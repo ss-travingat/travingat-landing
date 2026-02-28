@@ -1,11 +1,11 @@
 import { fontFamily, fontWeight, lineHeight, letterSpacing } from '@/lib/design-system';
 
-export default function OrganizeFeatures() {
+export default function OrganizeFeaturesMobile() {
     return (
-        <section className="pt-16 pb-8 md:pt-24 lg:pb-16 px-5 md:px-10 lg:px-16 bg-black overflow-hidden">
-            <div className="relative z-10 max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
+        <section className="pt-16 pb-8 md:pt-24 px-5 md:px-10 bg-black overflow-hidden lg:hidden">
+            <div className="relative z-10 max-w-7xl mx-auto grid grid-cols-1 gap-10 items-center">
                 {/* Text */}
-                <div className="order-1 text-center lg:text-left">
+                <div className="text-center">
                     <h2
                         className="text-white mb-4"
                         style={{
@@ -19,7 +19,7 @@ export default function OrganizeFeatures() {
                         Organize your travels by country
                     </h2>
                     <p
-                        className="text-secondary-text mx-auto lg:mx-0"
+                        className="text-secondary-text mx-auto"
                         style={{
                             fontFamily: fontFamily.sans,
                             fontSize: 'clamp(0.9375rem, 2.5vw, 1.125rem)',
@@ -31,19 +31,13 @@ export default function OrganizeFeatures() {
                     </p>
                 </div>
 
-                {/* Card collage image */}
-                <div className="order-2 flex justify-center lg:justify-end">
+                {/* Image */}
+                <div className="flex justify-center">
                     <img
                         alt="Country cards showing Greece, Thailand, and Switzerland"
-                        className="w-full h-auto block lg:hidden"
+                        className="w-full h-auto"
                         style={{ maxWidth: '28rem' }}
                         src="/assets/section2-1.png"
-                    />
-                    <img
-                        alt="Country cards showing Greece, Thailand, and Switzerland"
-                        className="w-full h-auto hidden lg:block"
-                        style={{ maxWidth: '28rem' }}
-                        src="/assets/collection.png"
                     />
                 </div>
             </div>

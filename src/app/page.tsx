@@ -1,7 +1,7 @@
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
-import OrganizeFeatures from "@/components/OrganizeFeatures";
-import CreateCollections from "@/components/CreateCollections";
+import OrganizeFeaturesMobile from "@/components/OrganizeFeaturesMobile";
+import OrganizeFeaturesDesktop from "@/components/OrganizeFeaturesDesktop";
 import OnePlace from "@/components/OnePlace";
 import Testimonial from "@/components/Testimonial";
 import PremiumTemplates from "@/components/PremiumTemplates";
@@ -14,22 +14,9 @@ export default function Home() {
     <>
       <Navbar />
       <Hero />
-      {/* Wrapper for connected sections with decorative line */}
-      <div className="relative bg-black">
-        <OrganizeFeatures />
-        <CreateCollections />
-        {/* Connecting line - desktop only, centered within content container */}
-        <div className="absolute inset-0 hidden lg:flex items-center justify-center pointer-events-none" style={{ zIndex: 1 }}>
-          <div className="w-full max-w-7xl mx-auto px-10 lg:px-16 flex justify-center">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/assets/line.svg"
-              alt=""
-              style={{ width: 'min(480px, 38%)', height: 'auto' }}
-            />
-          </div>
-        </div>
-      </div>
+      <div style={{ marginTop: '6rem' }} />
+      <OrganizeFeaturesMobile />
+      <OrganizeFeaturesDesktop />
       <OnePlace />
       <Testimonial />
       <div id="templates">
