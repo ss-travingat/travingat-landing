@@ -4,6 +4,7 @@ export default function Navbar() {
             <style>{`
                 .navbar-inner { height: 5rem; padding-top: 1rem; padding-bottom: 1rem; }
                 @media (min-width: 768px) { .navbar-inner { height: 8.25rem; padding-top: 2.75rem; padding-bottom: 2.75rem; } }
+                .navbar-logo-text, .navbar-logo-text * { color: #ffffff !important; -webkit-text-fill-color: #ffffff !important; }
             `}</style>
             <div
                 className="navbar-inner mx-auto flex items-center justify-between px-5 md:px-11"
@@ -12,8 +13,8 @@ export default function Navbar() {
                 }}
             >
                 {/* Logo */}
-                <a className="flex items-center" href="#" style={{ gap: '0.75rem' }}>
-                    <span className="text-white font-bold whitespace-nowrap" style={{ fontSize: '1.5rem', lineHeight: '2.1875rem' }}>travingat</span>
+                <a className="navbar-logo-text flex items-center" href="#" style={{ gap: '0.75rem' }}>
+                    <span className="navbar-brand font-bold whitespace-nowrap" style={{ fontSize: '1.5rem', lineHeight: '2.1875rem' }}>travingat</span>
                 </a>
 
                 {/* Mobile menu button */}
@@ -37,16 +38,7 @@ export default function Navbar() {
                     <a className="text-white hover:text-gray-300 transition-colors" href="#" style={{ fontSize: '0.875rem', lineHeight: '1.25rem' }}>Blog</a>
                     <a
                         href="#join"
-                        className="bg-white text-black font-medium hover:bg-gray-200 transition-colors"
-                        style={{
-                            fontSize: '0.875rem',
-                            lineHeight: '1.25rem',
-                            paddingTop: '0.5rem',
-                            paddingBottom: '0.5rem',
-                            paddingLeft: '1rem',
-                            paddingRight: '1rem',
-                            borderRadius: '62.5rem',
-                        }}
+                        className="btn btn-light btn-sm"
                     >
                         Join now
                     </a>

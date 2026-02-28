@@ -263,62 +263,197 @@ export const colors = {
 
   // ── Functional: Info ───────────────────────
   info: {
-    50:  '#EFF6FF',
-    100: '#DBEAFE',
-    200: '#BFDBFE',
-    300: '#93C5FD',
-    400: '#60A5FA',
-    500: '#3B82F6',
-    600: '#2563EB',
-    700: '#1D4ED8',
-    800: '#1E40AF',
-    900: '#1E3A8A',
-    950: '#172554',
+    50:  '#F1F8FE',
+    100: '#DEEFFD',
+    200: '#BCDFFA',
+    300: '#92CBF7',
+    400: '#59B0F3',
+    500: '#118BE8',
+    600: '#1080D6',
+    700: '#0E6FB9',
+    800: '#0B5B98',
+    900: '#08416D',
+    950: '#001D38',
   },
 
   // ── Functional: Success ────────────────────
   success: {
-    50:  '#F0FDF4',
-    100: '#DCFCE7',
-    200: '#BBF7D0',
-    300: '#86EFAC',
-    400: '#4ADE80',
-    500: '#22C55E',
-    600: '#16A34A',
-    700: '#15803D',
-    800: '#166534',
-    900: '#14532D',
-    950: '#052E16',
+    50:  '#E8FBE5',
+    100: '#D4F7CF',
+    200: '#A9EF9F',
+    300: '#7FE76F',
+    400: '#50DF3A',
+    500: '#35C220',
+    600: '#2A9919',
+    700: '#217613',
+    800: '#164F0D',
+    900: '#0D3107',
+    950: '#082005',
   },
 
   // ── Functional: Danger ─────────────────────
   danger: {
-    50:  '#FEF2F2',
-    100: '#FEE2E2',
-    200: '#FECACA',
-    300: '#FCA5A5',
-    400: '#F87171',
-    500: '#EF4444',
-    600: '#DC2626',
-    700: '#B91C1C',
-    800: '#991B1B',
-    900: '#7F1D1D',
-    950: '#450A0A',
+    50:  '#FEECEC',
+    100: '#FCD9D9',
+    200: '#F9B3B3',
+    300: '#F68989',
+    400: '#F36363',
+    500: '#F03D3D',
+    600: '#E92020',
+    700: '#A60D0D',
+    800: '#720909',
+    900: '#4A0606',
+    950: '#240000',
   },
 
   // ── Functional: Warning ────────────────────
   warning: {
-    50:  '#FFFBEB',
-    100: '#FEF3C7',
-    200: '#FDE68A',
-    300: '#FCD34D',
-    400: '#FBBF24',
-    500: '#F59E0B',
-    600: '#D97706',
-    700: '#B45309',
-    800: '#92400E',
-    900: '#78350F',
-    950: '#451A03',
+    50:  '#FFF8E6',
+    100: '#FEF2CD',
+    200: '#FEE59A',
+    300: '#FDD868',
+    400: '#FDCB35',
+    500: '#FCBF04',
+    600: '#CA9802',
+    700: '#977202',
+    800: '#654C01',
+    900: '#4A3902',
+    950: '#2D2000',
+  },
+
+  // ── Gray (Charcoal Neutrals) ───────────────
+  gray: {
+    50:  '#F6F7F9',
+    100: '#EDEEF1',
+    200: '#DCDCDC',
+    300: '#BDBDBD',
+    400: '#989898',
+    500: '#656565',
+    600: '#464646',
+    700: '#303030',
+    800: '#1E1E1E',
+    900: '#161616',
+    950: '#111111',
+  },
+
+  // ── Blue (Ocean / Deep Azure) ──────────────
+  blue: {
+    50:  '#F0F9FF',
+    100: '#DFF2FF',
+    200: '#B8E8FF',
+    300: '#79D6FF',
+    400: '#1FBCFE',
+    500: '#07ABF0',
+    600: '#0088CD',
+    700: '#006CA6',
+    800: '#035C89',
+    900: '#06304B',
+    950: '#001D38',
+  },
+
+  // ── Sky (Cornflower / Royal Blue) ─────────
+  sky: {
+    50:  '#F1F8FE',
+    100: '#DEEFFD',
+    200: '#BCDFFA',
+    300: '#92CBF7',
+    400: '#59B0F3',
+    500: '#118BE8',
+    600: '#1080D6',
+    700: '#0E6FB9',
+    800: '#0B5B98',
+    900: '#08416D',
+    950: '#001D38',
+  },
+
+  // ── Indigo (Blue-Violet) ───────────────────
+  indigo: {
+    50:  '#ECF0FF',
+    100: '#DCE3FF',
+    200: '#C0CAFF',
+    300: '#9AA7FF',
+    400: '#7278FF',
+    500: '#5952FF',
+    600: '#5A45F9',
+    700: '#3F26DC',
+    800: '#3422B1',
+    900: '#2E248B',
+    950: '#1D1551',
+  },
+
+  // ── Green (Vivid Lime-Green) ───────────────
+  green: {
+    50:  '#E8FBE5',
+    100: '#D4F7CF',
+    200: '#A9EF9F',
+    300: '#7FE76F',
+    400: '#50DF3A',
+    500: '#35C220',
+    600: '#2A9919',
+    700: '#217613',
+    800: '#164F0D',
+    900: '#0D3107',
+    950: '#082005',
+  },
+
+  // ── Rose (Pink / Magenta Rose) ────────────
+  rose: {
+    50:  '#FFF1F2',
+    100: '#FEE5E7',
+    200: '#FDCED3',
+    300: '#FAA7AF',
+    400: '#F77585',
+    500: '#F0526A',
+    600: '#DB2347',
+    700: '#B9173C',
+    800: '#9B1638',
+    900: '#851636',
+    950: '#4A0719',
+  },
+
+  // ── Red (Vivid Red) ────────────────────────
+  red: {
+    50:  '#FFF1F2',
+    100: '#FCD9D9',
+    200: '#F9B3B3',
+    300: '#F68989',
+    400: '#F36363',
+    500: '#F03D3D',
+    600: '#E92020',
+    700: '#A60D0D',
+    800: '#720909',
+    900: '#4A0606',
+    950: '#240000',
+  },
+
+  // ── Orange (Warm Orange) ───────────────────
+  orange: {
+    50:  '#FFF8EB',
+    100: '#FFEBC6',
+    200: '#FED789',
+    300: '#FEBC4B',
+    400: '#FDA221',
+    500: '#F77F09',
+    600: '#DB5A04',
+    700: '#B63B07',
+    800: '#932E0D',
+    900: '#79270E',
+    950: '#461102',
+  },
+
+  // ── Yellow (Golden Yellow) ────────────────
+  yellow: {
+    50:  '#FFF8E6',
+    100: '#FEF2CD',
+    200: '#FEE59A',
+    300: '#FDD868',
+    400: '#FDCB35',
+    500: '#FCBF04',
+    600: '#CA9802',
+    700: '#977202',
+    800: '#654C01',
+    900: '#4A3902',
+    950: '#2D2000',
   },
 } as const;
 
@@ -419,4 +554,56 @@ export const transitions = {
   fast: '150ms ease',
   normal: '250ms ease',
   slow: '350ms ease',
+} as const;
+
+// ─── Buttons ─────────────────────────────────────────────────────────────────
+
+export const buttonVariants = {
+  // ── Full-color variants ──
+  primary:             { bg: '#5A45F9', hover: '#3F26DC',               text: '#FFFFFF' },
+  'primary-soft':      { bg: '#C0CAFF', hover: '#9CAAFF',               text: '#ECF0FF' },
+  'primary-subtle':    { bg: '#ECF0FF', hover: '#C0CAFF',               text: '#5A45F9' },
+  secondary:           { bg: '#1A1A1A', hover: '#303030',               text: '#FFFFFF', border: '#353535' },
+  'secondary-dark':    { bg: '#3D3D3D', hover: '#303030',               text: '#FFFFFF' },
+  ghost:               { bg: 'transparent', hover: 'rgba(255,255,255,0.05)', text: '#FFFFFF', border: '#353535' },
+  danger:              { bg: '#F0526A', hover: '#DB2347',               text: '#FFFFFF' },
+  'danger-soft':       { bg: '#FAA7AF', hover: '#F87F8A',               text: '#FFF1F2' },
+  'danger-subtle':     { bg: '#FFF1F2', hover: '#FAA7AF',               text: '#F0526A' },
+  warning:             { bg: '#FDA221', hover: '#F77F09',               text: '#FFFFFF' },
+  'warning-soft':      { bg: '#FED789', hover: '#FDCA55',               text: '#FFF8EB' },
+  'warning-subtle':    { bg: '#FFF8EB', hover: '#FED789',               text: '#FDA221' },
+  info:                { bg: '#1FBCFE', hover: '#0088CD',               text: '#FFFFFF' },
+  'info-soft':         { bg: '#B8E8FF', hover: '#8DD8FF',               text: '#F0F9FF' },
+  'info-subtle':       { bg: '#F0F9FF', hover: '#B8E8FF',               text: '#1FBCFE' },
+  // ── Light / neutral variants ──
+  light:               { bg: '#FFFFFF',  hover: '#DCDCDC',              text: '#000000' },
+  'light-secondary':   { bg: '#DCDCDC',  hover: '#BDBDBD',              text: '#000000' },
+  'light-ghost':       { bg: '#EFEFEF',  hover: '#DCDCDC',              text: '#000000' },
+  neutral:             { bg: '#BDBDBD',  hover: '#A0A0A0',              text: '#1A1A1A' },
+} as const;
+
+export const buttonSizes = {
+  xs:  { height: '2rem',   px: '0.75rem', fontSize: '0.75rem',  radius: '62.5rem' },
+  sm:  { height: '2.25rem',px: '1rem',    fontSize: '0.875rem', radius: '62.5rem' },
+  md:  { height: '2.5rem', px: '1.25rem', fontSize: '0.875rem', radius: '62.5rem' },
+  lg:  { height: '2.75rem',px: '1.5rem',  fontSize: '1rem',     radius: '62.5rem' },
+  xl:  { height: '3rem',   px: '1.75rem', fontSize: '1rem',     radius: '62.5rem' },
+  '2xl': { height: '3.5rem', px: '2.25rem', fontSize: '1.125rem', radius: '62.5rem' },
+} as const;
+
+// ─── Animations ──────────────────────────────────────────────────────────────
+
+export const animations = {
+  'fade-in':    { class: 'animate-fade-in',    keyframe: 'fade-in',    description: 'Fade from transparent to opaque',               category: 'entrance' },
+  'fade-up':    { class: 'animate-fade-up',    keyframe: 'fade-up',    description: 'Fade in while rising from below',               category: 'entrance' },
+  'fade-down':  { class: 'animate-fade-down',  keyframe: 'fade-down',  description: 'Fade in while dropping from above',             category: 'entrance' },
+  'fade-left':  { class: 'animate-fade-left',  keyframe: 'fade-left',  description: 'Fade in while sliding from the right',          category: 'entrance' },
+  'fade-right': { class: 'animate-fade-right', keyframe: 'fade-right', description: 'Fade in while sliding from the left',           category: 'entrance' },
+  'scale-in':   { class: 'animate-scale-in',   keyframe: 'scale-in',   description: 'Fade in while scaling up from slightly smaller', category: 'entrance' },
+  'float':      { class: 'animate-float',      keyframe: 'float',      description: 'Gentle up-and-down hover loop',                 category: 'loop' },
+  'pulse-soft': { class: 'animate-pulse-soft', keyframe: 'pulse-soft', description: 'Soft opacity pulsing loop',                     category: 'loop' },
+  'shimmer':    { class: 'animate-shimmer',    keyframe: 'shimmer',    description: 'Horizontal shine sweep for skeleton loaders',   category: 'loop' },
+  'spin-slow':  { class: 'animate-spin-slow',  keyframe: 'spin-slow',  description: 'Slow full rotation loop',                       category: 'loop' },
+  'bounce-y':   { class: 'animate-bounce-y',   keyframe: 'bounce-y',   description: 'Vertical bounce loop',                          category: 'loop' },
+  'marquee':    { class: 'animate-marquee',    keyframe: 'marquee',    description: 'Continuous horizontal scroll (ticker)',         category: 'loop' },
 } as const;

@@ -136,6 +136,123 @@ html {
   --color-warning-900: #78350F;
   --color-warning-950: #451A03;
 
+  /* ── Gray (Charcoal Neutrals) ───────────────── */
+  --color-gray-50:  #F6F7F9;
+  --color-gray-100: #EDEEF1;
+  --color-gray-200: #DCDCDC;
+  --color-gray-300: #BDBDBD;
+  --color-gray-400: #989898;
+  --color-gray-500: #656565;
+  --color-gray-600: #464646;
+  --color-gray-700: #303030;
+  --color-gray-800: #1E1E1E;
+  --color-gray-900: #161616;
+  --color-gray-950: #111111;
+
+  /* ── Blue (Ocean / Deep Azure) ──────────────── */
+  --color-blue-50:  #F0F9FF;
+  --color-blue-100: #DFF2FF;
+  --color-blue-200: #B8E8FF;
+  --color-blue-300: #79D6FF;
+  --color-blue-400: #1FBCFE;
+  --color-blue-500: #07ABF0;
+  --color-blue-600: #0088CD;
+  --color-blue-700: #006CA6;
+  --color-blue-800: #035C89;
+  --color-blue-900: #06304B;
+  --color-blue-950: #001D38;
+
+  /* ── Sky (Cornflower / Royal Blue) ──────────── */
+  --color-sky-50:  #F1F8FE;
+  --color-sky-100: #DEEFFD;
+  --color-sky-200: #BCDFFA;
+  --color-sky-300: #92CBF7;
+  --color-sky-400: #59B0F3;
+  --color-sky-500: #118BE8;
+  --color-sky-600: #1080D6;
+  --color-sky-700: #0E6FB9;
+  --color-sky-800: #0B5B98;
+  --color-sky-900: #08416D;
+  --color-sky-950: #094C71;
+
+  /* ── Indigo (Blue-Violet) ───────────────────── */
+  --color-indigo-50:  #ECF0FF;
+  --color-indigo-100: #DCE3FF;
+  --color-indigo-200: #C0CAFF;
+  --color-indigo-300: #9AA7FF;
+  --color-indigo-400: #7278FF;
+  --color-indigo-500: #5952FF;
+  --color-indigo-600: #5A45F9;
+  --color-indigo-700: #3F26DC;
+  --color-indigo-800: #3422B1;
+  --color-indigo-900: #2E248B;
+  --color-indigo-950: #1D1551;
+
+  /* ── Green (Vivid Lime-Green) ───────────────── */
+  --color-green-50:  #E8FBE5;
+  --color-green-100: #D4F7CF;
+  --color-green-200: #A9EF9F;
+  --color-green-300: #7FE76F;
+  --color-green-400: #50DF3A;
+  --color-green-500: #35C220;
+  --color-green-600: #2A9919;
+  --color-green-700: #217613;
+  --color-green-800: #164F0D;
+  --color-green-900: #0D3107;
+  --color-green-950: #082005;
+
+  /* ── Rose (Pink / Magenta Rose) ─────────────── */
+  --color-rose-50:  #FFF1F2;
+  --color-rose-100: #FEE5E7;
+  --color-rose-200: #FDCED3;
+  --color-rose-300: #FAA7AF;
+  --color-rose-400: #F77585;
+  --color-rose-500: #F0526A;
+  --color-rose-600: #DB2347;
+  --color-rose-700: #B9173C;
+  --color-rose-800: #9B1638;
+  --color-rose-900: #851636;
+  --color-rose-950: #4A0719;
+
+  /* ── Red (Vivid Red) ────────────────────────── */
+  --color-red-50:  #FFF1F2;
+  --color-red-100: #FCD9D9;
+  --color-red-200: #F9B3B3;
+  --color-red-300: #F68989;
+  --color-red-400: #F36363;
+  --color-red-500: #F03D3D;
+  --color-red-600: #E92020;
+  --color-red-700: #A60D0D;
+  --color-red-800: #720909;
+  --color-red-900: #4A0606;
+  --color-red-950: #240000;
+
+  /* ── Orange (Warm Orange) ───────────────────── */
+  --color-orange-50:  #FFF8EB;
+  --color-orange-100: #FFEBC6;
+  --color-orange-200: #FED789;
+  --color-orange-300: #FEBC4B;
+  --color-orange-400: #FDA221;
+  --color-orange-500: #F77F09;
+  --color-orange-600: #DB5A04;
+  --color-orange-700: #B63B07;
+  --color-orange-800: #932E0D;
+  --color-orange-900: #79270E;
+  --color-orange-950: #461102;
+
+  /* ── Yellow (Golden Yellow) ─────────────────── */
+  --color-yellow-50:  #FFF8E6;
+  --color-yellow-100: #FEF2CD;
+  --color-yellow-200: #FEE59A;
+  --color-yellow-300: #FDD868;
+  --color-yellow-400: #FDCB35;
+  --color-yellow-500: #FCBF04;
+  --color-yellow-600: #CA9802;
+  --color-yellow-700: #977202;
+  --color-yellow-800: #654C01;
+  --color-yellow-900: #4A3902;
+  --color-yellow-950: #2D2000;
+
   /* ── Semantic Aliases ───────────────────────── */
   --color-primary: #5A4CFF;
   --color-primary-hover: #4839CC;
@@ -150,8 +267,8 @@ html {
   --color-border-dark-hover: #333333;
 
   /* ── Font Families ──────────────────────────── */
-  --font-display: "Inter Display", "Inter", sans-serif;
-  --font-sans: "Inter", sans-serif;
+  --font-display: var(--font-inter-display);
+  --font-sans: var(--font-inter);
 
   /* ── Font Sizes (rem) ───────────────────────── */
   --font-size-h1: 3.5rem;
@@ -208,6 +325,11 @@ html {
 }
 
 /* ─── Base Styles ─────────────────────────────────────────────────────────── */
+.navbar-brand {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+
 body {
   font-family: var(--font-sans);
   font-size: var(--font-size-body);
@@ -307,3 +429,155 @@ body {
   }
 }
 
+/* ─── Keyframes ───────────────────────────────────────────────────────────── */
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fade-down {
+  from { opacity: 0; transform: translateY(-16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fade-left {
+  from { opacity: 0; transform: translateX(16px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes fade-right {
+  from { opacity: 0; transform: translateX(-16px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes scale-in {
+  from { opacity: 0; transform: scale(0.93); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+@keyframes scale-up {
+  from { transform: scale(1); }
+  to   { transform: scale(1.04); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-8px); }
+}
+
+@keyframes pulse-soft {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.55; }
+}
+
+@keyframes shimmer {
+  from { background-position: -200% 0; }
+  to   { background-position:  200% 0; }
+}
+
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+@keyframes bounce-y {
+  0%, 100% { transform: translateY(0);    animation-timing-function: cubic-bezier(0.8,0,1,1); }
+  50%       { transform: translateY(-12px); animation-timing-function: cubic-bezier(0,0,0.2,1); }
+}
+
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+/* ─── Animation utility classes ──────────────────────────────────────────── */
+.animate-fade-in    { animation: fade-in    var(--transition-normal) ease both; }
+.animate-fade-up    { animation: fade-up    var(--transition-normal) ease both; }
+.animate-fade-down  { animation: fade-down  var(--transition-normal) ease both; }
+.animate-fade-left  { animation: fade-left  var(--transition-normal) ease both; }
+.animate-fade-right { animation: fade-right var(--transition-normal) ease both; }
+.animate-scale-in   { animation: scale-in   var(--transition-normal) ease both; }
+.animate-float      { animation: float      3s ease-in-out infinite; }
+.animate-pulse-soft { animation: pulse-soft 2s ease-in-out infinite; }
+.animate-shimmer    { animation: shimmer    1.6s linear infinite; background-size: 200% 100%; }
+.animate-spin-slow  { animation: spin-slow  8s linear infinite; }
+.animate-bounce-y   { animation: bounce-y   1s infinite; }
+.animate-marquee    { animation: marquee    var(--duration, 20s) linear infinite; }
+
+/* ─── Button base ─────────────────────────────────────────────────────────── */
+@layer components {
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 62.5rem;
+    font-weight: 500;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background 150ms ease, color 150ms ease, transform 150ms ease, opacity 150ms ease;
+    outline: none;
+    border: none;
+    user-select: none;
+    text-decoration: none;
+  }
+  .btn:disabled { opacity: 0.4; pointer-events: none; }
+  .btn:active   { transform: scale(0.98); }
+
+  /* ── variants ──────────────────────────────────────────────────────────── */
+  .btn-primary          { background: #5A45F9; color: #fff; }
+  .btn-primary:hover    { background: #3F26DC; }
+  .btn-primary-soft     { background: #C0CAFF; color: #ECF0FF; }
+  .btn-primary-soft:hover { background: #9CAAFF; }
+  .btn-primary-subtle   { background: #ECF0FF; color: #5A45F9; }
+  .btn-primary-subtle:hover { background: #C0CAFF; }
+
+  .btn-secondary        { background: #1A1A1A; color: #fff; border: 1px solid #353535; }
+  .btn-secondary:hover  { background: #303030; }
+  .btn-secondary-dark   { background: #3D3D3D; color: #fff; }
+  .btn-secondary-dark:hover { background: #303030; }
+  .btn-ghost            { background: transparent; color: #fff; border: 1px solid #353535; }
+  .btn-ghost:hover      { background: rgba(255,255,255,0.05); }
+
+  .btn-danger           { background: #F0526A; color: #fff; }
+  .btn-danger:hover     { background: #DB2347; }
+  .btn-danger-soft      { background: #FAA7AF; color: #FFF1F2; }
+  .btn-danger-soft:hover { background: #F87F8A; }
+  .btn-danger-subtle    { background: #FFF1F2; color: #F0526A; }
+  .btn-danger-subtle:hover { background: #FAA7AF; }
+
+  .btn-warning          { background: #FDA221; color: #fff; }
+  .btn-warning:hover    { background: #F77F09; }
+  .btn-warning-soft     { background: #FED789; color: #FFF8EB; }
+  .btn-warning-soft:hover { background: #FDCA55; }
+  .btn-warning-subtle   { background: #FFF8EB; color: #FDA221; }
+  .btn-warning-subtle:hover { background: #FED789; }
+
+  .btn-info             { background: #1FBCFE; color: #fff; }
+  .btn-info:hover       { background: #0088CD; }
+  .btn-info-soft        { background: #B8E8FF; color: #F0F9FF; }
+  .btn-info-soft:hover  { background: #8DD8FF; }
+  .btn-info-subtle      { background: #F0F9FF; color: #1FBCFE; }
+  .btn-info-subtle:hover { background: #B8E8FF; }
+
+  .btn-light            { background: #ffffff; color: #000; }
+  .btn-light:hover      { background: #DCDCDC; }
+  .btn-light-secondary  { background: #DCDCDC; color: #000; }
+  .btn-light-secondary:hover { background: #BDBDBD; }
+  .btn-light-ghost      { background: #EFEFEF; color: #000; }
+  .btn-light-ghost:hover { background: #DCDCDC; }
+  .btn-neutral          { background: #BDBDBD; color: #1A1A1A; }
+  .btn-neutral:hover    { background: #A0A0A0; }
+
+  /* ── sizes ─────────────────────────────────────────────────────────────── */
+  .btn-xs  { height: 2rem;    padding: 0 0.75rem; font-size: 0.75rem;  gap: 0.375rem; }
+  .btn-sm  { height: 2.25rem; padding: 0 1rem;    font-size: 0.875rem; gap: 0.5rem;   }
+  .btn-md  { height: 2.5rem;  padding: 0 1.25rem; font-size: 0.875rem; gap: 0.5rem;   }
+  .btn-lg  { height: 2.75rem; padding: 0 1.5rem;  font-size: 1rem;     gap: 0.625rem; }
+  .btn-xl  { height: 3rem;    padding: 0 1.75rem; font-size: 1rem;     gap: 0.625rem; }
+  .btn-2xl { height: 3.5rem;  padding: 0 2.25rem; font-size: 1.125rem; gap: 0.75rem;  }
+}

@@ -19,7 +19,7 @@ export default function CTA() {
                 <p className="text-white text-sm md:text-base mb-8 md:mb-10">Be first to build and share your travel profile.</p>
                 <div className="flex flex-col items-center justify-center gap-3 md:gap-4 max-w-md mx-auto">
                     <input className="w-full bg-transparent border border-gray-700 text-white rounded-full px-6 py-3 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent placeholder-gray-500 text-sm md:text-base" placeholder="Enter your email" type="email" />
-                    <button className="w-full bg-white text-black hover:bg-gray-100 font-medium rounded-full px-8 py-3 whitespace-nowrap transition-colors text-sm md:text-base">
+                    <button className="btn btn-light btn-lg w-full">
                         Get early access
                     </button>
                 </div>

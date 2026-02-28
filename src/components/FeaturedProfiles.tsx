@@ -38,8 +38,8 @@ export default function FeaturedProfiles() {
                                 </div>
                             </div>
                             <div className="flex gap-2">
-                                <button className="flex-1 bg-white text-black py-2 rounded-full text-sm font-bold hover:bg-gray-200">Follow</button>
-                                <button className="flex-1 bg-transparent border border-gray-700 text-white py-2 rounded-full text-sm font-bold hover:bg-gray-800">Connect</button>
+                                <button className="btn btn-light btn-sm flex-1">Follow</button>
+                                <button className="btn btn-ghost btn-sm flex-1">Connect</button>
                             </div>
                         </div>
                     </div>
@@ -72,8 +72,8 @@ export default function FeaturedProfiles() {
                                 </div>
                             </div>
                             <div className="flex gap-2">
-                                <button className="flex-1 bg-white text-black py-2 rounded-full text-sm font-bold hover:bg-gray-200">Follow</button>
-                                <button className="flex-1 bg-transparent border border-gray-700 text-white py-2 rounded-full text-sm font-bold hover:bg-gray-800">Connect</button>
+                                <button className="btn btn-light btn-sm flex-1">Follow</button>
+                                <button className="btn btn-ghost btn-sm flex-1">Connect</button>
                             </div>
                         </div>
                     </div>
@@ -106,8 +106,8 @@ export default function FeaturedProfiles() {
                                 </div>
                             </div>
                             <div className="flex gap-2">
-                                <button className="flex-1 bg-white text-black py-2 rounded-full text-sm font-bold hover:bg-gray-200">Follow</button>
-                                <button className="flex-1 bg-transparent border border-gray-700 text-white py-2 rounded-full text-sm font-bold hover:bg-gray-800">Connect</button>
+                                <button className="btn btn-light btn-sm flex-1">Follow</button>
+                                <button className="btn btn-ghost btn-sm flex-1">Connect</button>
                             </div>
                         </div>
                     </div>
@@ -140,8 +140,8 @@ export default function FeaturedProfiles() {
                                 </div>
                             </div>
                             <div className="flex gap-2">
-                                <button className="flex-1 bg-white text-black py-2 rounded-full text-sm font-bold hover:bg-gray-200">Follow</button>
-                                <button className="flex-1 bg-transparent border border-gray-700 text-white py-2 rounded-full text-sm font-bold hover:bg-gray-800">Connect</button>
+                                <button className="btn btn-light btn-sm flex-1">Follow</button>
+                                <button className="btn btn-ghost btn-sm flex-1">Connect</button>
                             </div>
                         </div>
                     </div>

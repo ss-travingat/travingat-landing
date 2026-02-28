@@ -82,19 +82,7 @@ export default function Hero() {
                                 padding: '0.5rem 0',
                             }}
                         />
-                        <button
-                            className="bg-white text-black hover:bg-gray-200 transition-colors"
-                            style={{
-                                fontFamily: fontFamily.sans,
-                                fontSize: fontSize['body-sm'],
-                                fontWeight: fontWeight.medium,
-                                lineHeight: lineHeight.body,
-                                padding: '0.75rem 1.5rem',
-                                borderRadius: '62.5rem',
-                                whiteSpace: 'nowrap',
-                            }}
-                            type="button"
-                        >
+                        <button className="btn btn-light btn-md" type="button">
                             Get early access
                         </button>
                     </div>
@@ -114,14 +102,8 @@ export default function Hero() {
                             }}
                         />
                         <button
-                            className="bg-white text-black hover:bg-gray-200 transition-colors w-full"
+                            className="btn btn-light btn-lg w-full"
                             style={{
-                                fontFamily: fontFamily.sans,
-                                fontSize: fontSize.body,
-                                fontWeight: fontWeight.medium,
-                                lineHeight: lineHeight.body,
-                                padding: '1rem 1.5rem',
-                                borderRadius: '62.5rem',
                                 whiteSpace: 'nowrap',
                             }}
                             type="button"

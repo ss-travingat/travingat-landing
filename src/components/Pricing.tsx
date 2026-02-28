@@ -11,7 +11,7 @@ const plans = {
             period: "/per month",
             description: "For casual travelers who are just starting their journey.",
             cta: "Get Started",
-            ctaStyle: "bg-white text-black hover:bg-gray-200",
+            ctaStyle: "btn-light",
             featured: false,
             features: [
                 { text: "Unlimited country flags", included: true },
@@ -28,7 +28,7 @@ const plans = {
             period: "/per month",
             description: "For serious travelers building their travel identity.",
             cta: "Get Started",
-            ctaStyle: "bg-primary text-white hover:bg-primary-hover",
+            ctaStyle: "btn-primary",
             featured: true,
             features: [
                 { text: "Everything in Explorer", included: true },
@@ -46,7 +46,7 @@ const plans = {
             period: "/per month",
             description: "For creators, storytellers, and travel personalities.",
             cta: "Get Started",
-            ctaStyle: "bg-amber-500 text-black hover:bg-amber-400",
+            ctaStyle: "btn-warning",
             featured: false,
             features: [
                 { text: "Everything in Traveller", included: true },
@@ -65,7 +65,7 @@ const plans = {
             period: "/per month",
             description: "Great for trying out Frames X component and templates.",
             cta: "Get Started",
-            ctaStyle: "bg-white text-black hover:bg-gray-200",
+            ctaStyle: "btn-light",
             featured: false,
             features: [
                 { text: "Unlimited country flags", included: true },
@@ -82,7 +82,7 @@ const plans = {
             period: "/per month",
             description: "Best for professional freelancers and small teams.",
             cta: "Get Started",
-            ctaStyle: "bg-primary text-white hover:bg-primary-hover",
+            ctaStyle: "btn-primary",
             featured: true,
             features: [
                 { text: "Everything in Explorer", included: true },
@@ -100,7 +100,7 @@ const plans = {
             period: "/per month",
             description: "Best for growing large company or enterprise design team.",
             cta: "Get Started",
-            ctaStyle: "bg-amber-500 text-black hover:bg-amber-400",
+            ctaStyle: "btn-warning",
             featured: false,
             features: [
                 { text: "Everything in Traveller", included: true },
@@ -201,7 +201,7 @@ export default function Pricing() {
 
                             {/* CTA */}
                             <button
-                                className={`w-full py-2.5 rounded-full text-sm font-semibold transition-colors ${plan.ctaStyle}`}
+                                className={`btn btn-md w-full ${plan.ctaStyle}`}
                             >
                                 {plan.cta}
                             </button>
