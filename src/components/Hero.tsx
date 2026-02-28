@@ -3,7 +3,7 @@ import { fontFamily, fontSize, fontWeight, lineHeight, letterSpacing } from '@/l
 export default function Hero() {
     return (
         <section
-            className="hero-section relative mx-auto overflow-hidden px-6 md:px-0"
+            className="hero-section relative mx-auto overflow-hidden px-24"
             style={{
                 maxWidth: '96rem',
                 width: '100%',
@@ -43,7 +43,7 @@ export default function Hero() {
                             lineHeight: lineHeight.h1,
                             fontWeight: fontWeight.bold,
                             letterSpacing: letterSpacing.tight,
-                            marginBottom: '1rem',
+                            marginBottom: '2rem', // Increased gap below heading
                         }}
                     >
                         Build your travel profile

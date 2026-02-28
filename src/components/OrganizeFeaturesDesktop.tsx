@@ -56,7 +56,7 @@ export default function OrganizeFeaturesDesktop() {
                         marginBottom: '4rem', 
                         marginTop: '2rem', // Move text upward
                     }}>
-                        Create collections for photography, journeys, moods—or anything you like.
+                        Create collections for photography, journeys, moods or anything you like.
                     </p>
                 </div>
             </div>
