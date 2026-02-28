@@ -14,7 +14,7 @@ export default function OrganizeFeaturesDesktop() {
                     <h2 style={{
                         fontFamily: '"Inter Display", "Inter", sans-serif',
                         fontWeight: 600,
-                        fontSize: 'clamp(2rem, 3.5vw, 3rem)',
+                        fontSize: 'clamp(3rem, 4.5vw, 3rem)',
                         lineHeight: 1.25,
                         letterSpacing: '-0.02em',
                         color: '#ffffff',
@@ -25,9 +25,9 @@ export default function OrganizeFeaturesDesktop() {
                     <p style={{
                         fontFamily: '"Inter", sans-serif',
                         fontWeight: 400,
-                        fontSize: 'clamp(0.875rem, 1.1vw, 1.125rem)',
+                        fontSize: 'clamp(1rem, 1.5vw, 1.1rem)',
                         lineHeight: 1.6,
-                        color: '#9CA3AF',
+                        color: '#ffffff',
                         marginTop: '2rem', // Move text downward
                     }}>
                         Add countries to your profile and neatly group photos and videos from each journey.
@@ -39,21 +39,21 @@ export default function OrganizeFeaturesDesktop() {
                     <h2 style={{
                         fontFamily: '"Inter Display", "Inter", sans-serif',
                         fontWeight: 600,
-                        fontSize: 'clamp(2rem, 3.5vw, 3rem)',
+                        fontSize: 'clamp(3rem, 4.5vw, 3rem)',
                         lineHeight: 1.15,
                         letterSpacing: '-0.02em',
                         color: '#ffffff',
-                        marginTop: '3.5rem',
+                        marginTop: '2.5rem',
                     }}>
                         Create collections that tell a story
                     </h2>
                     <p style={{
                         fontFamily: '"Inter", sans-serif',
                         fontWeight: 400,
-                        fontSize: 'clamp(0.875rem, 1.1vw, 1.125rem)',
+                        fontSize: 'clamp(1rem, 1.5vw, 1.1rem)',
                         lineHeight: 1.6,
-                        color: '#9CA3AF',
-                        marginBottom: '2rem', 
+                        color: '#ffffff',
+                        marginBottom: '4rem', 
                         marginTop: '2rem', // Move text upward
                     }}>
                         Create collections for photography, journeys, moods—or anything you like.

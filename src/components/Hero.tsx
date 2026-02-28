@@ -56,6 +56,7 @@ export default function Hero() {
                             lineHeight: lineHeight.body,
                             marginBottom: '2rem',
                             maxWidth: '32rem',
+                            color: '#fff', // Set text color to white
                         }}
                     >
                         Turn your journeys into a beautiful personal archive.
