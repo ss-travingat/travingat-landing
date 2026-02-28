@@ -14,7 +14,7 @@ export default function Home() {
     <>
       <Navbar />
       <Hero />
-      <div style={{ marginTop: '10rem' }} />
+      <div style={{ marginTop: '6rem' }} />
       <OrganizeFeaturesMobile />
       <OrganizeFeaturesDesktop />
       <OnePlace />

@@ -3,10 +3,11 @@ import { fontFamily, fontSize, fontWeight, lineHeight, letterSpacing } from '@/l
 export default function Hero() {
     return (
         <section
-            className="hero-section relative mx-auto overflow-hidden px-24"
+            className="hero-section relative mx-auto overflow-hidden px-24 bg-black"
             style={{
                 maxWidth: '96rem',
                 width: '100%',
+                backgroundColor: '#000', // Fallback for background
             }}
         >
             <style>{`
@@ -83,7 +84,11 @@ export default function Hero() {
                                 padding: '0.5rem 0',
                             }}
                         />
-                        <button className="btn btn-light btn-md" type="button">
+                        <button
+                            className="btn btn-md bg-white text-black hover:bg-gray-200"
+                            style={{ backgroundColor: '#fff', color: '#000' }}
+                            type="button"
+                        >
                             Get early access
                         </button>
                     </div>
@@ -103,9 +108,11 @@ export default function Hero() {
                             }}
                         />
                         <button
-                            className="btn btn-light btn-lg w-full"
+                            className="btn btn-lg w-full bg-white text-black hover:bg-gray-200"
                             style={{
                                 whiteSpace: 'nowrap',
+                                backgroundColor: '#fff',
+                                color: '#000',
                             }}
                             type="button"
                         >

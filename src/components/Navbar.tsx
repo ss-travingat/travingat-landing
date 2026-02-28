@@ -1,6 +1,40 @@
+"use client";
+import React, { useEffect, useRef, useState } from 'react';
+
 export default function Navbar() {
+    const [show, setShow] = useState(true);
+    const lastScroll = useRef(0);
+
+    useEffect(() => {
+        let ticking = false;
+        const handleScroll = () => {
+            if (!ticking) {
+                window.requestAnimationFrame(() => {
+                    const curr = window.scrollY;
+                    if (curr === 0) {
+                        setShow(true);
+                    } else if (curr > lastScroll.current && curr - lastScroll.current > 0) {
+                        // Scrolling down
+                        setShow(false);
+                    } else if (curr < lastScroll.current && lastScroll.current - curr > 5) {
+                        // Scrolling up by at least 5px
+                        setShow(true);
+                    }
+                    lastScroll.current = curr;
+                    ticking = false;
+                });
+                ticking = true;
+            }
+        };
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
+
     return (
-        <nav className="fixed w-full z-50 top-0 start-0 bg-black">
+        <nav
+            className={`fixed w-full z-50 top-0 start-0 bg-black transition-transform duration-300 ${show ? 'translate-y-0' : '-translate-y-full'}`}
+            style={{ willChange: 'transform' }}
+        >
             <style>{`
                 .navbar-inner { height: 5rem; padding-top: 1rem; padding-bottom: 1rem; }
                 @media (min-width: 768px) { .navbar-inner { height: 8.25rem; padding-top: 2.75rem; padding-bottom: 2.75rem; } }

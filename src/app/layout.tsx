@@ -38,7 +38,7 @@ export default function RootLayout({
       <head>
           <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
       </head>
-      <body className="bg-background-light dark:bg-background-dark text-gray-900 dark:text-white antialiased selection:bg-primary selection:text-white">
+      <body className="bg-black text-white antialiased selection:bg-primary selection:text-white" style={{ backgroundColor: '#000' }}>
         {children}
       </body>
     </html>
