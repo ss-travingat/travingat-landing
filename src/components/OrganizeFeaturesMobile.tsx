@@ -16,7 +16,7 @@ export default function OrganizeFeaturesMobile() {
                             letterSpacing: letterSpacing.tight,
                         }}
                     >
-                        Organize your travels by country
+                        Organize your travels<br />by country
                     </h2>
                     <p
                         className="text-secondary-text mx-auto"

@@ -10,7 +10,7 @@ export default function OrganizeFeaturesDesktop() {
                 />
 
                 {/* Top-left text */}
-                <div className="absolute top-[6%] left-[2%] max-w-sm">
+                <div className="absolute top-[6%] left-[2%] max-w-lg">
                     <h2 style={{
                         fontFamily: '"Inter Display", "Inter", sans-serif',
                         fontWeight: 600,
@@ -20,7 +20,7 @@ export default function OrganizeFeaturesDesktop() {
                         color: '#ffffff',
                         marginTop: '6.5rem',
                     }}>
-                        Organize your travels by country
+                        Organize your travels<br />by country
                     </h2>
                     <p style={{
                         fontFamily: '"Inter", sans-serif',
@@ -35,7 +35,7 @@ export default function OrganizeFeaturesDesktop() {
                 </div>
 
                 {/* Bottom-right text */}
-                <div className="absolute bottom-[6%] right-[2%] max-w-sm text-left">
+                <div className="absolute bottom-[6%] right-[2%] max-w-lg text-left">
                     <h2 style={{
                         fontFamily: '"Inter Display", "Inter", sans-serif',
                         fontWeight: 600,
@@ -45,7 +45,7 @@ export default function OrganizeFeaturesDesktop() {
                         color: '#ffffff',
                         marginTop: '2.5rem',
                     }}>
-                        Create collections that tell a story
+                        Create collections<br />that tell a story
                     </h2>
                     <p style={{
                         fontFamily: '"Inter", sans-serif',
@@ -53,7 +53,7 @@ export default function OrganizeFeaturesDesktop() {
                         fontSize: 'clamp(1rem, 1.5vw, 1.1rem)',
                         lineHeight: 1.6,
                         color: '#ffffff',
-                        marginBottom: '4rem', 
+                        marginBottom: '4rem',
                         marginTop: '2rem', // Move text upward
                     }}>
                         Create collections for photography, journeys, moods or anything you like.
