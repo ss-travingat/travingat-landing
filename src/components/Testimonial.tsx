@@ -138,33 +138,13 @@ export default function Testimonial() {
 
     return (
         <section className="pt-16 pb-24 md:pt-24 md:pb-36 px-5 md:px-10 lg:px-16 bg-primary">
-            <div className="max-w-6xl mx-auto">
-                {/* Arrows — top-right on desktop, hidden on mobile (shown at bottom instead) */}
-                <div className="hidden md:flex gap-3 justify-end mb-6">
-                    <button
-                        onClick={prev}
-                        aria-label="Previous testimonial"
-                        className="text-white/30 hover:text-white/70 transition-colors duration-200"
-                    >
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M19 12H5M12 5l-7 7 7 7" />
-                        </svg>
-                    </button>
-                    <button
-                        onClick={next}
-                        aria-label="Next testimonial"
-                        className="text-white/80 hover:text-white transition-colors duration-200"
-                    >
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M5 12h14M12 5l7 7-7 7" />
-                        </svg>
-                    </button>
-                </div>
+            <div className="max-w-6xl">
 
                 {/* Animated content */}
                 <div
-                    className="flex flex-col md:flex-row gap-6 md:gap-14 items-stretch"
+                    className="flex flex-col md:flex-row gap-6 items-stretch"
                     style={{
+                        columnGap: '4rem',
                         opacity: visible ? 1 : 0,
                         transform: visible ? 'translateY(0)' : 'translateY(12px)',
                         filter: visible ? 'blur(0px)' : 'blur(4px)',
@@ -193,7 +173,14 @@ export default function Testimonial() {
                                 height={48}
                                 className="mb-4 select-none w-10 h-auto md:w-16"
                             />
-                            <p className="text-white text-lg md:text-2xl lg:text-3xl font-semibold leading-snug">
+                            <p style={{
+                                fontFamily: '"Inter", sans-serif',
+                                fontWeight: 500,
+                                fontSize: '42px',
+                                lineHeight: '3.25rem',
+                                letterSpacing: '-0.0625rem',
+                                color: '#ffffff',
+                            }}>
                                 <WordReveal text={t.quote} active={wordsReady} />
                             </p>
                         </div>
@@ -216,6 +203,30 @@ export default function Testimonial() {
                                     ))}
                                 </div>
                             </div>
+                        </div>
+                    </div>
+
+                    {/* Desktop arrows — right column, arrows at top */}
+                    <div className="hidden md:flex flex-col items-end shrink-0" style={{ marginLeft: '6rem' }}>
+                        <div className="flex gap-3" style={{ marginBottom: '6rem' }}>
+                            <button
+                                onClick={prev}
+                                aria-label="Previous testimonial"
+                                className="text-white/30 hover:text-white/70 transition-colors duration-200"
+                            >
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <path d="M19 12H5M12 5l-7 7 7 7" />
+                                </svg>
+                            </button>
+                            <button
+                                onClick={next}
+                                aria-label="Next testimonial"
+                                className="text-white/80 hover:text-white transition-colors duration-200"
+                            >
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <path d="M5 12h14M12 5l7 7-7 7" />
+                                </svg>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -245,3 +256,4 @@ export default function Testimonial() {
         </section>
     );
 }
+
