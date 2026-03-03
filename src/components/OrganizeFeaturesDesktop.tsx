@@ -35,7 +35,7 @@ export default function OrganizeFeaturesDesktop() {
                 </div>
 
                 {/* Bottom-right text */}
-                <div className="absolute bottom-[6%] right-[2%] max-w-lg text-left">
+                <div className="absolute bottom-[6%] right-[0%] max-w-lg text-left" style={{ transform: 'translateX(6rem)' }}>
                     <h2 style={{
                         fontFamily: '"Inter Display", "Inter", sans-serif',
                         fontWeight: 600,

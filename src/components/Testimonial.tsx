@@ -138,13 +138,36 @@ export default function Testimonial() {
 
     return (
         <section className="pt-16 pb-24 md:pt-24 md:pb-36 px-5 md:px-10 lg:px-16 bg-primary">
-            <div className="max-w-6xl">
+            <div className="max-w-6xl relative">
+
+                {/* Desktop arrows — fixed, no fade */}
+                <div className="hidden md:flex absolute top-0 gap-3" style={{ right: '-6rem' }}>
+                    <button
+                        onClick={prev}
+                        aria-label="Previous testimonial"
+                        className="text-white/30 hover:text-white/70 transition-colors duration-200"
+                    >
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M19 12H5M12 5l-7 7 7 7" />
+                        </svg>
+                    </button>
+                    <button
+                        onClick={next}
+                        aria-label="Next testimonial"
+                        className="text-white/80 hover:text-white transition-colors duration-200"
+                    >
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M5 12h14M12 5l7 7-7 7" />
+                        </svg>
+                    </button>
+                </div>
 
                 {/* Animated content */}
                 <div
                     className="flex flex-col md:flex-row gap-6 items-stretch"
                     style={{
                         columnGap: '4rem',
+
                         opacity: visible ? 1 : 0,
                         transform: visible ? 'translateY(0)' : 'translateY(12px)',
                         filter: visible ? 'blur(0px)' : 'blur(4px)',
@@ -162,7 +185,6 @@ export default function Testimonial() {
                         </div>
                     </div>
 
-                    {/* Content */}
                     <div className="flex-1 flex flex-col justify-between py-2 md:py-6">
                         {/* Quote */}
                         <div>
@@ -203,30 +225,6 @@ export default function Testimonial() {
                                     ))}
                                 </div>
                             </div>
-                        </div>
-                    </div>
-
-                    {/* Desktop arrows — right column, arrows at top */}
-                    <div className="hidden md:flex flex-col items-end shrink-0" style={{ marginLeft: '6rem' }}>
-                        <div className="flex gap-3" style={{ marginBottom: '6rem' }}>
-                            <button
-                                onClick={prev}
-                                aria-label="Previous testimonial"
-                                className="text-white/30 hover:text-white/70 transition-colors duration-200"
-                            >
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                    <path d="M19 12H5M12 5l-7 7 7 7" />
-                                </svg>
-                            </button>
-                            <button
-                                onClick={next}
-                                aria-label="Next testimonial"
-                                className="text-white/80 hover:text-white transition-colors duration-200"
-                            >
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                    <path d="M5 12h14M12 5l7 7-7 7" />
-                                </svg>
-                            </button>
                         </div>
                     </div>
                 </div>
