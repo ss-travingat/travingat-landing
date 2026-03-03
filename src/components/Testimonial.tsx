@@ -138,7 +138,7 @@ export default function Testimonial() {
 
     return (
         <section className="pt-16 pb-24 md:pt-24 md:pb-36 px-5 md:px-10 lg:px-16 bg-primary">
-            <div className="max-w-6xl relative">
+            <div className="max-w-6xl mx-auto relative">
 
                 {/* Desktop arrows — fixed, no fade */}
                 <div className="hidden md:flex absolute top-0 gap-3" style={{ right: '-6rem' }}>

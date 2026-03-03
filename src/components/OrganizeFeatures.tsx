@@ -16,7 +16,7 @@ export default function OrganizeFeatures() {
                             letterSpacing: letterSpacing.tight,
                         }}
                     >
-                        Organize your travels by country
+                        Organize your travels by country.
                     </h2>
                     <p
                         className="text-secondary-text mx-auto lg:mx-0"
