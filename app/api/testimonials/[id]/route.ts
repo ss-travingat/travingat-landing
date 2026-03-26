@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
+import { toLandingAssetUrl } from "@/lib/landing-assets";
 
 const DATA_PATH = path.join(process.cwd(), "src/data/testimonials.json");
 
@@ -26,6 +27,13 @@ function writeTestimonials(data: Testimonial[]) {
   fs.writeFileSync(DATA_PATH, JSON.stringify(data, null, 2), "utf-8");
 }
 
+function normalizeTestimonial(testimonial: Testimonial): Testimonial {
+  return {
+    ...testimonial,
+    photo: toLandingAssetUrl(testimonial.photo),
+  };
+}
+
 // PUT — update a testimonial
 export async function PUT(
   request: Request,
@@ -49,7 +57,7 @@ export async function PUT(
       name: body.name ?? testimonials[index].name,
       location: body.location ?? testimonials[index].location,
       quote: body.quote ?? testimonials[index].quote,
-      photo: body.photo ?? testimonials[index].photo,
+      photo: toLandingAssetUrl(body.photo ?? testimonials[index].photo),
       socials: {
         instagram:
           body.socials?.instagram ?? testimonials[index].socials.instagram,
@@ -60,7 +68,7 @@ export async function PUT(
     };
 
     writeTestimonials(testimonials);
-    return NextResponse.json(testimonials[index]);
+  return NextResponse.json(normalizeTestimonial(testimonials[index]));
   } catch {
     return NextResponse.json(
       { error: "Failed to update testimonial" },

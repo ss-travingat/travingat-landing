@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import fs from "fs";
 import path from "path";
+import { uploadLandingAsset } from "@/lib/r2-upload";
 
 export const dynamic = "force-dynamic";
 
@@ -38,16 +38,13 @@ export async function POST(request: Request) {
     const originalName = file instanceof File ? file.name : "upload.png";
     const ext = path.extname(originalName) || ".png";
     const filename = `blog-${Date.now()}${ext}`;
-    const publicDir = path.join(process.cwd(), "public", "images");
+    const uploaded = await uploadLandingAsset({
+      fileBuffer: buffer,
+      keySuffix: `images/${filename}`,
+      contentType: file instanceof File ? file.type : undefined,
+    });
 
-    if (!fs.existsSync(publicDir)) {
-      fs.mkdirSync(publicDir, { recursive: true });
-    }
-
-    const filePath = path.join(publicDir, filename);
-    fs.writeFileSync(filePath, buffer);
-
-    return NextResponse.json({ url: `/images/${filename}` }, { status: 201 });
+    return NextResponse.json({ url: uploaded.url }, { status: 201 });
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : "Unknown error";
     console.error("Blog image upload error:", message);

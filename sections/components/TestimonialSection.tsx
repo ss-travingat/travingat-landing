@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useState, useEffect, useCallback, useRef } from "react";
+import { toLandingAssetUrl } from "@/lib/landing-assets";
 
 interface Testimonial {
   id: string;
@@ -84,7 +85,7 @@ export default function TestimonialSection() {
           className="w-[36px] h-[36px] xl:w-12 xl:h-12 flex items-center justify-center rotate-180 opacity-70 hover:opacity-100 transition-opacity cursor-pointer"
         >
           <Image
-            src="/arrow-right.svg"
+            src={toLandingAssetUrl("/arrow-right.svg")}
             alt="Previous"
             width={48}
             height={48}
@@ -96,7 +97,7 @@ export default function TestimonialSection() {
           className="w-[36px] h-[36px] xl:w-12 xl:h-12 flex items-center justify-center opacity-70 hover:opacity-100 transition-opacity cursor-pointer"
         >
           <Image
-            src="/arrow-right.svg"
+            src={toLandingAssetUrl("/arrow-right.svg")}
             alt="Next"
             width={48}
             height={48}
@@ -118,7 +119,7 @@ export default function TestimonialSection() {
         {/* Photo */}
         <div className="w-[134px] h-[204px] rounded-2xl overflow-hidden flex-shrink-0 xl:w-[354px] xl:h-[540px] xl:rounded-[20px]">
           <Image
-            src={t.photo}
+            src={toLandingAssetUrl(t.photo)}
             alt={t.name}
             width={354}
             height={540}
@@ -132,7 +133,7 @@ export default function TestimonialSection() {
             {/* Quote mark */}
             <div className="w-[35px] h-[30px] mb-4 xl:w-16 xl:h-14 xl:mb-6">
               <Image
-                src="/quote-mark.svg"
+                src={toLandingAssetUrl("/quote-mark.svg")}
                 alt=""
                 width={64}
                 height={56}
@@ -157,7 +158,7 @@ export default function TestimonialSection() {
               {t.socials.instagram && (
                 <a href={t.socials.instagram} target="_blank" rel="noopener noreferrer">
                   <Image
-                    src="/social-instagram.svg"
+                    src={toLandingAssetUrl("/social-instagram.svg")}
                     alt="Instagram"
                     width={32}
                     height={32}
@@ -168,7 +169,7 @@ export default function TestimonialSection() {
               {t.socials.tiktok && (
                 <a href={t.socials.tiktok} target="_blank" rel="noopener noreferrer">
                   <Image
-                    src="/social-tiktok.svg"
+                    src={toLandingAssetUrl("/social-tiktok.svg")}
                     alt="TikTok"
                     width={32}
                     height={32}
@@ -179,7 +180,7 @@ export default function TestimonialSection() {
               {t.socials.linkedin && (
                 <a href={t.socials.linkedin} target="_blank" rel="noopener noreferrer">
                   <Image
-                    src="/social-linkedin.svg"
+                    src={toLandingAssetUrl("/social-linkedin.svg")}
                     alt="LinkedIn"
                     width={32}
                     height={32}

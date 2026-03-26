@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
+import { toLandingAssetUrl } from "@/lib/landing-assets";
 
 const DATA_PATH = path.join(process.cwd(), "src/data/testimonials.json");
 
@@ -13,11 +14,18 @@ function writeTestimonials(data: unknown[]) {
   fs.writeFileSync(DATA_PATH, JSON.stringify(data, null, 2), "utf-8");
 }
 
+function normalizeTestimonial<T extends { photo: string }>(testimonial: T): T {
+  return {
+    ...testimonial,
+    photo: toLandingAssetUrl(testimonial.photo),
+  };
+}
+
 // GET — return all testimonials
 export async function GET() {
   try {
     const testimonials = readTestimonials();
-    return NextResponse.json(testimonials);
+    return NextResponse.json(testimonials.map(normalizeTestimonial));
   } catch {
     return NextResponse.json([], { status: 200 });
   }
@@ -46,7 +54,7 @@ export async function POST(request: Request) {
       name,
       location: location || "",
       quote,
-      photo: photo || "/testimonial-photo.png",
+      photo: toLandingAssetUrl(photo || "/images/testimonial-photo-figma.png"),
       socials: {
         instagram: socials?.instagram || "",
         tiktok: socials?.tiktok || "",
@@ -57,7 +65,7 @@ export async function POST(request: Request) {
     testimonials.push(newTestimonial);
     writeTestimonials(testimonials);
 
-    return NextResponse.json(newTestimonial, { status: 201 });
+    return NextResponse.json(normalizeTestimonial(newTestimonial), { status: 201 });
   } catch {
     return NextResponse.json(
       { error: "Failed to create testimonial" },

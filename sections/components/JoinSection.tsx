@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { toLandingAssetUrl } from "@/lib/landing-assets";
 
 export default function JoinSection() {
   return (
@@ -6,22 +7,22 @@ export default function JoinSection() {
       {/* Image collage */}
       <div className="flex justify-center gap-1 mb-8 md:gap-2 xl:gap-3 xl:mb-12">
         <div className="w-[55px] h-[55px] md:w-[65px] md:h-[65px] xl:w-[80px] xl:h-[80px] rounded-xl overflow-hidden rotate-[-3deg] relative">
-          <Image src="/images/join-avatar1-figma.png" alt="Traveler" fill className="object-cover" />
+          <Image src={toLandingAssetUrl("/images/join-avatar1-figma.png")} alt="Traveler" fill className="object-cover" />
         </div>
         <div className="w-[65px] h-[65px] md:w-[75px] md:h-[75px] xl:w-[90px] xl:h-[90px] rounded-xl overflow-hidden z-10 -mt-1 relative">
-          <Image src="/images/join-avatar2-figma.png" alt="Traveler" fill className="object-cover" />
+          <Image src={toLandingAssetUrl("/images/join-avatar2-figma.png")} alt="Traveler" fill className="object-cover" />
         </div>
         <div className="w-[55px] h-[55px] md:w-[65px] md:h-[65px] xl:w-[80px] xl:h-[80px] rounded-xl overflow-hidden rotate-[2deg] relative">
-          <Image src="/images/join-avatar3-figma.png" alt="Traveler" fill className="object-cover" />
+          <Image src={toLandingAssetUrl("/images/join-avatar3-figma.png")} alt="Traveler" fill className="object-cover" />
         </div>
         <div className="w-[60px] h-[60px] md:w-[70px] md:h-[70px] xl:w-[85px] xl:h-[85px] rounded-xl overflow-hidden rotate-[-1deg] -mt-0.5 relative">
-          <Image src="/images/join-avatar4-figma.png" alt="Traveler" fill className="object-cover" />
+          <Image src={toLandingAssetUrl("/images/join-avatar4-figma.png")} alt="Traveler" fill className="object-cover" />
         </div>
       </div>
 
       {/* Dotted world map decoration */}
       <div className="mb-6 relative h-8 md:h-10 xl:mb-8 xl:h-12">
-        <Image src="/images/dotted-world-map.svg" alt="" fill className="object-contain opacity-20" />
+        <Image src={toLandingAssetUrl("/images/dotted-world-map.svg")} alt="" fill className="object-contain opacity-20" />
       </div>
 
       {/* CTA content */}

@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { toLandingAssetUrl } from "@/lib/landing-assets";
 
 export default function HeroSection() {
   return (
@@ -41,7 +42,7 @@ export default function HeroSection() {
       {/* Phone mockups — iPad: single composed image */}
       <div className="hidden md:block md:mx-auto md:max-w-[738px] xl:hidden">
         <Image
-          src="/assets/ipad_hero.png"
+          src={toLandingAssetUrl("/assets/ipad_hero.png")}
           alt="Travingat hero preview"
           width={1472}
           height={898}
@@ -54,7 +55,7 @@ export default function HeroSection() {
       <div className="hidden xl:block xl:max-w-[1256px] xl:mx-auto">
         <div className="relative w-full" style={{ aspectRatio: '1256 / 802' }}>
           <Image
-            src="/images/hero-phones.svg"
+            src={toLandingAssetUrl("/images/hero-phones.svg")}
             alt="Phone mockups showing travel profiles"
             fill
             className="object-contain"
@@ -67,7 +68,7 @@ export default function HeroSection() {
       {/* Phone mockups — Mobile: single image from Figma */}
       <div className="relative mx-auto overflow-hidden md:hidden xl:hidden">
         <Image
-          src="/images/hero-mobile-mockup.png"
+          src={toLandingAssetUrl("/images/hero-mobile-mockup.png")}
           alt="Phone mockups showing travel profiles"
           width={369}
           height={351}

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
+import { normalizeAssetHtml, toLandingAssetUrl } from "@/lib/landing-assets";
 
 const DATA_PATH = path.join(process.cwd(), "src/data/blogs.json");
 
@@ -26,6 +27,14 @@ function writeBlogs(data: BlogPost[]) {
   fs.writeFileSync(DATA_PATH, JSON.stringify(data, null, 2), "utf-8");
 }
 
+function normalizeBlog(blog: BlogPost): BlogPost {
+  return {
+    ...blog,
+    coverImage: toLandingAssetUrl(blog.coverImage),
+    content: normalizeAssetHtml(blog.content),
+  };
+}
+
 // PUT — update a blog
 export async function PUT(
   request: Request,
@@ -46,15 +55,15 @@ export async function PUT(
       title: body.title ?? blogs[index].title,
       slug: body.slug ?? blogs[index].slug,
       excerpt: body.excerpt ?? blogs[index].excerpt,
-      coverImage: body.coverImage ?? blogs[index].coverImage,
-      content: body.content ?? blogs[index].content,
+      coverImage: toLandingAssetUrl(body.coverImage ?? blogs[index].coverImage),
+      content: normalizeAssetHtml(body.content ?? blogs[index].content),
       author: body.author ?? blogs[index].author,
       tags: body.tags ?? blogs[index].tags,
       readTime: body.readTime ?? blogs[index].readTime,
     };
 
     writeBlogs(blogs);
-    return NextResponse.json(blogs[index]);
+    return NextResponse.json(normalizeBlog(blogs[index]));
   } catch {
     return NextResponse.json(
       { error: "Failed to update blog" },

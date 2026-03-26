@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { toLandingAssetUrl } from "@/lib/landing-assets";
 
 export default function CollectionsSection() {
   return (
@@ -17,7 +18,7 @@ export default function CollectionsSection() {
         {/* Phone mockup image */}
         <div className="relative mx-auto md:max-w-[600px]">
           <Image
-            src="/images/collections-mobile-mockup.png"
+            src={toLandingAssetUrl("/images/collections-mobile-mockup.png")}
             alt="Create collections that tell a story"
             width={369}
             height={369}

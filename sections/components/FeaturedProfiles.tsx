@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRef, useEffect, useState, useCallback } from "react";
 import { demoProfiles } from "@/data/demo-profiles";
+import { toLandingAssetUrl } from "@/lib/landing-assets";
 
 function TravellerCard({
   profile,
@@ -21,7 +22,7 @@ function TravellerCard({
         <div className="flex flex-col items-center pb-9 w-full">
           <div className="h-[107px] xl:h-[160px] -mb-9 relative rounded-[14px] w-full overflow-hidden">
             <Image
-              src={profile.cover}
+              src={toLandingAssetUrl(profile.cover)}
               alt={`${profile.name} cover`}
               fill
               className="object-cover rounded-[14px]"
@@ -29,7 +30,7 @@ function TravellerCard({
           </div>
           <div className="border-[5px] xl:border-8 border-black -mb-9 relative rounded-2xl w-[53px] h-[53px] xl:w-[80px] xl:h-[80px] overflow-hidden z-10">
             <Image
-              src={profile.avatar}
+              src={toLandingAssetUrl(profile.avatar)}
               alt={profile.name}
               fill
               className="object-cover rounded-2xl"

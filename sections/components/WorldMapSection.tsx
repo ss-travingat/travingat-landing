@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { toLandingAssetUrl } from "@/lib/landing-assets";
 
 export default function WorldMapSection() {
   return (
@@ -13,7 +14,7 @@ export default function WorldMapSection() {
         {/* Mobile and iPad: single image with gradient + text overlay */}
         <div className="xl:hidden relative">
           <Image
-            src="/images/travel-mobile-mockup.png"
+            src={toLandingAssetUrl("/images/travel-mobile-mockup.png")}
             alt="One place for everywhere you've explored"
             width={393}
             height={450}
@@ -45,7 +46,7 @@ export default function WorldMapSection() {
         {/* World map background */}
         <div className="absolute inset-0">
           <Image
-            src="/images/dotted-world-map.svg"
+            src={toLandingAssetUrl("/images/dotted-world-map.svg")}
             alt=""
             fill
             className="object-contain opacity-[0.18]"
@@ -55,7 +56,7 @@ export default function WorldMapSection() {
         {/* Central explore.png image (already contains tags + pins) */}
         <div className="absolute left-1/2 -translate-x-1/2 bottom-0 w-[320px] xl:w-[660px] h-full z-10">
           <Image
-            src="/images/traveler-rachel-figma.png"
+            src={toLandingAssetUrl("/images/traveler-rachel-figma.png")}
             alt="Traveler exploring the world"
             fill
             className="object-contain object-bottom"
@@ -97,7 +98,7 @@ export default function WorldMapSection() {
             <div className="flex gap-2">
               <div className="flex-1 aspect-square rounded-[10px] overflow-hidden relative">
                 <Image
-                  src="/images/country-greece-figma.png"
+                  src={toLandingAssetUrl("/images/country-greece-figma.png")}
                   alt="Greece"
                   fill
                   className="object-cover"
@@ -109,7 +110,7 @@ export default function WorldMapSection() {
               </div>
               <div className="flex-1 aspect-square rounded-[10px] overflow-hidden relative">
                 <Image
-                  src="/images/country-thailand-figma.png"
+                  src={toLandingAssetUrl("/images/country-thailand-figma.png")}
                   alt="Thailand"
                   fill
                   className="object-cover"
@@ -121,7 +122,7 @@ export default function WorldMapSection() {
               </div>
               <div className="flex-1 aspect-square rounded-[10px] overflow-hidden relative">
                 <Image
-                  src="/images/country-switzerland-figma.png"
+                  src={toLandingAssetUrl("/images/country-switzerland-figma.png")}
                   alt="Switzerland"
                   fill
                   className="object-cover"
@@ -136,7 +137,7 @@ export default function WorldMapSection() {
             <div className="flex gap-2">
               <div className="flex-1 aspect-square rounded-[10px] overflow-hidden relative">
                 <Image
-                  src="/images/map-italy.jpg"
+                  src={toLandingAssetUrl("/images/map-italy.jpg")}
                   alt="Italy"
                   fill
                   className="object-cover"
@@ -148,7 +149,7 @@ export default function WorldMapSection() {
               </div>
               <div className="flex-1 aspect-square rounded-[10px] overflow-hidden relative">
                 <Image
-                  src="/images/map-nepal.jpg"
+                  src={toLandingAssetUrl("/images/map-nepal.jpg")}
                   alt="Nepal"
                   fill
                   className="object-cover"
@@ -160,7 +161,7 @@ export default function WorldMapSection() {
               </div>
               <div className="flex-1 aspect-square rounded-[10px] overflow-hidden relative">
                 <Image
-                  src="/images/map-france.jpg"
+                  src={toLandingAssetUrl("/images/map-france.jpg")}
                   alt="France"
                   fill
                   className="object-cover"
@@ -184,7 +185,7 @@ export default function WorldMapSection() {
             <div className="flex gap-2">
               <div className="flex-1 h-[85px] rounded-[10px] overflow-hidden relative">
                 <Image
-                  src="/images/collection-streetshots.jpg"
+                  src={toLandingAssetUrl("/images/collection-streetshots.jpg")}
                   alt="Street Shots"
                   fill
                   className="object-cover"
@@ -196,7 +197,7 @@ export default function WorldMapSection() {
               </div>
               <div className="flex-1 h-[85px] rounded-[10px] overflow-hidden relative">
                 <Image
-                  src="/images/collection-nightportraits.jpg"
+                  src={toLandingAssetUrl("/images/collection-nightportraits.jpg")}
                   alt="Night Portraits"
                   fill
                   className="object-cover"
@@ -211,7 +212,7 @@ export default function WorldMapSection() {
             <div className="flex gap-2">
               <div className="flex-1 h-[88px] rounded-[10px] overflow-hidden relative">
                 <Image
-                  src="/images/collection-skiing.jpg"
+                  src={toLandingAssetUrl("/images/collection-skiing.jpg")}
                   alt="Swiss Skiing"
                   fill
                   className="object-cover"
@@ -223,7 +224,7 @@ export default function WorldMapSection() {
               </div>
               <div className="flex-1 h-[88px] rounded-[10px] overflow-hidden relative">
                 <Image
-                  src="/images/collection-franceroadtrip.jpg"
+                  src={toLandingAssetUrl("/images/collection-franceroadtrip.jpg")}
                   alt="France Road Trip"
                   fill
                   className="object-cover"

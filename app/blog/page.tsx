@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect } from "react";
+import { toLandingAssetUrl } from "@/lib/landing-assets";
 
 interface BlogPost {
   id: string;
@@ -114,7 +115,7 @@ export default function BlogListPage() {
                 {/* Image */}
                 <div className="relative w-full md:w-[200px] h-[140px] md:h-[134px] rounded-lg overflow-hidden flex-shrink-0">
                   <Image
-                    src={blog.coverImage}
+                    src={toLandingAssetUrl(blog.coverImage)}
                     alt={blog.title}
                     fill
                     className="object-cover group-hover:scale-105 transition-transform duration-500"

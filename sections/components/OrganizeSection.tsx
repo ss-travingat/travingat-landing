@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { toLandingAssetUrl } from "@/lib/landing-assets";
 
 export default function OrganizeSection() {
   return (
@@ -10,7 +11,7 @@ export default function OrganizeSection() {
           style={{ aspectRatio: "1280 / 1360" }}
         >
           <Image
-            src="/images/organize-desktop.svg"
+            src={toLandingAssetUrl("/images/organize-desktop.svg")}
             alt="Organize travels by country and create collections"
             fill
             className="object-contain"
@@ -54,7 +55,7 @@ export default function OrganizeSection() {
         {/* Phone mockup image */}
         <div className="relative mx-auto md:max-w-[600px]">
           <Image
-            src="/images/organize-mobile-mockup.png"
+            src={toLandingAssetUrl("/images/organize-mobile-mockup.png")}
             alt="Organize travels by country"
             width={369}
             height={369}

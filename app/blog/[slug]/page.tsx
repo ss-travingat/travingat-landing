@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect, use } from "react";
+import { toLandingAssetUrl } from "@/lib/landing-assets";
 
 interface BlogPost {
   id: string;
@@ -115,7 +116,7 @@ export default function BlogPostPage({
         {/* Cover image */}
         <div className="relative w-full h-[300px] xl:h-[420px] rounded-xl overflow-hidden mb-10">
           <Image
-            src={blog.coverImage}
+            src={toLandingAssetUrl(blog.coverImage)}
             alt={blog.title}
             fill
             className="object-cover"

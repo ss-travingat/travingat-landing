@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
+import { toLandingAssetUrl } from "@/lib/landing-assets";
 
 interface Testimonial {
   id: string;
@@ -20,7 +21,7 @@ const emptyForm: Omit<Testimonial, "id"> = {
   name: "",
   location: "",
   quote: "",
-  photo: "/testimonial-photo.png",
+  photo: toLandingAssetUrl("/images/testimonial-photo-figma.png"),
   socials: { instagram: "", tiktok: "", linkedin: "" },
 };
 
@@ -86,7 +87,7 @@ export default function AdminTestimonialsPage() {
         return;
       }
       if (data.path) {
-        setForm((prev) => ({ ...prev, photo: data.path }));
+        setForm((prev) => ({ ...prev, photo: toLandingAssetUrl(data.path) }));
         showToast("Photo uploaded");
       }
     } catch (err) {
@@ -203,7 +204,7 @@ export default function AdminTestimonialsPage() {
               <div className="flex items-center gap-4">
                 <div className="w-16 h-24 rounded-lg overflow-hidden bg-white/5 flex-shrink-0 relative">
                   <Image
-                    src={form.photo}
+                    src={toLandingAssetUrl(form.photo)}
                     alt="Preview"
                     fill
                     className="object-cover"
@@ -386,7 +387,7 @@ export default function AdminTestimonialsPage() {
                   {/* Photo thumbnail */}
                   <div className="w-12 h-18 rounded-lg overflow-hidden bg-white/5 flex-shrink-0 relative">
                     <Image
-                      src={t.photo}
+                      src={toLandingAssetUrl(t.photo)}
                       alt={t.name}
                       fill
                       className="object-cover"

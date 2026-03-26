@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
+import { normalizeAssetHtml, toLandingAssetUrl } from "@/lib/landing-assets";
 
 const DATA_PATH = path.join(process.cwd(), "src/data/blogs.json");
 
@@ -22,6 +23,14 @@ function readBlogs(): BlogPost[] {
   return JSON.parse(raw);
 }
 
+function normalizeBlog(blog: BlogPost): BlogPost {
+  return {
+    ...blog,
+    coverImage: toLandingAssetUrl(blog.coverImage),
+    content: normalizeAssetHtml(blog.content),
+  };
+}
+
 function writeBlogs(data: BlogPost[]) {
   fs.writeFileSync(DATA_PATH, JSON.stringify(data, null, 2), "utf-8");
 }
@@ -38,7 +47,7 @@ export async function GET(request: Request) {
       if (!blog) {
         return NextResponse.json({ error: "Blog not found" }, { status: 404 });
       }
-      return NextResponse.json(blog);
+      return NextResponse.json(normalizeBlog(blog));
     }
 
     // Sort by publishedAt descending
@@ -46,7 +55,7 @@ export async function GET(request: Request) {
       (a, b) =>
         new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
     );
-    return NextResponse.json(blogs);
+    return NextResponse.json(blogs.map(normalizeBlog));
   } catch {
     return NextResponse.json([], { status: 200 });
   }
@@ -93,7 +102,7 @@ export async function POST(request: Request) {
       title,
       slug: generatedSlug,
       excerpt: excerpt || "",
-      coverImage: coverImage || "/testimonial-photo.png",
+      coverImage: toLandingAssetUrl(coverImage || "/images/testimonial-photo-figma.png"),
       content,
       author: author || "Travingat Team",
       publishedAt: new Date().toISOString(),
@@ -104,7 +113,7 @@ export async function POST(request: Request) {
     blogs.push(newBlog);
     writeBlogs(blogs);
 
-    return NextResponse.json(newBlog, { status: 201 });
+    return NextResponse.json(normalizeBlog(newBlog), { status: 201 });
   } catch {
     return NextResponse.json(
       { error: "Failed to create blog" },

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import Image from "next/image";
+import { toLandingAssetUrl } from "@/lib/landing-assets";
 
 interface BlogPost {
   id: string;
@@ -20,7 +21,7 @@ const emptyForm = {
   title: "",
   slug: "",
   excerpt: "",
-  coverImage: "/testimonial-photo.png",
+  coverImage: toLandingAssetUrl("/images/testimonial-photo-figma.png"),
   content: "",
   author: "Travingat Team",
   tags: [] as string[],
@@ -361,7 +362,7 @@ export default function AdminBlogsPage() {
                   {/* Cover thumbnail */}
                   <div className="w-20 h-14 rounded-lg overflow-hidden bg-white/5 relative flex-shrink-0">
                     <Image
-                      src={b.coverImage}
+                      src={toLandingAssetUrl(b.coverImage)}
                       alt=""
                       fill
                       className="object-cover"
@@ -493,7 +494,7 @@ export default function AdminBlogsPage() {
               <div className="flex items-center gap-3">
                 <div className="w-16 h-10 rounded-lg overflow-hidden bg-white/5 relative flex-shrink-0">
                   <Image
-                    src={form.coverImage}
+                    src={toLandingAssetUrl(form.coverImage)}
                     alt=""
                     fill
                     className="object-cover"

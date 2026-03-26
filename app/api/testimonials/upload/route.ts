@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import fs from "fs";
 import path from "path";
+import { uploadLandingAsset } from "@/lib/r2-upload";
 
 export const dynamic = "force-dynamic";
 
@@ -39,17 +39,14 @@ export async function POST(request: Request) {
     const originalName = file instanceof File ? file.name : "upload.png";
     const ext = path.extname(originalName) || ".png";
     const filename = `testimonial-${Date.now()}${ext}`;
-    const publicDir = path.join(process.cwd(), "public");
+    const uploaded = await uploadLandingAsset({
+      fileBuffer: buffer,
+      keySuffix: filename,
+      contentType: file instanceof File ? file.type : undefined,
+    });
 
-    // Ensure public directory exists
-    if (!fs.existsSync(publicDir)) {
-      fs.mkdirSync(publicDir, { recursive: true });
-    }
-
-    const publicPath = path.join(publicDir, filename);
-    fs.writeFileSync(publicPath, buffer);
-
-    return NextResponse.json({ path: `/${filename}` }, { status: 201 });
+    // Keep both keys for backward compatibility with existing admin UI.
+    return NextResponse.json({ path: uploaded.url, url: uploaded.url }, { status: 201 });
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : "Unknown error";
     console.error("Upload error:", message);
