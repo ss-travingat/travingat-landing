@@ -1,12 +1,32 @@
 "use client";
-import { useState } from "react";
 
-const plans = [
+import { useMemo, useState } from "react";
+
+type PlanVariant = {
+  price: number;
+  description: string;
+};
+
+type Plan = {
+  name: "Explorer" | "Traveller" | "Nomad";
+  monthly: PlanVariant;
+  annual: PlanVariant;
+  buttonClass: string;
+  features: string[];
+};
+
+const plans: Plan[] = [
   {
     name: "Explorer",
-    price: { monthly: 0, annual: 0 },
-    description: "For casual travelers starting their journey",
-    buttonStyle: "border border-white/30 text-white hover:bg-white/10",
+    monthly: {
+      price: 0,
+      description: "For casual travelers starting their journey.",
+    },
+    annual: {
+      price: 0,
+      description: "Great for trying out Frames X component and templates.",
+    },
+    buttonClass: "bg-white text-black hover:bg-[#ececec]",
     features: [
       "Unlimited country flags",
       "Upload photos to 3 countries",
@@ -18,10 +38,15 @@ const plans = [
   },
   {
     name: "Traveller",
-    price: { monthly: 7, annual: 5.6 },
-    description: "For serious travelers building their travel identity",
-    buttonStyle:
-      "bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-500 hover:to-purple-500",
+    monthly: {
+      price: 7,
+      description: "For serious travelers building their travel identity.",
+    },
+    annual: {
+      price: 9,
+      description: "Best for professional freelancers and small teams.",
+    },
+    buttonClass: "bg-[#5a45f9] text-white hover:bg-[#6956ff]",
     features: [
       "Everything in Explorer",
       "Unlimited countries",
@@ -33,10 +58,15 @@ const plans = [
   },
   {
     name: "Nomad",
-    price: { monthly: 15, annual: 12 },
-    description: "For creators, storytellers, and travel personalities",
-    buttonStyle:
-      "bg-gradient-to-r from-amber-500 to-orange-500 text-white hover:from-amber-400 hover:to-orange-400",
+    monthly: {
+      price: 15,
+      description: "For creators, storytellers, and travel personalities.",
+    },
+    annual: {
+      price: 19,
+      description: "Best for growing large company or enterprise design team.",
+    },
+    buttonClass: "bg-[#fda221] text-white hover:bg-[#ffb33e]",
     features: [
       "Everything in Traveller",
       "6 premium profile templates (total)",
@@ -48,96 +78,111 @@ const plans = [
   },
 ];
 
+function FeatureItem({ feature }: { feature: string }) {
+  return (
+    <li className="flex items-start gap-3">
+      <span className="mt-px inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#1e1e1e] text-white">
+        <span
+          className="material-symbols-rounded text-[14px]"
+          style={{ fontVariationSettings: "'FILL' 1, 'wght' 700, 'GRAD' 0, 'opsz' 20" }}
+          aria-hidden="true"
+        >
+          check
+        </span>
+      </span>
+      <span className="text-[16px] leading-6 tracking-[-0.096px] text-white">{feature}</span>
+    </li>
+  );
+}
+
 export default function PricingSection() {
   const [isAnnual, setIsAnnual] = useState(false);
   const onboardingUrl = "http://localhost:3000/onboarding";
 
+  const cardData = useMemo(
+    () =>
+      plans.map((plan) => {
+        const variant = isAnnual ? plan.annual : plan.monthly;
+        return {
+          ...plan,
+          price: variant.price,
+          description: variant.description,
+        };
+      }),
+    [isAnnual],
+  );
+
   return (
-    <section id="pricing" className="hidden xl:block px-5 py-10 xl:px-24 xl:py-20">
-      <h2 className="text-[28px] leading-[1.2] font-bold text-white text-center mb-3 xl:text-[48px] xl:mb-4">
-        Pricing
-      </h2>
-      <p className="text-sm text-gray-400 text-center mb-8 max-w-[600px] mx-auto xl:text-base xl:mb-12">
-        Built for travelers at every stage: from first trips to premium profile
-        presence.
-      </p>
+    <section id="pricing" className="px-4 py-14 md:px-12 md:py-16 xl:px-24 xl:py-20">
+      <div className="mx-auto w-full max-w-[738px] space-y-12 xl:max-w-[1200px]">
+        <div className="flex flex-col items-center gap-8 text-center">
+          <div className="space-y-4 text-white">
+            <h2 className="text-[40px] font-semibold leading-[1.12] tracking-[-0.5px] md:text-[44px]">Pricing</h2>
+            <p className="text-[18px] leading-[1.45] tracking-[-0.198px] text-white">
+              Built for travelers at every stage: from first trips to premium profile presence.
+            </p>
+          </div>
 
-      {/* Toggle */}
-      <div className="flex items-center justify-center gap-2 mb-10 xl:mb-14">
-        <div className="bg-[#1a1a1a] rounded-full p-1 flex">
-          <button
-            onClick={() => setIsAnnual(false)}
-            className={`px-5 py-2 rounded-full text-sm font-medium transition-colors ${
-              !isAnnual
-                ? "bg-white text-black"
-                : "text-gray-400 hover:text-white"
-            }`}
-          >
-            Monthly
-          </button>
-          <button
-            onClick={() => setIsAnnual(true)}
-            className={`px-5 py-2 rounded-full text-sm font-medium transition-colors flex items-center gap-2 ${
-              isAnnual
-                ? "bg-white text-black"
-                : "text-gray-400 hover:text-white"
-            }`}
-          >
-            Annual
-            <span className="text-[10px] bg-green-500/20 text-green-400 px-2 py-0.5 rounded-full font-semibold">
-              Save 20%
-            </span>
-          </button>
-        </div>
-      </div>
-
-      {/* Cards */}
-      <div className="flex flex-col gap-6 xl:flex-row xl:justify-center xl:gap-8">
-        {plans.map((plan) => {
-          const price = isAnnual ? plan.price.annual : plan.price.monthly;
-          return (
-            <div
-              key={plan.name}
-              className="bg-[#111] border border-gray-800 rounded-2xl p-6 xl:w-[384px] xl:p-8"
+          <div className="inline-flex items-center rounded-full bg-[#1e1e1e] p-1">
+            <button
+              type="button"
+              onClick={() => setIsAnnual(false)}
+              className={`rounded-full px-4 py-2.5 text-[14px] font-medium leading-5 tracking-[-0.084px] transition ${
+                !isAnnual ? "bg-white text-black" : "text-white"
+              }`}
             >
-              <h3 className="text-xl font-bold text-white mb-1 xl:text-2xl">
-                {plan.name}
-              </h3>
-              <div className="flex items-baseline gap-1 mb-2">
-                <span className="text-3xl font-bold text-white xl:text-4xl">
-                  ${price}
-                </span>
-                <span className="text-sm text-gray-400">/per month</span>
+              Monthly
+            </button>
+            <button
+              type="button"
+              onClick={() => setIsAnnual(true)}
+              className={`inline-flex items-center gap-1.5 rounded-full px-4 py-2.5 text-[14px] font-medium leading-5 tracking-[-0.084px] transition ${
+                isAnnual ? "bg-white text-black" : "text-white"
+              }`}
+            >
+              Annual
+              <span className="rounded-full bg-[#2a9919] px-2 py-0.5 text-[10px] font-medium leading-4 text-white">
+                Save 20%
+              </span>
+            </button>
+          </div>
+        </div>
+
+        <div className="space-y-6 xl:grid xl:grid-cols-3 xl:gap-6 xl:space-y-0">
+          {cardData.map((plan) => (
+            <article key={plan.name} className="rounded-[24px] border border-[#212121] bg-[#111111] p-6 md:p-8 xl:min-w-[340px]">
+              <div className="space-y-8">
+                <div className="flex flex-col gap-6 xl:min-h-[236px]">
+                  <div className="space-y-4 xl:min-h-[160px]">
+                    <h3 className="text-[24px] font-semibold leading-8 tracking-[-0.5px] text-white">{plan.name}</h3>
+
+                    <div className="flex items-baseline gap-1">
+                      <span className="text-[44px] font-semibold leading-[1.1] tracking-[-0.5px] text-white">${plan.price}</span>
+                      <span className="text-[18px] font-medium leading-[26px] tracking-[-0.198px] text-[#656565]">/per month</span>
+                    </div>
+
+                    <p className="text-[18px] leading-[26px] tracking-[-0.198px] text-white">{plan.description}</p>
+                  </div>
+
+                  <a
+                    href={onboardingUrl}
+                    className={`mt-auto inline-flex w-full items-center justify-center rounded-full px-[18px] py-[10px] text-[16px] font-medium leading-6 tracking-[-0.096px] transition ${plan.buttonClass}`}
+                  >
+                    Get Started
+                  </a>
+                </div>
+
+                <div className="border border-dashed border-[#303030]" />
+
+                <ul className="space-y-5">
+                  {plan.features.map((feature) => (
+                    <FeatureItem key={`${plan.name}-${feature}`} feature={feature} />
+                  ))}
+                </ul>
               </div>
-              <p className="text-sm text-gray-400 mb-6">{plan.description}</p>
-
-              <a
-                href={onboardingUrl}
-                className={`w-full py-3 rounded-full text-sm font-semibold transition-colors mb-3 inline-flex items-center justify-center ${plan.buttonStyle}`}
-              >
-                Get Started
-              </a>
-
-              <a
-                href="/signin"
-                className="mb-6 inline-flex w-full items-center justify-center rounded-full border border-[#2a2a2a] px-4 py-3 text-sm text-[#d8d8d8] transition hover:border-[#444] hover:text-white"
-              >
-                Already traveler? Sign in
-              </a>
-
-              <ul className="space-y-3">
-                {plan.features.map((feature, i) => (
-                  <li key={i} className="flex items-start gap-3">
-                    <span className="material-symbols-rounded text-green-400 text-[18px] mt-0.5 flex-shrink-0" style={{ fontVariationSettings: "'FILL' 1, 'wght' 600" }}>
-                      check
-                    </span>
-                    <span className="text-sm text-gray-300">{feature}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          );
-        })}
+            </article>
+          ))}
+        </div>
       </div>
     </section>
   );

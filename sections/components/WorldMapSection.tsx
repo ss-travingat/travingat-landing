@@ -53,7 +53,7 @@ export default function WorldMapSection() {
         </div>
 
         {/* Central explore.png image (already contains tags + pins) */}
-        <div className="absolute left-1/2 -translate-x-1/2 bottom-0 w-[320px] xl:w-[660px] h-[110%] z-10">
+        <div className="absolute left-1/2 -translate-x-1/2 bottom-0 w-[320px] xl:w-[660px] h-full z-10">
           <Image
             src="/images/traveler-rachel-figma.png"
             alt="Traveler exploring the world"

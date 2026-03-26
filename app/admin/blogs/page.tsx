@@ -1,0 +1,707 @@
+"use client";
+
+import { useState, useEffect, useRef, useCallback } from "react";
+import Image from "next/image";
+
+interface BlogPost {
+  id: string;
+  title: string;
+  slug: string;
+  excerpt: string;
+  coverImage: string;
+  content: string;
+  author: string;
+  publishedAt: string;
+  tags: string[];
+  readTime: number;
+}
+
+const emptyForm = {
+  title: "",
+  slug: "",
+  excerpt: "",
+  coverImage: "/testimonial-photo.png",
+  content: "",
+  author: "Travingat Team",
+  tags: [] as string[],
+};
+
+export default function AdminBlogsPage() {
+  const [blogs, setBlogs] = useState<BlogPost[]>([]);
+  const [editing, setEditing] = useState<BlogPost | null>(null);
+  const [form, setForm] = useState(emptyForm);
+  const [tagInput, setTagInput] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [toast, setToast] = useState<string | null>(null);
+  const [view, setView] = useState<"list" | "editor">("list");
+  const editorRef = useRef<HTMLDivElement>(null);
+  const coverInputRef = useRef<HTMLInputElement>(null);
+  const contentImageInputRef = useRef<HTMLInputElement>(null);
+
+  const showToast = (msg: string) => {
+    setToast(msg);
+    setTimeout(() => setToast(null), 3000);
+  };
+
+  // Fetch blogs
+  const fetchBlogs = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch("/api/blogs");
+      const data = await res.json();
+      if (Array.isArray(data)) setBlogs(data);
+    } catch {
+      showToast("Failed to load blogs");
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    fetchBlogs();
+  }, []);
+
+  // Sync editor content → form
+  const syncContent = useCallback(() => {
+    if (editorRef.current) {
+      setForm((prev) => ({ ...prev, content: editorRef.current!.innerHTML }));
+    }
+  }, []);
+
+  // Auto-generate slug from title
+  const generateSlug = (title: string) =>
+    title
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-|-$/g, "");
+
+  // Upload cover image
+  const handleCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+      showToast("Max 5MB");
+      return;
+    }
+    const fd = new FormData();
+    fd.append("file", file);
+    try {
+      const res = await fetch("/api/blogs/upload", {
+        method: "POST",
+        body: fd,
+      });
+      const data = await res.json();
+      if (data.url) {
+        setForm((prev) => ({ ...prev, coverImage: data.url }));
+        showToast("Cover uploaded");
+      } else {
+        showToast(data.error || "Upload failed");
+      }
+    } catch {
+      showToast("Upload failed");
+    }
+  };
+
+  // Upload image into editor content
+  const handleContentImageUpload = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+      showToast("Max 5MB");
+      return;
+    }
+    const fd = new FormData();
+    fd.append("file", file);
+    try {
+      const res = await fetch("/api/blogs/upload", {
+        method: "POST",
+        body: fd,
+      });
+      const data = await res.json();
+      if (data.url) {
+        insertHtml(
+          `<figure style="margin:24px 0;"><img src="${data.url}" alt="Blog image" style="width:100%;border-radius:8px;" /><figcaption style="text-align:center;color:#999;font-size:14px;margin-top:8px;">Image caption</figcaption></figure>`
+        );
+        showToast("Image inserted");
+      } else {
+        showToast(data.error || "Upload failed");
+      }
+    } catch {
+      showToast("Upload failed");
+    }
+    // Reset input
+    if (contentImageInputRef.current) contentImageInputRef.current.value = "";
+  };
+
+  // Insert YouTube embed
+  const insertYouTube = () => {
+    const url = prompt("Paste YouTube video URL:");
+    if (!url) return;
+
+    // Extract video ID from various YouTube URL formats
+    let videoId = "";
+    const patterns = [
+      /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/,
+      /youtube\.com\/shorts\/([a-zA-Z0-9_-]{11})/,
+    ];
+    for (const p of patterns) {
+      const match = url.match(p);
+      if (match) {
+        videoId = match[1];
+        break;
+      }
+    }
+    if (!videoId) {
+      showToast("Invalid YouTube URL");
+      return;
+    }
+
+    insertHtml(
+      `<div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;margin:24px 0;border-radius:12px;"><iframe src="https://www.youtube.com/embed/${videoId}" style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;border-radius:12px;" allowfullscreen></iframe></div>`
+    );
+    showToast("YouTube video embedded");
+  };
+
+  // Insert HTML at cursor position in editor
+  const insertHtml = (html: string) => {
+    editorRef.current?.focus();
+    document.execCommand("insertHTML", false, html);
+    syncContent();
+  };
+
+  // Toolbar exec
+  const exec = (cmd: string, value?: string) => {
+    editorRef.current?.focus();
+    document.execCommand(cmd, false, value);
+    syncContent();
+  };
+
+  // Save
+  const handleSave = async () => {
+    syncContent();
+    const current = {
+      ...form,
+      content: editorRef.current?.innerHTML || form.content,
+    };
+
+    if (!current.title.trim() || !current.content.trim()) {
+      showToast("Title and content are required");
+      return;
+    }
+    if (!current.slug) {
+      current.slug = generateSlug(current.title);
+    }
+
+    setSaving(true);
+    try {
+      if (editing) {
+        await fetch(`/api/blogs/${editing.id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(current),
+        });
+        showToast("Blog updated");
+      } else {
+        await fetch("/api/blogs", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(current),
+        });
+        showToast("Blog published");
+      }
+      resetForm();
+      setView("list");
+      await fetchBlogs();
+    } catch {
+      showToast("Failed to save");
+    }
+    setSaving(false);
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!confirm("Delete this blog post?")) return;
+    try {
+      await fetch(`/api/blogs/${id}`, { method: "DELETE" });
+      showToast("Blog deleted");
+      if (editing?.id === id) resetForm();
+      await fetchBlogs();
+    } catch {
+      showToast("Failed to delete");
+    }
+  };
+
+  const startEdit = (b: BlogPost) => {
+    setEditing(b);
+    setForm({
+      title: b.title,
+      slug: b.slug,
+      excerpt: b.excerpt,
+      coverImage: b.coverImage,
+      content: b.content,
+      author: b.author,
+      tags: [...b.tags],
+    });
+    setView("editor");
+    // Set editor content after render
+    setTimeout(() => {
+      if (editorRef.current) {
+        editorRef.current.innerHTML = b.content;
+      }
+    }, 50);
+  };
+
+  const resetForm = () => {
+    setEditing(null);
+    setForm(emptyForm);
+    setTagInput("");
+    if (editorRef.current) editorRef.current.innerHTML = "";
+  };
+
+  const addTag = () => {
+    const t = tagInput.trim().toLowerCase();
+    if (t && !form.tags.includes(t)) {
+      setForm((prev) => ({ ...prev, tags: [...prev.tags, t] }));
+    }
+    setTagInput("");
+  };
+
+  const removeTag = (tag: string) => {
+    setForm((prev) => ({
+      ...prev,
+      tags: prev.tags.filter((t) => t !== tag),
+    }));
+  };
+
+  const formatDate = (d: string) =>
+    new Date(d).toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+    });
+
+  // ─── RENDER ──────────────────────────────────────────────────────
+
+  return (
+    <div className="min-h-screen bg-[#0a0a0a] text-white">
+      {/* Toast */}
+      {toast && (
+        <div className="fixed top-4 right-4 z-50 bg-[#5A45F9] text-white px-5 py-3 rounded-xl text-sm font-medium shadow-lg">
+          {toast}
+        </div>
+      )}
+
+      {/* Header */}
+      <header className="border-b border-white/10 px-6 py-4 flex items-center justify-between sticky top-0 bg-[#0a0a0a]/95 backdrop-blur-sm z-40">
+        <div className="flex items-center gap-3">
+          <a
+            href="/admin"
+            className="text-white/50 hover:text-white text-sm transition-colors"
+          >
+            ← Dashboard
+          </a>
+          <span className="text-white/20">|</span>
+          <h1 className="text-lg font-semibold">Blog CMS</h1>
+        </div>
+        <div className="flex items-center gap-3">
+          <a
+            href="/"
+            className="text-white/40 hover:text-white text-sm transition-colors"
+          >
+            ← Site
+          </a>
+          {view === "list" ? (
+            <button
+              onClick={() => {
+                resetForm();
+                setView("editor");
+              }}
+              className="px-4 py-2 bg-[#5A45F9] hover:bg-[#4935e0] rounded-lg text-sm font-semibold transition-colors cursor-pointer"
+            >
+              + New Post
+            </button>
+          ) : (
+            <button
+              onClick={() => {
+                resetForm();
+                setView("list");
+              }}
+              className="px-4 py-2 bg-white/10 hover:bg-white/15 rounded-lg text-sm font-medium transition-colors cursor-pointer"
+            >
+              ← Back
+            </button>
+          )}
+        </div>
+      </header>
+
+      {view === "list" ? (
+        /* ─── LIST VIEW ──────────────────────────────────────── */
+        <div className="max-w-4xl mx-auto px-6 py-8">
+          <h2 className="text-lg font-semibold mb-6">
+            All Posts ({blogs.length})
+          </h2>
+          {loading ? (
+            <div className="text-white/30 text-sm py-12 text-center">
+              Loading…
+            </div>
+          ) : blogs.length === 0 ? (
+            <div className="bg-[#141414] rounded-2xl border border-white/10 p-12 text-center">
+              <p className="text-white/40 text-sm">No blog posts yet</p>
+              <p className="text-white/20 text-xs mt-1">
+                Click &quot;+ New Post&quot; to get started
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {blogs.map((b) => (
+                <div
+                  key={b.id}
+                  className="bg-[#141414] rounded-xl border border-white/10 p-4 flex gap-4 items-start"
+                >
+                  {/* Cover thumbnail */}
+                  <div className="w-20 h-14 rounded-lg overflow-hidden bg-white/5 relative flex-shrink-0">
+                    <Image
+                      src={b.coverImage}
+                      alt=""
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                  {/* Info */}
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-medium text-sm text-white truncate">
+                      {b.title}
+                    </h3>
+                    <p className="text-white/40 text-xs mt-0.5 line-clamp-1">
+                      {b.excerpt}
+                    </p>
+                    <div className="flex items-center gap-2 mt-2">
+                      <span className="text-[10px] text-white/25">
+                        {formatDate(b.publishedAt)}
+                      </span>
+                      <span className="text-[10px] text-white/25">·</span>
+                      <span className="text-[10px] text-white/25">
+                        {b.readTime} min
+                      </span>
+                      {b.tags.slice(0, 2).map((tag) => (
+                        <span
+                          key={tag}
+                          className="text-[9px] text-white/30 bg-white/5 px-1.5 py-0.5 rounded"
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                  {/* Actions */}
+                  <div className="flex items-center gap-1 flex-shrink-0">
+                    <button
+                      onClick={() => startEdit(b)}
+                      className="p-2 hover:bg-white/10 rounded-lg text-xs transition-colors cursor-pointer"
+                      title="Edit"
+                    >
+                      ✏️
+                    </button>
+                    <button
+                      onClick={() => handleDelete(b.id)}
+                      className="p-2 hover:bg-red-500/20 rounded-lg text-xs transition-colors cursor-pointer"
+                      title="Delete"
+                    >
+                      🗑️
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      ) : (
+        /* ─── EDITOR VIEW ────────────────────────────────────── */
+        <div className="max-w-4xl mx-auto px-6 py-8">
+          {/* Meta fields row */}
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 mb-6">
+            {/* Title */}
+            <div className="xl:col-span-2">
+              <input
+                type="text"
+                value={form.title}
+                onChange={(e) => {
+                  const title = e.target.value;
+                  setForm((prev) => ({
+                    ...prev,
+                    title,
+                    slug: generateSlug(title),
+                  }));
+                }}
+                placeholder="Post title…"
+                className="w-full px-0 py-3 bg-transparent text-[28px] xl:text-[36px] font-bold text-white placeholder:text-white/20 focus:outline-none tracking-[-1px]"
+                style={{
+                  fontFamily: "'Georgia', 'Times New Roman', serif",
+                }}
+              />
+            </div>
+
+            {/* Slug */}
+            <div>
+              <label className="text-xs text-white/40 block mb-1">Slug</label>
+              <input
+                type="text"
+                value={form.slug}
+                onChange={(e) =>
+                  setForm((prev) => ({ ...prev, slug: e.target.value }))
+                }
+                placeholder="auto-generated-from-title"
+                className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-[#5A45F9]"
+              />
+            </div>
+
+            {/* Author */}
+            <div>
+              <label className="text-xs text-white/40 block mb-1">Author</label>
+              <input
+                type="text"
+                value={form.author}
+                onChange={(e) =>
+                  setForm((prev) => ({ ...prev, author: e.target.value }))
+                }
+                placeholder="Author name"
+                className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-[#5A45F9]"
+              />
+            </div>
+
+            {/* Excerpt */}
+            <div className="xl:col-span-2">
+              <label className="text-xs text-white/40 block mb-1">
+                Excerpt
+              </label>
+              <textarea
+                value={form.excerpt}
+                onChange={(e) =>
+                  setForm((prev) => ({ ...prev, excerpt: e.target.value }))
+                }
+                placeholder="Brief description for the blog card…"
+                rows={2}
+                className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-[#5A45F9] resize-none"
+              />
+            </div>
+
+            {/* Cover image */}
+            <div>
+              <label className="text-xs text-white/40 block mb-1">
+                Cover Image
+              </label>
+              <div className="flex items-center gap-3">
+                <div className="w-16 h-10 rounded-lg overflow-hidden bg-white/5 relative flex-shrink-0">
+                  <Image
+                    src={form.coverImage}
+                    alt=""
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+                <button
+                  onClick={() => coverInputRef.current?.click()}
+                  className="px-3 py-1.5 bg-white/10 hover:bg-white/15 rounded-lg text-xs font-medium transition-colors cursor-pointer"
+                >
+                  Upload
+                </button>
+                <input
+                  ref={coverInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleCoverUpload}
+                  className="hidden"
+                />
+              </div>
+            </div>
+
+            {/* Tags */}
+            <div>
+              <label className="text-xs text-white/40 block mb-1">Tags</label>
+              <div className="flex items-center gap-2">
+                <input
+                  type="text"
+                  value={tagInput}
+                  onChange={(e) => setTagInput(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      addTag();
+                    }
+                  }}
+                  placeholder="Add tag…"
+                  className="flex-1 px-3 py-1.5 bg-white/5 border border-white/10 rounded-lg text-xs text-white placeholder:text-white/20 focus:outline-none focus:border-[#5A45F9]"
+                />
+                <button
+                  onClick={addTag}
+                  className="px-2 py-1.5 bg-white/10 hover:bg-white/15 rounded-lg text-xs transition-colors cursor-pointer"
+                >
+                  +
+                </button>
+              </div>
+              {form.tags.length > 0 && (
+                <div className="flex flex-wrap gap-1.5 mt-2">
+                  {form.tags.map((tag) => (
+                    <span
+                      key={tag}
+                      className="text-[10px] bg-[#5A45F9]/20 text-[#5A45F9] px-2 py-0.5 rounded-full flex items-center gap-1"
+                    >
+                      {tag}
+                      <button
+                        onClick={() => removeTag(tag)}
+                        className="hover:text-white cursor-pointer"
+                      >
+                        ×
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* ─── WYSIWYG TOOLBAR ──────────────────────────────── */}
+          <div className="sticky top-[65px] z-30 bg-[#0a0a0a] border-b border-white/10 pb-2 mb-4">
+            <div className="flex flex-wrap items-center gap-1">
+              {/* Text formatting */}
+              <ToolbarBtn label="B" title="Bold" onClick={() => exec("bold")} bold />
+              <ToolbarBtn label="I" title="Italic" onClick={() => exec("italic")} italic />
+              <ToolbarBtn label="U" title="Underline" onClick={() => exec("underline")} />
+              <ToolbarBtn label="S" title="Strikethrough" onClick={() => exec("strikeThrough")} strike />
+              <Divider />
+
+              {/* Headings */}
+              <ToolbarBtn label="H1" title="Heading 1" onClick={() => exec("formatBlock", "h1")} />
+              <ToolbarBtn label="H2" title="Heading 2" onClick={() => exec("formatBlock", "h2")} />
+              <ToolbarBtn label="H3" title="Heading 3" onClick={() => exec("formatBlock", "h3")} />
+              <ToolbarBtn label="¶" title="Paragraph" onClick={() => exec("formatBlock", "p")} />
+              <Divider />
+
+              {/* Lists */}
+              <ToolbarBtn label="• List" title="Bullet List" onClick={() => exec("insertUnorderedList")} />
+              <ToolbarBtn label="1. List" title="Numbered List" onClick={() => exec("insertOrderedList")} />
+              <Divider />
+
+              {/* Block quote */}
+              <ToolbarBtn label="❝" title="Blockquote" onClick={() => exec("formatBlock", "blockquote")} />
+              <ToolbarBtn label="—" title="Horizontal Rule" onClick={() => exec("insertHorizontalRule")} />
+              <Divider />
+
+              {/* Link */}
+              <ToolbarBtn
+                label="🔗"
+                title="Insert Link"
+                onClick={() => {
+                  const url = prompt("URL:");
+                  if (url) exec("createLink", url);
+                }}
+              />
+
+              {/* Image */}
+              <ToolbarBtn
+                label="🖼️"
+                title="Upload Image"
+                onClick={() => contentImageInputRef.current?.click()}
+              />
+              <input
+                ref={contentImageInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleContentImageUpload}
+                className="hidden"
+              />
+
+              {/* YouTube */}
+              <ToolbarBtn
+                label="▶ YT"
+                title="Embed YouTube Video"
+                onClick={insertYouTube}
+              />
+              <Divider />
+
+              {/* Clear */}
+              <ToolbarBtn
+                label="⌫"
+                title="Remove Formatting"
+                onClick={() => exec("removeFormat")}
+              />
+            </div>
+          </div>
+
+          {/* ─── WYSIWYG Editor ───────────────────────────────── */}
+          <div
+            ref={editorRef}
+            contentEditable
+            suppressContentEditableWarning
+            onInput={syncContent}
+            className="blog-content min-h-[400px] px-1 py-2 focus:outline-none text-white/90"
+            style={{
+              fontFamily: "'Georgia', 'Times New Roman', serif",
+              fontSize: "18px",
+              lineHeight: "1.8",
+            }}
+            data-placeholder="Start writing your story…"
+          />
+
+          {/* Action bar */}
+          <div className="flex items-center gap-3 mt-8 pt-6 border-t border-white/10">
+            <button
+              onClick={handleSave}
+              disabled={saving}
+              className="px-6 py-2.5 bg-[#5A45F9] hover:bg-[#4935e0] rounded-lg text-sm font-semibold transition-colors disabled:opacity-50 cursor-pointer"
+            >
+              {saving
+                ? "Saving…"
+                : editing
+                  ? "Update Post"
+                  : "Publish Post"}
+            </button>
+            <button
+              onClick={() => {
+                resetForm();
+                setView("list");
+              }}
+              className="px-4 py-2.5 bg-white/10 hover:bg-white/15 rounded-lg text-sm font-medium transition-colors cursor-pointer"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ─── Toolbar components ──────────────────────────────────────────── */
+
+function ToolbarBtn({
+  label,
+  title,
+  onClick,
+  bold,
+  italic,
+  strike,
+}: {
+  label: string;
+  title: string;
+  onClick: () => void;
+  bold?: boolean;
+  italic?: boolean;
+  strike?: boolean;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      title={title}
+      className={`px-2.5 py-1.5 text-xs rounded-md hover:bg-white/10 text-white/70 hover:text-white transition-colors cursor-pointer ${
+        bold ? "font-bold" : ""
+      } ${italic ? "italic" : ""} ${strike ? "line-through" : ""}`}
+    >
+      {label}
+    </button>
+  );
+}
+
+function Divider() {
+  return <div className="w-px h-5 bg-white/10 mx-1" />;
+}
