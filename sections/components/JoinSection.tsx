@@ -3,60 +3,54 @@ import { toLandingAssetUrl } from "@/lib/landing-assets";
 
 export default function JoinSection() {
   return (
-    <section id="join" className="px-3 py-12 md:px-12 md:py-16 text-center xl:px-24 xl:py-24">
-      {/* Image collage */}
-      <div className="flex justify-center gap-1 mb-8 md:gap-2 xl:gap-3 xl:mb-12">
-        <div className="w-[55px] h-[55px] md:w-[65px] md:h-[65px] xl:w-[80px] xl:h-[80px] rounded-xl overflow-hidden rotate-[-3deg] relative">
-          <Image src={toLandingAssetUrl("/images/join-avatar1-figma.png")} alt="Traveler" fill className="object-cover" />
-        </div>
-        <div className="w-[65px] h-[65px] md:w-[75px] md:h-[75px] xl:w-[90px] xl:h-[90px] rounded-xl overflow-hidden z-10 -mt-1 relative">
-          <Image src={toLandingAssetUrl("/images/join-avatar2-figma.png")} alt="Traveler" fill className="object-cover" />
-        </div>
-        <div className="w-[55px] h-[55px] md:w-[65px] md:h-[65px] xl:w-[80px] xl:h-[80px] rounded-xl overflow-hidden rotate-[2deg] relative">
-          <Image src={toLandingAssetUrl("/images/join-avatar3-figma.png")} alt="Traveler" fill className="object-cover" />
-        </div>
-        <div className="w-[60px] h-[60px] md:w-[70px] md:h-[70px] xl:w-[85px] xl:h-[85px] rounded-xl overflow-hidden rotate-[-1deg] -mt-0.5 relative">
-          <Image src={toLandingAssetUrl("/images/join-avatar4-figma.png")} alt="Traveler" fill className="object-cover" />
-        </div>
-      </div>
-
-      {/* Dotted world map decoration */}
-      <div className="mb-6 relative h-8 md:h-10 xl:mb-8 xl:h-12">
-        <Image src={toLandingAssetUrl("/images/dotted-world-map.svg")} alt="" fill className="object-contain opacity-20" />
-      </div>
-
-      {/* CTA content */}
-      <h2 className="text-[32px] leading-[40px] font-semibold text-white mb-3 md:text-[42px] xl:text-[48px] xl:leading-[1.2] xl:mb-6 tracking-[-0.5px]">
-        Join travelers from around the world.
-      </h2>
-      <p className="text-[18px] leading-[26px] text-gray-400 mb-8 md:text-[16px] xl:text-base xl:mb-10 tracking-[-0.2px]">
-        Be first to build and share your travel profile.
-      </p>
-
-      {/* Email input + CTA - mobile and iPad stacked */}
-      <div className="flex flex-col items-center gap-3 xl:hidden">
-        <input
-          type="email"
-          placeholder="Enter your email"
-          className="w-full max-w-[300px] md:max-w-[500px] h-12 md:h-[60px] rounded-full border border-[#3d3d3d] px-6 bg-black text-white text-[16px] font-medium placeholder:text-[#464646] focus:outline-none focus:border-gray-500 transition-colors"
+    <section id="join" className="relative overflow-hidden px-3 py-12 text-center md:px-12 md:py-16 xl:px-24 xl:py-20">
+      {/* Full-width map background from Figma Section 16 */}
+      <div className="pointer-events-none absolute inset-x-0 top-3 mx-auto h-[220px] w-full max-w-[1471px] md:h-[300px] xl:h-[478px]">
+        <Image
+          src={toLandingAssetUrl("/images/dotted-world-map.svg")}
+          alt=""
+          fill
+          className="object-contain opacity-95"
+          priority
         />
-        <button className="w-full max-w-[300px] md:max-w-[500px] h-12 md:h-[52px] rounded-full bg-white text-black font-medium text-[16px] hover:bg-gray-200 transition-colors">
-          Get early access
-        </button>
       </div>
 
-      {/* Email input + CTA - desktop inline */}
-      <div className="hidden xl:flex items-center justify-center gap-0 max-w-[500px] mx-auto focus-within:border-gray-400 transition-colors">
-        <div className="flex-1 h-14 rounded-full border border-gray-600 flex items-center px-6 bg-transparent rounded-r-none border-r-0">
+      <div className="relative z-10 mx-auto max-w-[1536px]">
+        {/* Image collage */}
+        <div className="mb-8 flex justify-center gap-1 md:gap-2 xl:mb-12 xl:gap-3">
+          <div className="relative h-[55px] w-[55px] rotate-[-3deg] overflow-hidden rounded-xl md:h-[65px] md:w-[65px] xl:h-[80px] xl:w-[80px]">
+          <Image src={toLandingAssetUrl("/images/join-avatar1-figma.png")} alt="Traveler" fill className="object-cover" />
+          </div>
+          <div className="relative z-10 -mt-1 h-[65px] w-[65px] overflow-hidden rounded-xl md:h-[75px] md:w-[75px] xl:h-[90px] xl:w-[90px]">
+          <Image src={toLandingAssetUrl("/images/join-avatar2-figma.png")} alt="Traveler" fill className="object-cover" />
+          </div>
+          <div className="relative h-[55px] w-[55px] rotate-[2deg] overflow-hidden rounded-xl md:h-[65px] md:w-[65px] xl:h-[80px] xl:w-[80px]">
+          <Image src={toLandingAssetUrl("/images/join-avatar3-figma.png")} alt="Traveler" fill className="object-cover" />
+          </div>
+          <div className="relative -mt-0.5 h-[60px] w-[60px] rotate-[-1deg] overflow-hidden rounded-xl md:h-[70px] md:w-[70px] xl:h-[85px] xl:w-[85px]">
+          <Image src={toLandingAssetUrl("/images/join-avatar4-figma.png")} alt="Traveler" fill className="object-cover" />
+          </div>
+        </div>
+
+        {/* CTA content */}
+        <h2 className="mb-3 text-[32px] font-semibold leading-[40px] tracking-[-0.5px] text-white md:text-[42px] xl:mb-6 xl:text-[48px] xl:leading-[1.2]">
+          Join travelers from around the world.
+        </h2>
+        <p className="mb-8 text-[18px] leading-[26px] tracking-[-0.2px] text-gray-400 md:text-[16px] xl:mb-10 xl:text-base">
+          Be first to build and share your travel profile.
+        </p>
+
+        {/* Figma JWL pill */}
+        <div className="mx-auto flex h-[60px] w-full max-w-[500px] items-center justify-between overflow-hidden rounded-full border border-[#3d3d3d] bg-black pl-6 pr-1 py-1">
           <input
             type="email"
             placeholder="Enter your email"
-            className="w-full bg-transparent text-white text-[15px] placeholder:text-gray-500 focus:outline-none"
+            className="w-full bg-transparent text-[20px] font-medium leading-7 tracking-[-0.5px] text-white placeholder:text-[#464646] focus:outline-none"
           />
+          <button className="h-[52px] shrink-0 rounded-full bg-white px-8 text-[20px] font-medium leading-7 tracking-[-0.5px] text-black transition hover:bg-[#ececec]">
+            Get early access
+          </button>
         </div>
-        <button className="h-14 px-8 rounded-full bg-white text-black font-semibold text-[15px] hover:bg-gray-200 transition-colors rounded-l-none">
-          Get early access
-        </button>
       </div>
     </section>
   );

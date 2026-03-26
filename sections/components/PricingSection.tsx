@@ -81,14 +81,22 @@ const plans: Plan[] = [
 function FeatureItem({ feature }: { feature: string }) {
   return (
     <li className="flex items-start gap-3">
-      <span className="mt-px inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#1e1e1e] text-white">
-        <span
-          className="material-symbols-rounded text-[14px]"
-          style={{ fontVariationSettings: "'FILL' 1, 'wght' 700, 'GRAD' 0, 'opsz' 20" }}
+      <span className="mt-px inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-[20px] border border-[#1e1e1e] bg-[#1e1e1e]">
+        <svg
           aria-hidden="true"
+          className="h-3 w-4"
+          viewBox="0 0 16 12"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
         >
-          check
-        </span>
+          <path
+            d="M1.5 6L6 10.5L14.5 1.5"
+            stroke="#FFFFFF"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
       </span>
       <span className="text-[16px] leading-6 tracking-[-0.096px] text-white">{feature}</span>
     </li>
