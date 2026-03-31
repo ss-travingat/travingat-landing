@@ -14,7 +14,7 @@ export default function FeaturedProfiles() {
         {/* Phone mockup left */}
         <div className="flex-shrink-0 flex items-center justify-center w-full xl:w-[420px]">
           <Image
-            src={toLandingAssetUrl("/hero-phone-center.png")}
+            src={toLandingAssetUrl("/images/hero-phone-center.png")}
             alt="Phone mockup"
             width={360}
             height={720}
