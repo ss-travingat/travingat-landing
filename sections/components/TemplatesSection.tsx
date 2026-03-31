@@ -4,7 +4,7 @@ import { toLandingAssetUrl } from "@/lib/landing-assets";
 export default function TemplatesSection() {
   return (
     <section id="templates" className="px-3 py-12 md:px-12 md:py-16 xl:px-24 xl:py-20">
-      <h2 className="text-[32px] leading-[1.2] font-bold text-white mb-8 text-center md:text-[42px] md:mb-10 xl:text-[48px] xl:text-center xl:max-w-[800px] xl:mx-auto xl:mb-16">
+      <h2 className="text-[32px] leading-[1.2] font-bold text-white mb-8 text-center md:text-[42px] md:mb-10 xl:text-[48px] xl:max-w-[800px] xl:mx-auto xl:mb-16">
         Premium templates to elevate your profile
       </h2>
 

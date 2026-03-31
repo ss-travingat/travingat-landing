@@ -58,9 +58,6 @@ export default function LandingHeader() {
           </div>
 
           <div className="flex xl:hidden items-center gap-2">
-            <a href={onboardingUrl} className="rounded-full bg-white px-4 py-2 text-sm font-medium text-black hover:bg-[#ececec] transition">
-              Join now
-            </a>
             <button
               onClick={() => setMenuOpen((prev) => !prev)}
               className="relative flex h-9 w-9 items-center justify-center rounded-xl border border-[#1e1e1e] bg-[#0b0b0b]"

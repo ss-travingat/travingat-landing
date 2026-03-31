@@ -40,8 +40,20 @@ export default function JoinSection() {
           Be first to build and share your travel profile.
         </p>
 
-        {/* Figma JWL pill */}
-        <div className="mx-auto flex h-[60px] w-full max-w-[500px] items-center justify-between overflow-hidden rounded-full border border-[#3d3d3d] bg-black pl-6 pr-1 py-1">
+        {/* Mobile: stacked input + button */}
+        <div className="mx-auto flex flex-col items-center gap-3 w-full max-w-[300px] md:hidden">
+          <input
+            type="email"
+            placeholder="Enter your email"
+            className="w-full h-12 rounded-full border border-[#3d3d3d] bg-black px-6 text-[16px] font-medium text-white placeholder:text-[#464646] focus:outline-none focus:border-gray-500 transition-colors"
+          />
+          <button className="w-full h-12 rounded-full bg-white text-[16px] font-medium text-black transition hover:bg-[#ececec]">
+            Get early access
+          </button>
+        </div>
+
+        {/* Tablet/Desktop: inline pill */}
+        <div className="hidden md:flex mx-auto h-[60px] w-full max-w-[500px] items-center justify-between overflow-hidden rounded-full border border-[#3d3d3d] bg-black pl-6 pr-1 py-1">
           <input
             type="email"
             placeholder="Enter your email"
