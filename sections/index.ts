@@ -7,3 +7,4 @@ export { default as FeaturedProfiles } from '@/sections/components/FeaturedProfi
 export { default as TemplatesSection } from '@/sections/components/TemplatesSection';
 export { default as PricingSection } from '@/sections/components/PricingSection';
 export { default as JoinSection } from '@/sections/components/JoinSection';
+export { default as DesignSystemPreviewSection } from '@/sections/components/DesignSystemPreviewSection';

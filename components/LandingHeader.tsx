@@ -20,7 +20,7 @@ export default function LandingHeader() {
     <header className="sticky top-0 z-50 bg-black/90 backdrop-blur">
       <div className="mx-auto w-full max-w-[1728px] px-5 md:px-8 xl:px-24">
         <div className="h-[92px] xl:h-[132px] flex items-center justify-between">
-          <Link href="/" className="text-white text-[28px] font-semibold leading-none tracking-[-0.41px]">
+          <Link href="/" className="ds-font-logo text-white text-[28px] font-normal leading-none tracking-[0.2px]">
             travingat
           </Link>
 

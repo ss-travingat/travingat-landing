@@ -1,5 +1,6 @@
 import {
   HeroSection,
+  DesignSystemPreviewSection,
   OrganizeSection,
   CollectionsSection,
   WorldMapSection,
@@ -14,6 +15,7 @@ export default function LandingPage() {
   return (
     <main>
       <HeroSection />
+      {/* <DesignSystemPreviewSection /> */}
       <OrganizeSection />
       <CollectionsSection />
       <WorldMapSection />

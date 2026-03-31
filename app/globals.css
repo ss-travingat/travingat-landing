@@ -3,6 +3,9 @@
 :root {
   --background: #0a0a0a;
   --foreground: #ffffff;
+  --font-sans: var(--font-inter, "Inter"), "Inter", "Segoe UI", sans-serif;
+  --font-display: var(--font-inter-display, "Inter Display"), var(--font-inter, "Inter"), "Inter", "Segoe UI", sans-serif;
+  --radius-pill: 999px;
 }
 
 * {
@@ -15,7 +18,195 @@ body {
   padding: 0;
   background: var(--background);
   color: var(--foreground);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family: var(--font-sans);
+}
+
+@layer base {
+  h1 {
+    font-family: var(--font-display);
+    font-size: 64px;
+    line-height: 72px;
+    letter-spacing: -1px;
+    font-weight: 600;
+  }
+
+  h2 {
+    font-family: var(--font-display);
+    font-size: 52px;
+    line-height: 60px;
+    letter-spacing: -1px;
+    font-weight: 600;
+  }
+
+  h3 {
+    font-family: var(--font-display);
+    font-size: 44px;
+    line-height: 52px;
+    letter-spacing: -0.5px;
+    font-weight: 600;
+  }
+
+  h4 {
+    font-family: var(--font-display);
+    font-size: 32px;
+    line-height: 40px;
+    letter-spacing: -0.5px;
+    font-weight: 600;
+  }
+
+  h5 {
+    font-family: var(--font-display);
+    font-size: 28px;
+    line-height: 36px;
+    letter-spacing: -0.5px;
+    font-weight: 600;
+  }
+
+  h6 {
+    font-family: var(--font-display);
+    font-size: 24px;
+    line-height: 32px;
+    letter-spacing: -0.5px;
+    font-weight: 600;
+  }
+
+  p {
+    font-family: var(--font-sans);
+    font-size: 16px;
+    line-height: 24px;
+    letter-spacing: -0.6px;
+    font-weight: 400;
+  }
+
+  small {
+    font-family: var(--font-sans);
+    font-size: 12px;
+    line-height: 16px;
+    letter-spacing: 0;
+    font-weight: 400;
+  }
+}
+
+@layer components {
+  .ds-h1 {
+    font-family: var(--font-display);
+    font-size: 64px;
+    line-height: 72px;
+    letter-spacing: -1px;
+    font-weight: 600;
+  }
+
+  .ds-h2 {
+    font-family: var(--font-display);
+    font-size: 52px;
+    line-height: 60px;
+    letter-spacing: -1px;
+    font-weight: 600;
+  }
+
+  .ds-h3 {
+    font-family: var(--font-display);
+    font-size: 44px;
+    line-height: 52px;
+    letter-spacing: -0.5px;
+    font-weight: 600;
+  }
+
+  .ds-h4 {
+    font-family: var(--font-display);
+    font-size: 32px;
+    line-height: 40px;
+    letter-spacing: -0.5px;
+    font-weight: 600;
+  }
+
+  .ds-h5 {
+    font-family: var(--font-display);
+    font-size: 28px;
+    line-height: 36px;
+    letter-spacing: -0.5px;
+    font-weight: 600;
+  }
+
+  .ds-h6 {
+    font-family: var(--font-display);
+    font-size: 24px;
+    line-height: 32px;
+    letter-spacing: -0.5px;
+    font-weight: 600;
+  }
+
+  .ds-h7 {
+    font-family: var(--font-display);
+    font-size: 20px;
+    line-height: 28px;
+    letter-spacing: -0.5px;
+    font-weight: 600;
+  }
+
+  .ds-text-lg {
+    font-family: var(--font-sans);
+    font-size: 18px;
+    line-height: 26px;
+    letter-spacing: -1.1px;
+    font-weight: 400;
+  }
+
+  .ds-text-md {
+    font-family: var(--font-sans);
+    font-size: 16px;
+    line-height: 24px;
+    letter-spacing: -0.6px;
+    font-weight: 400;
+  }
+
+  .ds-text-sm {
+    font-family: var(--font-sans);
+    font-size: 14px;
+    line-height: 20px;
+    letter-spacing: -0.6px;
+    font-weight: 400;
+  }
+
+  .ds-text-xs {
+    font-family: var(--font-sans);
+    font-size: 12px;
+    line-height: 16px;
+    letter-spacing: 0;
+    font-weight: 400;
+  }
+
+  .ds-text-xxs {
+    font-family: var(--font-sans);
+    font-size: 10px;
+    line-height: 16px;
+    letter-spacing: 0;
+    font-weight: 400;
+  }
+}
+
+.ds-font-display {
+  font-family: var(--font-display);
+}
+
+.ds-font-body {
+  font-family: var(--font-sans);
+}
+
+.ds-font-logo {
+  font-family: var(--font-logo), var(--font-display);
+}
+
+.ds-card {
+  border: 1px solid #20242d;
+  border-radius: 20px;
+  background: #12161f;
+}
+
+.ds-shell {
+  border: 1px solid #2d2f37;
+  border-radius: 24px;
+  background: #000000;
 }
 
 .hide-scrollbar::-webkit-scrollbar {

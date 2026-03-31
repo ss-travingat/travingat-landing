@@ -3,10 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "predev": "node scripts/sync-inter-display-fonts.mjs",
     "dev": "next dev",
+    "prebuild": "node scripts/sync-inter-display-fonts.mjs",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "fonts:sync": "node scripts/sync-inter-display-fonts.mjs",
     "upload:assets:r2": "node scripts/upload-public-assets-to-r2.mjs"
   },
   "dependencies": {
