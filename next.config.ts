@@ -3,15 +3,7 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   images: {
-    loader: "custom",
-    loaderFile: "./lib/image-loader.ts",
-    remotePatterns: [
-      {
-        protocol: "https",
-        hostname: "pub-73816168e54041228c76b8c06deb5f76.r2.dev",
-        pathname: "/landingpage-assets/**",
-      },
-    ],
+    unoptimized: true,
   },
 };
 
