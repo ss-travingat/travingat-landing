@@ -15,7 +15,7 @@ const textVariants = cva("", {
       "text-lg": "font-sans text-[1.125rem] leading-[1.625rem] tracking-[-0.011em]",
       "text-md": "font-sans text-[1rem] leading-[1.5rem] tracking-[-0.006em]",
       "text-sm": "font-sans text-[0.875rem] leading-[1.25rem] tracking-[-0.006em]",
-      "text-xs": "font-sans text-[0.75rem] leading-[1.25rem] tracking-[0em]",
+      "text-xs": "font-sans text-[0.75rem] leading-[1.25rem] tracking-[-0.006em]",
       "text-xxs": "font-sans text-[0.625rem] leading-[1.125rem] tracking-[0em]",
     },
     weight: {

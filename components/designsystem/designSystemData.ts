@@ -28,7 +28,7 @@ export const TEXT_TOKENS: TypeToken[] = [
   { id: "text-lg", label: "Text lg", size: 18, lineHeight: 26, letterSpacing: -1.1, letterSpacingUnit: "%" },
   { id: "text-md", label: "Text md", size: 16, lineHeight: 24, letterSpacing: -0.6, letterSpacingUnit: "%" },
   { id: "text-sm", label: "Text sm", size: 14, lineHeight: 20, letterSpacing: -0.6, letterSpacingUnit: "%" },
-  { id: "text-xs", label: "Text xs", size: 12, lineHeight: 20, letterSpacing: 0, letterSpacingUnit: "%" },
+  { id: "text-xs", label: "Text xs", size: 12, lineHeight: 20, letterSpacing: -0.6, letterSpacingUnit: "%" },
   { id: "text-xxs", label: "Text xxs", size: 10, lineHeight: 18, letterSpacing: 0, letterSpacingUnit: "%" },
 ];
 
