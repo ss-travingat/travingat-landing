@@ -173,7 +173,7 @@ body {
     font-family: var(--font-display-css);
     font-size: 4rem;
     line-height: 4.5rem;
-    letter-spacing: -0.0625rem;
+    letter-spacing: -0.01em;
     font-weight: 600;
   }
 
@@ -181,7 +181,7 @@ body {
     font-family: var(--font-display-css);
     font-size: 3.25rem;
     line-height: 4rem;
-    letter-spacing: -0.0625rem;
+    letter-spacing: -0.01em;
     font-weight: 600;
   }
 
@@ -189,7 +189,7 @@ body {
     font-family: var(--font-display-css);
     font-size: 2.75rem;
     line-height: 3.5rem;
-    letter-spacing: -0.0625rem;
+    letter-spacing: -0.01em;
     font-weight: 600;
   }
 
@@ -197,7 +197,7 @@ body {
     font-family: var(--font-display-css);
     font-size: 2rem;
     line-height: 2.5rem;
-    letter-spacing: -0.03125rem;
+    letter-spacing: -0.005em;
     font-weight: 600;
   }
 
@@ -205,7 +205,7 @@ body {
     font-family: var(--font-display-css);
     font-size: 1.75rem;
     line-height: 2.5rem;
-    letter-spacing: -0.03125rem;
+    letter-spacing: -0.005em;
     font-weight: 600;
   }
 
@@ -213,7 +213,7 @@ body {
     font-family: var(--font-display-css);
     font-size: 1.5rem;
     line-height: 2rem;
-    letter-spacing: -0.03125rem;
+    letter-spacing: -0.005em;
     font-weight: 600;
   }
 
@@ -221,7 +221,7 @@ body {
     font-family: var(--font-sans-css);
     font-size: 1rem;
     line-height: 1.5rem;
-    letter-spacing: -0.0375rem;
+    letter-spacing: -0.006em;
     font-weight: 400;
   }
 
@@ -239,7 +239,7 @@ body {
     font-family: var(--font-display-css);
     font-size: 4rem;
     line-height: 4.5rem;
-    letter-spacing: -0.0625rem;
+    letter-spacing: -0.01em;
     font-weight: 600;
   }
 
@@ -247,7 +247,7 @@ body {
     font-family: var(--font-display-css);
     font-size: 3.25rem;
     line-height: 4rem;
-    letter-spacing: -0.0625rem;
+    letter-spacing: -0.01em;
     font-weight: 600;
   }
 
@@ -255,7 +255,7 @@ body {
     font-family: var(--font-display-css);
     font-size: 2.75rem;
     line-height: 3.5rem;
-    letter-spacing: -0.0625rem;
+    letter-spacing: -0.01em;
     font-weight: 600;
   }
 
@@ -263,7 +263,7 @@ body {
     font-family: var(--font-display-css);
     font-size: 2rem;
     line-height: 2.5rem;
-    letter-spacing: -0.03125rem;
+    letter-spacing: -0.005em;
     font-weight: 600;
   }
 
@@ -271,7 +271,7 @@ body {
     font-family: var(--font-display-css);
     font-size: 1.75rem;
     line-height: 2.5rem;
-    letter-spacing: -0.03125rem;
+    letter-spacing: -0.005em;
     font-weight: 600;
   }
 
@@ -279,7 +279,7 @@ body {
     font-family: var(--font-display-css);
     font-size: 1.5rem;
     line-height: 2rem;
-    letter-spacing: -0.03125rem;
+    letter-spacing: -0.005em;
     font-weight: 600;
   }
 
@@ -287,7 +287,7 @@ body {
     font-family: var(--font-display-css);
     font-size: 1.25rem;
     line-height: 1.75rem;
-    letter-spacing: -0.03125rem;
+    letter-spacing: -0.005em;
     font-weight: 600;
   }
 

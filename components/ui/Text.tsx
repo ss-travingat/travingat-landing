@@ -5,13 +5,13 @@ import { forwardRef, type ElementType, type ComponentPropsWithoutRef } from "rea
 const textVariants = cva("", {
   variants: {
     variant: {
-      h1: "font-display text-[4rem] leading-[4.5rem] tracking-[-0.0625rem]",
-      h2: "font-display text-[3.25rem] leading-[4rem] tracking-[-0.0625rem]",
-      h3: "font-display text-[2.75rem] leading-[3.5rem] tracking-[-0.0625rem]",
-      h4: "font-display text-[2rem] leading-[2.5rem] tracking-[-0.03125rem]",
-      h5: "font-display text-[1.75rem] leading-[2.5rem] tracking-[-0.03125rem]",
-      h6: "font-display text-[1.5rem] leading-[2rem] tracking-[-0.03125rem]",
-      h7: "font-display text-[1.25rem] leading-[1.75rem] tracking-[-0.03125rem]",
+      h1: "font-display text-[4rem] leading-[4.5rem] tracking-[-0.01em]",
+      h2: "font-display text-[3.25rem] leading-[4rem] tracking-[-0.01em]",
+      h3: "font-display text-[2.75rem] leading-[3.5rem] tracking-[-0.01em]",
+      h4: "font-display text-[2rem] leading-[2.5rem] tracking-[-0.005em]",
+      h5: "font-display text-[1.75rem] leading-[2.5rem] tracking-[-0.005em]",
+      h6: "font-display text-[1.5rem] leading-[2rem] tracking-[-0.005em]",
+      h7: "font-display text-[1.25rem] leading-[1.75rem] tracking-[-0.005em]",
       "text-lg": "font-sans text-[1.125rem] leading-[1.625rem] tracking-[-0.011em]",
       "text-md": "font-sans text-[1rem] leading-[1.5rem] tracking-[-0.006em]",
       "text-sm": "font-sans text-[0.875rem] leading-[1.25rem] tracking-[-0.006em]",
