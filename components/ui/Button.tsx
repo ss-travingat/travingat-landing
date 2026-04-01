@@ -10,9 +10,9 @@ const buttonVariants = cva(
     variants: {
       variant: {
         primary:
-          "bg-white-50 text-black-950 hover:bg-white-100 disabled:bg-white-200 disabled:text-white-400",
+          "bg-white-50 text-black-950 hover:bg-white-200 disabled:bg-white-100 disabled:text-white-300",
         secondary:
-          "bg-black-500 text-white-50 border border-black-200 hover:bg-black-600 hover:border-black-200 disabled:bg-black-900 disabled:text-white-900 disabled:border-black-700",
+          "bg-black-700 text-white-50 border border-black-100 hover:bg-black-200 hover:border-black-100 disabled:bg-black-700 disabled:text-white-900 disabled:border-black-100",
         violet:
           "bg-violet-600 text-white hover:bg-violet-700 disabled:bg-violet-200 disabled:text-violet-50",
         coral:
@@ -25,12 +25,12 @@ const buttonVariants = cva(
           "bg-transparent text-white hover:bg-transparent disabled:text-white-900",
       },
       size: {
-        xs: "h-[2rem] px-[0.5rem] py-[0.5rem] text-[0.75rem] leading-[1rem] tracking-[0rem]",
-        sm: "h-[2.25rem] px-[0.75rem] py-[0.5rem] text-[0.875rem] leading-[1.25rem] tracking-[-0.0375rem]",
-        md: "h-[2.5rem] px-[1rem] py-[0.625rem] text-[0.875rem] leading-[1.25rem] tracking-[-0.0375rem]",
-        lg: "h-[2.75rem] px-[1.125rem] py-[0.625rem] text-[1rem] leading-[1.5rem] tracking-[-0.0375rem]",
-        xl: "h-[3rem] px-[1.25rem] py-[0.75rem] text-[1rem] leading-[1.5rem] tracking-[-0.0375rem]",
-        "2xl": "h-[3.625rem] px-[1.5rem] py-[1rem] text-[1.125rem] leading-[1.625rem] tracking-[-0.06875rem]",
+        xs: "h-[32px] px-[8px] py-[8px] text-[12px] leading-[16px] tracking-[0px]",
+        sm: "h-[36px] px-[12px] py-[8px] text-[14px] leading-[20px] tracking-[-0.084px]",
+        md: "h-[40px] px-[16px] py-[10px] text-[14px] leading-[20px] tracking-[-0.084px]",
+        lg: "h-[44px] px-[18px] py-[10px] text-[16px] leading-[24px] tracking-[-0.096px]",
+        xl: "h-[48px] px-[20px] py-[12px] text-[16px] leading-[24px] tracking-[-0.096px]",
+        "2xl": "h-[58px] px-[24px] py-[16px] text-[18px] leading-[26px] tracking-[-0.198px]",
       },
     },
     defaultVariants: {

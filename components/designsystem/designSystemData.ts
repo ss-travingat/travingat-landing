@@ -220,11 +220,11 @@ export type ButtonSizeToken = {
 
 export const BUTTON_SIZES: ButtonSizeToken[] = [
   { id: "xs", height: 32, paddingX: 8, paddingY: 8, fontSize: 12, lineHeight: 16, letterSpacing: 0 },
-  { id: "sm", height: 36, paddingX: 12, paddingY: 8, fontSize: 14, lineHeight: 20, letterSpacing: -0.6 },
-  { id: "md", height: 40, paddingX: 16, paddingY: 10, fontSize: 14, lineHeight: 20, letterSpacing: -0.6 },
-  { id: "lg", height: 44, paddingX: 18, paddingY: 10, fontSize: 16, lineHeight: 24, letterSpacing: -0.6 },
-  { id: "xl", height: 48, paddingX: 20, paddingY: 12, fontSize: 16, lineHeight: 24, letterSpacing: -0.6 },
-  { id: "2xl", height: 58, paddingX: 24, paddingY: 16, fontSize: 18, lineHeight: 26, letterSpacing: -1.1 },
+  { id: "sm", height: 36, paddingX: 12, paddingY: 8, fontSize: 14, lineHeight: 20, letterSpacing: -0.084 },
+  { id: "md", height: 40, paddingX: 16, paddingY: 10, fontSize: 14, lineHeight: 20, letterSpacing: -0.084 },
+  { id: "lg", height: 44, paddingX: 18, paddingY: 10, fontSize: 16, lineHeight: 24, letterSpacing: -0.096 },
+  { id: "xl", height: 48, paddingX: 20, paddingY: 12, fontSize: 16, lineHeight: 24, letterSpacing: -0.096 },
+  { id: "2xl", height: 58, paddingX: 24, paddingY: 16, fontSize: 18, lineHeight: 26, letterSpacing: -0.198 },
 ];
 
 export type ButtonTheme = {
@@ -243,17 +243,17 @@ export const BUTTON_THEMES: ButtonTheme[] = [
     label: "Primary",
     states: {
       default: { bg: "#ffffff", text: "#000000" },
-      hover: { bg: "#efefef", text: "#000000" },
-      disabled: { bg: "#dcdcdc", text: "#989898" },
+      hover: { bg: "#dcdcdc", text: "#000000" },
+      disabled: { bg: "#efefef", text: "#bdbdbd" },
     },
   },
   {
     id: "secondary",
     label: "Secondary",
     states: {
-      default: { bg: "#212121", text: "#ffffff", border: "#303030" },
-      hover: { bg: "#1e1e1e", text: "#ffffff", border: "#303030" },
-      disabled: { bg: "#111111", text: "#3d3d3d", border: "#1a1a1a" },
+      default: { bg: "#1a1a1a", text: "#ffffff", border: "#353535" },
+      hover: { bg: "#303030", text: "#ffffff", border: "#353535" },
+      disabled: { bg: "#1a1a1a", text: "#3d3d3d", border: "#353535" },
     },
   },
   {
