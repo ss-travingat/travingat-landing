@@ -653,6 +653,24 @@ export default function AdminBlogsPage() {
             contentEditable
             suppressContentEditableWarning
             onInput={syncContent}
+            onPaste={(e) => {
+              e.preventDefault();
+              const text = e.clipboardData.getData("text/html") || e.clipboardData.getData("text/plain");
+              const tmp = document.createElement("div");
+              tmp.innerHTML = text;
+              tmp.querySelectorAll("*").forEach((el) => {
+                (el as HTMLElement).style.color = "";
+                (el as HTMLElement).style.backgroundColor = "";
+              });
+              const sel = window.getSelection();
+              if (!sel?.rangeCount) return;
+              const range = sel.getRangeAt(0);
+              range.deleteContents();
+              const frag = range.createContextualFragment(tmp.innerHTML);
+              range.insertNode(frag);
+              range.collapse(false);
+              syncContent();
+            }}
             className="blog-content min-h-[400px] px-1 py-2 focus:outline-none text-white/90"
             style={{
               fontFamily: "'Georgia', 'Times New Roman', serif",
