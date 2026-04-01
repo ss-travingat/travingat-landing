@@ -4,6 +4,7 @@ export type TypeToken = {
   size: number;
   lineHeight: number;
   letterSpacing: number;
+  letterSpacingUnit?: "px" | "%";
 };
 
 export const FONT_WEIGHTS = [
@@ -15,20 +16,20 @@ export const FONT_WEIGHTS = [
 
 export const HEADING_TOKENS: TypeToken[] = [
   { id: "h1", label: "Header 1", size: 64, lineHeight: 72, letterSpacing: -1 },
-  { id: "h2", label: "Header 2", size: 52, lineHeight: 60, letterSpacing: -1 },
-  { id: "h3", label: "Header 3", size: 44, lineHeight: 52, letterSpacing: -0.5 },
+  { id: "h2", label: "Header 2", size: 52, lineHeight: 64, letterSpacing: -1 },
+  { id: "h3", label: "Header 3", size: 44, lineHeight: 56, letterSpacing: -1 },
   { id: "h4", label: "Header 4", size: 32, lineHeight: 40, letterSpacing: -0.5 },
-  { id: "h5", label: "Header 5", size: 28, lineHeight: 36, letterSpacing: -0.5 },
+  { id: "h5", label: "Header 5", size: 28, lineHeight: 40, letterSpacing: -0.5 },
   { id: "h6", label: "Header 6", size: 24, lineHeight: 32, letterSpacing: -0.5 },
   { id: "h7", label: "Header 7", size: 20, lineHeight: 28, letterSpacing: -0.5 },
 ];
 
 export const TEXT_TOKENS: TypeToken[] = [
-  { id: "text-lg", label: "Text lg", size: 18, lineHeight: 26, letterSpacing: -1.1 },
-  { id: "text-md", label: "Text md", size: 16, lineHeight: 24, letterSpacing: -0.6 },
-  { id: "text-sm", label: "Text sm", size: 14, lineHeight: 20, letterSpacing: -0.6 },
-  { id: "text-xs", label: "Text xs", size: 12, lineHeight: 16, letterSpacing: 0 },
-  { id: "text-xxs", label: "Text xxs", size: 10, lineHeight: 16, letterSpacing: 0 },
+  { id: "text-lg", label: "Text lg", size: 18, lineHeight: 26, letterSpacing: -1.1, letterSpacingUnit: "%" },
+  { id: "text-md", label: "Text md", size: 16, lineHeight: 24, letterSpacing: -0.6, letterSpacingUnit: "%" },
+  { id: "text-sm", label: "Text sm", size: 14, lineHeight: 20, letterSpacing: -0.6, letterSpacingUnit: "%" },
+  { id: "text-xs", label: "Text xs", size: 12, lineHeight: 20, letterSpacing: 0, letterSpacingUnit: "%" },
+  { id: "text-xxs", label: "Text xxs", size: 10, lineHeight: 18, letterSpacing: 0, letterSpacingUnit: "%" },
 ];
 
 export type Swatch = {

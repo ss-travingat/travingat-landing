@@ -1,3 +1,7 @@
+"use client";
+
+import { Tooltip, TooltipProvider } from "@/components/ui/Tooltip";
+
 type ArrowDirection = "none" | "top" | "bottom" | "left" | "right" | "bottom-left" | "bottom-right";
 
 type TooltipBubbleProps = {
@@ -164,18 +168,68 @@ function TooltipColumn({ theme }: { theme: "light" | "dark" }) {
 }
 
 export default function TooltipShowcase() {
-  return (
-    <section className="px-3 py-10 md:px-10 md:py-14 xl:px-24 xl:py-16">
-      <div className="ds-shell overflow-hidden bg-[#1a1a1f] p-5 md:p-8 xl:p-10">
-        <h2 className="ds-font-display mb-8 text-[42px] font-semibold leading-[1.1] tracking-[-0.5px] text-white">Tooltips</h2>
+  const sides = ["top", "right", "bottom", "left"] as const;
 
-        <div className="rounded-xl border border-[#4d2cff] border-dashed p-4 md:p-6">
-          <div className="grid gap-8 xl:grid-cols-2">
-            <TooltipColumn theme="light" />
-            <TooltipColumn theme="dark" />
+  return (
+    <TooltipProvider delayDuration={100}>
+      <section className="px-3 py-10 md:px-10 md:py-14 xl:px-24 xl:py-16">
+        <div className="ds-shell overflow-hidden bg-[#1a1a1f] p-5 md:p-8 xl:p-10">
+          <h2 className="ds-font-display mb-8 text-[42px] font-semibold leading-[1.1] tracking-[-0.5px] text-white">Tooltips</h2>
+
+          {/* Interactive Radix tooltip demos */}
+          <div className="mb-10 rounded-xl border border-white-700 p-6">
+            <p className="ds-font-body mb-6 text-[13px] font-semibold uppercase tracking-[0.12em] text-white-400">
+              Interactive — hover to reveal
+            </p>
+            <div className="flex flex-wrap items-center gap-6">
+              {sides.map((side) => (
+                <Tooltip key={`dark-${side}`} content="This is a tooltip" theme="dark" side={side}>
+                  <button className="rounded-full bg-black-500 px-4 py-2 text-[14px] text-white transition-colors hover:bg-black-400">
+                    {side}
+                  </button>
+                </Tooltip>
+              ))}
+              {sides.map((side) => (
+                <Tooltip key={`light-${side}`} content="This is a tooltip" theme="light" side={side}>
+                  <button className="rounded-full bg-white-200 px-4 py-2 text-[14px] text-black-950 transition-colors hover:bg-white-100">
+                    {side} light
+                  </button>
+                </Tooltip>
+              ))}
+            </div>
+            <div className="mt-6 flex flex-wrap items-center gap-6">
+              <Tooltip
+                title="This is a tooltip"
+                content="Tooltips are used to describe or identify an element. In most scenarios, tooltips help users understand meaning, function or alt-text."
+                theme="dark"
+                side="bottom"
+              >
+                <button className="rounded-full bg-black-500 px-4 py-2 text-[14px] text-white transition-colors hover:bg-black-400">
+                  With title (dark)
+                </button>
+              </Tooltip>
+              <Tooltip
+                title="This is a tooltip"
+                content="Tooltips are used to describe or identify an element. In most scenarios, tooltips help users understand meaning, function or alt-text."
+                theme="light"
+                side="bottom"
+              >
+                <button className="rounded-full bg-white-200 px-4 py-2 text-[14px] text-black-950 transition-colors hover:bg-white-100">
+                  With title (light)
+                </button>
+              </Tooltip>
+            </div>
+          </div>
+
+          {/* Visual reference: all bubble variants */}
+          <div className="rounded-xl border border-[#4d2cff] border-dashed p-4 md:p-6">
+            <div className="grid gap-8 xl:grid-cols-2">
+              <TooltipColumn theme="light" />
+              <TooltipColumn theme="dark" />
+            </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </TooltipProvider>
   );
 }

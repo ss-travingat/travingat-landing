@@ -1,15 +1,28 @@
-const demoTabs = ["Tab Item", "Tab Item", "Tab Item", "Tab Item", "Tab Item", "Tab Item", "Tab Item", "Tab Item"];
+"use client";
+
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/Tabs";
+
+const demoTabs = [
+  "Explore",
+  "Countries",
+  "Cities",
+  "Hotels",
+  "Flights",
+  "Activities",
+  "Reviews",
+  "Saved",
+];
 
 type TabState = "default" | "selected" | "hover";
 
+/** Visual-only pill for the state reference section */
 function TabPill({ label, state }: { label: string; state: TabState }) {
   const bg = state === "default" ? "#161616" : "#1e1e1e";
   const color = state === "default" ? "#bdbdbd" : "#ffffff";
   const fontWeight = state === "selected" ? 500 : 400;
 
   return (
-    <button
-      type="button"
+    <span
       className="ds-font-body inline-flex h-10 items-center rounded-full px-6"
       style={{
         backgroundColor: bg,
@@ -22,7 +35,7 @@ function TabPill({ label, state }: { label: string; state: TabState }) {
       }}
     >
       {label}
-    </button>
+    </span>
   );
 }
 
@@ -32,19 +45,42 @@ export default function TabsShowcase() {
       <div className="ds-shell overflow-hidden bg-[#1a1a1f] p-5 md:p-8 xl:p-10">
         <h2 className="ds-font-display mb-8 text-[42px] font-semibold leading-[1.1] tracking-[-0.5px] text-white">Tabs</h2>
 
-        <div className="mb-14 overflow-x-auto">
-          <div className="flex min-w-235 items-center gap-2">
-            {demoTabs.map((label, index) => (
-              <TabPill key={`${label}-${index}`} label={label} state={index === 0 ? "selected" : "default"} />
-            ))}
+        {/* Interactive demo using Radix Tabs */}
+        <Tabs defaultValue="explore" className="mb-14">
+          <div className="overflow-x-auto">
+            <TabsList className="min-w-235">
+              {demoTabs.map((label) => (
+                <TabsTrigger key={label} value={label.toLowerCase()}>
+                  {label}
+                </TabsTrigger>
+              ))}
+            </TabsList>
           </div>
-        </div>
 
+          {demoTabs.map((label) => (
+            <TabsContent key={label} value={label.toLowerCase()} className="mt-4">
+              <p className="ds-font-body text-[14px] text-white-300">
+                Content for &ldquo;{label}&rdquo; tab.
+              </p>
+            </TabsContent>
+          ))}
+        </Tabs>
+
+        {/* Visual state reference */}
         <div className="inline-flex rounded-xl border border-[#4d2cff] border-dashed p-5">
           <div className="space-y-5">
-            <TabPill label="Countries" state="default" />
-            <TabPill label="Countries" state="selected" />
-            <TabPill label="Countries" state="hover" />
+            <div className="flex items-center gap-4">
+              <span className="ds-font-body w-20 text-[12px] text-white-400">Default</span>
+              <TabPill label="Countries" state="default" />
+            </div>
+            <div className="flex items-center gap-4">
+              <span className="ds-font-body w-20 text-[12px] text-white-400">Selected</span>
+              <TabPill label="Countries" state="selected" />
+            </div>
+            <div className="flex items-center gap-4">
+              <span className="ds-font-body w-20 text-[12px] text-white-400">Hover</span>
+              <TabPill label="Countries" state="hover" />
+            </div>
           </div>
         </div>
       </div>

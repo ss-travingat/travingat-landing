@@ -44,6 +44,18 @@ const interDisplay = localFont({
   display: "swap",
 });
 
+const openSauceTwo = localFont({
+  src: [
+    {
+      path: "../open-sauce-two/OpenSauceTwo-SemiBold.woff2",
+      weight: "600",
+      style: "normal",
+    },
+  ],
+  variable: "--font-open-sauce-two",
+  display: "swap",
+});
+
 export const metadata: Metadata = {
   title: "Travingat - Travel Portfolio for Explorers",
   description: "Build your travel portfolio and organize every journey in one place.",
@@ -62,7 +74,7 @@ export default function RootLayout({
           href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap"
         />
       </head>
-      <body className={`${inter.variable} ${interDisplay.variable} ${righteous.variable}`}>
+      <body className={`${inter.variable} ${interDisplay.variable} ${righteous.variable} ${openSauceTwo.variable}`}>
         <LandingLayout>{children}</LandingLayout>
       </body>
     </html>

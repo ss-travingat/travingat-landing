@@ -23,7 +23,7 @@ export default function DesignSystemPage() {
         </div>
       </section>
 
-      <TypographyShowcase withSidebar />
+      <TypographyShowcase />
       <ColorPaletteShowcase withSidebar />
       <ButtonShowcase />
       <TabsShowcase />

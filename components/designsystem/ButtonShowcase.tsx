@@ -1,8 +1,28 @@
+import { Button, type ButtonProps } from "@/components/ui/Button";
 import { BUTTON_SIZES, BUTTON_THEMES, ButtonSizeToken, ButtonTheme } from "@/components/designsystem/designSystemData";
 
 type ButtonState = "default" | "hover" | "disabled";
 
 const STATE_ORDER: ButtonState[] = ["default", "hover", "disabled"];
+
+const VARIANT_MAP: Record<string, ButtonProps["variant"]> = {
+  primary: "primary",
+  secondary: "secondary",
+  violet: "violet",
+  coral: "coral",
+  amber: "amber",
+  cyan: "cyan",
+  ghost: "ghost",
+};
+
+const SIZE_MAP: Record<string, ButtonProps["size"]> = {
+  xs: "xs",
+  sm: "sm",
+  md: "md",
+  lg: "lg",
+  xl: "xl",
+  "2xl": "2xl",
+};
 
 function ButtonSample({
   size,
@@ -13,13 +33,30 @@ function ButtonSample({
   theme: ButtonTheme;
   state: ButtonState;
 }) {
-  const palette = theme.states[state];
+  const variant = VARIANT_MAP[theme.id];
+  const sizeKey = SIZE_MAP[size.id];
+
+  /* Default & disabled states use the actual <Button> component */
+  if (state === "default" || state === "disabled") {
+    return (
+      <Button
+        variant={variant}
+        size={sizeKey}
+        disabled={state === "disabled"}
+        style={{ minWidth: size.id === "xs" ? 56 : size.id === "sm" ? 72 : 84 }}
+      >
+        Button
+      </Button>
+    );
+  }
+
+  /* Hover state: visual reference only (CSS :hover cannot be forced) */
+  const palette = theme.states.hover;
   const isGhost = theme.id === "ghost";
 
   return (
     <button
       type="button"
-      disabled={state === "disabled"}
       className="ds-font-body inline-flex items-center justify-center rounded-full font-medium"
       style={{
         minWidth: size.id === "xs" ? 56 : size.id === "sm" ? 72 : 84,
@@ -34,7 +71,6 @@ function ButtonSample({
         backgroundColor: palette.bg,
         color: palette.text,
         border: isGhost ? "1px solid transparent" : palette.border ? `1px solid ${palette.border}` : "1px solid transparent",
-        opacity: state === "disabled" ? 0.95 : 1,
       }}
     >
       Button
