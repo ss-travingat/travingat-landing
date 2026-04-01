@@ -47,9 +47,9 @@ export default function LandingHeader() {
               >
                 Pricing
               </a>
-              <a href="#blog" className="rounded-full px-[18px] py-[10px] text-[16px] font-medium leading-6 tracking-[-0.096px] text-white hover:bg-white/5 transition">
+              <Link href="/blog" className="rounded-full px-[18px] py-[10px] text-[16px] font-medium leading-6 tracking-[-0.096px] text-white hover:bg-white/5 transition">
                 Blog
-              </a>
+              </Link>
             </nav>
 
             <a href={onboardingUrl} className="inline-flex items-center justify-center rounded-full bg-white px-4 py-2 text-[14px] font-medium leading-5 tracking-[-0.084px] text-black hover:bg-[#ececec] transition">
@@ -110,9 +110,9 @@ export default function LandingHeader() {
           >
             Pricing
           </a>
-          <a href="#blog" onClick={() => setMenuOpen(false)} className="block rounded-xl px-3 py-2 text-sm text-[#d8d8d8] hover:bg-[#1b1b1b]">
+          <Link href="/blog" onClick={() => setMenuOpen(false)} className="block rounded-xl px-3 py-2 text-sm text-[#d8d8d8] hover:bg-[#1b1b1b]">
             Blog
-          </a>
+          </Link>
           <Link href="/signin" onClick={() => setMenuOpen(false)} className="block rounded-xl px-3 py-2 text-sm text-[#d8d8d8] hover:bg-[#1b1b1b]">
             Already traveler? Sign in
           </Link>

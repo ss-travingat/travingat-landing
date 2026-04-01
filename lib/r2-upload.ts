@@ -67,3 +67,20 @@ export async function uploadLandingAsset(params: {
     url: `${cdnBase}/${cleanSuffix}`,
   };
 }
+
+/**
+ * Upload a blog image to R2 under `landingpage-assets/blogs/`.
+ */
+export async function uploadBlogAsset(params: {
+  fileBuffer: Buffer;
+  fileName: string;
+  contentType?: string;
+}): Promise<{ key: string; url: string }> {
+  const { fileBuffer, fileName, contentType } = params;
+  const cleanName = fileName.replace(/^[\/]+/, "");
+  return uploadLandingAsset({
+    fileBuffer,
+    keySuffix: `blogs/${cleanName}`,
+    contentType,
+  });
+}

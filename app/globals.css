@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
 
 @theme {
   /* ── Font Families ── */
@@ -367,4 +368,125 @@ body {
 .hide-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+/* ── Blog Prose: dark theme overrides ── */
+.blog-prose {
+  color: #d1d5db;
+  font-size: 1.0625rem;
+  line-height: 1.8;
+}
+
+.blog-prose h1,
+.blog-prose h2,
+.blog-prose h3,
+.blog-prose h4 {
+  color: #F5F5F5;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  margin-top: 2em;
+  margin-bottom: 0.75em;
+}
+
+.blog-prose h2 {
+  font-size: 1.5rem;
+}
+
+.blog-prose h3 {
+  font-size: 1.25rem;
+}
+
+.blog-prose p {
+  margin-bottom: 1.25em;
+}
+
+.blog-prose a {
+  color: #D4A853;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  transition: color 0.2s;
+}
+
+.blog-prose a:hover {
+  color: #e6c171;
+}
+
+.blog-prose blockquote {
+  border-left: 3px solid #D4A853;
+  padding-left: 1.25em;
+  color: #9ca3af;
+  font-style: italic;
+  margin: 1.5em 0;
+}
+
+.blog-prose code {
+  background: #1A1A1A;
+  border-radius: 4px;
+  padding: 0.15em 0.35em;
+  font-size: 0.875em;
+  color: #D4A853;
+}
+
+.blog-prose pre {
+  background: #1A1A1A;
+  border: 1px solid #1F1F1F;
+  border-radius: 8px;
+  padding: 1em 1.25em;
+  overflow-x: auto;
+  margin: 1.5em 0;
+}
+
+.blog-prose pre code {
+  background: none;
+  padding: 0;
+  color: #d1d5db;
+}
+
+.blog-prose img {
+  border-radius: 12px;
+  margin: 1.5em 0;
+}
+
+.blog-prose figure {
+  margin: 1.5em 0;
+}
+
+.blog-prose figcaption {
+  text-align: center;
+  color: #6B7280;
+  font-size: 0.85rem;
+  margin-top: 0.5em;
+}
+
+.blog-prose ul,
+.blog-prose ol {
+  padding-left: 1.5em;
+  margin-bottom: 1.25em;
+}
+
+.blog-prose li {
+  margin-bottom: 0.4em;
+}
+
+.blog-prose strong {
+  color: #F5F5F5;
+}
+
+.blog-prose hr {
+  border-color: #1F1F1F;
+  margin: 2em 0;
+}
+
+/* ── Hero image zoom animation ── */
+@keyframes hero-zoom {
+  from {
+    transform: scale(1.02);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+.animate-hero-zoom {
+  animation: hero-zoom 600ms ease-out forwards;
 }

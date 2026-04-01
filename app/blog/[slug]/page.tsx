@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect, use } from "react";
 import { toLandingAssetUrl } from "@/lib/landing-assets";
+import ShareButton from "./ShareButton";
 
 interface BlogPost {
   id: string;
@@ -20,7 +21,7 @@ interface BlogPost {
 
 function formatDate(dateStr: string) {
   return new Date(dateStr).toLocaleDateString("en-US", {
-    month: "long",
+    month: "short",
     day: "numeric",
     year: "numeric",
   });
@@ -33,23 +34,44 @@ export default function BlogPostPage({
 }) {
   const { slug } = use(params);
   const [blog, setBlog] = useState<BlogPost | null>(null);
+  const [related, setRelated] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
 
   useEffect(() => {
-    fetch(`/api/blogs?slug=${slug}`)
-      .then((res) => {
+    async function load() {
+      try {
+        const res = await fetch(`/api/blogs?slug=${encodeURIComponent(slug)}`);
         if (!res.ok) throw new Error("Not found");
-        return res.json();
-      })
-      .then((data) => setBlog(data))
-      .catch(() => setNotFound(true))
-      .finally(() => setLoading(false));
+        const post: BlogPost = await res.json();
+        setBlog(post);
+
+        // Fetch all blogs for related posts
+        const allRes = await fetch("/api/blogs");
+        if (allRes.ok) {
+          const all: BlogPost[] = await allRes.json();
+          const others = all
+            .filter((b) => b.slug !== post.slug)
+            .filter((b) => b.tags.some((t) => post.tags.includes(t)))
+            .slice(0, 2);
+          setRelated(
+            others.length > 0
+              ? others
+              : all.filter((b) => b.slug !== post.slug).slice(0, 2)
+          );
+        }
+      } catch {
+        setNotFound(true);
+      } finally {
+        setLoading(false);
+      }
+    }
+    load();
   }, [slug]);
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center text-white/30">
+      <div className="min-h-screen bg-[#0A0A0A] flex items-center justify-center text-white/30">
         Loading…
       </div>
     );
@@ -57,98 +79,121 @@ export default function BlogPostPage({
 
   if (notFound || !blog) {
     return (
-      <div className="min-h-screen bg-[#0a0a0a] flex flex-col items-center justify-center text-white gap-4">
+      <div className="min-h-screen bg-[#0A0A0A] flex flex-col items-center justify-center text-white gap-4">
         <h1 className="text-2xl font-bold">Post not found</h1>
-        <Link href="/blog" className="text-[#5A45F9] hover:underline">
-          ← Back to blog
+        <Link
+          href="/blog"
+          className="text-[#D4A853] hover:underline text-sm"
+        >
+          ← Back to Journal
         </Link>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-white">
-      {/* Minimal header */}
-      <header className="border-b border-white/10 px-6 py-5">
-        <div className="max-w-[720px] mx-auto flex items-center justify-between">
-          <Link href="/" className="text-xl font-bold tracking-[-0.5px]">
-            Travingat
-          </Link>
-          <Link
-            href="/blog"
-            className="text-white/40 hover:text-white text-sm transition-colors"
-          >
-            ← All posts
-          </Link>
+    <div className="min-h-screen bg-[#0A0A0A] text-[#F5F5F5]">
+      {/* ── Hero Cover ── */}
+      <header className="relative w-full h-[340px] md:h-[480px] overflow-hidden">
+        <Image
+          src={toLandingAssetUrl(blog.coverImage)}
+          alt={blog.title}
+          fill
+          priority
+          className="object-cover animate-hero-zoom"
+        />
+        {/* Dark gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0A] via-[#0A0A0A]/40 to-transparent" />
+
+        {/* Overlaid meta at bottom */}
+        <div className="absolute bottom-0 left-0 right-0 px-6 pb-8 md:pb-12">
+          <div className="max-w-2xl mx-auto">
+            {/* Tag pill */}
+            {blog.tags.length > 0 && (
+              <span className="inline-block rounded-full bg-[#D4A853] px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-black mb-4">
+                {blog.tags[0]}
+              </span>
+            )}
+
+            {/* Title */}
+            <h1 className="text-3xl md:text-5xl font-semibold leading-[1.1] tracking-[-1px] text-white mb-5">
+              {blog.title}
+            </h1>
+
+            {/* Author row */}
+            <div className="flex items-center gap-3 text-sm text-white/50">
+              <div className="w-8 h-8 rounded-full bg-[#D4A853]/20 flex items-center justify-center text-[#D4A853] text-xs font-bold overflow-hidden">
+                {blog.author.charAt(0)}
+              </div>
+              <span className="font-medium text-white/70">{blog.author}</span>
+              <span className="text-white/20">·</span>
+              <time dateTime={blog.publishedAt}>
+                {formatDate(blog.publishedAt)}
+              </time>
+              <span className="text-white/20">·</span>
+              <span>{blog.readTime} min read</span>
+            </div>
+          </div>
         </div>
       </header>
 
-      <article className="max-w-[720px] mx-auto px-6 py-12 xl:py-16">
-        {/* Tags */}
-        <div className="flex items-center gap-2 mb-5">
-          {blog.tags.map((tag) => (
-            <span
-              key={tag}
-              className="text-[11px] font-semibold uppercase tracking-wider text-[#5A45F9] bg-[#5A45F9]/10 px-2.5 py-1 rounded-full"
-            >
-              {tag}
-            </span>
-          ))}
-        </div>
-
-        {/* Title */}
-        <h1
-          className="text-[32px] xl:text-[42px] font-bold leading-[1.15] tracking-[-1px] mb-5"
-          style={{ fontFamily: "'Georgia', 'Times New Roman', serif" }}
-        >
-          {blog.title}
-        </h1>
-
-        {/* Meta */}
-        <div className="flex items-center gap-3 text-sm text-white/40 mb-8 pb-8 border-b border-white/10">
-          <span className="font-medium text-white/60">{blog.author}</span>
-          <span>·</span>
-          <span>{formatDate(blog.publishedAt)}</span>
-          <span>·</span>
-          <span>{blog.readTime} min read</span>
-        </div>
-
-        {/* Cover image */}
-        <div className="relative w-full h-[300px] xl:h-[420px] rounded-xl overflow-hidden mb-10">
-          <Image
-            src={toLandingAssetUrl(blog.coverImage)}
-            alt={blog.title}
-            fill
-            className="object-cover"
-            priority
-          />
-        </div>
-
-        {/* Content */}
+      {/* ── Content Area ── */}
+      <article className="max-w-2xl mx-auto px-4 pt-12 pb-16 md:pt-16 md:pb-24">
         <div
-          className="blog-content"
-          style={{ fontFamily: "'Georgia', 'Times New Roman', serif" }}
+          className="blog-prose"
           dangerouslySetInnerHTML={{ __html: blog.content }}
         />
       </article>
 
-      {/* Footer */}
-      <div className="border-t border-white/10 px-6 py-8">
-        <div className="max-w-[720px] mx-auto flex items-center justify-between">
+      {/* ── Bottom Bar ── */}
+      <div className="border-t border-[#1F1F1F] px-4">
+        <div className="max-w-2xl mx-auto flex items-center justify-between py-6">
           <Link
             href="/blog"
-            className="text-[#5A45F9] text-sm font-semibold hover:underline"
+            className="text-sm text-[#6B7280] transition-colors duration-200 hover:text-[#D4A853]"
           >
-            ← All posts
+            ← Back to Journal
           </Link>
-          <Link
-            href="/"
-            className="text-white/40 text-sm hover:text-white transition-colors"
-          >
-            Travingat Home
-          </Link>
+          <ShareButton />
         </div>
       </div>
+
+      {/* ── Related Posts ── */}
+      {related.length > 0 && (
+        <section className="border-t border-[#1F1F1F] px-4 py-12 md:py-16">
+          <div className="max-w-2xl mx-auto">
+            <h2 className="text-lg font-semibold tracking-[-0.3px] mb-8 text-white/60">
+              More from the Journal
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              {related.map((post) => (
+                <Link
+                  key={post.id}
+                  href={`/blog/${post.slug}`}
+                  className="group flex gap-4 rounded-xl border border-[#1F1F1F] bg-[#111111] p-4 transition-colors duration-200 hover:border-[#D4A853]/30"
+                >
+                  <div className="relative w-20 h-20 rounded-lg overflow-hidden flex-shrink-0">
+                    <Image
+                      src={toLandingAssetUrl(post.coverImage)}
+                      alt={post.title}
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                  <div className="flex flex-col justify-center min-w-0">
+                    <span className="text-[11px] text-[#6B7280] mb-1">
+                      {formatDate(post.publishedAt)}
+                    </span>
+                    <h3 className="text-sm font-medium leading-snug text-white line-clamp-2 group-hover:text-[#D4A853] transition-colors duration-200">
+                      {post.title}
+                    </h3>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
     </div>
   );
 }

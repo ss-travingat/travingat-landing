@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import path from "path";
-import { uploadLandingAsset } from "@/lib/r2-upload";
+import { uploadBlogAsset } from "@/lib/r2-upload";
 
 export const dynamic = "force-dynamic";
 
@@ -38,9 +38,9 @@ export async function POST(request: Request) {
     const originalName = file instanceof File ? file.name : "upload.png";
     const ext = path.extname(originalName) || ".png";
     const filename = `blog-${Date.now()}${ext}`;
-    const uploaded = await uploadLandingAsset({
+    const uploaded = await uploadBlogAsset({
       fileBuffer: buffer,
-      keySuffix: `images/${filename}`,
+      fileName: filename,
       contentType: file instanceof File ? file.type : undefined,
     });
 

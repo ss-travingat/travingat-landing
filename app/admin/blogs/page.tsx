@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import Image from "next/image";
 import { toLandingAssetUrl } from "@/lib/landing-assets";
+import ImageCropModal from "@/components/ImageCropModal";
 
 interface BlogPost {
   id: string;
@@ -39,6 +40,8 @@ export default function AdminBlogsPage() {
   const editorRef = useRef<HTMLDivElement>(null);
   const coverInputRef = useRef<HTMLInputElement>(null);
   const contentImageInputRef = useRef<HTMLInputElement>(null);
+  const [cropFile, setCropFile] = useState<File | null>(null);
+  const [cropTarget, setCropTarget] = useState<"cover" | "content">("cover");
 
   const showToast = (msg: string) => {
     setToast(msg);
@@ -76,35 +79,46 @@ export default function AdminBlogsPage() {
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/^-|-$/g, "");
 
-  // Upload cover image
-  const handleCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  // Open crop modal for cover image
+  const handleCoverFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     if (file.size > 5 * 1024 * 1024) {
       showToast("Max 5MB");
       return;
     }
+    setCropTarget("cover");
+    setCropFile(file);
+    if (coverInputRef.current) coverInputRef.current.value = "";
+  };
+
+  // Upload a blob to the blog upload endpoint
+  const uploadBlob = async (blob: Blob, prefix: string): Promise<string | null> => {
     const fd = new FormData();
-    fd.append("file", file);
+    fd.append("file", blob, `${prefix}-${Date.now()}.jpg`);
     try {
-      const res = await fetch("/api/blogs/upload", {
-        method: "POST",
-        body: fd,
-      });
+      const res = await fetch("/api/blogs/upload", { method: "POST", body: fd });
       const data = await res.json();
-      if (data.url) {
-        setForm((prev) => ({ ...prev, coverImage: data.url }));
-        showToast("Cover uploaded");
-      } else {
-        showToast(data.error || "Upload failed");
-      }
+      if (data.url) return data.url;
+      showToast(data.error || "Upload failed");
     } catch {
       showToast("Upload failed");
     }
+    return null;
   };
 
-  // Upload image into editor content
-  const handleContentImageUpload = async (
+  // Handle cropped cover image
+  const handleCroppedCover = async (blob: Blob) => {
+    setCropFile(null);
+    const url = await uploadBlob(blob, "cover");
+    if (url) {
+      setForm((prev) => ({ ...prev, coverImage: url }));
+      showToast("Cover uploaded");
+    }
+  };
+
+  // Open crop modal for content image
+  const handleContentImageSelect = (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
     const file = e.target.files?.[0];
@@ -113,27 +127,21 @@ export default function AdminBlogsPage() {
       showToast("Max 5MB");
       return;
     }
-    const fd = new FormData();
-    fd.append("file", file);
-    try {
-      const res = await fetch("/api/blogs/upload", {
-        method: "POST",
-        body: fd,
-      });
-      const data = await res.json();
-      if (data.url) {
-        insertHtml(
-          `<figure style="margin:24px 0;"><img src="${data.url}" alt="Blog image" style="width:100%;border-radius:8px;" /><figcaption style="text-align:center;color:#999;font-size:14px;margin-top:8px;">Image caption</figcaption></figure>`
-        );
-        showToast("Image inserted");
-      } else {
-        showToast(data.error || "Upload failed");
-      }
-    } catch {
-      showToast("Upload failed");
-    }
-    // Reset input
+    setCropTarget("content");
+    setCropFile(file);
     if (contentImageInputRef.current) contentImageInputRef.current.value = "";
+  };
+
+  // Handle cropped content image
+  const handleCroppedContent = async (blob: Blob) => {
+    setCropFile(null);
+    const url = await uploadBlob(blob, "blog");
+    if (url) {
+      insertHtml(
+        `<figure style="margin:24px 0;"><img src="${url}" alt="Blog image" style="width:100%;border-radius:8px;" /><figcaption style="text-align:center;color:#999;font-size:14px;margin-top:8px;">Image caption</figcaption></figure>`
+      );
+      showToast("Image inserted");
+    }
   };
 
   // Insert YouTube embed
@@ -285,6 +293,16 @@ export default function AdminBlogsPage() {
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white">
+      {/* Crop Modal */}
+      {cropFile && (
+        <ImageCropModal
+          file={cropFile}
+          aspectRatio={cropTarget === "cover" ? 16 / 9 : 0}
+          onCrop={cropTarget === "cover" ? handleCroppedCover : handleCroppedContent}
+          onCancel={() => setCropFile(null)}
+        />
+      )}
+
       {/* Toast */}
       {toast && (
         <div className="fixed top-4 right-4 z-50 bg-[#5A45F9] text-white px-5 py-3 rounded-xl text-sm font-medium shadow-lg">
@@ -510,7 +528,7 @@ export default function AdminBlogsPage() {
                   ref={coverInputRef}
                   type="file"
                   accept="image/*"
-                  onChange={handleCoverUpload}
+                  onChange={handleCoverFileSelect}
                   className="hidden"
                 />
               </div>
@@ -608,7 +626,7 @@ export default function AdminBlogsPage() {
                 ref={contentImageInputRef}
                 type="file"
                 accept="image/*"
-                onChange={handleContentImageUpload}
+                onChange={handleContentImageSelect}
                 className="hidden"
               />
 

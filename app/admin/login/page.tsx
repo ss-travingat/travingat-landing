@@ -29,7 +29,7 @@ export default function AdminLoginPage() {
         setError(data?.error || "Login failed");
         return;
       }
-      router.replace("/admin/users");
+      router.replace("/admin");
     } catch {
       setError("Network error. Please try again.");
     } finally {
