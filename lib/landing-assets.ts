@@ -1,4 +1,4 @@
-const DEFAULT_R2_PUBLIC_URL = "https://pub-73816168e54041228c76b8c06deb5f76.r2.dev";
+const DEFAULT_R2_PUBLIC_URL = "https://cdn.travingat.com";
 const LANDING_ASSETS_PREFIX = "landingpage-assets";
 
 export function getLandingAssetsCdnBase(): string {

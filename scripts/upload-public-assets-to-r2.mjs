@@ -47,7 +47,7 @@ async function main() {
   const accessKeyId = requiredEnv("R2_ACCESS_KEY_ID");
   const secretAccessKey = requiredEnv("R2_SECRET_ACCESS_KEY");
   const bucket = requiredEnv("R2_BUCKET_NAME");
-  const publicBase = (process.env.R2_PUBLIC_URL || "https://pub-73816168e54041228c76b8c06deb5f76.r2.dev").replace(/\/+$/, "");
+  const publicBase = (process.env.R2_PUBLIC_URL || "https://cdn.travingat.com").replace(/\/+$/, "");
 
   const client = new S3Client({
     region: "auto",
