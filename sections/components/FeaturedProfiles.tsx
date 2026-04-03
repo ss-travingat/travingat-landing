@@ -53,7 +53,7 @@ function TravellerCard({ profile }: { profile: DemoProfile }) {
               {profile.country}
             </p>
           </div>
-          <p className="w-full text-center text-xl font-semibold leading-normal tracking-[-0.41px] text-white">
+          <p className="w-full text-center text-xl font-semibold leading-normal tracking-[-0.41px] text-white ds-font-display">
             {profile.name}
           </p>
           <p className="w-full text-center text-base font-normal leading-normal tracking-[-0.5px] text-[#a8a8a8]">
@@ -63,7 +63,7 @@ function TravellerCard({ profile }: { profile: DemoProfile }) {
 
         <div className="flex w-full items-center justify-center gap-10 rounded-xl bg-[#111] px-5 py-4">
           <div className="flex flex-1 flex-col items-center gap-1">
-            <p className="text-xl font-semibold leading-normal tracking-[-0.41px] text-white">
+            <p className="text-xl font-semibold leading-normal tracking-[-0.41px] text-white ds-font-display">
               {profile.countries}
             </p>
             <p className="text-xs font-normal leading-[1.5] tracking-[-0.5px] text-[#8c8c8c]">
@@ -71,7 +71,7 @@ function TravellerCard({ profile }: { profile: DemoProfile }) {
             </p>
           </div>
           <div className="flex flex-1 flex-col items-center gap-1">
-            <p className="text-xl font-semibold leading-normal tracking-[-0.41px] text-white">
+            <p className="text-xl font-semibold leading-normal tracking-[-0.41px] text-white ds-font-display">
               {profile.media}
             </p>
             <p className="text-xs font-normal leading-[1.5] tracking-[-0.5px] text-[#8c8c8c]">
@@ -79,7 +79,7 @@ function TravellerCard({ profile }: { profile: DemoProfile }) {
             </p>
           </div>
           <div className="flex flex-1 flex-col items-center gap-1">
-            <p className="text-xl font-semibold leading-normal tracking-[-0.41px] text-white">
+            <p className="text-xl font-semibold leading-normal tracking-[-0.41px] text-white ds-font-display">
               {profile.collections}
             </p>
             <p className="text-xs font-normal leading-[1.5] tracking-[-0.5px] text-[#8c8c8c]">

@@ -125,7 +125,7 @@ export default function PricingSection() {
       <div className="mx-auto w-full max-w-[738px] space-y-12 xl:max-w-[1200px]">
         <div className="flex flex-col items-center gap-8 text-center">
           <div className="space-y-4 text-white">
-            <h2 className="text-[40px] font-semibold leading-[1.12] tracking-[-0.5px] md:text-[44px]">Pricing</h2>
+            <h2 className="text-[44px] font-semibold leading-[52px] tracking-[-0.5px] md:text-[44px]">Pricing</h2>
             <p className="text-[18px] leading-[1.45] tracking-[-0.198px] text-white">
               Built for travelers at every stage: from first trips to premium profile presence.
             </p>
@@ -160,10 +160,10 @@ export default function PricingSection() {
               <div className="flex gap-6 md:gap-8 xl:flex-col">
                 <div className="flex w-[40%] shrink-0 flex-col gap-6 md:w-[260px] xl:w-auto xl:min-h-[236px]">
                   <div className="space-y-4 xl:min-h-[160px]">
-                    <h3 className="text-[24px] font-semibold leading-8 tracking-[-0.5px] text-white">{plan.name}</h3>
+                    <h3 className="ds-font-display text-[24px] font-semibold leading-8 tracking-[-0.5px] text-white">{plan.name}</h3>
 
                     <div className="flex items-baseline gap-1">
-                      <span className="text-[44px] font-semibold leading-[1.1] tracking-[-0.5px] text-white">${plan.price}</span>
+                      <span className="ds-font-display text-[44px] font-semibold leading-[1.1] tracking-[-0.5px] text-white">${plan.price}</span>
                       <span className="text-[18px] font-medium leading-[26px] tracking-[-0.198px] text-[#656565]">/per month</span>
                     </div>
 

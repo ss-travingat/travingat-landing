@@ -4,7 +4,7 @@ export default function LandingFooter() {
       <div className="px-5 py-12 md:px-12 md:py-14 xl:px-24 xl:py-16 xl:flex xl:justify-between xl:items-start">
         <div>
           <div className="mb-10 xl:mb-8">
-            <h2 className="text-[32px] font-bold text-white mb-6">travingat</h2>
+            <h2 className="ds-font-logo text-[32px] font-bold text-white mb-6">travingat</h2>
             <div className="space-y-2">
               <a href="mailto:connect@travingat.com" className="block text-[14px] text-gray-400 hover:text-white transition-colors">
                 connect@travingat.com

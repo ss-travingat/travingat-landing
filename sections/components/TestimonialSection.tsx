@@ -142,14 +142,14 @@ export default function TestimonialSection() {
             </div>
 
             {/* Quote text */}
-            <p className="text-[24px] leading-[1.3] text-white font-medium tracking-[-0.5px] xl:text-[52px] xl:leading-[60px] xl:tracking-[-1px]">
+            <p className="ds-font-display text-[24px] leading-[1.3] text-white font-medium tracking-[-0.5px] xl:text-[52px] xl:leading-[60px] xl:tracking-[-1px]">
               {t.quote}
             </p>
           </div>
 
           {/* Author info */}
           <div className="flex items-center justify-between border-t border-white/20 pt-8 mt-8 xl:pt-12 xl:mt-0">
-            <p className="text-[20px] text-white font-medium tracking-[-0.5px] xl:text-[32px] xl:leading-[40px]">
+            <p className="ds-font-display text-[20px] text-white font-medium tracking-[-0.5px] xl:text-[32px] xl:leading-[40px]">
               {t.name}, {t.location}
             </p>
 

@@ -33,7 +33,7 @@ export default function JoinSection() {
         </div>
 
         {/* CTA content */}
-        <h2 className="mb-3 text-[32px] font-semibold leading-[40px] tracking-[-0.5px] text-white md:text-[42px] xl:mb-6 xl:text-[48px] xl:leading-[1.2]">
+        <h2 className="mb-3 text-[44px] font-semibold leading-[52px] tracking-[-0.5px] text-white md:text-[64px] md:leading-[72px] md:tracking-[-1px] xl:mb-6 xl:text-[64px] xl:leading-[72px] xl:tracking-[-1px]">
           Join travelers from around the world.
         </h2>
         <p className="mb-8 text-[18px] leading-[26px] tracking-[-0.2px] text-gray-400 md:text-[16px] xl:mb-10 xl:text-base">

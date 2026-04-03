@@ -6,10 +6,10 @@ export default function HeroSection() {
     <section className="px-3 py-12 md:px-12 md:pt-16 md:pb-10 xl:px-24 xl:pt-16 xl:pb-8">
       {/* Text content */}
       <div className="mb-6 md:mb-8 xl:mb-10 xl:text-center xl:max-w-[1000px] xl:mx-auto">
-        <h1 className="text-[32px] leading-[1.2] font-bold text-white mb-3 text-center md:text-[42px] xl:text-[64px] xl:leading-[1.15] xl:mb-4">
+        <h1 className="text-[44px] leading-[52px] font-semibold text-white mb-3 text-center tracking-[-0.5px] md:text-[64px] md:leading-[72px] md:tracking-[-1px] xl:text-[72px] xl:leading-[80px] xl:tracking-[0.5px] xl:mb-4">
           Build your travel profile
         </h1>
-        <p className="text-[16px] leading-normal text-gray-400 text-center md:text-[18px] xl:text-[20px]">
+        <p className="text-[16px] leading-normal text-gray-400 text-center md:text-[18px] xl:text-[18px]">
           Turn your journeys into a beautiful personal archive.
         </p>
       </div>
