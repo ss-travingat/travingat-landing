@@ -94,10 +94,12 @@ export async function POST(req: NextRequest) {
       VALUES (${email}, ${browser}, ${device}, ${country}, ${city}, ${ip})
     `;
 
-    // Send welcome email (non-blocking — don't fail signup if email fails)
-    sendWelcomeEmail(email).catch((err) =>
-      console.error("Failed to send welcome email:", err)
-    );
+    // Send welcome email — must await on serverless (function terminates after response)
+    try {
+      await sendWelcomeEmail(email);
+    } catch (err) {
+      console.error("Failed to send welcome email:", err);
+    }
 
     return NextResponse.json({ success: true });
   } catch (err) {
