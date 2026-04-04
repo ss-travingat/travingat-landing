@@ -11,8 +11,8 @@ export default function HeroSection() {
   return (
     <section className="px-3 py-12 md:px-12 md:pt-16 md:pb-10 xl:px-24 xl:pt-16 xl:pb-8">
       {/* Text content */}
-      <div className="mb-6 md:mb-8 xl:mb-10 xl:text-center xl:max-w-[1000px] xl:mx-auto">
-        <h1 className="text-[44px] leading-[52px] font-semibold text-white mb-3 text-center tracking-[-0.5px] md:text-[64px] md:leading-[72px] md:tracking-[-1px] xl:text-[72px] xl:leading-[80px] xl:tracking-[0.5px] xl:mb-4">
+      <div className="mb-6 md:mb-8 xl:mb-10 xl:text-center xl:max-w-250 xl:mx-auto">
+        <h1 className="text-[44px] leading-13 font-semibold text-white mb-3 text-center tracking-[-0.5px] md:text-[64px] md:leading-18 md:tracking-[-1px] xl:text-[72px] xl:leading-20 xl:tracking-[0.5px] xl:mb-4">
           Build your travel profile
         </h1>
         <p className="text-[16px] leading-normal text-gray-400 text-center md:text-[18px] xl:text-[18px]">
@@ -29,13 +29,13 @@ export default function HeroSection() {
           </p>
         )}
         {/* Mobile: stacked */}
-        <form onSubmit={submit} className="w-full max-w-[340px] flex flex-col gap-3 md:hidden">
+        <form onSubmit={submit} className="w-full max-w-85 flex flex-col gap-3 md:hidden">
           <input
             type="email"
             placeholder="Enter your email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full h-12 rounded-full border border-[#3d3d3d] px-6 bg-black text-white text-[16px] font-medium placeholder:text-[#464646] focus:outline-none focus:border-gray-500 transition-colors"
+            className="w-full h-12 rounded-full border border-white-900 px-6 bg-black text-white text-[16px] font-medium placeholder:text-white-800 focus:outline-none focus:border-gray-500 transition-colors"
           />
           <button
             type="submit"
@@ -47,7 +47,7 @@ export default function HeroSection() {
         </form>
 
         {/* Tablet/Desktop: inline input with button */}
-        <form onSubmit={submit} className="hidden md:flex items-center w-full max-w-[500px] h-[60px] rounded-full border border-[#3d3d3d] bg-transparent pl-6 pr-1 focus-within:border-gray-400 transition-colors">
+        <form onSubmit={submit} className="hidden md:flex items-center w-full max-w-125 h-15 rounded-full border border-white-900 bg-transparent pl-6 pr-1 focus-within:border-gray-400 transition-colors">
           <input
             type="email"
             placeholder="Enter your email"
@@ -58,7 +58,7 @@ export default function HeroSection() {
           <button
             type="submit"
             disabled={isLoading}
-            className="h-[52px] px-8 rounded-full bg-white text-black font-semibold text-[15px] hover:bg-gray-200 transition-colors disabled:opacity-50"
+            className="h-13 px-8 rounded-full bg-white text-black font-semibold text-[15px] hover:bg-gray-200 transition-colors disabled:opacity-50"
           >
             {isLoading ? "Joining..." : "Get early access"}
           </button>
@@ -66,7 +66,7 @@ export default function HeroSection() {
       </div>
 
       {/* Phone mockups — iPad: single composed image */}
-      <div className="hidden md:block md:mx-auto md:max-w-[738px] xl:hidden">
+      <div className="hidden md:block md:mx-auto md:max-w-184.5 xl:hidden">
         <Image
           src={toLandingAssetUrl("/assets/ipad_hero.png")}
           alt="Travingat hero preview"
@@ -78,7 +78,7 @@ export default function HeroSection() {
       </div>
 
       {/* Phone mockups — Desktop: single SVG composite */}
-      <div className="hidden xl:block xl:max-w-[1256px] xl:mx-auto">
+      <div className="hidden xl:block xl:max-w-314 xl:mx-auto">
         <div className="relative w-full" style={{ aspectRatio: '1256 / 802' }}>
           <Image
             src={toLandingAssetUrl("/images/hero-phones.svg")}

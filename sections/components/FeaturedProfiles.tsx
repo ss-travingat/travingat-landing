@@ -20,7 +20,7 @@ function TravellerCard({ profile }: { profile: DemoProfile }) {
         <div className="flex w-full flex-col items-center pb-6 xl:pb-9">
           <div className="relative -mb-6 h-26.75 w-full overflow-hidden rounded-[14px] xl:-mb-9 xl:h-40 xl:rounded-2xl">
             <Image
-              src={toLandingAssetUrl(profile.cover)}
+              src={toLandingAssetUrl(profile.images.cover)}
               alt={`${profile.name} cover`}
               fill
               className="object-cover"
@@ -29,7 +29,7 @@ function TravellerCard({ profile }: { profile: DemoProfile }) {
           </div>
           <div className="relative z-10 -mb-6 size-13.25 overflow-hidden rounded-[13px] border-[5.333px] border-black xl:-mb-9 xl:size-20 xl:rounded-2xl xl:border-8">
             <Image
-              src={toLandingAssetUrl(profile.avatar)}
+              src={toLandingAssetUrl(profile.images.avatar)}
               alt={profile.name}
               fill
               className="object-cover"
@@ -47,19 +47,19 @@ function TravellerCard({ profile }: { profile: DemoProfile }) {
               alt={`${profile.country} flag`}
               className="h-1.5 w-2.5 shrink-0 rounded-xs object-cover xl:h-4 xl:w-6"
             />
-            <p className="text-[9.33px] font-normal leading-none tracking-[-0.056px] whitespace-nowrap text-[#696969] xl:text-sm xl:leading-5 xl:tracking-[-0.5px]">
+            <p className="text-[9.33px] font-normal leading-none tracking-[-0.056px] whitespace-nowrap text-white-600 xl:text-sm xl:leading-5 xl:tracking-[-0.084px]">
               {profile.country}
             </p>
           </div>
           <p className="w-full text-center text-[13.33px] font-semibold leading-[18.667px] tracking-[-0.0667px] text-white ds-font-display xl:text-xl xl:leading-normal xl:tracking-[-0.41px]">
             {profile.name}
           </p>
-          <p className="w-full text-center text-[10.67px] font-normal leading-4 tracking-[-0.064px] text-[#a8a8a8] xl:text-base xl:leading-normal xl:tracking-[-0.5px]">
+          <p className="w-full text-center text-[10.67px] font-normal leading-4 tracking-[-0.064px] text-white-400 xl:text-base xl:leading-normal xl:tracking-[-0.096px]">
             {profile.handle}
           </p>
         </div>
 
-        <div className="flex w-full items-center justify-center gap-[26.667px] rounded-xl bg-[#111] px-[13.333px] py-[10.667px] xl:gap-10 xl:px-5 xl:py-4">
+        <div className="flex w-full items-center justify-center gap-[26.667px] rounded-xl bg-black-900 px-[13.333px] py-[10.667px] xl:gap-10 xl:px-5 xl:py-4">
           <div className="flex flex-1 flex-col items-center gap-1">
             <p className="text-[13.33px] font-semibold leading-normal tracking-[-0.41px] text-white ds-font-display xl:text-xl">
               {profile.countries}
@@ -87,10 +87,10 @@ function TravellerCard({ profile }: { profile: DemoProfile }) {
         </div>
 
         <div className="flex w-full items-center gap-2 xl:gap-3">
-          <span className="flex-1 overflow-hidden rounded-full bg-white px-[10.667px] py-[6.667px] text-center text-[9.33px] font-medium leading-[13.333px] tracking-[-0.056px] text-black xl:p-2.5 xl:text-sm xl:leading-normal xl:tracking-[-0.408px]">
+          <span className="flex-1 overflow-hidden rounded-full bg-white-50 px-[10.667px] py-[6.667px] text-center text-[9.33px] font-medium leading-[13.333px] tracking-[-0.056px] text-black-950 xl:p-2.5 xl:text-sm xl:leading-normal xl:tracking-[-0.084px]">
             Follow
           </span>
-          <span className="flex-1 overflow-hidden rounded-full border border-black-100 bg-black-700 px-[10.667px] py-[6.667px] text-center text-[9.33px] font-medium leading-[13.333px] tracking-[-0.056px] text-white xl:p-2.5 xl:text-sm xl:leading-normal xl:tracking-[-0.408px]">
+          <span className="flex-1 overflow-hidden rounded-full border border-black-100 bg-black-700 px-[10.667px] py-[6.667px] text-center text-[9.33px] font-medium leading-[13.333px] tracking-[-0.056px] text-white-50 xl:p-2.5 xl:text-sm xl:leading-normal xl:tracking-[-0.084px]">
             Connect
           </span>
         </div>

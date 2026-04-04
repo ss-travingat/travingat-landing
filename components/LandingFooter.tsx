@@ -56,7 +56,6 @@ export default function LandingFooter() {
             </div>
             <div className="space-y-3">
               <a href="#" className="block text-[14px] text-gray-400 hover:text-white transition-colors">Contact us</a>
-              <a href="#" className="block text-[14px] text-gray-400 hover:text-white transition-colors">Careers</a>
               <a href="#" className="block text-[14px] text-gray-400 hover:text-white transition-colors">Showreel</a>
               <a href="#" className="block text-[14px] text-gray-400 hover:text-white transition-colors">Invest</a>
             </div>
@@ -71,10 +70,6 @@ export default function LandingFooter() {
             </div>
           </div>
         </div>
-      </div>
-
-      <div className="flex justify-center pb-4 pt-2">
-        <div className="w-34.75 h-1.25 bg-gray-600 rounded-full" />
       </div>
     </footer>
   );

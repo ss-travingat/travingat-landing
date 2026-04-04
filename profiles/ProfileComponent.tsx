@@ -68,9 +68,43 @@ function toFlagAssetPath(flagCode?: string) {
   return `/flags/${flagCode.toUpperCase()}.svg`;
 }
 
+function SocialIcon({ platform }: { platform: string }) {
+  const cls = "w-5 h-5";
+  if (platform === "x") {
+    return (
+      <svg className={cls} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.745l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+      </svg>
+    );
+  }
+  if (platform === "instagram") {
+    return (
+      <svg className={cls} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
+      </svg>
+    );
+  }
+  if (platform === "linkedin") {
+    return (
+      <svg className={cls} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+      </svg>
+    );
+  }
+  if (platform === "youtube") {
+    return (
+      <svg className={cls} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+      </svg>
+    );
+  }
+  return null;
+}
+
 export default function ProfileComponent({ profile }: { profile: SampleProfile }) {
   const [activeTab, setActiveTab] = useState<TabKey>("all");
   const [showNavMenu, setShowNavMenu] = useState(false);
+  const [showFollowModal, setShowFollowModal] = useState(false);
   const navMenuRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -103,39 +137,17 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
   const currentlyInFlagSrc = toFlagAssetPath(currentlyInFlagCode);
 
   const allMediaItems = useMemo<MediaItem[]>(() => {
-    return profile.photoUrls.map((fileUrl, index) => ({
+    return profile.images.gallery.map((fileUrl, index) => ({
       id: `${profile.id}-${index}`,
       fileUrl,
       isVideo: isVideoAsset(fileUrl),
     }));
-  }, [profile.id, profile.photoUrls]);
+  }, [profile.id, profile.images.gallery]);
 
   const headerFlagCodes = useMemo(() => {
-    const WORLD_FLAGS = [
-      "AD","AE","AF","AG","AL","AM","AO","AR","AT","AU","AZ","BA","BB","BD","BE",
-      "BF","BG","BH","BI","BJ","BN","BO","BR","BS","BT","BW","BY","BZ","CA","CD",
-      "CF","CG","CH","CI","CL","CM","CN","CO","CR","CU","CV","CY","CZ","DE","DJ",
-      "DK","DM","DO","DZ","EC","EE","EG","ER","ES","ET","FI","FJ","FO","FR","GA",
-      "GB","GD","GE","GH","GL","GM","GN","GQ","GR","GT","GW","GY","HN","HR","HT",
-      "HU","ID","IE","IL","IN","IQ","IR","IS","IT","JM","JO","JP","KE","KG","KH",
-      "KI","KM","KN","KP","KR","KW","KZ","LA","LB","LC","LI","LK","LR","LS","LT",
-      "LU","LV","LY","MA","MC","MD","ME","MG","MH","MK","ML","MM","MN","MR","MT",
-      "MU","MV","MW","MX","MY","MZ","NA","NE","NG","NI","NL","NO","NP","NR","NZ",
-      "OM","PA","PE","PG","PH","PK","PL","PT","PY","QA","RO","RS","RU","RW","SA",
-      "SB","SC","SD","SE","SG","SI","SK","SL","SM","SN","SO","SR","SS","ST","SV",
-      "SY","SZ","TD","TG","TH","TJ","TL","TM","TN","TO","TR","TT","TV","TW","TZ",
-      "UA","UG","US","UY","UZ","VA","VC","VE","VN","VU","WS","YE","ZA","ZM","ZW",
-    ];
-    const maxFlags = Math.min(profile.countries ?? 0, 30);
-    const unique = new Set<string>();
-    if (profile.flagCode) unique.add(profile.flagCode.toUpperCase());
-    const seed = profile.id.split("").reduce((acc, c) => acc + c.charCodeAt(0), 0);
-    const offset = seed % WORLD_FLAGS.length;
-    for (let i = 0; i < WORLD_FLAGS.length && unique.size < maxFlags; i++) {
-      unique.add(WORLD_FLAGS[(offset + i) % WORLD_FLAGS.length]);
-    }
-    return Array.from(unique);
-  }, [profile.flagCode, profile.id, profile.countries]);
+    const codes = profile.visitedCountryCodes ?? [];
+    return codes.slice(0, 30).map((c) => c.toUpperCase());
+  }, [profile.visitedCountryCodes]);
 
   const flagOverflowCount = Math.max(0, (profile.countries ?? 0) - headerFlagCodes.length);
 
@@ -160,7 +172,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
     const count = unique.length || 1;
 
     return unique.map(({ name, flagCode }, index) => {
-      const fallback = allMediaItems[index % Math.max(allMediaItems.length, 1)]?.fileUrl || profile.cover;
+      const fallback = allMediaItems[index % Math.max(allMediaItems.length, 1)]?.fileUrl || profile.images.cover;
       return {
         code: `${profile.id}-${index}`,
         name,
@@ -170,7 +182,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
         videoCount: Math.floor(totalVideos / count),
       };
     });
-  }, [allMediaItems, basedIn, profile.cover, profile.currentlyIn, profile.flagCode, profile.homelandFlagCode, profile.currentlyInFlagCode, profile.homeland, profile.id]);
+  }, [allMediaItems, basedIn, profile.images.cover, profile.currentlyIn, profile.flagCode, profile.homelandFlagCode, profile.currentlyInFlagCode, profile.homeland, profile.id]);
 
   const collectionCards = useMemo<CollectionCard[]>(() => {
     const titles = profile.interests.length > 0 ? profile.interests : ["Travel moments"];
@@ -189,11 +201,11 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
           month: "short",
           year: "numeric",
         }),
-        thumbnailUrl: thumbnailItem ? thumbnailItem.fileUrl : profile.cover,
+        thumbnailUrl: thumbnailItem ? thumbnailItem.fileUrl : profile.images.cover,
         countries: countryCards.map((country) => country.name).slice(0, 3),
       };
     });
-  }, [allMediaItems, countryCards, profile.bio, profile.cover, profile.id, profile.interests]);
+  }, [allMediaItems, countryCards, profile.bio, profile.images.cover, profile.id, profile.interests]);
 
   const aboutPhotos = useMemo(() => {
     return allMediaItems
@@ -203,12 +215,13 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
   }, [allMediaItems]);
 
   const socialRows = useMemo(() => {
-    return profile.socials
-      .map((value, index) => ({
-        key: `social-${index}`,
-        label: toSocialLabel(value),
-      }))
-      .filter((item) => Boolean(item.label));
+    const { x, instagram, linkedin, youtube } = profile.socials;
+    const rows: { key: string; label: string; url: string }[] = [];
+    if (x) rows.push({ key: "x", label: `x.com/${x}`, url: `https://x.com/${x}` });
+    if (instagram) rows.push({ key: "instagram", label: `instagram.com/${instagram}`, url: `https://instagram.com/${instagram}` });
+    if (linkedin) rows.push({ key: "linkedin", label: `linkedin.com/in/${linkedin}`, url: `https://linkedin.com/in/${linkedin}` });
+    if (youtube) rows.push({ key: "youtube", label: `youtube.com/@${youtube}`, url: `https://youtube.com/@${youtube}` });
+    return rows;
   }, [profile.socials]);
 
   const hasAboutContent =
@@ -244,7 +257,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
               >
                 <span className="material-symbols-rounded text-[#e3e3e3] text-[21px]">dehaze</span>
                 <div className="hidden md:block h-7 w-7 overflow-hidden rounded-lg">
-                  <img src={toLandingAssetUrl(profile.avatar)} alt="Profile" className="h-full w-full object-cover" />
+                  <img src={toLandingAssetUrl(profile.images.avatar)} alt="Profile" className="h-full w-full object-cover" />
                 </div>
               </button>
 
@@ -256,16 +269,16 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                     className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-sm text-[#d8d8d8] hover:bg-[#1b1b1b]"
                   >
                     <span className="material-symbols-rounded text-[17px] text-[#9a9a9a]">arrow_back</span>
-                    Back to featured
+                    Back
                   </Link>
-                  <Link
-                    href="/"
+                  <a
+                    href="/#join"
                     onClick={() => setShowNavMenu(false)}
                     className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-sm text-[#d8d8d8] hover:bg-[#1b1b1b]"
                   >
-                    <span className="material-symbols-rounded text-[17px] text-[#9a9a9a]">home</span>
-                    Landing page
-                  </Link>
+                    <span className="material-symbols-rounded text-[17px] text-[#9a9a9a]">login</span>
+                    Join now
+                  </a>
                 </div>
               ) : null}
             </div>
@@ -277,10 +290,10 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
             <div className="flex flex-col items-center gap-5 rounded-3xl w-full">
               <div className="w-full">
                 <div className="h-50 -mb-9 rounded-xl overflow-hidden bg-[#151515]">
-                  <img src={toLandingAssetUrl(profile.cover)} alt="Profile cover" className="w-full h-full object-cover" />
+                  <img src={toLandingAssetUrl(profile.images.cover)} alt="Profile cover" className="w-full h-full object-cover" />
                 </div>
                 <div className="relative z-10 mx-auto h-20 w-20 rounded-2xl border-4 border-black overflow-hidden bg-[#151515]">
-                  <img src={toLandingAssetUrl(profile.avatar)} alt="Profile avatar" className="w-full h-full object-cover" />
+                  <img src={toLandingAssetUrl(profile.images.avatar)} alt="Profile avatar" className="w-full h-full object-cover" />
                 </div>
               </div>
 
@@ -346,7 +359,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
             <div className="space-y-10 pt-12 self-end">
               <div className="space-y-8">
                 <div className="relative h-30 w-30 overflow-hidden rounded-2xl bg-[#151515]">
-                  <img src={toLandingAssetUrl(profile.avatar)} alt="Profile avatar" className="h-full w-full object-cover rounded-2xl" />
+                  <img src={toLandingAssetUrl(profile.images.avatar)} alt="Profile avatar" className="h-full w-full object-cover rounded-2xl" />
                 </div>
 
                 <div className="flex flex-col gap-3">
@@ -371,7 +384,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                 </div>
               </div>
 
-              <div className="grid grid-cols-10 gap-2">
+              <div className="grid grid-cols-[repeat(12,30px)] gap-2">
                 {headerFlagCodes.map((code, index) => (
                   <img
                     key={`${code}-${index}`}
@@ -436,7 +449,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
               </div>
 
               <div className="flex items-center gap-3">
-                <button className="w-37 rounded-full bg-white text-black px-5 py-3 text-[16px] font-medium leading-6 tracking-[-0.096px] hover:bg-[#ececec] transition">Follow</button>
+                <button onClick={() => setShowFollowModal(true)} className="w-37 rounded-full bg-white text-black px-5 py-3 text-[16px] font-medium leading-6 tracking-[-0.096px] hover:bg-[#ececec] transition">Follow</button>
                 <button className="w-37 rounded-full border border-black-100 bg-black-700 text-white px-5 py-3 text-[16px] font-medium leading-6 tracking-[-0.096px] hover:bg-[#242424] transition">Connect</button>
                 <button className="h-12 w-12 grid place-items-center rounded-full border border-black-100 bg-black-700 text-white hover:bg-[#242424] transition" aria-label="More options">
                   <span className="material-symbols-rounded text-[20px]">grid_view</span>
@@ -446,7 +459,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
 
             <div className="flex flex-row items-end justify-end self-stretch">
               <div className="relative aspect-640/662 h-full w-full max-w-160 overflow-hidden rounded-4xl bg-[#111]">
-                <img src={toLandingAssetUrl(profile.cover)} alt="Profile cover" className="w-full h-full object-cover rounded-4xl" />
+                <img src={toLandingAssetUrl(profile.images.cover)} alt="Profile cover" className="w-full h-full object-cover rounded-4xl" />
               </div>
             </div>
           </section>
@@ -776,7 +789,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                     {socialRows.length > 0 ? (
                       <div className="space-y-1.5">
                         {socialRows.map((item) => (
-                          <p key={item.key} className="text-white-100 text-sm truncate">{item.label}</p>
+                          <a key={item.key} href={item.url} target="_blank" rel="noopener noreferrer" className="text-white-100 text-sm truncate hover:text-white transition">{item.label}</a>
                         ))}
                       </div>
                     ) : (
@@ -816,13 +829,70 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
 
       <div className="md:hidden fixed inset-x-0 bottom-0 z-40 border-t border-black-800 bg-black px-3 pt-3 pb-5">
         <div className="flex items-center gap-2">
-          <button className="flex-1 rounded-full bg-white text-black px-5 py-2.5 text-[16px] font-medium tracking-[-0.41px]">Follow</button>
+          <button onClick={() => setShowFollowModal(true)} className="flex-1 rounded-full bg-white text-black px-5 py-2.5 text-[16px] font-medium tracking-[-0.41px]">Follow</button>
           <button className="h-10.75 w-10.75 rounded-full border border-[#363636] bg-[#181818] grid place-items-center text-white" aria-label="More options">
             <span className="material-symbols-rounded text-[20px]">more_horiz</span>
           </button>
           <button className="flex-1 rounded-full border border-[#363636] bg-[#181818] text-white px-5 py-2.5 text-[16px] font-medium tracking-[-0.41px]">Connect</button>
         </div>
       </div>
+
+      {showFollowModal && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60"
+          onClick={() => setShowFollowModal(false)}
+        >
+          <div
+            className="bg-black-800 border border-black-300 rounded-2xl p-8 w-full max-w-75 flex flex-col gap-8 shadow-[20px_20px_20px_0px_rgba(0,0,0,0.25)]"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Cover + Avatar + Name */}
+            <div className="flex flex-col gap-5 items-center">
+              <div className="flex flex-col items-center pb-8 w-full">
+                <div className="-mb-8 h-48.5 w-50 overflow-hidden rounded-xl shrink-0">
+                  <img src={toLandingAssetUrl(profile.images.cover)} alt={displayName} className="w-full h-full object-cover" />
+                </div>
+                <div className="-mb-8 h-15 w-15 overflow-hidden rounded-xl shadow-[8px_8px_12px_0px_rgba(0,0,0,0.25)] shrink-0">
+                  <img src={toLandingAssetUrl(profile.images.avatar)} alt={displayName} className="w-full h-full object-cover" />
+                </div>
+              </div>
+              <div className="flex flex-col gap-1 text-center w-full">
+                <p className="ds-font-display font-medium text-[24px] leading-8 tracking-[-0.5px] text-white">{displayName}</p>
+                <p className="text-white-400 text-[14px] leading-5 tracking-[-0.084px]">{handle}</p>
+              </div>
+            </div>
+
+            {/* Social icon buttons */}
+            {socialRows.length > 0 && (
+              <div className="flex gap-3 items-center justify-center">
+                {socialRows.map((item) => (
+                  <a
+                    key={item.key}
+                    href={item.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex-1 flex items-center justify-center aspect-square bg-black-300 rounded-xl p-2.5 text-white hover:bg-[#3a3a3a] transition"
+                    aria-label={item.key}
+                  >
+                    <SocialIcon platform={item.key} />
+                  </a>
+                ))}
+              </div>
+            )}
+
+            {/* Copy Link */}
+            <button
+              onClick={() => {
+                navigator.clipboard.writeText(window.location.href).catch(() => {});
+                setShowFollowModal(false);
+              }}
+              className="w-full bg-white text-black rounded-full px-4 py-2.5 text-sm font-medium tracking-[-0.084px] hover:bg-[#ececec] transition"
+            >
+              Copy Link
+            </button>
+          </div>
+        </div>
+      )}
     </>
   );
 }

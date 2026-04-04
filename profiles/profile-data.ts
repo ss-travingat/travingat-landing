@@ -12,19 +12,27 @@ export type SampleProfile = {
   countries: number;
   media: number;
   collections: number;
-  cover: string;
-  avatar: string;
+  images: {
+    cover: string;
+    avatar: string;
+    gallery: string[];
+  };
   align: "start" | "end";
   bio: string;
   interests: string[];
   languages: string[];
   homeland: string;
   currentlyIn: string;
-  socials: string[];
-  photoUrls: string[];
+  socials: {
+    x?: string;
+    instagram?: string;
+    linkedin?: string;
+    youtube?: string;
+  };
+  visitedCountryCodes: string[];
 };
 
-export const sampleProfiles = profilesData as SampleProfile[];
+export const sampleProfiles = profilesData as unknown as SampleProfile[];
 
 export function getSampleProfileById(id: string) {
   return sampleProfiles.find((profile) => profile.id === id);

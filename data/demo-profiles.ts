@@ -12,15 +12,24 @@ export type DemoProfile = {
   countries: number;
   media: number;
   collections: number;
-  cover: string;
-  avatar: string;
+  images: {
+    cover: string;
+    avatar: string;
+    gallery: string[];
+  };
   align: "start" | "end";
   bio: string;
   interests: string[];
   languages: string[];
   homeland: string;
   currentlyIn: string;
-  socials: string[];
+  socials: {
+    x?: string;
+    instagram?: string;
+    linkedin?: string;
+    youtube?: string;
+  };
+  visitedCountryCodes: string[];
 };
 
 export const demoProfiles: DemoProfile[] = sampleProfiles.map((profile) => ({
@@ -35,8 +44,7 @@ export const demoProfiles: DemoProfile[] = sampleProfiles.map((profile) => ({
   countries: profile.countries,
   media: profile.media,
   collections: profile.collections,
-  cover: profile.cover,
-  avatar: profile.avatar,
+  images: profile.images,
   align: profile.align,
   bio: profile.bio,
   interests: profile.interests,
@@ -44,4 +52,5 @@ export const demoProfiles: DemoProfile[] = sampleProfiles.map((profile) => ({
   homeland: profile.homeland,
   currentlyIn: profile.currentlyIn,
   socials: profile.socials,
+  visitedCountryCodes: profile.visitedCountryCodes ?? [],
 }));

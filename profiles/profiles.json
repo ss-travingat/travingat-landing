@@ -1,6 +1,6 @@
 [
   {
-    "id": "002",
+    "id": "001",
     "name": "Michael Thompson",
     "handle": "@micheal.th99",
     "country": "Colombia",
@@ -11,23 +11,31 @@
     "countries": 45,
     "media": 245,
     "collections": 16,
-    "cover": "/images/profile-cover1-figma.png",
-    "avatar": "/images/profile-avatar1-figma.png",
+    "images": {
+      "cover": "/images/profile-cover1-figma.png",
+      "avatar": "/images/profile-avatar1-figma.png",
+      "gallery": [
+        "/images/collection-franceroadtrip.jpg",
+        "/images/collection-portraits-figma.jpg",
+        "/images/collection-streetshots.jpg"
+      ]
+    },
     "align": "end",
     "bio": "Slow journeys, long train rides, and stories from mountain towns. I travel for human connection and local culture.",
     "interests": ["Slow Travel", "Digital Nomad Life", "Photography", "Cultural Exchange"],
     "languages": ["English", "Spanish"],
     "homeland": "Bogota, Colombia",
     "currentlyIn": "Medellin, Colombia",
-    "socials": ["instagram.com/micheal.th99", "x.com/michealth99"],
-    "photoUrls": [
-      "/images/collection-franceroadtrip.jpg",
-      "/images/collection-portraits-figma.jpg",
-      "/images/collection-streetshots.jpg"
-    ]
+    "socials": {
+      "instagram": "micheal.th99",
+      "x": "michealth99",
+      "linkedin": "michael-thompson-travel",
+      "youtube": "micheal.th99"
+    },
+    "visitedCountryCodes": ["CO", "MX", "PE", "BR", "AR", "CL", "EC", "BO", "PY", "UY", "VE", "PA", "CR", "GT", "HN", "SV", "NI", "CU", "DO", "HT", "US", "CA", "FR", "DE", "ES", "IT", "PT", "NL", "BE", "CH", "AT", "CZ", "PL", "HU", "RO", "GR", "TR", "MA", "EG", "NG", "ZA", "KE", "TZ", "JP", "TH"]
   },
   {
-    "id": "003",
+    "id": "002",
     "name": "Olivia Martinez",
     "handle": "@olivia.m",
     "country": "Spain",
@@ -38,23 +46,30 @@
     "countries": 31,
     "media": 198,
     "collections": 12,
-    "cover": "/images/profile-cover2-figma.png",
-    "avatar": "/images/profile-avatar2-figma.png",
+    "images": {
+      "cover": "/images/profile-cover2-figma.png",
+      "avatar": "/images/profile-avatar2-figma.png",
+      "gallery": [
+        "/images/collection-europe-figma.png",
+        "/images/country-greece-figma.png",
+        "/images/country-switzerland-figma.png"
+      ]
+    },
     "align": "start",
     "bio": "Cities at golden hour, boutique stays, and culture-first travel guides.",
     "interests": ["City Breaks", "Food", "Architecture"],
     "languages": ["Spanish", "English"],
     "homeland": "Barcelona, Spain",
     "currentlyIn": "Lisbon, Portugal",
-    "socials": ["instagram.com/olivia.m", "x.com/olivia_travels"],
-    "photoUrls": [
-      "/images/collection-europe-figma.png",
-      "/images/country-greece-figma.png",
-      "/images/country-switzerland-figma.png"
-    ]
+    "socials": {
+      "instagram": "olivia.m",
+      "x": "olivia_travels",
+      "linkedin": "olivia-martinez-travel"
+    },
+    "visitedCountryCodes": ["ES", "PT", "FR", "IT", "DE", "NL", "BE", "CH", "AT", "GR", "HR", "SI", "CZ", "SK", "HU", "PL", "SE", "NO", "DK", "FI", "IS", "IE", "GB", "MT", "CY", "TR", "MA", "EG", "MX", "CO", "AR"]
   },
   {
-    "id": "001",
+    "id": "003",
     "name": "Robert Williamson",
     "handle": "@robert.wando",
     "country": "United States",
@@ -65,20 +80,26 @@
     "countries": 28,
     "media": 245,
     "collections": 16,
-    "cover": "/images/profile-cover3-figma.png",
-    "avatar": "/images/profile-avatar3-figma.png",
+    "images": {
+      "cover": "/images/profile-cover3-figma.png",
+      "avatar": "/images/profile-avatar3-figma.png",
+      "gallery": [
+        "/images/collection-hiking-figma.png",
+        "/images/country-thailand-figma.png",
+        "/images/collection-skiing.jpg"
+      ]
+    },
     "align": "end",
     "bio": "Trails, ocean winds, and backcountry camps. I share routes and moments from the wild.",
     "interests": ["Hiking", "Nature & Landscapes", "Surfing", "Long Walks"],
     "languages": ["English", "French"],
     "homeland": "San Diego, United States",
     "currentlyIn": "Santa Marta, Colombia",
-    "socials": ["instagram.com/robert.wando", "facebook.com/robert.wando"],
-    "photoUrls": [
-      "/images/collection-hiking-figma.png",
-      "/images/country-thailand-figma.png",
-      "/images/collection-skiing.jpg"
-    ]
+    "socials": {
+      "instagram": "robert.wando",
+      "youtube": "robertwandotravels"
+    },
+    "visitedCountryCodes": ["US", "CO", "PE", "NZ", "IS", "NO", "CA", "MX", "CR", "PA", "CL", "AR", "ZA", "KE", "TZ", "NP", "IN", "TH", "ID", "AU", "JP", "FR", "CH", "AT", "DE", "IT", "PT", "ES", "GB", "IE"]
   },
   {
     "id": "004",
@@ -92,20 +113,26 @@
     "countries": 8,
     "media": 102,
     "collections": 19,
-    "cover": "/images/profile-cover4-figma.png",
-    "avatar": "/images/profile-avatar4-figma.jpg",
+    "images": {
+      "cover": "/images/profile-cover4-figma.png",
+      "avatar": "/images/profile-avatar4-figma.jpg",
+      "gallery": [
+        "/images/collection-nightportraits.jpg",
+        "/images/collection-portraits.jpg",
+        "/images/country-greece.jpg"
+      ]
+    },
     "align": "start",
     "bio": "Weekend escapes and long-form photo essays from across Latin America.",
     "interests": ["Photography", "Weekend Trips", "Art & Museums"],
     "languages": ["English", "Spanish"],
     "homeland": "Monterrey, Mexico",
     "currentlyIn": "Oaxaca, Mexico",
-    "socials": ["x.com/dh_88"],
-    "photoUrls": [
-      "/images/collection-nightportraits.jpg",
-      "/images/collection-portraits.jpg",
-      "/images/country-greece.jpg"
-    ]
+    "socials": {
+      "x": "dh_88",
+      "instagram": "dh.88photos"
+    },
+    "visitedCountryCodes": ["MX", "US", "CA", "GT", "CR", "CO", "PE", "AR"]
   },
   {
     "id": "005",
@@ -119,19 +146,25 @@
     "countries": 12,
     "media": 56,
     "collections": 10,
-    "cover": "/images/profile-cover5-figma.png",
-    "avatar": "/images/profile-avatar5-figma.png",
+    "images": {
+      "cover": "/images/profile-cover5-figma.png",
+      "avatar": "/images/profile-avatar5-figma.png",
+      "gallery": [
+        "/images/country-thailand.jpg",
+        "/images/collection-europe.jpg",
+        "/images/map-thailand.jpg"
+      ]
+    },
     "align": "end",
     "bio": "I travel around coastal and island communities and focus on local wellness culture.",
     "interests": ["Beaches", "Nature Retreats", "Cafe Hopping"],
     "languages": ["English", "Thai"],
     "homeland": "Bangkok, Thailand",
     "currentlyIn": "Phuket, Thailand",
-    "socials": ["instagram.com/sarah.mitchell"],
-    "photoUrls": [
-      "/images/country-thailand.jpg",
-      "/images/collection-europe.jpg",
-      "/images/map-thailand.jpg"
-    ]
+    "socials": {
+      "instagram": "sarah.mitchell",
+      "youtube": "sarahmitchelltravel"
+    },
+    "visitedCountryCodes": ["TH", "VN", "KH", "MM", "LA", "ID", "MY", "SG", "PH", "JP", "IN", "LK"]
   }
 ]
