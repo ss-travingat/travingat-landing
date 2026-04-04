@@ -15,6 +15,7 @@ export default function LandingLayout({
   return (
     <div className="min-h-screen w-full bg-black text-white overflow-x-hidden">
       {!hideShell ? <LandingHeader /> : null}
+      {!hideShell ? <div className="h-23 xl:h-33" aria-hidden="true" /> : null}
       {children}
       {!hideShell ? <LandingFooter /> : null}
     </div>

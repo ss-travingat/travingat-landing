@@ -1,11 +1,30 @@
 "use client";
 
-import { type MouseEvent, useState } from "react";
+import { type MouseEvent, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 
 export default function LandingHeader() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [visible, setVisible] = useState(true);
+  const lastScrollY = useRef(0);
   const onboardingUrl = "https://app.travingat.com/";
+
+  useEffect(() => {
+    const onScroll = () => {
+      const current = window.scrollY;
+      // Show when scrolling up, hide when scrolling down (past 80px to avoid jitter at top)
+      if (current < 80 || current < lastScrollY.current) {
+        setVisible(true);
+      } else if (current > lastScrollY.current) {
+        setVisible(false);
+        setMenuOpen(false);
+      }
+      lastScrollY.current = current;
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   const scrollToSection = (event: MouseEvent<HTMLAnchorElement>, sectionId: string) => {
     event.preventDefault();
@@ -17,9 +36,9 @@ export default function LandingHeader() {
   };
 
   return (
-    <header className="sticky top-0 z-50 bg-black/90 backdrop-blur">
+    <header className={`fixed top-0 left-0 right-0 z-50 bg-black/90 backdrop-blur transition-transform duration-300 ${visible ? "translate-y-0" : "-translate-y-full"}`}>
       <div className="mx-auto w-full max-w-[1728px] px-5 md:px-8 xl:px-24">
-        <div className="h-[92px] xl:h-[132px] flex items-center justify-between">
+        <div className="h-23 xl:h-33 flex items-center justify-between">
           <Link href="/" className="ds-font-logo text-white text-[28px] font-normal leading-none tracking-[0.2px]">
             travingat
           </Link>

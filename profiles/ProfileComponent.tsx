@@ -31,7 +31,10 @@ type MediaItem = {
 type CountryCard = {
   code: string;
   name: string;
+  flagCode: string;
   thumbnailUrl: string;
+  photoCount: number;
+  videoCount: number;
 };
 
 type CollectionCard = {
@@ -120,24 +123,37 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
   }, [profile.flagCode]);
 
   const countryCards = useMemo<CountryCard[]>(() => {
-    const countryCandidates = [
-      basedIn,
-      toLocationCountry(profile.homeland),
-      toLocationCountry(profile.currentlyIn),
+    const candidates: { name: string; flagCode: string }[] = [
+      { name: basedIn, flagCode: profile.flagCode },
+      { name: toLocationCountry(profile.homeland), flagCode: profile.homelandFlagCode || profile.flagCode },
+      { name: toLocationCountry(profile.currentlyIn), flagCode: profile.currentlyInFlagCode || profile.flagCode },
     ]
-      .map((item) => item.trim())
-      .filter(Boolean);
+      .map((item) => ({ ...item, name: item.name.trim() }))
+      .filter((item) => Boolean(item.name));
 
-    const uniqueCountries = Array.from(new Set(countryCandidates));
-    return uniqueCountries.map((countryName, index) => {
+    const seen = new Set<string>();
+    const unique = candidates.filter(({ name }) => {
+      if (seen.has(name)) return false;
+      seen.add(name);
+      return true;
+    });
+
+    const totalPhotos = allMediaItems.filter((m) => !m.isVideo).length;
+    const totalVideos = allMediaItems.filter((m) => m.isVideo).length;
+    const count = unique.length || 1;
+
+    return unique.map(({ name, flagCode }, index) => {
       const fallback = allMediaItems[index % Math.max(allMediaItems.length, 1)]?.fileUrl || profile.cover;
       return {
         code: `${profile.id}-${index}`,
-        name: countryName,
+        name,
+        flagCode,
         thumbnailUrl: fallback,
+        photoCount: Math.floor(totalPhotos / count),
+        videoCount: Math.floor(totalVideos / count),
       };
     });
-  }, [allMediaItems, basedIn, profile.cover, profile.currentlyIn, profile.homeland, profile.id]);
+  }, [allMediaItems, basedIn, profile.cover, profile.currentlyIn, profile.flagCode, profile.homelandFlagCode, profile.currentlyInFlagCode, profile.homeland, profile.id]);
 
   const collectionCards = useMemo<CollectionCard[]>(() => {
     const titles = profile.interests.length > 0 ? profile.interests : ["Travel moments"];
@@ -190,7 +206,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
   return (
     <>
       <div className="min-h-screen bg-black text-white flex flex-col items-center px-4 md:px-10 xl:px-24">
-        <header className="relative w-full max-w-[1488px] flex items-center justify-between py-6 md:py-8">
+        <header className="relative w-full max-w-372 flex items-center justify-between py-6 md:py-8">
           <Link href="/" className="ds-font-logo text-[28px] font-normal text-white tracking-[-0.41px] leading-normal">
             travingat
           </Link>
@@ -206,7 +222,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
             <div className="relative" ref={navMenuRef}>
               <button
                 onClick={() => setShowNavMenu((prev) => !prev)}
-                className="flex items-center gap-2 rounded-xl border border-[#1e1e1e] bg-[#0b0b0b] px-3 py-2"
+                className="flex items-center gap-2 rounded-xl border border-black-600 bg-[#0b0b0b] px-3 py-2"
                 aria-label="Open profile menu"
               >
                 <span className="material-symbols-rounded text-[#e3e3e3] text-[21px]">dehaze</span>
@@ -216,7 +232,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
               </button>
 
               {showNavMenu ? (
-                <div className="absolute right-0 top-full z-30 mt-3 w-[220px] rounded-2xl border border-[#252525] bg-[#101010] p-2 shadow-[0_12px_40px_rgba(0,0,0,0.45)]">
+                <div className="absolute right-0 top-full z-30 mt-3 w-55 rounded-2xl border border-black-400 bg-[#101010] p-2 shadow-[0_12px_40px_rgba(0,0,0,0.45)]">
                   <Link
                     href="/#featured"
                     onClick={() => setShowNavMenu(false)}
@@ -239,14 +255,14 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
           </div>
         </header>
 
-        <main className="w-full max-w-[1488px] pb-12 md:pb-20 grid gap-10">
+        <main className="w-full max-w-372 pb-12 md:pb-20 grid gap-10">
           <section className="lg:hidden space-y-5">
-            <div className="flex flex-col items-center gap-5 rounded-[24px] w-full">
+            <div className="flex flex-col items-center gap-5 rounded-3xl w-full">
               <div className="w-full">
-                <div className="h-[200px] mb-[-36px] rounded-[12px] overflow-hidden bg-[#151515]">
+                <div className="h-50 -mb-9 rounded-xl overflow-hidden bg-[#151515]">
                   <img src={toLandingAssetUrl(profile.cover)} alt="Profile cover" className="w-full h-full object-cover" />
                 </div>
-                <div className="relative z-10 mx-auto h-20 w-20 rounded-[16px] border-4 border-black overflow-hidden bg-[#151515]">
+                <div className="relative z-10 mx-auto h-20 w-20 rounded-2xl border-4 border-black overflow-hidden bg-[#151515]">
                   <img src={toLandingAssetUrl(profile.avatar)} alt="Profile avatar" className="w-full h-full object-cover" />
                 </div>
               </div>
@@ -257,7 +273,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                     <img
                       src={profileFlagSrc}
                       alt={`${basedIn} flag`}
-                      className="h-4 w-6 rounded-[2px] object-cover"
+                      className="h-4 w-6 rounded-xs object-cover"
                       loading="lazy"
                       decoding="async"
                     />
@@ -266,7 +282,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                   )}
                   <span>{basedIn}</span>
                 </div>
-                <h1 className="text-white text-[28px] leading-[1.1] tracking-[-0.5px] font-semibold mt-2">{displayName}</h1>
+                <h1 className="text-white text-[28px] leading-tight tracking-[-0.5px] font-semibold mt-2">{displayName}</h1>
                 <p className="text-[#a8a8a8] text-[16px] mt-1">{handle}</p>
               </div>
             </div>
@@ -277,26 +293,26 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                   key={`${code}-${index}`}
                   src={toFlagAssetPath(code) || ""}
                   alt={`${code} flag`}
-                  className="h-4 w-6 rounded-[2px] object-cover"
+                  className="h-4 w-6 rounded-xs object-cover"
                   loading="lazy"
                   decoding="async"
                 />
               ))}
             </div>
 
-            <div className="w-full rounded-[16px] border border-[#202020] bg-[#111] px-5 py-5">
+            <div className="w-full rounded-2xl border border-[#202020] bg-[#111] px-5 py-5">
               <div className="grid grid-cols-3 gap-2 text-center">
                 <div>
                   <p className="text-white text-[28px] leading-none tracking-[-0.4px] font-semibold">{profile.countries}</p>
-                  <p className="text-[#989898] text-[12px] mt-1">Countries</p>
+                  <p className="text-white-400 text-[12px] mt-1">Countries</p>
                 </div>
                 <div>
                   <p className="text-white text-[28px] leading-none tracking-[-0.4px] font-semibold">{profile.media}</p>
-                  <p className="text-[#989898] text-[12px] mt-1">All media</p>
+                  <p className="text-white-400 text-[12px] mt-1">All media</p>
                 </div>
                 <div>
                   <p className="text-white text-[28px] leading-none tracking-[-0.4px] font-semibold">{profile.collections}</p>
-                  <p className="text-[#989898] text-[12px] mt-1">Collections</p>
+                  <p className="text-white-400 text-[12px] mt-1">Collections</p>
                 </div>
               </div>
             </div>
@@ -305,17 +321,17 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
           <section className="hidden lg:grid lg:grid-cols-[600px_minmax(0,1fr)] gap-20 items-end">
             <div className="space-y-10 pt-12 self-end">
               <div className="space-y-8">
-                <div className="relative h-[120px] w-[120px] overflow-hidden rounded-[20px] bg-[#151515]">
-                  <img src={toLandingAssetUrl(profile.avatar)} alt="Profile avatar" className="h-full w-full object-cover rounded-[20px]" />
+                <div className="relative h-30 w-30 overflow-hidden rounded-2xl bg-[#151515]">
+                  <img src={toLandingAssetUrl(profile.avatar)} alt="Profile avatar" className="h-full w-full object-cover rounded-2xl" />
                 </div>
 
                 <div className="flex flex-col gap-3">
-                  <div className="flex items-center gap-2 text-[#989898] text-[18px] tracking-[-0.198px] leading-[26px]">
+                  <div className="flex items-center gap-2 text-white-400 text-[18px] tracking-[-0.198px] leading-6.5">
                     {profileFlagSrc ? (
                       <img
                         src={profileFlagSrc}
                         alt={`${basedIn} flag`}
-                        className="h-4 w-6 rounded-[4px] object-cover"
+                        className="h-4 w-6 rounded-sm object-cover"
                         loading="lazy"
                         decoding="async"
                       />
@@ -325,9 +341,9 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                     <span>{basedIn}</span>
                   </div>
 
-                  <h1 className="ds-font-display text-[44px] leading-[52px] tracking-[-0.5px] font-semibold text-white">{displayName}</h1>
+                  <h1 className="ds-font-display text-[44px] leading-13 tracking-[-0.5px] font-semibold text-white">{displayName}</h1>
 
-                  <p className="ds-font-display text-[#989898] text-[24px] leading-[32px] tracking-[-0.5px] font-normal">{handle}</p>
+                  <p className="ds-font-display text-white-400 text-[24px] leading-8 tracking-[-0.5px] font-normal">{handle}</p>
                 </div>
               </div>
 
@@ -337,49 +353,61 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                     key={`${code}-${index}`}
                     src={toFlagAssetPath(code) || ""}
                     alt={`${code} flag`}
-                    className="h-[20px] w-[30px] rounded-[2px] object-cover"
+                    className="h-5 w-7.5 rounded-xs object-cover"
                     loading="lazy"
                     decoding="async"
                   />
                 ))}
               </div>
 
-              <div className="w-full rounded-[16px] border-l border-[#353535] bg-gradient-to-r from-[#1c1c1c] to-[rgba(0,0,0,0.1)] px-4 py-5">
+              <div className="w-full rounded-2xl border-l border-black-100 bg-linear-to-r from-[#1c1c1c] to-[rgba(0,0,0,0.1)] px-4 py-5">
                 <div className="flex items-center gap-10">
                   <div className="flex items-center gap-4 rounded-xl">
-                    <div className="w-[60px] h-[60px] overflow-hidden flex-shrink-0">
-                      <span className="material-symbols-rounded text-[48px] text-white" style={{ fontVariationSettings: "'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 48" }}>travel_explore</span>
+                    <div className="w-15 h-15 overflow-hidden shrink-0 relative">
+                      <img
+                        src="/images/stat-icon-globe.png"
+                        alt="Globe icon"
+                        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-19 h-19 -rotate-[14.68deg] object-cover pointer-events-none"
+                      />
                     </div>
                     <div className="flex flex-col gap-1">
-                      <p className="ds-font-display text-[24px] leading-[32px] tracking-[-0.5px] text-white font-semibold">{profile.countries}</p>
-                      <p className="text-[14px] leading-[20px] tracking-[-0.084px] text-[#989898] font-normal">Countries</p>
+                      <p className="ds-font-display text-[24px] leading-8 tracking-[-0.5px] text-white font-semibold">{profile.countries}</p>
+                      <p className="text-[14px] leading-5 tracking-[-0.084px] text-white-400 font-normal">Countries</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-4 rounded-xl">
-                    <div className="w-[60px] h-[60px] overflow-hidden flex-shrink-0">
-                      <span className="material-symbols-rounded text-[48px] text-white" style={{ fontVariationSettings: "'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 48" }}>photo_library</span>
+                    <div className="w-15 h-15 overflow-hidden shrink-0 relative">
+                      <img
+                        src="/images/stat-icon-media.png"
+                        alt="Media icon"
+                        className="absolute top-1/2 left-[calc(50%-1px)] -translate-x-1/2 -translate-y-1/2 w-15.5 h-17.25 object-cover pointer-events-none"
+                      />
                     </div>
                     <div className="flex flex-col gap-1">
-                      <p className="ds-font-display text-[24px] leading-[32px] tracking-[-0.5px] text-white font-semibold">{profile.media}</p>
-                      <p className="text-[14px] leading-[20px] tracking-[-0.084px] text-[#989898] font-normal">All media</p>
+                      <p className="ds-font-display text-[24px] leading-8 tracking-[-0.5px] text-white font-semibold">{profile.media}</p>
+                      <p className="text-[14px] leading-5 tracking-[-0.084px] text-white-400 font-normal">All media</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-4 rounded-xl">
-                    <div className="w-[60px] h-[60px] overflow-hidden flex-shrink-0">
-                      <span className="material-symbols-rounded text-[48px] text-white" style={{ fontVariationSettings: "'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 48" }}>folder</span>
+                    <div className="w-15 h-15 overflow-hidden shrink-0 relative">
+                      <img
+                        src="/images/stat-icon-collections.png"
+                        alt="Collections icon"
+                        className="absolute top-1/2 left-[calc(50%+4px)] -translate-x-1/2 -translate-y-1/2 w-[61px] h-[68px] object-cover pointer-events-none"
+                      />
                     </div>
                     <div className="flex flex-col gap-1">
-                      <p className="ds-font-display text-[24px] leading-[32px] tracking-[-0.5px] text-white font-semibold">{profile.collections}</p>
-                      <p className="text-[14px] leading-[20px] tracking-[-0.084px] text-[#989898] font-normal">Collections</p>
+                      <p className="ds-font-display text-[24px] leading-8 tracking-[-0.5px] text-white font-semibold">{profile.collections}</p>
+                      <p className="text-[14px] leading-5 tracking-[-0.084px] text-white-400 font-normal">Collections</p>
                     </div>
                   </div>
                 </div>
               </div>
 
               <div className="flex items-center gap-3">
-                <button className="w-[148px] rounded-full bg-white text-black px-5 py-3 text-[16px] font-medium leading-[24px] tracking-[-0.096px] hover:bg-[#ececec] transition">Follow</button>
-                <button className="w-[148px] rounded-full border border-[#353535] bg-[#1a1a1a] text-white px-5 py-3 text-[16px] font-medium leading-[24px] tracking-[-0.096px] hover:bg-[#242424] transition">Connect</button>
-                <button className="h-[48px] w-[48px] grid place-items-center rounded-full border border-[#353535] bg-[#1a1a1a] text-white hover:bg-[#242424] transition" aria-label="More options">
+                <button className="w-[148px] rounded-full bg-white text-black px-5 py-3 text-[16px] font-medium leading-6 tracking-[-0.096px] hover:bg-[#ececec] transition">Follow</button>
+                <button className="w-[148px] rounded-full border border-black-100 bg-[#1a1a1a] text-white px-5 py-3 text-[16px] font-medium leading-6 tracking-[-0.096px] hover:bg-[#242424] transition">Connect</button>
+                <button className="h-12 w-12 grid place-items-center rounded-full border border-black-100 bg-[#1a1a1a] text-white hover:bg-[#242424] transition" aria-label="More options">
                   <span className="material-symbols-rounded text-[20px]">grid_view</span>
                 </button>
               </div>
@@ -392,12 +420,13 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
             </div>
           </section>
 
-          <div className="flex items-center justify-center gap-2 flex-wrap">
+          {/* Desktop: pill tabs with text */}
+          <div className="hidden lg:flex items-center justify-center gap-2 flex-wrap">
             <button
               onClick={() => setActiveTab("all")}
-              className={`rounded-full px-6 py-2 text-[16px] leading-[24px] tracking-[-0.096px] transition ${
+              className={`rounded-full px-6 py-2 text-[16px] leading-6 tracking-[-0.096px] transition ${
                 activeTab === "all"
-                  ? "bg-[#1e1e1e] border border-white text-white font-medium"
+                  ? "bg-black-600 border border-white text-white font-medium"
                   : "bg-[#161616] border border-transparent text-[#bdbdbd] font-normal"
               }`}
             >
@@ -405,9 +434,9 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
             </button>
             <button
               onClick={() => setActiveTab("countries")}
-              className={`rounded-full px-6 py-2 text-[16px] leading-[24px] tracking-[-0.096px] transition ${
+              className={`rounded-full px-6 py-2 text-[16px] leading-6 tracking-[-0.096px] transition ${
                 activeTab === "countries"
-                  ? "bg-[#1e1e1e] border border-white text-white font-medium"
+                  ? "bg-black-600 border border-white text-white font-medium"
                   : "bg-[#161616] border border-transparent text-[#bdbdbd] font-normal"
               }`}
             >
@@ -415,9 +444,9 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
             </button>
             <button
               onClick={() => setActiveTab("collections")}
-              className={`rounded-full px-6 py-2 text-[16px] leading-[24px] tracking-[-0.096px] transition ${
+              className={`rounded-full px-6 py-2 text-[16px] leading-6 tracking-[-0.096px] transition ${
                 activeTab === "collections"
-                  ? "bg-[#1e1e1e] border border-white text-white font-medium"
+                  ? "bg-black-600 border border-white text-white font-medium"
                   : "bg-[#161616] border border-transparent text-[#bdbdbd] font-normal"
               }`}
             >
@@ -425,15 +454,55 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
             </button>
             <button
               onClick={() => setActiveTab("about")}
-              className={`rounded-full px-6 py-2 text-[16px] leading-[24px] tracking-[-0.096px] transition ${
+              className={`rounded-full px-6 py-2 text-[16px] leading-6 tracking-[-0.096px] transition ${
                 activeTab === "about"
-                  ? "bg-[#1e1e1e] border border-white text-white font-medium"
+                  ? "bg-black-600 border border-white text-white font-medium"
                   : "bg-[#161616] border border-transparent text-[#bdbdbd] font-normal"
               }`}
             >
               About me
             </button>
           </div>
+
+          {/* Mobile/iPad: icon-only tabs with sliding underline indicator */}
+          {(() => {
+            const mobileTabs: { key: TabKey; icon: string }[] = [
+              { key: "all", icon: "photo_library" },
+              { key: "countries", icon: "public" },
+              { key: "collections", icon: "folder" },
+              { key: "about", icon: "person" },
+            ];
+            const activeIndex = mobileTabs.findIndex((t) => t.key === activeTab);
+            return (
+              <div className="flex lg:hidden flex-col w-full border-b border-black-400 relative">
+                <div className="flex items-center w-full">
+                  {mobileTabs.map((tab) => (
+                    <button
+                      key={tab.key}
+                      onClick={() => {
+                        navigator.vibrate?.(8);
+                        setActiveTab(tab.key);
+                      }}
+                      className={`flex-1 flex items-center justify-center px-6 py-4 transition-colors duration-200 ${
+                        activeTab === tab.key ? "text-white" : "text-[#666]"
+                      }`}
+                    >
+                      <span className="material-symbols-rounded text-[24px]">{tab.icon}</span>
+                    </button>
+                  ))}
+                </div>
+                {/* Sliding underline */}
+                <div
+                  className="absolute bottom-0 h-[2px] bg-white rounded-full"
+                  style={{
+                    width: `${100 / mobileTabs.length}%`,
+                    transform: `translateX(${activeIndex * 100}%)`,
+                    transition: "transform 300ms cubic-bezier(0.4, 0, 0.2, 1)",
+                  }}
+                />
+              </div>
+            );
+          })()}
 
           {activeTab === "all" ? (
             <section className="pb-[100px] min-h-[250px]">
@@ -447,16 +516,16 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
               ) : (
                 <div className="columns-2 md:columns-3 xl:columns-4 gap-5 space-y-5">
                   {allMediaItems.map((item) => (
-                    <div key={item.id} className="group break-inside-avoid rounded-[16px] overflow-hidden bg-[#111] relative">
+                    <div key={item.id} className="group break-inside-avoid rounded-2xl overflow-hidden bg-[#111] relative">
                       {item.isVideo ? (
                         <>
-                          <video src={toLandingAssetUrl(item.fileUrl)} muted playsInline preload="metadata" className="w-full object-cover rounded-[16px]" />
+                          <video src={toLandingAssetUrl(item.fileUrl)} muted playsInline preload="metadata" className="w-full object-cover rounded-2xl" />
                           <div className="absolute top-4 left-4">
                             <span className="material-symbols-rounded text-[24px] text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]" style={{ fontVariationSettings: "'FILL' 1, 'wght' 700, 'GRAD' 200, 'opsz' 24" }}>play_arrow</span>
                           </div>
                         </>
                       ) : (
-                        <img src={toLandingAssetUrl(item.fileUrl)} alt="Uploaded media" loading="lazy" decoding="async" className="w-full object-cover rounded-[16px]" />
+                        <img src={toLandingAssetUrl(item.fileUrl)} alt="Uploaded media" loading="lazy" decoding="async" className="w-full object-cover rounded-2xl" />
                       )}
                     </div>
                   ))}
@@ -466,56 +535,63 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
           ) : null}
 
           {activeTab === "countries" ? (
-            <section className="pb-16 space-y-8">
+            <section className="pb-16">
               {countryCards.length === 0 ? (
-                <div className="flex items-center justify-center gap-2 text-[16px] tracking-[-0.41px]">
-                  <span className="h-px flex-1 bg-[#1f1f1f]" />
-                  <div className="flex items-center gap-1">
-                    <span className="text-white font-medium">0</span>
-                    <span className="text-[#606060]">/8</span>
-                  </div>
-                  <span className="text-white">Countries added</span>
-                  <span className="material-symbols-rounded text-[#9a9a9a] text-[16px]">edit</span>
-                  <span className="h-px flex-1 bg-[#1f1f1f]" />
-                </div>
-              ) : null}
-
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5">
-                {countryCards.length === 0 ? (
-                  <div className="col-span-full rounded-2xl border border-dashed border-[#2b2b2b] bg-[#0e0e0e] p-10 md:p-16">
-                    <div className="max-w-[600px] mx-auto flex flex-col items-center gap-6 text-center">
-                      <div className="flex items-center gap-3">
-                        {COUNTRIES_EMPTY_PREVIEW_IMAGES.map((src, idx) => (
-                          <div key={src} className="w-[76px] h-[76px] md:w-[100px] md:h-[100px] rounded-[10px] overflow-hidden">
-                            <img src={toLandingAssetUrl(src)} alt={`Country preview ${idx + 1}`} className="w-full h-full object-cover" />
-                          </div>
-                        ))}
-                      </div>
-
-                      <div className="space-y-2">
-                        <h3 className="text-white text-[24px] leading-[1.4] tracking-[-0.41px] font-semibold">Add your first country</h3>
-                        <p className="text-[#a8a8a8] text-[16px] leading-[1.5] tracking-[-0.41px]">
-                          Start with your favorite country - you can add the rest later.
-                        </p>
-                      </div>
+                <div className="rounded-2xl border border-dashed border-[#2b2b2b] bg-[#0e0e0e] p-10 md:p-16">
+                  <div className="max-w-150 mx-auto flex flex-col items-center gap-6 text-center">
+                    <div className="flex items-center gap-3">
+                      {COUNTRIES_EMPTY_PREVIEW_IMAGES.map((src, idx) => (
+                        <div key={src} className="w-19 h-19 md:w-[100px] md:h-[100px] rounded-[10px] overflow-hidden">
+                          <img src={toLandingAssetUrl(src)} alt={`Country preview ${idx + 1}`} className="w-full h-full object-cover" />
+                        </div>
+                      ))}
+                    </div>
+                    <div className="space-y-2">
+                      <h3 className="text-white text-[24px] leading-[1.4] tracking-[-0.41px] font-semibold">Add your first country</h3>
+                      <p className="text-[#a8a8a8] text-[16px] leading-normal tracking-[-0.41px]">
+                        Start with your favorite country - you can add the rest later.
+                      </p>
                     </div>
                   </div>
-                ) : (
-                  countryCards.map((country) => (
-                    <Link key={country.code} href={`/profiles/${profile.id}`} className="relative aspect-square rounded-2xl overflow-hidden bg-[#101010] block">
-                      <div className="absolute inset-0 bg-[#151515]">
-                        <img src={toLandingAssetUrl(country.thumbnailUrl)} alt={`${country.name} thumbnail`} loading="lazy" decoding="async" className="w-full h-full object-cover" />
-                        <div className="absolute inset-0 bg-gradient-to-b from-transparent from-[70%] to-[rgba(0,0,0,0.5)]" />
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-5">
+                  {countryCards.map((country) => (
+                    <Link key={country.code} href={`/profiles/${profile.id}`} className="flex flex-col gap-4 group">
+                      {/* Photo */}
+                      <div className="aspect-square w-full overflow-hidden rounded-2xl bg-[#151515]">
+                        <img
+                          src={toLandingAssetUrl(country.thumbnailUrl)}
+                          alt={country.name}
+                          loading="lazy"
+                          decoding="async"
+                          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+                        />
                       </div>
-                      <div className="relative h-full w-full flex items-end p-3">
-                        <p title={country.name} className="text-white text-[24px] font-black leading-none tracking-[-0.408px] drop-shadow-[0_4px_12px_rgba(0,0,0,0.25)] truncate">
-                          {country.name}
-                        </p>
+                      {/* Country info */}
+                      <div className="flex flex-col gap-2">
+                        <div className="flex items-center gap-2">
+                          <div className="h-[15.6px] w-6 overflow-hidden rounded-sm shadow-[1.62px_1.62px_1.62px_0px_rgba(0,0,0,0.18)] shrink-0">
+                            <img
+                              src={`/flags/${country.flagCode.toUpperCase()}.svg`}
+                              alt={country.name}
+                              className="block w-full h-full object-cover"
+                            />
+                          </div>
+                          <p className="text-white text-[18px] font-semibold leading-6.5 tracking-[-0.198px] truncate">
+                            {country.name}
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-[#646464] text-[14px] leading-normal tracking-[-0.41px]">{country.photoCount} photos</span>
+                          <span className="text-[#646464] text-[8px] leading-none">&bull;</span>
+                          <span className="text-[#646464] text-[14px] leading-normal tracking-[-0.41px]">{country.videoCount} Videos</span>
+                        </div>
                       </div>
                     </Link>
-                  ))
-                )}
-              </div>
+                  ))}
+                </div>
+              )}
             </section>
           ) : null}
 
@@ -523,10 +599,10 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
             <section className="w-full pb-8 md:pb-12 space-y-6">
               {collectionCards.length === 0 ? (
                 <div className="rounded-2xl border border-dashed border-[#2b2b2b] bg-[#0e0e0e] px-6 py-12 md:px-10 md:py-16">
-                  <div className="max-w-[600px] mx-auto flex flex-col items-center gap-6 text-center">
+                  <div className="max-w-150 mx-auto flex flex-col items-center gap-6 text-center">
                     <div className="flex items-center gap-3">
                       {COLLECTIONS_EMPTY_PREVIEW_IMAGES.map((src, idx) => (
-                        <div key={src} className="w-[76px] h-[76px] md:w-[100px] md:h-[100px] rounded-[10px] overflow-hidden">
+                        <div key={src} className="w-19 h-19 md:w-[100px] md:h-[100px] rounded-[10px] overflow-hidden">
                           <img src={toLandingAssetUrl(src)} alt={`Collection preview ${idx + 1}`} className="w-full h-full object-cover" />
                         </div>
                       ))}
@@ -534,7 +610,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
 
                     <div className="space-y-2">
                       <h3 className="text-white text-[24px] leading-[1.4] tracking-[-0.41px] font-semibold">Your collections</h3>
-                      <p className="text-[#a8a8a8] text-[16px] leading-[1.5] tracking-[-0.41px] max-w-[560px]">
+                      <p className="text-[#a8a8a8] text-[16px] leading-normal tracking-[-0.41px] max-w-140">
                         Group photos and videos by theme - not location.
                       </p>
                     </div>
@@ -548,13 +624,13 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                         <img src={toLandingAssetUrl(collection.thumbnailUrl)} alt={collection.title} className="w-full h-full object-cover" />
                       </div>
                       <div className="pt-2 px-1 space-y-1.5">
-                        <p className="text-[#989898] text-[11px] leading-[1.4] tracking-[-0.3px]">{collection.createdLabel}</p>
+                        <p className="text-white-400 text-[11px] leading-[1.4] tracking-[-0.3px]">{collection.createdLabel}</p>
                         <p className="text-white text-[14px] leading-[1.35] tracking-[-0.5px] font-semibold line-clamp-1">{collection.title}</p>
-                        <p className="text-[#989898] text-[12px] leading-[1.4] tracking-[-0.4px] line-clamp-1">{collection.description}</p>
+                        <p className="text-white-400 text-[12px] leading-[1.4] tracking-[-0.4px] line-clamp-1">{collection.description}</p>
 
                         <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
                           {collection.countries.map((country) => (
-                            <span key={`${collection.id}-${country}`} className="inline-flex items-center rounded-full border border-[#353535] bg-[#1e1e1e] px-2 py-[3px] text-[10px] leading-none text-[#bdbdbd]">
+                            <span key={`${collection.id}-${country}`} className="inline-flex items-center rounded-full border border-black-100 bg-black-600 px-2 py-[3px] text-[10px] leading-none text-[#bdbdbd]">
                               {country}
                             </span>
                           ))}
@@ -620,7 +696,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                         <img
                           src={homelandFlagSrc}
                           alt={`${toLocationCountry(profile.homeland)} flag`}
-                          className="h-4 w-6 rounded-[2px] object-cover"
+                          className="h-4 w-6 rounded-xs object-cover"
                           loading="lazy"
                           decoding="async"
                         />
@@ -638,7 +714,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                         <img
                           src={currentlyInFlagSrc}
                           alt={`${toLocationCountry(profile.currentlyIn)} flag`}
-                          className="h-4 w-6 rounded-[2px] object-cover"
+                          className="h-4 w-6 rounded-xs object-cover"
                           loading="lazy"
                           decoding="async"
                         />
@@ -681,10 +757,10 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
             ) : (
               <section className="w-full pb-8 md:pb-12">
                 <div className="rounded-2xl border border-dashed border-[#2b2b2b] bg-[#0e0e0e] px-6 py-12 md:px-10 md:py-16">
-                  <div className="max-w-[600px] mx-auto flex flex-col items-center gap-6 text-center">
+                  <div className="max-w-150 mx-auto flex flex-col items-center gap-6 text-center">
                     <div className="space-y-2">
                       <h3 className="text-white text-[24px] leading-[1.4] tracking-[-0.41px] font-semibold">Tell your travel story</h3>
-                      <p className="text-[#a8a8a8] text-[16px] leading-[1.5] tracking-[-0.41px] max-w-[560px]">
+                      <p className="text-[#a8a8a8] text-[16px] leading-normal tracking-[-0.41px] max-w-140">
                         Add a short bio, your interests, languages, and links so people can understand your style and follow your journey.
                       </p>
                     </div>
@@ -695,7 +771,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
           ) : null}
 
           <footer className="pt-2 pb-8">
-            <div className="flex flex-wrap items-center justify-center gap-8 text-[12px] text-[#7c7c7c] tracking-[-0.408px] leading-[1.5]">
+            <div className="flex flex-wrap items-center justify-center gap-8 text-[12px] text-[#7c7c7c] tracking-[-0.408px] leading-normal">
               <span>Help</span>
               <span>About</span>
               <span>Careers</span>

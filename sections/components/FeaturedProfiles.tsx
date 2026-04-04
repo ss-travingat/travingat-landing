@@ -15,19 +15,19 @@ function toFlagAssetPath(flagCode: string) {
 
 function TravellerCard({ profile }: { profile: DemoProfile }) {
   return (
-    <article className="flex w-[240px] flex-shrink-0 flex-col items-center gap-[17px] rounded-[20px] border border-[#262626] bg-black px-[5px] pb-[19px] pt-[5px] xl:w-[360px] xl:gap-[26px] xl:px-2 xl:pb-7 xl:pt-2">
+    <article className="flex w-60 shrink-0 flex-col items-center gap-4.25 rounded-2xl border border-[#262626] bg-black px-1.25 pb-4.75 pt-1.25 xl:w-90 xl:gap-6.5 xl:px-2 xl:pb-7 xl:pt-2">
       <div className="w-full">
         <div className="flex w-full flex-col items-center pb-9">
-          <div className="relative -mb-9 h-[107px] w-full overflow-hidden rounded-[14px] xl:h-[160px]">
+          <div className="relative -mb-9 h-26.75 w-full overflow-hidden rounded-2xl xl:h-40">
             <Image
               src={toLandingAssetUrl(profile.cover)}
               alt={`${profile.name} cover`}
               fill
-              className="rounded-[14px] object-cover"
+              className="rounded-2xl object-cover"
               sizes="(min-width: 1280px) 360px, 240px"
             />
           </div>
-          <div className="relative z-10 -mb-9 h-[53px] w-[53px] overflow-hidden rounded-2xl border-[5px] border-black xl:h-[80px] xl:w-[80px] xl:border-8">
+          <div className="relative z-10 -mb-9 h-13.25 w-13.25 overflow-hidden rounded-2xl border-[5px] border-black xl:h-20 xl:w-20 xl:border-8">
             <Image
               src={toLandingAssetUrl(profile.avatar)}
               alt={profile.name}
@@ -47,7 +47,7 @@ function TravellerCard({ profile }: { profile: DemoProfile }) {
               alt={`${profile.country} flag`}
               width={24}
               height={16}
-              className="h-4 w-6 rounded-[2px] object-cover"
+              className="h-4 w-6 rounded-xs object-cover"
             />
             <p className="text-sm font-normal leading-5 tracking-[-0.5px] whitespace-nowrap text-[#696969]">
               {profile.country}
@@ -66,7 +66,7 @@ function TravellerCard({ profile }: { profile: DemoProfile }) {
             <p className="text-xl font-semibold leading-normal tracking-[-0.41px] text-white ds-font-display">
               {profile.countries}
             </p>
-            <p className="text-xs font-normal leading-[1.5] tracking-[-0.5px] text-[#8c8c8c]">
+            <p className="text-xs font-normal leading-normal tracking-[-0.5px] text-white-500">
               Countries
             </p>
           </div>
@@ -74,7 +74,7 @@ function TravellerCard({ profile }: { profile: DemoProfile }) {
             <p className="text-xl font-semibold leading-normal tracking-[-0.41px] text-white ds-font-display">
               {profile.media}
             </p>
-            <p className="text-xs font-normal leading-[1.5] tracking-[-0.5px] text-[#8c8c8c]">
+            <p className="text-xs font-normal leading-normal tracking-[-0.5px] text-white-500">
               All media
             </p>
           </div>
@@ -82,7 +82,7 @@ function TravellerCard({ profile }: { profile: DemoProfile }) {
             <p className="text-xl font-semibold leading-normal tracking-[-0.41px] text-white ds-font-display">
               {profile.collections}
             </p>
-            <p className="text-xs font-normal leading-[1.5] tracking-[-0.5px] text-[#8c8c8c]">
+            <p className="text-xs font-normal leading-normal tracking-[-0.5px] text-white-500">
               Collections
             </p>
           </div>
@@ -150,8 +150,8 @@ export default function FeaturedProfiles() {
 
   return (
     <section id="featured" className="py-12 md:py-16 xl:py-28 overflow-hidden">
-      <div className="mb-8 flex items-start justify-center px-3 md:mb-12 md:px-12 xl:mb-[108px]">
-        <h2 className="max-w-[800px] text-center text-[32px] font-semibold leading-[1.1] tracking-[-1px] text-white md:text-[42px] xl:text-[64px] xl:leading-[72px]">
+      <div className="mb-8 flex items-start justify-center px-3 md:mb-12 md:px-12 xl:mb-27">
+        <h2 className="ds-font-display max-w-200 text-center text-[32px] font-semibold leading-tight tracking-[-1px] text-white md:text-[42px] xl:text-[64px] xl:leading-18">
           Featured travel profiles &mdash; a look at what&apos;s coming
         </h2>
       </div>
@@ -173,7 +173,7 @@ export default function FeaturedProfiles() {
                 key={`${profile.id}-${index}`}
                 href={`/profiles/${profile.id}`}
                 aria-label={`Open ${profile.name} profile`}
-                className={`flex h-[390px] flex-shrink-0 flex-col items-center xl:h-[600px] ${
+                className={`flex h-97.5 shrink-0 flex-col items-center xl:h-150 ${
                   isCardUp ? "justify-start" : "justify-end"
                 }`}
               >
