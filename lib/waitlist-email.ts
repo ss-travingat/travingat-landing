@@ -1,12 +1,14 @@
 import nodemailer from "nodemailer";
 
-const transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: process.env.SMTP_EMAIL,
-    pass: process.env.SMTP_PASSWORD,
-  },
-});
+function getTransporter() {
+  return nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: process.env.SMTP_EMAIL,
+      pass: process.env.SMTP_PASSWORD,
+    },
+  });
+}
 
 export function buildWelcomeEmail(email: string) {
   const html = `
@@ -111,9 +113,14 @@ export function buildWelcomeEmail(email: string) {
 }
 
 export async function sendWelcomeEmail(email: string) {
+  if (!process.env.SMTP_EMAIL || !process.env.SMTP_PASSWORD) {
+    console.warn("SMTP credentials not configured — skipping welcome email");
+    return;
+  }
+
   const html = buildWelcomeEmail(email);
 
-  await transporter.sendMail({
+  await getTransporter().sendMail({
     from: `"Travingat" <${process.env.SMTP_EMAIL}>`,
     to: email,
     subject: "Welcome to the Travingat waitlist! 🌍",

@@ -41,26 +41,45 @@ export async function POST(req: NextRequest) {
       req.headers.get("x-real-ip") ??
       "unknown";
 
-    // Geo lookup via free API (ip-api.com)
-    let country = "Unknown";
-    let city = "Unknown";
-    try {
-      // If IP is local/unknown, omit it so the API auto-detects the public IP
-      const isLocal = !ip || ip === "unknown" || ip === "127.0.0.1" || ip === "::1" || ip.startsWith("192.168.") || ip.startsWith("10.");
-      const geoUrl = isLocal
-        ? "http://ip-api.com/json/?fields=country,city"
-        : `http://ip-api.com/json/${ip}?fields=country,city`;
-      const geoRes = await fetch(geoUrl, {
-        signal: AbortSignal.timeout(3000),
-      });
-      if (geoRes.ok) {
-        const geo = await geoRes.json();
-        country = geo.country ?? "Unknown";
-        city = geo.city ?? "Unknown";
+    // Geo: prefer Vercel's geo headers (free, zero-latency), fall back to ip-api.com for local dev
+    let country = req.headers.get("x-vercel-ip-country") ?? "";
+    let city = req.headers.get("x-vercel-ip-city") ?? "";
+
+    // Decode percent-encoded Vercel header values (e.g. "S%C3%A3o%20Paulo" → "São Paulo")
+    if (city) try { city = decodeURIComponent(city); } catch {}
+
+    // Vercel returns ISO 2-letter country codes — convert to full name
+    if (country) {
+      try {
+        const displayName = new Intl.DisplayNames(["en"], { type: "region" }).of(country);
+        country = displayName ?? country;
+      } catch {
+        // keep the ISO code if conversion fails
       }
-    } catch {
-      // Geo lookup failed — not critical
     }
+
+    if (!country) {
+      // Fallback for local dev / non-Vercel hosts
+      try {
+        const isLocal = !ip || ip === "unknown" || ip === "127.0.0.1" || ip === "::1" || ip.startsWith("192.168.") || ip.startsWith("10.");
+        const geoUrl = isLocal
+          ? "http://ip-api.com/json/?fields=country,city"
+          : `http://ip-api.com/json/${ip}?fields=country,city`;
+        const geoRes = await fetch(geoUrl, {
+          signal: AbortSignal.timeout(3000),
+        });
+        if (geoRes.ok) {
+          const geo = await geoRes.json();
+          country = geo.country ?? "";
+          city = geo.city ?? "";
+        }
+      } catch {
+        // Geo lookup failed — not critical
+      }
+    }
+
+    country = country || "Unknown";
+    city = city || "Unknown";
 
     const sql = getDb();
 
