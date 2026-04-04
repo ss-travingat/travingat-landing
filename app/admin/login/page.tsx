@@ -1,10 +1,8 @@
 "use client";
 
 import { FormEvent, useState } from "react";
-import { useRouter } from "next/navigation";
 
 export default function AdminLoginPage() {
-  const router = useRouter();
   const [password, setPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
@@ -29,7 +27,7 @@ export default function AdminLoginPage() {
         setError(data?.error || "Login failed");
         return;
       }
-      router.replace("/admin");
+      window.location.href = "/admin";
     } catch {
       setError("Network error. Please try again.");
     } finally {

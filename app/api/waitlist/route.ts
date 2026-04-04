@@ -1,0 +1,116 @@
+import { NextRequest, NextResponse } from "next/server";
+import { getDb } from "@/lib/db";
+import { sendWelcomeEmail } from "@/lib/waitlist-email";
+import {
+  getAdminSessionCookieName,
+  verifyAdminSessionToken,
+} from "@/lib/admin-session";
+
+function parseDevice(ua: string): string {
+  if (/iPad|tablet/i.test(ua)) return "tablet";
+  if (/Mobile|iPhone|Android.*Mobile/i.test(ua)) return "mobile";
+  return "desktop";
+}
+
+function parseBrowser(ua: string): string {
+  if (/Edg\//i.test(ua)) return "Edge";
+  if (/OPR\//i.test(ua) || /Opera/i.test(ua)) return "Opera";
+  if (/Chrome\//i.test(ua)) return "Chrome";
+  if (/Safari\//i.test(ua) && !/Chrome/i.test(ua)) return "Safari";
+  if (/Firefox\//i.test(ua)) return "Firefox";
+  return "Other";
+}
+
+// POST — join waitlist
+export async function POST(req: NextRequest) {
+  try {
+    const body = await req.json();
+    const email = (body.email ?? "").trim().toLowerCase();
+
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      return NextResponse.json({ error: "Invalid email" }, { status: 400 });
+    }
+
+    const ua = req.headers.get("user-agent") ?? "";
+    const browser = parseBrowser(ua);
+    const device = parseDevice(ua);
+
+    // Get IP from headers (works behind Vercel/CF proxies)
+    const ip =
+      req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
+      req.headers.get("x-real-ip") ??
+      "unknown";
+
+    // Geo lookup via free API (ip-api.com)
+    let country = "Unknown";
+    let city = "Unknown";
+    try {
+      // If IP is local/unknown, omit it so the API auto-detects the public IP
+      const isLocal = !ip || ip === "unknown" || ip === "127.0.0.1" || ip === "::1" || ip.startsWith("192.168.") || ip.startsWith("10.");
+      const geoUrl = isLocal
+        ? "http://ip-api.com/json/?fields=country,city"
+        : `http://ip-api.com/json/${ip}?fields=country,city`;
+      const geoRes = await fetch(geoUrl, {
+        signal: AbortSignal.timeout(3000),
+      });
+      if (geoRes.ok) {
+        const geo = await geoRes.json();
+        country = geo.country ?? "Unknown";
+        city = geo.city ?? "Unknown";
+      }
+    } catch {
+      // Geo lookup failed — not critical
+    }
+
+    const sql = getDb();
+
+    // Check for existing email
+    const existing = await sql`SELECT id FROM waitlist WHERE email = ${email}`;
+    if (existing.length > 0) {
+      return NextResponse.json({ error: "Already on the waitlist" }, { status: 409 });
+    }
+
+    await sql`
+      INSERT INTO waitlist (email, browser, device, country, city, ip)
+      VALUES (${email}, ${browser}, ${device}, ${country}, ${city}, ${ip})
+    `;
+
+    // Send welcome email (non-blocking — don't fail signup if email fails)
+    sendWelcomeEmail(email).catch((err) =>
+      console.error("Failed to send welcome email:", err)
+    );
+
+    return NextResponse.json({ success: true });
+  } catch (err) {
+    console.error("Waitlist signup error:", err);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+  }
+}
+
+// GET — list waitlist entries (admin use)
+export async function GET(req: NextRequest) {
+  try {
+    // Verify admin session
+    const token = req.cookies.get(getAdminSessionCookieName())?.value || "";
+    if (!verifyAdminSessionToken(token)) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const sql = getDb();
+    const rows = await sql`
+      SELECT id, email, browser, device, country, city, ip, created_at
+      FROM waitlist
+      ORDER BY created_at DESC
+    `;
+
+    const countResult = await sql`SELECT COUNT(*)::int as total FROM waitlist`;
+
+    return NextResponse.json({
+      entries: rows,
+      total: countResult[0]?.total ?? 0,
+    });
+  } catch (err) {
+    console.error("Waitlist fetch error:", err);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+  }
+}

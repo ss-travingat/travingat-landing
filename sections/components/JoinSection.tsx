@@ -1,7 +1,13 @@
+"use client";
+
 import Image from "next/image";
 import { toLandingAssetUrl } from "@/lib/landing-assets";
+import { useWaitlistForm } from "@/lib/use-waitlist-form";
 
 export default function JoinSection() {
+  const { email, setEmail, status, message, submit } = useWaitlistForm();
+  const isLoading = status === "loading";
+
   return (
     <section id="join" className="relative overflow-hidden px-3 py-12 text-center md:px-12 md:py-16 xl:px-24 xl:py-20">
       {/* Full-width map background from Figma Section 16 */}
@@ -40,29 +46,48 @@ export default function JoinSection() {
           Be first to build and share your travel profile.
         </p>
 
+        {/* Status message */}
+        {message && (
+          <p className={`mb-4 text-sm ${status === "success" || status === "duplicate" ? "text-green-400" : "text-red-400"}`}>
+            {message}
+          </p>
+        )}
+
         {/* Mobile: stacked input + button */}
-        <div className="mx-auto flex flex-col items-center gap-3 w-full max-w-[300px] md:hidden">
+        <form onSubmit={submit} className="mx-auto flex flex-col items-center gap-3 w-full max-w-[300px] md:hidden">
           <input
             type="email"
             placeholder="Enter your email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             className="w-full h-12 rounded-full border border-[#3d3d3d] bg-black px-6 text-[16px] font-medium text-white placeholder:text-[#464646] focus:outline-none focus:border-gray-500 transition-colors"
           />
-          <button className="w-full h-12 rounded-full bg-white text-[16px] font-medium text-black transition hover:bg-[#ececec]">
-            Get early access
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="w-full h-12 rounded-full bg-white text-[16px] font-medium text-black transition hover:bg-[#ececec] disabled:opacity-50"
+          >
+            {isLoading ? "Joining..." : "Get early access"}
           </button>
-        </div>
+        </form>
 
         {/* Tablet/Desktop: inline pill */}
-        <div className="hidden md:flex mx-auto h-[60px] w-full max-w-[500px] items-center justify-between overflow-hidden rounded-full border border-[#3d3d3d] bg-black pl-6 pr-1 py-1">
+        <form onSubmit={submit} className="hidden md:flex mx-auto h-[60px] w-full max-w-[500px] items-center justify-between overflow-hidden rounded-full border border-[#3d3d3d] bg-black pl-6 pr-1 py-1">
           <input
             type="email"
             placeholder="Enter your email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             className="w-full bg-transparent text-[20px] font-medium leading-7 tracking-[-0.5px] text-white placeholder:text-[#464646] focus:outline-none"
           />
-          <button className="h-[52px] shrink-0 rounded-full bg-white px-8 text-[20px] font-medium leading-7 tracking-[-0.5px] text-black transition hover:bg-[#ececec]">
-            Get early access
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="h-[52px] shrink-0 rounded-full bg-white px-8 text-[20px] font-medium leading-7 tracking-[-0.5px] text-black transition hover:bg-[#ececec] disabled:opacity-50"
+          >
+            {isLoading ? "Joining..." : "Get early access"}
           </button>
-        </div>
+        </form>
       </div>
     </section>
   );

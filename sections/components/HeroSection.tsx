@@ -1,7 +1,13 @@
+"use client";
+
 import Image from "next/image";
 import { toLandingAssetUrl } from "@/lib/landing-assets";
+import { useWaitlistForm } from "@/lib/use-waitlist-form";
 
 export default function HeroSection() {
+  const { email, setEmail, status, message, submit } = useWaitlistForm();
+  const isLoading = status === "loading";
+
   return (
     <section className="px-3 py-12 md:px-12 md:pt-16 md:pb-10 xl:px-24 xl:pt-16 xl:pb-8">
       {/* Text content */}
@@ -16,27 +22,47 @@ export default function HeroSection() {
 
       {/* Email input + CTA */}
       <div className="flex flex-col items-center gap-3 mb-12 px-2 md:mb-14 xl:mb-16">
+        {/* Status message */}
+        {message && (
+          <p className={`text-sm ${status === "success" || status === "duplicate" ? "text-green-400" : "text-red-400"}`}>
+            {message}
+          </p>
+        )}
         {/* Mobile: stacked */}
-        <input
-          type="email"
-          placeholder="Enter your email"
-          className="w-full max-w-[340px] h-12 rounded-full border border-[#3d3d3d] px-6 bg-black text-white text-[16px] font-medium placeholder:text-[#464646] focus:outline-none focus:border-gray-500 transition-colors md:hidden"
-        />
-        <button className="w-full max-w-[340px] h-12 rounded-full bg-white text-black font-medium text-[16px] hover:bg-gray-200 transition-colors md:hidden">
-          Get early access
-        </button>
-
-        {/* Tablet/Desktop: inline input with button (matches Figma 500x60 field) */}
-        <div className="hidden md:flex items-center w-full max-w-[500px] h-[60px] rounded-full border border-[#3d3d3d] bg-transparent pl-6 pr-1 focus-within:border-gray-400 transition-colors">
+        <form onSubmit={submit} className="w-full max-w-[340px] flex flex-col gap-3 md:hidden">
           <input
             type="email"
             placeholder="Enter your email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="w-full h-12 rounded-full border border-[#3d3d3d] px-6 bg-black text-white text-[16px] font-medium placeholder:text-[#464646] focus:outline-none focus:border-gray-500 transition-colors"
+          />
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="w-full h-12 rounded-full bg-white text-black font-medium text-[16px] hover:bg-gray-200 transition-colors disabled:opacity-50"
+          >
+            {isLoading ? "Joining..." : "Get early access"}
+          </button>
+        </form>
+
+        {/* Tablet/Desktop: inline input with button */}
+        <form onSubmit={submit} className="hidden md:flex items-center w-full max-w-[500px] h-[60px] rounded-full border border-[#3d3d3d] bg-transparent pl-6 pr-1 focus-within:border-gray-400 transition-colors">
+          <input
+            type="email"
+            placeholder="Enter your email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             className="flex-1 bg-transparent text-white text-[16px] placeholder:text-gray-500 focus:outline-none"
           />
-          <button className="h-[52px] px-8 rounded-full bg-white text-black font-semibold text-[15px] hover:bg-gray-200 transition-colors">
-            Get early access
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="h-[52px] px-8 rounded-full bg-white text-black font-semibold text-[15px] hover:bg-gray-200 transition-colors disabled:opacity-50"
+          >
+            {isLoading ? "Joining..." : "Get early access"}
           </button>
-        </div>
+        </form>
       </div>
 
       {/* Phone mockups — iPad: single composed image */}

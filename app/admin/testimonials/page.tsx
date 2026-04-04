@@ -103,6 +103,11 @@ export default function AdminTestimonialsPage() {
       return;
     }
 
+    if (form.quote.length > 100) {
+      showToast("Quote must be 100 characters or less");
+      return;
+    }
+
     setSaving(true);
     try {
       if (editing) {
@@ -263,17 +268,23 @@ export default function AdminTestimonialsPage() {
 
             {/* Quote */}
             <div className="mb-4">
-              <label className="text-sm text-white/60 block mb-1.5">
-                Quote <span className="text-red-400">*</span>
-              </label>
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="text-sm text-white/60">
+                  Quote <span className="text-red-400">*</span>
+                </label>
+                <span className={`text-xs tabular-nums ${form.quote.length > 100 ? "text-red-400" : "text-white/30"}`}>
+                  {form.quote.length}/100
+                </span>
+              </div>
               <textarea
                 value={form.quote}
                 onChange={(e) =>
-                  setForm((prev) => ({ ...prev, quote: e.target.value }))
+                  setForm((prev) => ({ ...prev, quote: e.target.value.slice(0, 100) }))
                 }
                 placeholder="What did they say about Travingat?"
                 rows={4}
-                className="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-lg text-sm text-white placeholder:text-white/25 focus:outline-none focus:border-[#5A45F9] transition-colors resize-none"
+                maxLength={100}
+                className={`w-full px-4 py-2.5 bg-white/5 border rounded-lg text-sm text-white placeholder:text-white/25 focus:outline-none transition-colors resize-none ${form.quote.length >= 100 ? "border-red-400/50 focus:border-red-400" : "border-white/10 focus:border-[#5A45F9]"}`}
               />
             </div>
 

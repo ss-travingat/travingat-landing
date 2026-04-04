@@ -15,84 +15,82 @@ function toFlagAssetPath(flagCode: string) {
 
 function TravellerCard({ profile }: { profile: DemoProfile }) {
   return (
-    <article className="flex w-60 shrink-0 flex-col items-center gap-4.25 rounded-2xl border border-[#262626] bg-black px-1.25 pb-4.75 pt-1.25 xl:w-90 xl:gap-6.5 xl:px-2 xl:pb-7 xl:pt-2">
+    <article className="flex w-60 shrink-0 flex-col items-center gap-4.25 rounded-[20px] border border-black-400 bg-black px-1.25 pb-4.75 pt-1.25 xl:w-90 xl:gap-6.5 xl:rounded-2xl xl:px-2 xl:pb-7 xl:pt-2">
       <div className="w-full">
-        <div className="flex w-full flex-col items-center pb-9">
-          <div className="relative -mb-9 h-26.75 w-full overflow-hidden rounded-2xl xl:h-40">
+        <div className="flex w-full flex-col items-center pb-6 xl:pb-9">
+          <div className="relative -mb-6 h-26.75 w-full overflow-hidden rounded-[14px] xl:-mb-9 xl:h-40 xl:rounded-2xl">
             <Image
               src={toLandingAssetUrl(profile.cover)}
               alt={`${profile.name} cover`}
               fill
-              className="rounded-2xl object-cover"
+              className="object-cover"
               sizes="(min-width: 1280px) 360px, 240px"
             />
           </div>
-          <div className="relative z-10 -mb-9 h-13.25 w-13.25 overflow-hidden rounded-2xl border-[5px] border-black xl:h-20 xl:w-20 xl:border-8">
+          <div className="relative z-10 -mb-6 size-13.25 overflow-hidden rounded-[13px] border-[5.333px] border-black xl:-mb-9 xl:size-20 xl:rounded-2xl xl:border-8">
             <Image
               src={toLandingAssetUrl(profile.avatar)}
               alt={profile.name}
               fill
-              className="rounded-2xl object-cover"
+              className="object-cover"
               sizes="(min-width: 1280px) 80px, 53px"
             />
           </div>
         </div>
       </div>
 
-      <div className="flex w-full flex-col items-start gap-6 px-3">
-        <div className="flex w-full flex-col items-center gap-3">
-          <div className="flex w-full items-center justify-center gap-1.5">
-            <Image
+      <div className="flex w-full flex-col items-start gap-4 px-2 xl:gap-6 xl:px-3">
+        <div className="flex w-full flex-col items-center gap-[5.333px] xl:gap-3">
+          <div className="flex w-full items-center justify-center gap-1">
+            <img
               src={toFlagAssetPath(profile.flagCode)}
               alt={`${profile.country} flag`}
-              width={24}
-              height={16}
-              className="h-4 w-6 rounded-xs object-cover"
+              className="h-1.5 w-2.5 shrink-0 rounded-xs object-cover xl:h-4 xl:w-6"
             />
-            <p className="text-sm font-normal leading-5 tracking-[-0.5px] whitespace-nowrap text-[#696969]">
+            <p className="text-[9.33px] font-normal leading-none tracking-[-0.056px] whitespace-nowrap text-[#696969] xl:text-sm xl:leading-5 xl:tracking-[-0.5px]">
               {profile.country}
             </p>
           </div>
-          <p className="w-full text-center text-xl font-semibold leading-normal tracking-[-0.41px] text-white ds-font-display">
+          <p className="w-full text-center text-[13.33px] font-semibold leading-[18.667px] tracking-[-0.0667px] text-white ds-font-display xl:text-xl xl:leading-normal xl:tracking-[-0.41px]">
             {profile.name}
           </p>
-          <p className="w-full text-center text-base font-normal leading-normal tracking-[-0.5px] text-[#a8a8a8]">
+          <p className="w-full text-center text-[10.67px] font-normal leading-4 tracking-[-0.064px] text-[#a8a8a8] xl:text-base xl:leading-normal xl:tracking-[-0.5px]">
             {profile.handle}
           </p>
         </div>
 
-        <div className="flex w-full items-center justify-center gap-10 rounded-xl bg-[#111] px-5 py-4">
+        <div className="flex w-full items-center justify-center gap-[26.667px] rounded-xl bg-[#111] px-[13.333px] py-[10.667px] xl:gap-10 xl:px-5 xl:py-4">
           <div className="flex flex-1 flex-col items-center gap-1">
-            <p className="text-xl font-semibold leading-normal tracking-[-0.41px] text-white ds-font-display">
+            <p className="text-[13.33px] font-semibold leading-normal tracking-[-0.41px] text-white ds-font-display xl:text-xl">
               {profile.countries}
             </p>
-            <p className="text-xs font-normal leading-normal tracking-[-0.5px] text-white-500">
+            <p className="text-[8px] font-normal leading-[10.667px] text-white-500 xl:text-xs xl:leading-normal xl:tracking-[-0.5px]">
               Countries
             </p>
           </div>
           <div className="flex flex-1 flex-col items-center gap-1">
-            <p className="text-xl font-semibold leading-normal tracking-[-0.41px] text-white ds-font-display">
+            <p className="text-[13.33px] font-semibold leading-normal tracking-[-0.41px] text-white ds-font-display xl:text-xl">
               {profile.media}
             </p>
-            <p className="text-xs font-normal leading-normal tracking-[-0.5px] text-white-500">
+            <p className="text-[8px] font-normal leading-[10.667px] text-white-500 xl:text-xs xl:leading-normal xl:tracking-[-0.5px]">
               All media
             </p>
           </div>
           <div className="flex flex-1 flex-col items-center gap-1">
-            <p className="text-xl font-semibold leading-normal tracking-[-0.41px] text-white ds-font-display">
+            <p className="text-[13.33px] font-semibold leading-normal tracking-[-0.41px] text-white ds-font-display xl:text-xl">
               {profile.collections}
             </p>
-            <p className="text-xs font-normal leading-normal tracking-[-0.5px] text-white-500">
+            <p className="text-[8px] font-normal leading-[10.667px] text-white-500 xl:text-xs xl:leading-normal xl:tracking-[-0.5px]">
               Collections
             </p>
           </div>
         </div>
 
-        <div className="flex w-full items-center gap-3">
-          <span className="flex-1 overflow-hidden rounded-full bg-white p-2.5 text-center text-sm font-medium leading-normal tracking-[-0.408px] text-black">
+        <div className="flex w-full items-center gap-2 xl:gap-3">
+          <span className="flex-1 overflow-hidden rounded-full bg-white px-[10.667px] py-[6.667px] text-center text-[9.33px] font-medium leading-[13.333px] tracking-[-0.056px] text-black xl:p-2.5 xl:text-sm xl:leading-normal xl:tracking-[-0.408px]">
             Follow
           </span>
-          <span className="flex-1 overflow-hidden rounded-full border border-[#363636] bg-[#181818] p-2.5 text-center text-sm font-medium leading-normal tracking-[-0.408px] text-white">
+          <span className="flex-1 overflow-hidden rounded-full border border-black-100 bg-black-700 px-[10.667px] py-[6.667px] text-center text-[9.33px] font-medium leading-[13.333px] tracking-[-0.056px] text-white xl:p-2.5 xl:text-sm xl:leading-normal xl:tracking-[-0.408px]">
             Connect
           </span>
         </div>

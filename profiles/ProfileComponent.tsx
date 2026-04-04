@@ -111,16 +111,33 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
   }, [profile.id, profile.photoUrls]);
 
   const headerFlagCodes = useMemo(() => {
+    const WORLD_FLAGS = [
+      "AD","AE","AF","AG","AL","AM","AO","AR","AT","AU","AZ","BA","BB","BD","BE",
+      "BF","BG","BH","BI","BJ","BN","BO","BR","BS","BT","BW","BY","BZ","CA","CD",
+      "CF","CG","CH","CI","CL","CM","CN","CO","CR","CU","CV","CY","CZ","DE","DJ",
+      "DK","DM","DO","DZ","EC","EE","EG","ER","ES","ET","FI","FJ","FO","FR","GA",
+      "GB","GD","GE","GH","GL","GM","GN","GQ","GR","GT","GW","GY","HN","HR","HT",
+      "HU","ID","IE","IL","IN","IQ","IR","IS","IT","JM","JO","JP","KE","KG","KH",
+      "KI","KM","KN","KP","KR","KW","KZ","LA","LB","LC","LI","LK","LR","LS","LT",
+      "LU","LV","LY","MA","MC","MD","ME","MG","MH","MK","ML","MM","MN","MR","MT",
+      "MU","MV","MW","MX","MY","MZ","NA","NE","NG","NI","NL","NO","NP","NR","NZ",
+      "OM","PA","PE","PG","PH","PK","PL","PT","PY","QA","RO","RS","RU","RW","SA",
+      "SB","SC","SD","SE","SG","SI","SK","SL","SM","SN","SO","SR","SS","ST","SV",
+      "SY","SZ","TD","TG","TH","TJ","TL","TM","TN","TO","TR","TT","TV","TW","TZ",
+      "UA","UG","US","UY","UZ","VA","VC","VE","VN","VU","WS","YE","ZA","ZM","ZW",
+    ];
+    const maxFlags = Math.min(profile.countries ?? 0, 30);
     const unique = new Set<string>();
     if (profile.flagCode) unique.add(profile.flagCode.toUpperCase());
-
-    for (const item of sampleProfiles) {
-      if (item.flagCode) unique.add(item.flagCode.toUpperCase());
-      if (unique.size >= 16) break;
+    const seed = profile.id.split("").reduce((acc, c) => acc + c.charCodeAt(0), 0);
+    const offset = seed % WORLD_FLAGS.length;
+    for (let i = 0; i < WORLD_FLAGS.length && unique.size < maxFlags; i++) {
+      unique.add(WORLD_FLAGS[(offset + i) % WORLD_FLAGS.length]);
     }
-
     return Array.from(unique);
-  }, [profile.flagCode]);
+  }, [profile.flagCode, profile.id, profile.countries]);
+
+  const flagOverflowCount = Math.max(0, (profile.countries ?? 0) - headerFlagCodes.length);
 
   const countryCards = useMemo<CountryCard[]>(() => {
     const candidates: { name: string; flagCode: string }[] = [
@@ -287,7 +304,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
               </div>
             </div>
 
-            <div className="flex flex-wrap justify-center gap-1">
+            <div className="grid grid-cols-10 gap-1">
               {headerFlagCodes.map((code, index) => (
                 <img
                   key={`${code}-${index}`}
@@ -298,6 +315,13 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                   decoding="async"
                 />
               ))}
+              {flagOverflowCount > 0 && (
+                <div className="flex h-4 w-6 shrink-0 items-center justify-center overflow-hidden rounded-xs bg-white">
+                  <span className="font-medium text-violet-600 text-[10px] text-center tracking-[-0.408px] whitespace-nowrap">
+                    +{flagOverflowCount}
+                  </span>
+                </div>
+              )}
             </div>
 
             <div className="w-full rounded-2xl border border-[#202020] bg-[#111] px-5 py-5">
@@ -347,7 +371,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                 </div>
               </div>
 
-              <div className="flex flex-wrap items-center gap-2">
+              <div className="grid grid-cols-10 gap-2">
                 {headerFlagCodes.map((code, index) => (
                   <img
                     key={`${code}-${index}`}
@@ -358,6 +382,13 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                     decoding="async"
                   />
                 ))}
+                {flagOverflowCount > 0 && (
+                  <div className="flex h-5 w-7.5 shrink-0 items-center justify-center overflow-hidden rounded-xs bg-white">
+                    <span className="font-medium text-violet-600 text-[11px] text-center tracking-[-0.408px] whitespace-nowrap">
+                      +{flagOverflowCount}
+                    </span>
+                  </div>
+                )}
               </div>
 
               <div className="w-full rounded-2xl border-l border-black-100 bg-linear-to-r from-[#1c1c1c] to-[rgba(0,0,0,0.1)] px-4 py-5">
@@ -393,7 +424,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                       <img
                         src="/images/stat-icon-collections.png"
                         alt="Collections icon"
-                        className="absolute top-1/2 left-[calc(50%+4px)] -translate-x-1/2 -translate-y-1/2 w-[61px] h-[68px] object-cover pointer-events-none"
+                        className="absolute top-1/2 left-[calc(50%+4px)] -translate-x-1/2 -translate-y-1/2 w-15.25 h-17 object-cover pointer-events-none"
                       />
                     </div>
                     <div className="flex flex-col gap-1">
@@ -405,17 +436,17 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
               </div>
 
               <div className="flex items-center gap-3">
-                <button className="w-[148px] rounded-full bg-white text-black px-5 py-3 text-[16px] font-medium leading-6 tracking-[-0.096px] hover:bg-[#ececec] transition">Follow</button>
-                <button className="w-[148px] rounded-full border border-black-100 bg-[#1a1a1a] text-white px-5 py-3 text-[16px] font-medium leading-6 tracking-[-0.096px] hover:bg-[#242424] transition">Connect</button>
-                <button className="h-12 w-12 grid place-items-center rounded-full border border-black-100 bg-[#1a1a1a] text-white hover:bg-[#242424] transition" aria-label="More options">
+                <button className="w-37 rounded-full bg-white text-black px-5 py-3 text-[16px] font-medium leading-6 tracking-[-0.096px] hover:bg-[#ececec] transition">Follow</button>
+                <button className="w-37 rounded-full border border-black-100 bg-black-700 text-white px-5 py-3 text-[16px] font-medium leading-6 tracking-[-0.096px] hover:bg-[#242424] transition">Connect</button>
+                <button className="h-12 w-12 grid place-items-center rounded-full border border-black-100 bg-black-700 text-white hover:bg-[#242424] transition" aria-label="More options">
                   <span className="material-symbols-rounded text-[20px]">grid_view</span>
                 </button>
               </div>
             </div>
 
             <div className="flex flex-row items-end justify-end self-stretch">
-              <div className="relative aspect-[640/662] h-full w-full max-w-[640px] overflow-hidden rounded-[32px] bg-[#111]">
-                <img src={toLandingAssetUrl(profile.cover)} alt="Profile cover" className="w-full h-full object-cover rounded-[32px]" />
+              <div className="relative aspect-640/662 h-full w-full max-w-160 overflow-hidden rounded-4xl bg-[#111]">
+                <img src={toLandingAssetUrl(profile.cover)} alt="Profile cover" className="w-full h-full object-cover rounded-4xl" />
               </div>
             </div>
           </section>
@@ -427,7 +458,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
               className={`rounded-full px-6 py-2 text-[16px] leading-6 tracking-[-0.096px] transition ${
                 activeTab === "all"
                   ? "bg-black-600 border border-white text-white font-medium"
-                  : "bg-[#161616] border border-transparent text-[#bdbdbd] font-normal"
+                  : "bg-black-800 border border-transparent text-white-300 font-normal"
               }`}
             >
               All media
@@ -437,7 +468,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
               className={`rounded-full px-6 py-2 text-[16px] leading-6 tracking-[-0.096px] transition ${
                 activeTab === "countries"
                   ? "bg-black-600 border border-white text-white font-medium"
-                  : "bg-[#161616] border border-transparent text-[#bdbdbd] font-normal"
+                  : "bg-black-800 border border-transparent text-white-300 font-normal"
               }`}
             >
               Countries
@@ -447,7 +478,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
               className={`rounded-full px-6 py-2 text-[16px] leading-6 tracking-[-0.096px] transition ${
                 activeTab === "collections"
                   ? "bg-black-600 border border-white text-white font-medium"
-                  : "bg-[#161616] border border-transparent text-[#bdbdbd] font-normal"
+                  : "bg-black-800 border border-transparent text-white-300 font-normal"
               }`}
             >
               Collections
@@ -457,7 +488,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
               className={`rounded-full px-6 py-2 text-[16px] leading-6 tracking-[-0.096px] transition ${
                 activeTab === "about"
                   ? "bg-black-600 border border-white text-white font-medium"
-                  : "bg-[#161616] border border-transparent text-[#bdbdbd] font-normal"
+                  : "bg-black-800 border border-transparent text-white-300 font-normal"
               }`}
             >
               About me
@@ -493,7 +524,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                 </div>
                 {/* Sliding underline */}
                 <div
-                  className="absolute bottom-0 h-[2px] bg-white rounded-full"
+                  className="absolute bottom-0 h-0.5 bg-white rounded-full"
                   style={{
                     width: `${100 / mobileTabs.length}%`,
                     transform: `translateX(${activeIndex * 100}%)`,
@@ -505,11 +536,11 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
           })()}
 
           {activeTab === "all" ? (
-            <section className="pb-[100px] min-h-[250px]">
+            <section className="pb-25 min-h-62.5">
               {allMediaItems.length === 0 ? (
                 <div className="max-w-xl mx-auto flex flex-col items-center gap-5 text-center py-10">
                   <h2 className="text-[30px] leading-none tracking-[-0.5px] font-semibold text-white">All media</h2>
-                  <p className="text-[#7c7c7c] text-[14px] leading-[1.4]">
+                  <p className="text-white-500 text-[14px] leading-[1.4]">
                     Add media to a country or collection to start building your gallery.
                   </p>
                 </div>
@@ -541,7 +572,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                   <div className="max-w-150 mx-auto flex flex-col items-center gap-6 text-center">
                     <div className="flex items-center gap-3">
                       {COUNTRIES_EMPTY_PREVIEW_IMAGES.map((src, idx) => (
-                        <div key={src} className="w-19 h-19 md:w-[100px] md:h-[100px] rounded-[10px] overflow-hidden">
+                        <div key={src} className="w-19 h-19 md:w-25 md:h-25 rounded-[10px] overflow-hidden">
                           <img src={toLandingAssetUrl(src)} alt={`Country preview ${idx + 1}`} className="w-full h-full object-cover" />
                         </div>
                       ))}
@@ -602,7 +633,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                   <div className="max-w-150 mx-auto flex flex-col items-center gap-6 text-center">
                     <div className="flex items-center gap-3">
                       {COLLECTIONS_EMPTY_PREVIEW_IMAGES.map((src, idx) => (
-                        <div key={src} className="w-19 h-19 md:w-[100px] md:h-[100px] rounded-[10px] overflow-hidden">
+                        <div key={src} className="w-19 h-19 md:w-25 md:h-25 rounded-[10px] overflow-hidden">
                           <img src={toLandingAssetUrl(src)} alt={`Collection preview ${idx + 1}`} className="w-full h-full object-cover" />
                         </div>
                       ))}
@@ -630,7 +661,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
 
                         <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
                           {collection.countries.map((country) => (
-                            <span key={`${collection.id}-${country}`} className="inline-flex items-center rounded-full border border-black-100 bg-black-600 px-2 py-[3px] text-[10px] leading-none text-[#bdbdbd]">
+                            <span key={`${collection.id}-${country}`} className="inline-flex items-center rounded-full border border-black-100 bg-black-600 px-2 py-0.75 text-[10px] leading-none text-white-300">
                               {country}
                             </span>
                           ))}
@@ -646,7 +677,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
           {activeTab === "about" ? (
             hasAboutContent ? (
               <section className="grid xl:grid-cols-[1fr_360px] gap-6 items-start">
-                <article className="relative rounded-2xl border border-[#1f1f1f] p-6 bg-[#161616] space-y-6">
+                <article className="relative rounded-2xl border border-[#1f1f1f] p-6 bg-black-800 space-y-6">
                   <div className="space-y-3">
                     <h3 className="text-[32px] text-2xl font-semibold tracking-[-0.5px]">About</h3>
                     <p className="text-[#b7b7b7] leading-7 text-sm md:text-base">{profile.bio || "No bio yet."}</p>
@@ -660,7 +691,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                         </div>
                       ))
                     ) : (
-                      <div className="col-span-full rounded-xl border border-dashed border-[#2b2b2b] bg-[#111] p-6 text-sm text-[#7c7c7c] text-center">
+                      <div className="col-span-full rounded-xl border border-dashed border-[#2b2b2b] bg-[#111] p-6 text-sm text-white-500 text-center">
                         No photos added yet.
                       </div>
                     )}
@@ -671,26 +702,26 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                     {profile.interests.length > 0 ? (
                       <div className="flex flex-wrap gap-2.5">
                         {profile.interests.map((interest) => (
-                          <span key={interest} className="px-3.5 py-1.5 rounded-full border border-[#464646] bg-[#161616] text-[#d0d0d0] text-sm">
+                          <span key={interest} className="px-3.5 py-1.5 rounded-full border border-white-800 bg-black-800 text-[#d0d0d0] text-sm">
                             {interest}
                           </span>
                         ))}
                       </div>
                     ) : (
-                      <p className="text-[#7c7c7c] text-sm">No interests added yet.</p>
+                      <p className="text-white-500 text-sm">No interests added yet.</p>
                     )}
                   </div>
                 </article>
 
-                <aside className="rounded-2xl border border-[#1f1f1f] p-6 bg-[#161616] space-y-6">
-                  <div className="space-y-1 pb-4 border-b border-[#2a2a2a]">
-                    <p className="text-[#7c7c7c] text-xs">Username</p>
+                <aside className="rounded-2xl border border-[#1f1f1f] p-6 bg-black-800 space-y-6">
+                  <div className="space-y-1 pb-4 border-b border-black-300">
+                    <p className="text-white-500 text-xs">Username</p>
                     <p className="text-white text-lg font-medium">{handle}</p>
                     <p className="text-[#5f5f5f] text-xs">travingat.com/{handle.replace(/^@/, "")}</p>
                   </div>
 
                   <div className="space-y-1">
-                    <p className="text-[#7c7c7c] text-xs">Home land</p>
+                    <p className="text-white-500 text-xs">Home land</p>
                     <div className="flex items-center gap-2 text-[#f0f0f0] text-sm">
                       {homelandFlagSrc ? (
                         <img
@@ -708,7 +739,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                   </div>
 
                   <div className="space-y-1">
-                    <p className="text-[#7c7c7c] text-xs">Currently in</p>
+                    <p className="text-white-500 text-xs">Currently in</p>
                     <div className="flex items-center gap-2 text-[#f0f0f0] text-sm">
                       {currentlyInFlagSrc ? (
                         <img
@@ -726,7 +757,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                   </div>
 
                   <div className="space-y-2">
-                    <p className="text-[#7c7c7c] text-xs">Speaks</p>
+                    <p className="text-white-500 text-xs">Speaks</p>
                     {profile.languages.length > 0 ? (
                       <div className="flex flex-wrap gap-2">
                         {profile.languages.map((language) => (
@@ -741,11 +772,11 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                   </div>
 
                   <div className="space-y-2">
-                    <p className="text-[#7c7c7c] text-xs">Find me On</p>
+                    <p className="text-white-500 text-xs">Find me On</p>
                     {socialRows.length > 0 ? (
                       <div className="space-y-1.5">
                         {socialRows.map((item) => (
-                          <p key={item.key} className="text-[#efefef] text-sm truncate">{item.label}</p>
+                          <p key={item.key} className="text-white-100 text-sm truncate">{item.label}</p>
                         ))}
                       </div>
                     ) : (
@@ -771,7 +802,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
           ) : null}
 
           <footer className="pt-2 pb-8">
-            <div className="flex flex-wrap items-center justify-center gap-8 text-[12px] text-[#7c7c7c] tracking-[-0.408px] leading-normal">
+            <div className="flex flex-wrap items-center justify-center gap-8 text-[12px] text-white-500 tracking-[-0.408px] leading-normal">
               <span>Help</span>
               <span>About</span>
               <span>Careers</span>
@@ -783,10 +814,10 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
         </main>
       </div>
 
-      <div className="md:hidden fixed inset-x-0 bottom-0 z-40 border-t border-[#161616] bg-black px-3 pt-3 pb-5">
+      <div className="md:hidden fixed inset-x-0 bottom-0 z-40 border-t border-black-800 bg-black px-3 pt-3 pb-5">
         <div className="flex items-center gap-2">
           <button className="flex-1 rounded-full bg-white text-black px-5 py-2.5 text-[16px] font-medium tracking-[-0.41px]">Follow</button>
-          <button className="h-[43px] w-[43px] rounded-full border border-[#363636] bg-[#181818] grid place-items-center text-white" aria-label="More options">
+          <button className="h-10.75 w-10.75 rounded-full border border-[#363636] bg-[#181818] grid place-items-center text-white" aria-label="More options">
             <span className="material-symbols-rounded text-[20px]">more_horiz</span>
           </button>
           <button className="flex-1 rounded-full border border-[#363636] bg-[#181818] text-white px-5 py-2.5 text-[16px] font-medium tracking-[-0.41px]">Connect</button>
