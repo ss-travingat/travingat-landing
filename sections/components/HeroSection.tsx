@@ -12,7 +12,7 @@ export default function HeroSection() {
     <section className="px-3 py-12 md:px-12 md:pt-16 md:pb-10 xl:px-24 xl:pt-16 xl:pb-8">
       {/* Text content */}
       <div className="mb-6 md:mb-8 xl:mb-10 xl:text-center xl:max-w-250 xl:mx-auto">
-        <h1 className="text-[44px] leading-13 font-semibold text-white mb-3 text-center tracking-[-0.5px] md:text-[64px] md:leading-18 md:tracking-[-1px] xl:text-[72px] xl:leading-20 xl:tracking-[0.5px] xl:mb-4">
+        <h1 className="ds-font-display text-[44px] leading-13 font-semibold text-white mb-3 text-center tracking-[-0.5px] md:text-[64px] md:leading-18 md:tracking-[-1px] xl:text-[72px] xl:leading-20 xl:tracking-[0.5px] xl:mb-4">
           Build your travel profile
         </h1>
         <p className="text-[16px] leading-normal text-gray-400 text-center md:text-[18px] xl:text-[18px]">

@@ -125,7 +125,7 @@ export default function PricingSection() {
       <div className="mx-auto w-full max-w-[738px] space-y-12 xl:max-w-[1200px]">
         <div className="flex flex-col items-center gap-8 text-center">
           <div className="space-y-4 text-white">
-            <h2 className="text-[44px] font-semibold leading-[52px] tracking-[-0.5px] md:text-[44px]">Pricing</h2>
+            <h2 className="ds-font-display text-[44px] font-semibold leading-[52px] tracking-[-0.5px] md:text-[44px]">Pricing</h2>
             <p className="text-[18px] leading-[1.45] tracking-[-0.198px] text-white">
               Built for travelers at every stage: from first trips to premium profile presence.
             </p>
