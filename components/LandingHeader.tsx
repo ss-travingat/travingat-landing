@@ -29,7 +29,10 @@ export default function LandingHeader() {
   const scrollToSection = (event: MouseEvent<HTMLAnchorElement>, sectionId: string) => {
     event.preventDefault();
     const section = document.getElementById(sectionId);
-    if (!section) return;
+    if (!section) {
+      window.location.href = `/#${sectionId}`;
+      return;
+    }
 
     setMenuOpen(false);
     section.scrollIntoView({ behavior: "smooth", block: "start" });

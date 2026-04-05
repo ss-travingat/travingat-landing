@@ -490,3 +490,13 @@ body {
 .animate-hero-zoom {
   animation: hero-zoom 600ms ease-out forwards;
 }
+
+/* ── Page transition ── */
+@keyframes page-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.animate-page-in {
+  animation: page-in 280ms ease-out forwards;
+}
