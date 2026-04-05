@@ -157,8 +157,8 @@ export default function PricingSection() {
         <div className="space-y-6 xl:grid xl:grid-cols-3 xl:gap-6 xl:space-y-0">
           {cardData.map((plan) => (
             <article key={plan.name} className="rounded-[24px] border border-[#212121] bg-[#111111] p-6 md:p-8 xl:min-w-[340px]">
-              <div className="flex gap-6 md:gap-8 xl:flex-col">
-                <div className="flex w-[40%] shrink-0 flex-col gap-6 md:w-[260px] xl:w-auto xl:min-h-[236px]">
+              <div className="flex flex-col gap-6 md:gap-8">
+                <div className="flex flex-col gap-6 xl:min-h-[236px]">
                   <div className="space-y-4 xl:min-h-[160px]">
                     <h3 className="ds-font-display text-[24px] font-semibold leading-8 tracking-[-0.5px] text-white">{plan.name}</h3>
 
@@ -178,10 +178,9 @@ export default function PricingSection() {
                   </a>
                 </div>
 
-                <div className="self-stretch border-l border-dashed border-[#303030] xl:hidden" />
-                <div className="hidden border border-dashed border-[#303030] xl:block" />
+                <div className="border border-dashed border-[#303030]" />
 
-                <ul className="flex-1 space-y-5">
+                <ul className="space-y-5">
                   {plan.features.map((feature) => (
                     <FeatureItem key={`${plan.name}-${feature}`} feature={feature} />
                   ))}

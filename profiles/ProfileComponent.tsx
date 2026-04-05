@@ -285,7 +285,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
           </div>
         </header>
 
-        <main className="w-full max-w-372 pb-12 md:pb-20 grid gap-10">
+        <main className="w-full max-w-372 pb-28 md:pb-20 grid gap-10">
           <section className="lg:hidden space-y-5">
             <div className="flex flex-col items-center gap-5 rounded-3xl w-full">
               <div className="w-full">
@@ -689,14 +689,14 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
 
           {activeTab === "about" ? (
             hasAboutContent ? (
-              <section className="grid xl:grid-cols-[1fr_360px] gap-6 items-start">
-                <article className="relative rounded-2xl border border-[#1f1f1f] p-6 bg-black-800 space-y-6">
+              <section className="grid md:grid-cols-[1fr_300px] xl:grid-cols-[1fr_360px] gap-6 items-start">
+                <article className="relative rounded-2xl border border-[#1f1f1f] p-5 md:p-6 bg-black-800 space-y-6">
                   <div className="space-y-3">
-                    <h3 className="text-[32px] text-2xl font-semibold tracking-[-0.5px]">About</h3>
+                    <h3 className="text-2xl font-semibold tracking-[-0.5px]">About</h3>
                     <p className="text-[#b7b7b7] leading-7 text-sm md:text-base">{profile.bio || "No bio yet."}</p>
                   </div>
 
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-3">
                     {aboutPhotos.length > 0 ? (
                       aboutPhotos.map((src, idx) => (
                         <div key={`${src}-${idx}`} className="rounded-xl overflow-hidden border border-[#2b2b2b] bg-[#111] aspect-[1.06]">
@@ -711,7 +711,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                   </div>
 
                   <div className="space-y-4">
-                    <h4 className="text-[28px] text-xl font-semibold tracking-[-0.5px]">My Interests</h4>
+                    <h4 className="text-xl font-semibold tracking-[-0.5px]">My Interests</h4>
                     {profile.interests.length > 0 ? (
                       <div className="flex flex-wrap gap-2.5">
                         {profile.interests.map((interest) => (
@@ -726,75 +726,77 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                   </div>
                 </article>
 
-                <aside className="rounded-2xl border border-[#1f1f1f] p-6 bg-black-800 space-y-6">
-                  <div className="space-y-1 pb-4 border-b border-black-300">
+                <aside className="rounded-2xl border border-[#1f1f1f] p-5 md:p-6 bg-black-800">
+                  <div className="space-y-1 pb-4 border-b border-black-300 mb-4">
                     <p className="text-white-500 text-xs">Username</p>
                     <p className="text-white text-lg font-medium">{handle}</p>
-                    <p className="text-[#5f5f5f] text-xs">travingat.com/{handle.replace(/^@/, "")}</p>
+                    <p className="text-[#5f5f5f] text-xs truncate">travingat.com/{handle.replace(/^@/, "")}</p>
                   </div>
 
-                  <div className="space-y-1">
-                    <p className="text-white-500 text-xs">Home land</p>
-                    <div className="flex items-center gap-2 text-[#f0f0f0] text-sm">
-                      {homelandFlagSrc ? (
-                        <img
-                          src={homelandFlagSrc}
-                          alt={`${toLocationCountry(profile.homeland)} flag`}
-                          className="h-4 w-6 rounded-xs object-cover"
-                          loading="lazy"
-                          decoding="async"
-                        />
-                      ) : (
-                        <span>{homelandFlagCode}</span>
-                      )}
-                      <span>{profile.homeland}</span>
-                    </div>
-                  </div>
-
-                  <div className="space-y-1">
-                    <p className="text-white-500 text-xs">Currently in</p>
-                    <div className="flex items-center gap-2 text-[#f0f0f0] text-sm">
-                      {currentlyInFlagSrc ? (
-                        <img
-                          src={currentlyInFlagSrc}
-                          alt={`${toLocationCountry(profile.currentlyIn)} flag`}
-                          className="h-4 w-6 rounded-xs object-cover"
-                          loading="lazy"
-                          decoding="async"
-                        />
-                      ) : (
-                        <span>{currentlyInFlagCode}</span>
-                      )}
-                      <span>{profile.currentlyIn}</span>
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <p className="text-white-500 text-xs">Speaks</p>
-                    {profile.languages.length > 0 ? (
-                      <div className="flex flex-wrap gap-2">
-                        {profile.languages.map((language) => (
-                          <span key={language} className="px-3 py-1 rounded-full bg-[#1f1f1f] border border-[#3a3a3a] text-[#d8d8d8] text-xs">
-                            {language}
-                          </span>
-                        ))}
+                  <div className="grid grid-cols-2 md:grid-cols-1 gap-4 md:gap-5">
+                    <div className="space-y-1">
+                      <p className="text-white-500 text-xs">Home land</p>
+                      <div className="flex items-center gap-2 text-[#f0f0f0] text-sm">
+                        {homelandFlagSrc ? (
+                          <img
+                            src={homelandFlagSrc}
+                            alt={`${toLocationCountry(profile.homeland)} flag`}
+                            className="h-4 w-6 shrink-0 rounded-xs object-cover"
+                            loading="lazy"
+                            decoding="async"
+                          />
+                        ) : (
+                          <span>{homelandFlagCode}</span>
+                        )}
+                        <span className="truncate">{profile.homeland}</span>
                       </div>
-                    ) : (
-                      <p className="text-[#8a8a8a] text-sm">No languages selected.</p>
-                    )}
-                  </div>
+                    </div>
 
-                  <div className="space-y-2">
-                    <p className="text-white-500 text-xs">Find me On</p>
-                    {socialRows.length > 0 ? (
-                      <div className="space-y-1.5">
-                        {socialRows.map((item) => (
-                          <a key={item.key} href={item.url} target="_blank" rel="noopener noreferrer" className="text-white-100 text-sm truncate hover:text-white transition">{item.label}</a>
-                        ))}
+                    <div className="space-y-1">
+                      <p className="text-white-500 text-xs">Currently in</p>
+                      <div className="flex items-center gap-2 text-[#f0f0f0] text-sm">
+                        {currentlyInFlagSrc ? (
+                          <img
+                            src={currentlyInFlagSrc}
+                            alt={`${toLocationCountry(profile.currentlyIn)} flag`}
+                            className="h-4 w-6 shrink-0 rounded-xs object-cover"
+                            loading="lazy"
+                            decoding="async"
+                          />
+                        ) : (
+                          <span>{currentlyInFlagCode}</span>
+                        )}
+                        <span className="truncate">{profile.currentlyIn}</span>
                       </div>
-                    ) : (
-                      <p className="text-[#8a8a8a] text-sm">No social links added.</p>
-                    )}
+                    </div>
+
+                    <div className="space-y-2">
+                      <p className="text-white-500 text-xs">Speaks</p>
+                      {profile.languages.length > 0 ? (
+                        <div className="flex flex-wrap gap-2">
+                          {profile.languages.map((language) => (
+                            <span key={language} className="px-3 py-1 rounded-full bg-[#1f1f1f] border border-[#3a3a3a] text-[#d8d8d8] text-xs">
+                              {language}
+                            </span>
+                          ))}
+                        </div>
+                      ) : (
+                        <p className="text-[#8a8a8a] text-sm">—</p>
+                      )}
+                    </div>
+
+                    <div className="space-y-2">
+                      <p className="text-white-500 text-xs">Find me On</p>
+                      {socialRows.length > 0 ? (
+                        <div className="flex flex-col gap-1.5 min-w-0">
+                          {socialRows.map((item) => (
+                            <a key={item.key} href={item.url} target="_blank" rel="noopener noreferrer" className="block w-full min-w-0 truncate text-white-100 text-sm hover:text-white transition">{item.label}</a>
+                          ))}
+                        </div>
+                      ) : (
+                        <p className="text-[#8a8a8a] text-sm">—</p>
+                      )}
+                    </div>
                   </div>
                 </aside>
               </section>
