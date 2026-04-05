@@ -121,7 +121,7 @@ export async function sendWelcomeEmail(email: string) {
   const html = buildWelcomeEmail(email);
 
   await getTransporter().sendMail({
-    from: `"Travingat" <${process.env.SMTP_EMAIL}>`,
+    from: `"Team Travingat" <${process.env.SMTP_EMAIL}>`,
     to: email,
     subject: "Welcome to the Travingat waitlist! 🌍",
     html,
