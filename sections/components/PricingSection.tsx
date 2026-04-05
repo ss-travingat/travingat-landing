@@ -20,11 +20,11 @@ const plans: Plan[] = [
     name: "Explorer",
     monthly: {
       price: 0,
-      description: "For casual travelers starting their journey.",
+      description: "Great for trying out Frames X component and templates.",
     },
     annual: {
       price: 0,
-      description: "Great for trying out Frames X component and templates.",
+      description: "For casual travelers starting their journey.",
     },
     buttonClass: "bg-white text-black hover:bg-[#ececec]",
     features: [
@@ -39,12 +39,12 @@ const plans: Plan[] = [
   {
     name: "Traveller",
     monthly: {
-      price: 7,
-      description: "For serious travelers building their travel identity.",
-    },
-    annual: {
       price: 9,
       description: "Best for professional freelancers and small teams.",
+    },
+    annual: {
+      price: 7,
+      description: "For serious travelers building their travel identity.",
     },
     buttonClass: "bg-[#5a45f9] text-white hover:bg-[#6956ff]",
     features: [
@@ -59,12 +59,12 @@ const plans: Plan[] = [
   {
     name: "Nomad",
     monthly: {
-      price: 15,
-      description: "For creators, storytellers, and travel personalities.",
-    },
-    annual: {
       price: 19,
       description: "Best for growing large company or enterprise design team.",
+    },
+    annual: {
+      price: 15,
+      description: "For creators, storytellers, and travel personalities.",
     },
     buttonClass: "bg-[#fda221] text-white hover:bg-[#ffb33e]",
     features: [

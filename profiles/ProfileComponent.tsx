@@ -317,7 +317,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
               </div>
             </div>
 
-            <div className="grid grid-cols-10 gap-1">
+            <div className="grid grid-cols-[repeat(10,24px)] justify-center gap-1">
               {headerFlagCodes.map((code, index) => (
                 <img
                   key={`${code}-${index}`}

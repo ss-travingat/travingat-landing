@@ -47,11 +47,11 @@
     "media": 198,
     "collections": 12,
     "images": {
-      "cover": "/images/profile-cover2-figma.png",
+      "cover": "/images/country-greece-figma.png",
       "avatar": "/images/profile-avatar2-figma.png",
       "gallery": [
         "/images/collection-europe-figma.png",
-        "/images/country-greece-figma.png",
+        "/images/profile-cover2-figma.png",
         "/images/country-switzerland-figma.png"
       ]
     },
