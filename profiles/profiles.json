@@ -379,5 +379,53 @@
       "EC",
       "EG"
     ]
+  },
+  {
+    "id": "007",
+    "name": "Matheus Silva",
+    "handle": "@matheus.explore",
+    "country": "Brazil",
+    "flag": "🇧🇷",
+    "flagCode": "BR",
+    "homelandFlagCode": "BR",
+    "currentlyInFlagCode": "AU",
+    "countries": 7,
+    "media": 0,
+    "collections": 0,
+    "images": {
+      "cover": "https://cdn.travingat.com/landingpage-assets/profiles/cover-1775657312044.jpg",
+      "avatar": "https://cdn.travingat.com/landingpage-assets/profiles/avatar-1775657318279.jpg",
+      "gallery": [
+        "https://cdn.travingat.com/landingpage-assets/profiles/gallery-1775657341037.webp",
+        "https://cdn.travingat.com/landingpage-assets/profiles/gallery-1775657342294.jpg",
+        "https://cdn.travingat.com/landingpage-assets/profiles/gallery-1775657344420.webp",
+        "https://cdn.travingat.com/landingpage-assets/profiles/gallery-1775657345496.webp",
+        "https://cdn.travingat.com/landingpage-assets/profiles/gallery-1775657346771.webp",
+        "https://cdn.travingat.com/landingpage-assets/profiles/gallery-1775657348924.webp",
+        "https://cdn.travingat.com/landingpage-assets/profiles/gallery-1775657350896.jpg",
+        "https://cdn.travingat.com/landingpage-assets/profiles/gallery-1775657352423.jpg"
+      ]
+    },
+    "align": "start",
+    "bio": "A restless soul with a permanent tan and a well-stamped passport, I specialize in the \"slow and local\" approach to global exploration. Whether I’m navigating the intricate metro lines of a sprawling megacity or sharing a moka pot of Brazilian coffee with new friends in a remote mountain village, my goal is always to find the extraordinary in the everyday. I travel with one bag, an open mind, and a relentless curiosity for hidden street food spots and architectural marvels. For me, the journey isn't about ticking off landmarks—it's about the stories gathered between destinations and the belief that the best way to understand a culture is to simply sit, observe, and take the scenic route every single time.",
+    "interests": [],
+    "languages": [],
+    "homeland": "Brazil",
+    "currentlyIn": "Australia",
+    "socials": {
+      "instagram": "",
+      "x": "",
+      "linkedin": "",
+      "youtube": ""
+    },
+    "visitedCountryCodes": [
+      "AU",
+      "BE",
+      "CL",
+      "IN",
+      "HU",
+      "PE",
+      "RU"
+    ]
   }
 ]

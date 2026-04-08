@@ -105,11 +105,17 @@ export default function FeaturedProfiles() {
   const scrollPositionRef = useRef(0);
   const [isPaused, setIsPaused] = useState(false);
 
-  // Touch / swipe tracking (refs avoid re-render on every touch event)
+  // Mouse drag
+  const isDraggingRef = useRef(false);
+  const dragStartXRef = useRef(0);
+  const dragStartScrollRef = useRef(0);
+  const mouseHasDraggedRef = useRef(false);
+
+  // Touch swipe
   const touchStartXRef = useRef(0);
   const touchStartScrollRef = useRef(0);
   const isSwipingRef = useRef(false);
-  const hasDraggedRef = useRef(false);
+  const touchHasDraggedRef = useRef(false);
 
   const allCards = [...demoProfiles, ...demoProfiles];
 
@@ -136,16 +142,12 @@ export default function FeaturedProfiles() {
     };
 
     animationRef.current = requestAnimationFrame(tick);
-
     return () => {
-      if (animationRef.current) {
-        cancelAnimationFrame(animationRef.current);
-      }
+      if (animationRef.current) cancelAnimationFrame(animationRef.current);
     };
   }, [isPaused]);
 
-  // Imperative touchmove listener with {passive: false} so we can
-  // call e.preventDefault() to block vertical page scroll while swiping
+  // Imperative touchmove with {passive: false} to preventDefault during horizontal swipe
   useEffect(() => {
     const element = scrollRef.current;
     if (!element) return;
@@ -155,18 +157,14 @@ export default function FeaturedProfiles() {
       e.preventDefault();
 
       const deltaX = touchStartXRef.current - e.touches[0].clientX;
-
-      if (Math.abs(deltaX) > 5) hasDraggedRef.current = true;
+      if (Math.abs(deltaX) > 5) touchHasDraggedRef.current = true;
 
       const singleSetWidth = element.scrollWidth / 2;
       let newPosition = touchStartScrollRef.current + deltaX;
-
-      // Wrap-around to keep the infinite loop intact
       if (singleSetWidth > 0) {
         if (newPosition < 0) newPosition += singleSetWidth;
         if (newPosition >= singleSetWidth) newPosition -= singleSetWidth;
       }
-
       scrollPositionRef.current = newPosition;
       element.scrollLeft = newPosition;
     };
@@ -175,36 +173,75 @@ export default function FeaturedProfiles() {
     return () => element.removeEventListener("touchmove", onTouchMove);
   }, []);
 
-  // Desktop hover — pause / resume
-  const handleMouseEnter = () => setIsPaused(true);
+  // Keep scrollPositionRef in sync when native scroll happens (mousewheel etc.)
+  const handleScroll = () => {
+    if (scrollRef.current) scrollPositionRef.current = scrollRef.current.scrollLeft;
+  };
+
+  // ── Mouse drag ──────────────────────────────────────────────────────────────
+  const handleMouseDown = (e: React.MouseEvent) => {
+    isDraggingRef.current = true;
+    mouseHasDraggedRef.current = false;
+    dragStartXRef.current = e.clientX;
+    dragStartScrollRef.current = scrollPositionRef.current;
+    setIsPaused(true);
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDraggingRef.current) return;
+    const element = scrollRef.current;
+    if (!element) return;
+
+    const deltaX = dragStartXRef.current - e.clientX;
+    if (Math.abs(deltaX) > 4) mouseHasDraggedRef.current = true;
+
+    const singleSetWidth = element.scrollWidth / 2;
+    let newPosition = dragStartScrollRef.current + deltaX;
+    if (singleSetWidth > 0) {
+      if (newPosition < 0) newPosition += singleSetWidth;
+      if (newPosition >= singleSetWidth) newPosition -= singleSetWidth;
+    }
+    scrollPositionRef.current = newPosition;
+    element.scrollLeft = newPosition;
+  };
+
+  const handleMouseUp = () => {
+    isDraggingRef.current = false;
+    if (scrollRef.current) scrollPositionRef.current = scrollRef.current.scrollLeft;
+    setTimeout(() => setIsPaused(false), 40);
+    setTimeout(() => { mouseHasDraggedRef.current = false; }, 200);
+  };
+
+  // ── Hover (no drag) ─────────────────────────────────────────────────────────
+  const handleMouseEnter = () => {
+    if (!isDraggingRef.current) setIsPaused(true);
+  };
+
   const handleMouseLeave = () => {
+    isDraggingRef.current = false;
     if (scrollRef.current) scrollPositionRef.current = scrollRef.current.scrollLeft;
     setIsPaused(false);
   };
 
-  // Touch start — record start position and pause auto-scroll
+  // ── Touch ───────────────────────────────────────────────────────────────────
   const handleTouchStart = (e: React.TouchEvent) => {
     touchStartXRef.current = e.touches[0].clientX;
     touchStartScrollRef.current = scrollPositionRef.current;
-    hasDraggedRef.current = false;
+    touchHasDraggedRef.current = false;
     isSwipingRef.current = true;
     setIsPaused(true);
   };
 
-  // Touch end — sync position, then resume auto-scroll after a brief delay
   const handleTouchEnd = () => {
     isSwipingRef.current = false;
     if (scrollRef.current) scrollPositionRef.current = scrollRef.current.scrollLeft;
-    // Small delay so the last frame lands smoothly before auto-scroll resumes
     setTimeout(() => setIsPaused(false), 60);
-    // Clear drag flag slightly later so the synthetic click fired after
-    // touchend is still blocked if the finger moved
-    setTimeout(() => { hasDraggedRef.current = false; }, 200);
+    setTimeout(() => { touchHasDraggedRef.current = false; }, 200);
   };
 
-  // Block link navigation when the user was actually dragging (not tapping)
+  // Block link navigation when finger/mouse actually dragged
   const handleClickCapture = (e: React.MouseEvent) => {
-    if (hasDraggedRef.current) {
+    if (mouseHasDraggedRef.current || touchHasDraggedRef.current) {
       e.preventDefault();
       e.stopPropagation();
     }
@@ -218,11 +255,17 @@ export default function FeaturedProfiles() {
         </h2>
       </div>
 
+      {/* overflow-x-scroll (scrollbar hidden by hide-scrollbar) ensures scrollLeft
+          works in all browsers — overflow-x-hidden silently blocks it in some. */}
       <div
         ref={scrollRef}
-        className="hide-scrollbar overflow-x-hidden overflow-y-hidden touch-pan-y"
+        className={`hide-scrollbar overflow-x-scroll overflow-y-hidden select-none ${isDraggingRef.current ? "cursor-grabbing" : "cursor-grab"}`}
+        onScroll={handleScroll}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
         onClickCapture={handleClickCapture}

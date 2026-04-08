@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { toLandingAssetUrl } from "@/lib/landing-assets";
 
 interface Profile {
@@ -486,7 +487,7 @@ export default function AdminProfilesPage() {
     try {
       const res = await fetch("/api/profiles");
       const data = await res.json();
-      setProfiles(data);
+      setProfiles([...data].reverse());
     } catch {
       showToast("Failed to load profiles");
     }
@@ -943,64 +944,51 @@ export default function AdminProfilesPage() {
                 />
 
                 {/* Homeland */}
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="text-sm text-white/60 block mb-1.5">
-                      Homeland
-                    </label>
-                    <input
-                      type="text"
-                      value={form.homeland}
-                      onChange={(e) =>
-                        setForm((prev) => ({
-                          ...prev,
-                          homeland: e.target.value,
-                        }))
-                      }
-                      placeholder="e.g. Bogota, Colombia"
-                      className="w-full px-3 py-2.5 bg-white/5 border border-white/10 rounded-lg text-sm text-white placeholder:text-white/25 focus:outline-none focus:border-[#5A45F9] transition-colors"
-                    />
-                  </div>
+                <div className="space-y-2">
                   <CountrySelect
-                    label="Homeland Flag"
+                    label="Homeland Country"
                     value={form.homelandFlagCode}
-                    onChange={(code) =>
+                    onChange={(code, name) =>
                       setForm((prev) => ({
                         ...prev,
                         homelandFlagCode: code,
+                        // Pre-fill city text if empty, otherwise keep what admin typed
+                        homeland: prev.homeland || name,
                       }))
                     }
+                  />
+                  <input
+                    type="text"
+                    value={form.homeland}
+                    onChange={(e) =>
+                      setForm((prev) => ({ ...prev, homeland: e.target.value }))
+                    }
+                    placeholder="City, e.g. Bogota"
+                    className="w-full px-3 py-2.5 bg-white/5 border border-white/10 rounded-lg text-sm text-white placeholder:text-white/25 focus:outline-none focus:border-[#5A45F9] transition-colors"
                   />
                 </div>
 
                 {/* Currently In */}
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="text-sm text-white/60 block mb-1.5">
-                      Currently In
-                    </label>
-                    <input
-                      type="text"
-                      value={form.currentlyIn}
-                      onChange={(e) =>
-                        setForm((prev) => ({
-                          ...prev,
-                          currentlyIn: e.target.value,
-                        }))
-                      }
-                      placeholder="e.g. Medellin, Colombia"
-                      className="w-full px-3 py-2.5 bg-white/5 border border-white/10 rounded-lg text-sm text-white placeholder:text-white/25 focus:outline-none focus:border-[#5A45F9] transition-colors"
-                    />
-                  </div>
+                <div className="space-y-2">
                   <CountrySelect
-                    label="Currently In Flag"
+                    label="Currently In Country"
                     value={form.currentlyInFlagCode}
-                    onChange={(code) =>
+                    onChange={(code, name) =>
                       setForm((prev) => ({
                         ...prev,
                         currentlyInFlagCode: code,
+                        currentlyIn: prev.currentlyIn || name,
                       }))
                     }
+                  />
+                  <input
+                    type="text"
+                    value={form.currentlyIn}
+                    onChange={(e) =>
+                      setForm((prev) => ({ ...prev, currentlyIn: e.target.value }))
+                    }
+                    placeholder="City, e.g. Medellin"
+                    className="w-full px-3 py-2.5 bg-white/5 border border-white/10 rounded-lg text-sm text-white placeholder:text-white/25 focus:outline-none focus:border-[#5A45F9] transition-colors"
                   />
                 </div>
 
@@ -1294,6 +1282,14 @@ export default function AdminProfilesPage() {
 
                     {/* Actions */}
                     <div className="flex items-center gap-1 shrink-0">
+                      <Link
+                        href={`/profiles/${p.id}`}
+                        target="_blank"
+                        className="p-2 hover:bg-white/10 rounded-lg text-xs text-white/60 hover:text-white transition-colors"
+                        title="View profile"
+                      >
+                        🔗
+                      </Link>
                       <button
                         onClick={() => startEdit(p)}
                         className="p-2 hover:bg-white/10 rounded-lg text-xs text-white/60 hover:text-white transition-colors cursor-pointer"
