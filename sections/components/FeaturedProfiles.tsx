@@ -105,8 +105,15 @@ export default function FeaturedProfiles() {
   const scrollPositionRef = useRef(0);
   const [isPaused, setIsPaused] = useState(false);
 
+  // Touch / swipe tracking (refs avoid re-render on every touch event)
+  const touchStartXRef = useRef(0);
+  const touchStartScrollRef = useRef(0);
+  const isSwipingRef = useRef(false);
+  const hasDraggedRef = useRef(false);
+
   const allCards = [...demoProfiles, ...demoProfiles];
 
+  // Auto-scroll animation loop
   useEffect(() => {
     const tick = () => {
       const element = scrollRef.current;
@@ -137,13 +144,70 @@ export default function FeaturedProfiles() {
     };
   }, [isPaused]);
 
-  const handleMouseEnter = () => setIsPaused(true);
+  // Imperative touchmove listener with {passive: false} so we can
+  // call e.preventDefault() to block vertical page scroll while swiping
+  useEffect(() => {
+    const element = scrollRef.current;
+    if (!element) return;
 
+    const onTouchMove = (e: TouchEvent) => {
+      if (!isSwipingRef.current) return;
+      e.preventDefault();
+
+      const deltaX = touchStartXRef.current - e.touches[0].clientX;
+
+      if (Math.abs(deltaX) > 5) hasDraggedRef.current = true;
+
+      const singleSetWidth = element.scrollWidth / 2;
+      let newPosition = touchStartScrollRef.current + deltaX;
+
+      // Wrap-around to keep the infinite loop intact
+      if (singleSetWidth > 0) {
+        if (newPosition < 0) newPosition += singleSetWidth;
+        if (newPosition >= singleSetWidth) newPosition -= singleSetWidth;
+      }
+
+      scrollPositionRef.current = newPosition;
+      element.scrollLeft = newPosition;
+    };
+
+    element.addEventListener("touchmove", onTouchMove, { passive: false });
+    return () => element.removeEventListener("touchmove", onTouchMove);
+  }, []);
+
+  // Desktop hover — pause / resume
+  const handleMouseEnter = () => setIsPaused(true);
   const handleMouseLeave = () => {
-    if (scrollRef.current) {
-      scrollPositionRef.current = scrollRef.current.scrollLeft;
-    }
+    if (scrollRef.current) scrollPositionRef.current = scrollRef.current.scrollLeft;
     setIsPaused(false);
+  };
+
+  // Touch start — record start position and pause auto-scroll
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartXRef.current = e.touches[0].clientX;
+    touchStartScrollRef.current = scrollPositionRef.current;
+    hasDraggedRef.current = false;
+    isSwipingRef.current = true;
+    setIsPaused(true);
+  };
+
+  // Touch end — sync position, then resume auto-scroll after a brief delay
+  const handleTouchEnd = () => {
+    isSwipingRef.current = false;
+    if (scrollRef.current) scrollPositionRef.current = scrollRef.current.scrollLeft;
+    // Small delay so the last frame lands smoothly before auto-scroll resumes
+    setTimeout(() => setIsPaused(false), 60);
+    // Clear drag flag slightly later so the synthetic click fired after
+    // touchend is still blocked if the finger moved
+    setTimeout(() => { hasDraggedRef.current = false; }, 200);
+  };
+
+  // Block link navigation when the user was actually dragging (not tapping)
+  const handleClickCapture = (e: React.MouseEvent) => {
+    if (hasDraggedRef.current) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
   };
 
   return (
@@ -156,11 +220,12 @@ export default function FeaturedProfiles() {
 
       <div
         ref={scrollRef}
-        className="hide-scrollbar overflow-x-hidden overflow-y-hidden"
+        className="hide-scrollbar overflow-x-hidden overflow-y-hidden touch-pan-y"
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
-        onTouchStart={handleMouseEnter}
-        onTouchEnd={handleMouseLeave}
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+        onClickCapture={handleClickCapture}
       >
         <div className="flex w-max items-center gap-4 px-4 xl:gap-8">
           {allCards.map((profile, index) => {

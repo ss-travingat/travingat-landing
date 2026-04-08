@@ -84,3 +84,20 @@ export async function uploadBlogAsset(params: {
     contentType,
   });
 }
+
+/**
+ * Upload a profile image to R2 under `landingpage-assets/profiles/`.
+ */
+export async function uploadProfileAsset(params: {
+  fileBuffer: Buffer;
+  fileName: string;
+  contentType?: string;
+}): Promise<{ key: string; url: string }> {
+  const { fileBuffer, fileName, contentType } = params;
+  const cleanName = fileName.replace(/^[\/]+/, "");
+  return uploadLandingAsset({
+    fileBuffer,
+    keySuffix: `profiles/${cleanName}`,
+    contentType,
+  });
+}
