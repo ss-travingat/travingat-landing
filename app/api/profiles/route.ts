@@ -5,6 +5,16 @@ import { toLandingAssetUrl } from "@/lib/landing-assets";
 
 const DATA_PATH = path.join(process.cwd(), "profiles/profiles.json");
 
+interface CountryImage {
+  countryCode: string;
+  imageUrl: string;
+}
+
+interface CollectionImage {
+  title: string;
+  imageUrl: string;
+}
+
 interface ProfileImages {
   cover: string;
   avatar: string;
@@ -37,6 +47,8 @@ interface Profile {
     youtube?: string;
   };
   visitedCountryCodes: string[];
+  countryImages?: CountryImage[];
+  collectionImages?: CollectionImage[];
 }
 
 function readProfiles(): Profile[] {
@@ -117,6 +129,8 @@ export async function POST(request: Request) {
         youtube: socials?.youtube || "",
       },
       visitedCountryCodes: visitedCountryCodes || [],
+      countryImages: body.countryImages || [],
+      collectionImages: body.collectionImages || [],
     };
 
     profiles.push(newProfile);

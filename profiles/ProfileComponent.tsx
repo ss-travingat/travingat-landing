@@ -20,6 +20,31 @@ const COLLECTIONS_EMPTY_PREVIEW_IMAGES = [
   "/images/collection-hiking-figma.png",
 ] as const;
 
+const COUNTRY_LIST_LOOKUP: Record<string, string> = {
+  AF: "Afghanistan", AL: "Albania", DZ: "Algeria", AR: "Argentina", AM: "Armenia",
+  AU: "Australia", AT: "Austria", AZ: "Azerbaijan", BS: "Bahamas", BD: "Bangladesh",
+  BE: "Belgium", BZ: "Belize", BO: "Bolivia", BA: "Bosnia and Herzegovina", BR: "Brazil",
+  BG: "Bulgaria", KH: "Cambodia", CA: "Canada", CL: "Chile", CN: "China",
+  CO: "Colombia", CR: "Costa Rica", HR: "Croatia", CU: "Cuba", CY: "Cyprus",
+  CZ: "Czech Republic", DK: "Denmark", DO: "Dominican Republic", EC: "Ecuador", EG: "Egypt",
+  SV: "El Salvador", EE: "Estonia", ET: "Ethiopia", FI: "Finland", FR: "France",
+  GE: "Georgia", DE: "Germany", GH: "Ghana", GR: "Greece", GT: "Guatemala",
+  HT: "Haiti", HN: "Honduras", HK: "Hong Kong", HU: "Hungary", IS: "Iceland",
+  IN: "India", ID: "Indonesia", IR: "Iran", IQ: "Iraq", IE: "Ireland",
+  IL: "Israel", IT: "Italy", JM: "Jamaica", JP: "Japan", JO: "Jordan",
+  KZ: "Kazakhstan", KE: "Kenya", KR: "South Korea", KW: "Kuwait", LA: "Laos",
+  LV: "Latvia", LB: "Lebanon", LT: "Lithuania", LU: "Luxembourg", MY: "Malaysia",
+  MV: "Maldives", MT: "Malta", MX: "Mexico", MA: "Morocco", MM: "Myanmar",
+  NP: "Nepal", NL: "Netherlands", NZ: "New Zealand", NI: "Nicaragua", NG: "Nigeria",
+  NO: "Norway", OM: "Oman", PK: "Pakistan", PA: "Panama", PY: "Paraguay",
+  PE: "Peru", PH: "Philippines", PL: "Poland", PT: "Portugal", QA: "Qatar",
+  RO: "Romania", RU: "Russia", SA: "Saudi Arabia", RS: "Serbia", SG: "Singapore",
+  SK: "Slovakia", SI: "Slovenia", ZA: "South Africa", ES: "Spain", LK: "Sri Lanka",
+  SE: "Sweden", CH: "Switzerland", TW: "Taiwan", TZ: "Tanzania", TH: "Thailand",
+  TR: "Turkey", UA: "Ukraine", AE: "United Arab Emirates", GB: "United Kingdom",
+  US: "United States", UY: "Uruguay", UZ: "Uzbekistan", VE: "Venezuela", VN: "Vietnam",
+};
+
 type TabKey = "all" | "countries" | "collections" | "about";
 
 type MediaItem = {
@@ -152,6 +177,24 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
   const flagOverflowCount = Math.max(0, (profile.countries ?? 0) - headerFlagCodes.length);
 
   const countryCards = useMemo<CountryCard[]>(() => {
+    // Use admin-uploaded country images if available
+    if (profile.countryImages && profile.countryImages.length > 0) {
+      const totalPhotos = allMediaItems.filter((m) => !m.isVideo).length;
+      const totalVideos = allMediaItems.filter((m) => m.isVideo).length;
+      const count = profile.countryImages.length;
+      return profile.countryImages.map((ci, index) => {
+        const countryName = COUNTRY_LIST_LOOKUP[ci.countryCode.toUpperCase()] || ci.countryCode;
+        return {
+          code: `${profile.id}-ci-${index}`,
+          name: countryName,
+          flagCode: ci.countryCode,
+          thumbnailUrl: ci.imageUrl,
+          photoCount: Math.floor(totalPhotos / count),
+          videoCount: Math.floor(totalVideos / count),
+        };
+      });
+    }
+
     const candidates: { name: string; flagCode: string }[] = [
       { name: basedIn, flagCode: profile.flagCode },
       { name: toLocationCountry(profile.homeland), flagCode: profile.homelandFlagCode || profile.flagCode },
@@ -182,9 +225,28 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
         videoCount: Math.floor(totalVideos / count),
       };
     });
-  }, [allMediaItems, basedIn, profile.images.cover, profile.currentlyIn, profile.flagCode, profile.homelandFlagCode, profile.currentlyInFlagCode, profile.homeland, profile.id]);
+  }, [allMediaItems, basedIn, profile.images.cover, profile.currentlyIn, profile.flagCode, profile.homelandFlagCode, profile.currentlyInFlagCode, profile.homeland, profile.id, profile.countryImages]);
 
   const collectionCards = useMemo<CollectionCard[]>(() => {
+    // Use admin-uploaded collection images if available
+    if (profile.collectionImages && profile.collectionImages.length > 0) {
+      return profile.collectionImages.map((ci, index) => {
+        const createdAt = new Date(Date.now() - index * 1000 * 60 * 60 * 24 * 19);
+        return {
+          id: `${profile.id}-collection-${index}`,
+          title: ci.title,
+          description: profile.bio,
+          createdLabel: createdAt.toLocaleDateString("en-GB", {
+            day: "2-digit",
+            month: "short",
+            year: "numeric",
+          }),
+          thumbnailUrl: ci.imageUrl,
+          countries: countryCards.map((country) => country.name).slice(0, 3),
+        };
+      });
+    }
+
     const titles = profile.interests.length > 0 ? profile.interests : ["Travel moments"];
     const count = Math.min(4, Math.max(1, Math.min(titles.length, allMediaItems.length || 1)));
 
@@ -205,7 +267,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
         countries: countryCards.map((country) => country.name).slice(0, 3),
       };
     });
-  }, [allMediaItems, countryCards, profile.bio, profile.images.cover, profile.id, profile.interests]);
+  }, [allMediaItems, countryCards, profile.bio, profile.images.cover, profile.id, profile.interests, profile.collectionImages]);
 
   const aboutPhotos = useMemo(() => {
     return allMediaItems

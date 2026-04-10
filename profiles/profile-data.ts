@@ -30,6 +30,8 @@ export type SampleProfile = {
     youtube?: string;
   };
   visitedCountryCodes: string[];
+  countryImages?: { countryCode: string; imageUrl: string }[];
+  collectionImages?: { title: string; imageUrl: string }[];
 };
 
 export const sampleProfiles = profilesData as unknown as SampleProfile[];

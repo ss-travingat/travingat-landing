@@ -5,6 +5,16 @@ import Image from "next/image";
 import Link from "next/link";
 import { toLandingAssetUrl } from "@/lib/landing-assets";
 
+interface CountryImage {
+  countryCode: string;
+  imageUrl: string;
+}
+
+interface CollectionImage {
+  title: string;
+  imageUrl: string;
+}
+
 interface Profile {
   id: string;
   name: string;
@@ -35,6 +45,8 @@ interface Profile {
     youtube: string;
   };
   visitedCountryCodes: string[];
+  countryImages: CountryImage[];
+  collectionImages: CollectionImage[];
 }
 
 const COUNTRY_LIST: { code: string; name: string; flag: string }[] = [
@@ -173,6 +185,8 @@ const emptyForm: Omit<Profile, "id"> = {
   currentlyIn: "",
   socials: { x: "", instagram: "", linkedin: "", youtube: "" },
   visitedCountryCodes: [],
+  countryImages: [],
+  collectionImages: [],
 };
 
 function CountrySelect({
@@ -472,10 +486,14 @@ export default function AdminProfilesPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [toast, setToast] = useState<{ msg: string; error?: boolean } | null>(null);
-  const [uploading, setUploading] = useState<"cover" | "avatar" | "gallery" | null>(null);
+  const [uploading, setUploading] = useState<"cover" | "avatar" | "gallery" | "country" | "collection" | null>(null);
   const coverInputRef = useRef<HTMLInputElement>(null);
   const avatarInputRef = useRef<HTMLInputElement>(null);
   const galleryInputRef = useRef<HTMLInputElement>(null);
+  const countryImageInputRef = useRef<HTMLInputElement>(null);
+  const collectionImageInputRef = useRef<HTMLInputElement>(null);
+  const [pendingCountryCode, setPendingCountryCode] = useState<string>("");
+  const [pendingCollectionTitle, setPendingCollectionTitle] = useState<string>("");
 
   const showToast = (msg: string, error = false) => {
     setToast({ msg, error });
@@ -500,7 +518,7 @@ export default function AdminProfilesPage() {
 
   const handleImageUpload = async (
     file: File,
-    type: "avatar" | "cover" | "gallery"
+    type: "avatar" | "cover" | "gallery" | "country" | "collection"
   ) => {
     if (file.size > 5 * 1024 * 1024) {
       showToast("File too large. Max 5MB.", true);
@@ -658,6 +676,8 @@ export default function AdminProfilesPage() {
       currentlyIn: p.currentlyIn,
       socials: { ...p.socials, x: p.socials.x || "", instagram: p.socials.instagram || "", linkedin: p.socials.linkedin || "", youtube: p.socials.youtube || "" },
       visitedCountryCodes: [...p.visitedCountryCodes],
+      countryImages: p.countryImages ? [...p.countryImages] : [],
+      collectionImages: p.collectionImages ? [...p.collectionImages] : [],
     });
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -1163,6 +1183,183 @@ export default function AdminProfilesPage() {
                       className="flex-1 px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-xs text-white placeholder:text-white/25 focus:outline-none focus:border-[#5A45F9] transition-colors"
                     />
                   </div>
+                </div>
+              </div>
+
+              {/* Country Images */}
+              <div className="space-y-4">
+                <h3 className="text-sm font-medium text-white/80 border-b border-white/10 pb-2">
+                  Country Images
+                </h3>
+                <p className="text-xs text-white/40">
+                  Upload images for specific countries that appear on the profile&apos;s Countries tab.
+                </p>
+
+                {/* Existing country images */}
+                <div className="space-y-2">
+                  {form.countryImages.map((ci, idx) => {
+                    const country = getCountryByCode(ci.countryCode);
+                    return (
+                      <div key={idx} className="flex items-center gap-3 bg-white/5 rounded-lg p-2">
+                        <div className="w-16 h-12 rounded-md overflow-hidden bg-white/5 shrink-0 relative">
+                          <Image
+                            src={toLandingAssetUrl(ci.imageUrl)}
+                            alt={country?.name || ci.countryCode}
+                            fill
+                            className="object-cover"
+                          />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-1.5">
+                            {country && (
+                              <img
+                                src={`/flags/${ci.countryCode}.svg`}
+                                alt={country.name}
+                                className="w-4 h-3 rounded-sm object-cover"
+                              />
+                            )}
+                            <span className="text-sm text-white truncate">{country?.name || ci.countryCode}</span>
+                          </div>
+                        </div>
+                        <button
+                          onClick={() =>
+                            setForm((prev) => ({
+                              ...prev,
+                              countryImages: prev.countryImages.filter((_, i) => i !== idx),
+                            }))
+                          }
+                          className="p-1.5 hover:bg-red-500/20 rounded-md text-white/40 hover:text-red-400 transition-colors cursor-pointer text-xs"
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* Add country image */}
+                <div className="flex gap-2 items-end">
+                  <div className="flex-1">
+                    <CountrySelect
+                      label="Country"
+                      value={pendingCountryCode}
+                      onChange={(code) => setPendingCountryCode(code)}
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    disabled={!pendingCountryCode || uploading !== null}
+                    onClick={() => countryImageInputRef.current?.click()}
+                    className="px-3 py-2.5 bg-white/10 hover:bg-white/15 rounded-lg text-sm font-medium transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+                  >
+                    {uploading === "country" ? "Uploading…" : "+ Upload Image"}
+                  </button>
+                  <input
+                    ref={countryImageInputRef}
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={async (e) => {
+                      const file = e.target.files?.[0];
+                      if (!file || !pendingCountryCode) return;
+                      e.target.value = "";
+                      const url = await handleImageUpload(file, "country");
+                      if (url) {
+                        setForm((prev) => ({
+                          ...prev,
+                          countryImages: [
+                            ...prev.countryImages,
+                            { countryCode: pendingCountryCode, imageUrl: url },
+                          ],
+                        }));
+                        setPendingCountryCode("");
+                      }
+                    }}
+                  />
+                </div>
+              </div>
+
+              {/* Collection Images */}
+              <div className="space-y-4">
+                <h3 className="text-sm font-medium text-white/80 border-b border-white/10 pb-2">
+                  Collection Images
+                </h3>
+                <p className="text-xs text-white/40">
+                  Upload cover images for collections shown on the profile&apos;s Collections tab.
+                </p>
+
+                {/* Existing collection images */}
+                <div className="space-y-2">
+                  {form.collectionImages.map((ci, idx) => (
+                    <div key={idx} className="flex items-center gap-3 bg-white/5 rounded-lg p-2">
+                      <div className="w-16 h-12 rounded-md overflow-hidden bg-white/5 shrink-0 relative">
+                        <Image
+                          src={toLandingAssetUrl(ci.imageUrl)}
+                          alt={ci.title}
+                          fill
+                          className="object-cover"
+                        />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <span className="text-sm text-white truncate block">{ci.title}</span>
+                      </div>
+                      <button
+                        onClick={() =>
+                          setForm((prev) => ({
+                            ...prev,
+                            collectionImages: prev.collectionImages.filter((_, i) => i !== idx),
+                          }))
+                        }
+                        className="p-1.5 hover:bg-red-500/20 rounded-md text-white/40 hover:text-red-400 transition-colors cursor-pointer text-xs"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Add collection image */}
+                <div className="flex gap-2 items-end">
+                  <div className="flex-1">
+                    <label className="text-sm text-white/60 block mb-1.5">Title</label>
+                    <input
+                      type="text"
+                      value={pendingCollectionTitle}
+                      onChange={(e) => setPendingCollectionTitle(e.target.value)}
+                      placeholder="e.g. Street Shots of Europe"
+                      className="w-full px-3 py-2.5 bg-white/5 border border-white/10 rounded-lg text-sm text-white placeholder:text-white/25 focus:outline-none focus:border-[#5A45F9] transition-colors"
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    disabled={!pendingCollectionTitle.trim() || uploading !== null}
+                    onClick={() => collectionImageInputRef.current?.click()}
+                    className="px-3 py-2.5 bg-white/10 hover:bg-white/15 rounded-lg text-sm font-medium transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+                  >
+                    {uploading === "collection" ? "Uploading…" : "+ Upload Image"}
+                  </button>
+                  <input
+                    ref={collectionImageInputRef}
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={async (e) => {
+                      const file = e.target.files?.[0];
+                      if (!file || !pendingCollectionTitle.trim()) return;
+                      e.target.value = "";
+                      const url = await handleImageUpload(file, "collection");
+                      if (url) {
+                        setForm((prev) => ({
+                          ...prev,
+                          collectionImages: [
+                            ...prev.collectionImages,
+                            { title: pendingCollectionTitle.trim(), imageUrl: url },
+                          ],
+                        }));
+                        setPendingCollectionTitle("");
+                      }
+                    }}
+                  />
                 </div>
               </div>
 
