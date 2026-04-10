@@ -7,12 +7,12 @@ const DATA_PATH = path.join(process.cwd(), "profiles/profiles.json");
 
 interface CountryImage {
   countryCode: string;
-  imageUrl: string;
+  images: string[];
 }
 
 interface CollectionImage {
   title: string;
-  imageUrl: string;
+  images: string[];
 }
 
 interface ProfileImages {

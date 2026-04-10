@@ -7,12 +7,12 @@ import { toLandingAssetUrl } from "@/lib/landing-assets";
 
 interface CountryImage {
   countryCode: string;
-  imageUrl: string;
+  images: string[];
 }
 
 interface CollectionImage {
   title: string;
-  imageUrl: string;
+  images: string[];
 }
 
 interface Profile {
@@ -490,8 +490,6 @@ export default function AdminProfilesPage() {
   const coverInputRef = useRef<HTMLInputElement>(null);
   const avatarInputRef = useRef<HTMLInputElement>(null);
   const galleryInputRef = useRef<HTMLInputElement>(null);
-  const countryImageInputRef = useRef<HTMLInputElement>(null);
-  const collectionImageInputRef = useRef<HTMLInputElement>(null);
   const [pendingCountryCode, setPendingCountryCode] = useState<string>("");
   const [pendingCollectionTitle, setPendingCollectionTitle] = useState<string>("");
 
@@ -851,6 +849,261 @@ export default function AdminProfilesPage() {
                     className="hidden"
                   />
                 </div>
+
+                {/* Country Images */}
+                <div>
+                  <label className="text-sm text-white/60 block mb-2">
+                    Country Images
+                  </label>
+                  <div className="space-y-2 mb-2">
+                    {form.countryImages.map((ci, idx) => {
+                      const country = getCountryByCode(ci.countryCode);
+                      return (
+                        <div key={idx} className="bg-white/5 rounded-lg p-3 space-y-2">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-1.5">
+                              {country && (
+                                <img
+                                  src={`/flags/${ci.countryCode}.svg`}
+                                  alt={country.name}
+                                  className="w-4 h-3 rounded-sm object-cover"
+                                />
+                              )}
+                              <span className="text-sm text-white font-medium">{country?.name || ci.countryCode}</span>
+                              <span className="text-xs text-white/40 ml-1">({ci.images.length} {ci.images.length === 1 ? "photo" : "photos"})</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <label className="px-2 py-1 bg-white/10 hover:bg-white/15 rounded-md text-xs font-medium transition-colors cursor-pointer whitespace-nowrap">
+                                + Add Photos
+                                <input
+                                  type="file"
+                                  accept="image/*"
+                                  multiple
+                                  className="hidden"
+                                  onChange={async (e) => {
+                                    const files = e.target.files;
+                                    if (!files || files.length === 0) return;
+                                    e.target.value = "";
+                                    const urls: string[] = [];
+                                    for (const file of Array.from(files)) {
+                                      const url = await handleImageUpload(file, "country");
+                                      if (url) urls.push(url);
+                                    }
+                                    if (urls.length > 0) {
+                                      setForm((prev) => ({
+                                        ...prev,
+                                        countryImages: prev.countryImages.map((c, i) =>
+                                          i === idx ? { ...c, images: [...c.images, ...urls] } : c
+                                        ),
+                                      }));
+                                    }
+                                  }}
+                                />
+                              </label>
+                              <button
+                                onClick={() =>
+                                  setForm((prev) => ({
+                                    ...prev,
+                                    countryImages: prev.countryImages.filter((_, i) => i !== idx),
+                                  }))
+                                }
+                                className="p-1 hover:bg-red-500/20 rounded-md text-white/40 hover:text-red-400 transition-colors cursor-pointer text-xs"
+                              >
+                                ✕
+                              </button>
+                            </div>
+                          </div>
+                          <div className="flex flex-wrap gap-2">
+                            {ci.images.map((imgUrl, imgIdx) => (
+                              <div key={imgIdx} className="relative group w-16 h-12 rounded-md overflow-hidden bg-white/5 shrink-0">
+                                <Image
+                                  src={toLandingAssetUrl(imgUrl)}
+                                  alt={`${country?.name || ci.countryCode} ${imgIdx + 1}`}
+                                  fill
+                                  className="object-cover"
+                                />
+                                <button
+                                  onClick={() =>
+                                    setForm((prev) => ({
+                                      ...prev,
+                                      countryImages: prev.countryImages.map((c, i) =>
+                                        i === idx ? { ...c, images: c.images.filter((_, j) => j !== imgIdx) } : c
+                                      ).filter((c) => c.images.length > 0),
+                                    }))
+                                  }
+                                  className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity cursor-pointer text-red-400 text-xs"
+                                >
+                                  ✕
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                  <div className="flex gap-2 items-end">
+                    <div className="flex-1">
+                      <CountrySelect
+                        label=""
+                        value={pendingCountryCode}
+                        onChange={(code) => setPendingCountryCode(code)}
+                      />
+                    </div>
+                    <button
+                      type="button"
+                      disabled={!pendingCountryCode}
+                      onClick={() => {
+                        if (!pendingCountryCode) return;
+                        const alreadyExists = form.countryImages.some(
+                          (c) => c.countryCode === pendingCountryCode
+                        );
+                        if (!alreadyExists) {
+                          setForm((prev) => ({
+                            ...prev,
+                            countryImages: [
+                              ...prev.countryImages,
+                              { countryCode: pendingCountryCode, images: [] },
+                            ],
+                          }));
+                        }
+                        setPendingCountryCode("");
+                      }}
+                      className="px-3 py-2.5 bg-white/10 hover:bg-white/15 rounded-lg text-sm font-medium transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+                    >
+                      + Add Country
+                    </button>
+                  </div>
+                </div>
+
+                {/* Collection Images */}
+                <div>
+                  <label className="text-sm text-white/60 block mb-2">
+                    Collection Images
+                  </label>
+                  <div className="space-y-2 mb-2">
+                    {form.collectionImages.map((ci, idx) => (
+                      <div key={idx} className="bg-white/5 rounded-lg p-3 space-y-2">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-sm text-white font-medium">{ci.title}</span>
+                            <span className="text-xs text-white/40 ml-1">({ci.images.length} {ci.images.length === 1 ? "photo" : "photos"})</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <label className="px-2 py-1 bg-white/10 hover:bg-white/15 rounded-md text-xs font-medium transition-colors cursor-pointer whitespace-nowrap">
+                              + Add Photos
+                              <input
+                                type="file"
+                                accept="image/*"
+                                multiple
+                                className="hidden"
+                                onChange={async (e) => {
+                                  const files = e.target.files;
+                                  if (!files || files.length === 0) return;
+                                  e.target.value = "";
+                                  const urls: string[] = [];
+                                  for (const file of Array.from(files)) {
+                                    const url = await handleImageUpload(file, "collection");
+                                    if (url) urls.push(url);
+                                  }
+                                  if (urls.length > 0) {
+                                    setForm((prev) => ({
+                                      ...prev,
+                                      collectionImages: prev.collectionImages.map((c, i) =>
+                                        i === idx ? { ...c, images: [...c.images, ...urls] } : c
+                                      ),
+                                    }));
+                                  }
+                                }}
+                              />
+                            </label>
+                            <button
+                              onClick={() =>
+                                setForm((prev) => ({
+                                  ...prev,
+                                  collectionImages: prev.collectionImages.filter((_, i) => i !== idx),
+                                }))
+                              }
+                              className="p-1 hover:bg-red-500/20 rounded-md text-white/40 hover:text-red-400 transition-colors cursor-pointer text-xs"
+                            >
+                              ✕
+                            </button>
+                          </div>
+                        </div>
+                        <div className="flex flex-wrap gap-2">
+                          {ci.images.map((imgUrl, imgIdx) => (
+                            <div key={imgIdx} className="relative group w-16 h-12 rounded-md overflow-hidden bg-white/5 shrink-0">
+                              <Image
+                                src={toLandingAssetUrl(imgUrl)}
+                                alt={`${ci.title} ${imgIdx + 1}`}
+                                fill
+                                className="object-cover"
+                              />
+                              <button
+                                onClick={() =>
+                                  setForm((prev) => ({
+                                    ...prev,
+                                    collectionImages: prev.collectionImages.map((c, i) =>
+                                      i === idx ? { ...c, images: c.images.filter((_, j) => j !== imgIdx) } : c
+                                    ).filter((c) => c.images.length > 0),
+                                  }))
+                                }
+                                className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity cursor-pointer text-red-400 text-xs"
+                              >
+                                ✕
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="flex gap-2 items-end">
+                    <div className="flex-1">
+                      <input
+                        type="text"
+                        value={pendingCollectionTitle}
+                        onChange={(e) => setPendingCollectionTitle(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") {
+                            e.preventDefault();
+                            const title = pendingCollectionTitle.trim();
+                            if (!title) return;
+                            setForm((prev) => ({
+                              ...prev,
+                              collectionImages: [
+                                ...prev.collectionImages,
+                                { title, images: [] },
+                              ],
+                            }));
+                            setPendingCollectionTitle("");
+                          }
+                        }}
+                        placeholder="Collection title..."
+                        className="w-full px-3 py-2.5 bg-white/5 border border-white/10 rounded-lg text-sm text-white placeholder:text-white/25 focus:outline-none focus:border-[#5A45F9] transition-colors"
+                      />
+                    </div>
+                    <button
+                      type="button"
+                      disabled={!pendingCollectionTitle.trim()}
+                      onClick={() => {
+                        const title = pendingCollectionTitle.trim();
+                        if (!title) return;
+                        setForm((prev) => ({
+                          ...prev,
+                          collectionImages: [
+                            ...prev.collectionImages,
+                            { title, images: [] },
+                          ],
+                        }));
+                        setPendingCollectionTitle("");
+                      }}
+                      className="px-3 py-2.5 bg-white/10 hover:bg-white/15 rounded-lg text-sm font-medium transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+                    >
+                      + Add Collection
+                    </button>
+                  </div>
+                </div>
               </div>
 
               {/* Basic Info */}
@@ -1183,183 +1436,6 @@ export default function AdminProfilesPage() {
                       className="flex-1 px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-xs text-white placeholder:text-white/25 focus:outline-none focus:border-[#5A45F9] transition-colors"
                     />
                   </div>
-                </div>
-              </div>
-
-              {/* Country Images */}
-              <div className="space-y-4">
-                <h3 className="text-sm font-medium text-white/80 border-b border-white/10 pb-2">
-                  Country Images
-                </h3>
-                <p className="text-xs text-white/40">
-                  Upload images for specific countries that appear on the profile&apos;s Countries tab.
-                </p>
-
-                {/* Existing country images */}
-                <div className="space-y-2">
-                  {form.countryImages.map((ci, idx) => {
-                    const country = getCountryByCode(ci.countryCode);
-                    return (
-                      <div key={idx} className="flex items-center gap-3 bg-white/5 rounded-lg p-2">
-                        <div className="w-16 h-12 rounded-md overflow-hidden bg-white/5 shrink-0 relative">
-                          <Image
-                            src={toLandingAssetUrl(ci.imageUrl)}
-                            alt={country?.name || ci.countryCode}
-                            fill
-                            className="object-cover"
-                          />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-1.5">
-                            {country && (
-                              <img
-                                src={`/flags/${ci.countryCode}.svg`}
-                                alt={country.name}
-                                className="w-4 h-3 rounded-sm object-cover"
-                              />
-                            )}
-                            <span className="text-sm text-white truncate">{country?.name || ci.countryCode}</span>
-                          </div>
-                        </div>
-                        <button
-                          onClick={() =>
-                            setForm((prev) => ({
-                              ...prev,
-                              countryImages: prev.countryImages.filter((_, i) => i !== idx),
-                            }))
-                          }
-                          className="p-1.5 hover:bg-red-500/20 rounded-md text-white/40 hover:text-red-400 transition-colors cursor-pointer text-xs"
-                        >
-                          ✕
-                        </button>
-                      </div>
-                    );
-                  })}
-                </div>
-
-                {/* Add country image */}
-                <div className="flex gap-2 items-end">
-                  <div className="flex-1">
-                    <CountrySelect
-                      label="Country"
-                      value={pendingCountryCode}
-                      onChange={(code) => setPendingCountryCode(code)}
-                    />
-                  </div>
-                  <button
-                    type="button"
-                    disabled={!pendingCountryCode || uploading !== null}
-                    onClick={() => countryImageInputRef.current?.click()}
-                    className="px-3 py-2.5 bg-white/10 hover:bg-white/15 rounded-lg text-sm font-medium transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
-                  >
-                    {uploading === "country" ? "Uploading…" : "+ Upload Image"}
-                  </button>
-                  <input
-                    ref={countryImageInputRef}
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={async (e) => {
-                      const file = e.target.files?.[0];
-                      if (!file || !pendingCountryCode) return;
-                      e.target.value = "";
-                      const url = await handleImageUpload(file, "country");
-                      if (url) {
-                        setForm((prev) => ({
-                          ...prev,
-                          countryImages: [
-                            ...prev.countryImages,
-                            { countryCode: pendingCountryCode, imageUrl: url },
-                          ],
-                        }));
-                        setPendingCountryCode("");
-                      }
-                    }}
-                  />
-                </div>
-              </div>
-
-              {/* Collection Images */}
-              <div className="space-y-4">
-                <h3 className="text-sm font-medium text-white/80 border-b border-white/10 pb-2">
-                  Collection Images
-                </h3>
-                <p className="text-xs text-white/40">
-                  Upload cover images for collections shown on the profile&apos;s Collections tab.
-                </p>
-
-                {/* Existing collection images */}
-                <div className="space-y-2">
-                  {form.collectionImages.map((ci, idx) => (
-                    <div key={idx} className="flex items-center gap-3 bg-white/5 rounded-lg p-2">
-                      <div className="w-16 h-12 rounded-md overflow-hidden bg-white/5 shrink-0 relative">
-                        <Image
-                          src={toLandingAssetUrl(ci.imageUrl)}
-                          alt={ci.title}
-                          fill
-                          className="object-cover"
-                        />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <span className="text-sm text-white truncate block">{ci.title}</span>
-                      </div>
-                      <button
-                        onClick={() =>
-                          setForm((prev) => ({
-                            ...prev,
-                            collectionImages: prev.collectionImages.filter((_, i) => i !== idx),
-                          }))
-                        }
-                        className="p-1.5 hover:bg-red-500/20 rounded-md text-white/40 hover:text-red-400 transition-colors cursor-pointer text-xs"
-                      >
-                        ✕
-                      </button>
-                    </div>
-                  ))}
-                </div>
-
-                {/* Add collection image */}
-                <div className="flex gap-2 items-end">
-                  <div className="flex-1">
-                    <label className="text-sm text-white/60 block mb-1.5">Title</label>
-                    <input
-                      type="text"
-                      value={pendingCollectionTitle}
-                      onChange={(e) => setPendingCollectionTitle(e.target.value)}
-                      placeholder="e.g. Street Shots of Europe"
-                      className="w-full px-3 py-2.5 bg-white/5 border border-white/10 rounded-lg text-sm text-white placeholder:text-white/25 focus:outline-none focus:border-[#5A45F9] transition-colors"
-                    />
-                  </div>
-                  <button
-                    type="button"
-                    disabled={!pendingCollectionTitle.trim() || uploading !== null}
-                    onClick={() => collectionImageInputRef.current?.click()}
-                    className="px-3 py-2.5 bg-white/10 hover:bg-white/15 rounded-lg text-sm font-medium transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
-                  >
-                    {uploading === "collection" ? "Uploading…" : "+ Upload Image"}
-                  </button>
-                  <input
-                    ref={collectionImageInputRef}
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={async (e) => {
-                      const file = e.target.files?.[0];
-                      if (!file || !pendingCollectionTitle.trim()) return;
-                      e.target.value = "";
-                      const url = await handleImageUpload(file, "collection");
-                      if (url) {
-                        setForm((prev) => ({
-                          ...prev,
-                          collectionImages: [
-                            ...prev.collectionImages,
-                            { title: pendingCollectionTitle.trim(), imageUrl: url },
-                          ],
-                        }));
-                        setPendingCollectionTitle("");
-                      }
-                    }}
-                  />
                 </div>
               </div>
 

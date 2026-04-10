@@ -188,9 +188,9 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
           code: `${profile.id}-ci-${index}`,
           name: countryName,
           flagCode: ci.countryCode,
-          thumbnailUrl: ci.imageUrl,
-          photoCount: Math.floor(totalPhotos / count),
-          videoCount: Math.floor(totalVideos / count),
+          thumbnailUrl: ci.images[0] || profile.images.cover,
+          photoCount: ci.images.filter((url) => !isVideoAsset(url)).length,
+          videoCount: ci.images.filter((url) => isVideoAsset(url)).length,
         };
       });
     }
@@ -241,7 +241,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
             month: "short",
             year: "numeric",
           }),
-          thumbnailUrl: ci.imageUrl,
+          thumbnailUrl: ci.images[0] || profile.images.cover,
           countries: countryCards.map((country) => country.name).slice(0, 3),
         };
       });
@@ -663,7 +663,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
               ) : (
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-5">
                   {countryCards.map((country) => (
-                    <Link key={country.code} href={`/profiles/${profile.id}`} className="flex flex-col gap-4 group">
+                    <Link key={country.code} href={`/profiles/${profile.id}/country/${country.flagCode.toUpperCase()}`} className="flex flex-col gap-4 group">
                       {/* Photo */}
                       <div className="aspect-square w-full overflow-hidden rounded-2xl bg-[#151515]">
                         <img
@@ -724,8 +724,8 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                 </div>
               ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-                  {collectionCards.map((collection) => (
-                    <Link key={collection.id} href={`/profiles/${profile.id}`} className="group block">
+                  {collectionCards.map((collection, idx) => (
+                    <Link key={collection.id} href={`/profiles/${profile.id}/collection/${idx}`} className="group block">
                       <div className="relative aspect-[1.22] rounded-2xl overflow-hidden bg-[#151515] border border-[#1f1f1f]">
                         <img src={toLandingAssetUrl(collection.thumbnailUrl)} alt={collection.title} className="w-full h-full object-cover" />
                       </div>
