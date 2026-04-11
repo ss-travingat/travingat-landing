@@ -39,10 +39,10 @@ export default function JoinSection() {
         </div>
 
         {/* CTA content */}
-        <h2 className="ds-font-display mb-3 text-[44px] font-semibold leading-13 tracking-[-0.5px] text-white md:text-[52px] md:leading-[60px] md:tracking-[-1px] xl:mb-6 xl:text-[64px] xl:leading-18 xl:tracking-[-1px]">
+        <h2 className="ds-font-display mb-3 text-[44px] font-semibold leading-13 tracking-[-0.5px] text-white md:text-[52px] md:leading-15 md:tracking-[-1px] xl:mb-6 xl:text-[64px] xl:leading-18 xl:tracking-[-1px]">
           Join travelers from around the world.
         </h2>
-        <p className="mb-8 text-[18px] leading-6.5 tracking-[-0.2px] text-gray-400 md:text-[18px] md:leading-[26px] xl:mb-10 xl:text-base">
+        <p className="mb-8 text-[18px] leading-6.5 tracking-[-0.2px] text-gray-400 md:text-[18px] md:leading-6.5 xl:mb-10 xl:text-base">
           Be first to build and share your travel profile.
         </p>
 

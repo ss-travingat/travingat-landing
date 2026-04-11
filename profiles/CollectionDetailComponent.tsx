@@ -89,7 +89,7 @@ export default function CollectionDetailComponent({
       <main className="w-full max-w-372 flex flex-col items-center gap-12 pb-28 md:pb-20">
         <div className="flex flex-col items-center gap-5 w-full max-w-150">
           <div className="flex flex-col items-center gap-4">
-            <div className="flex items-center justify-center w-16 h-16 rounded-2xl bg-[#1d1d1d] border border-[#2a2a2a]">
+            <div className="flex items-center justify-center w-16 h-16 rounded-2xl bg-[#1d1d1d] border border-black-300">
               <span className="material-symbols-rounded text-[32px] text-white">folder</span>
             </div>
             <h1 className="ds-font-display text-[48px] leading-[1.2] tracking-[-0.41px] font-bold text-white text-center">

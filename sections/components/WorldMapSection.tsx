@@ -5,12 +5,12 @@ export default function WorldMapSection() {
   return (
     <section className="py-12 md:py-16 xl:px-0 xl:py-20">
       {/* Title */}
-      <h2 className="ds-font-display text-center text-[44px] leading-[52px] font-semibold text-white mb-8 tracking-[-0.5px] md:text-[52px] md:leading-[60px] md:tracking-[-1px] md:mb-10 md:max-w-[700px] md:mx-auto xl:px-0 xl:text-[64px] xl:leading-[72px] xl:text-center xl:max-w-[800px] xl:mx-auto xl:mb-12 xl:tracking-[-1px]">
+      <h2 className="ds-font-display text-center text-[32px] leading-10 font-semibold text-white mb-8 tracking-[-0.5px] px-3 md:px-12 md:text-[52px] md:leading-15 md:tracking-[-1px] md:mb-10 xl:px-0 xl:text-[64px] xl:leading-18 xl:text-center xl:max-w-200 xl:mx-auto xl:mb-12 xl:tracking-[-1px]">
         One place for everywhere you&apos;ve explored
       </h2>
 
       {/* Illustration area */}
-      <div className="relative mx-0 xl:max-w-[1300px] xl:mx-auto xl:h-[550px] overflow-hidden">
+      <div className="relative mx-0 xl:max-w-325 xl:mx-auto xl:h-137.5 overflow-hidden">
         {/* Mobile and iPad: single image with gradient + text overlay */}
         <div className="xl:hidden relative">
           <Image
@@ -42,7 +42,7 @@ export default function WorldMapSection() {
         </div>
 
         {/* Desktop: full illustration */}
-        <div className="hidden xl:block relative w-full h-[550px]">
+        <div className="hidden xl:block relative w-full h-137.5">
         {/* World map background */}
         <div className="absolute inset-0">
           <Image
@@ -54,7 +54,7 @@ export default function WorldMapSection() {
         </div>
 
         {/* Central explore.png image (already contains tags + pins) */}
-        <div className="absolute left-1/2 -translate-x-1/2 bottom-0 w-[320px] xl:w-[660px] h-full z-10">
+        <div className="absolute left-1/2 -translate-x-1/2 bottom-0 w-[320px] xl:w-165 h-full z-10">
           <Image
             src={toLandingAssetUrl("/images/traveler-rachel-figma.png")}
             alt="Traveler exploring the world"
@@ -66,7 +66,7 @@ export default function WorldMapSection() {
 
         {/* Gradient overlay at bottom for name */}
         <div
-          className="absolute left-1/2 -translate-x-1/2 bottom-0 w-[320px] xl:w-[550px] h-[200px] flex flex-col items-center justify-end z-20 pointer-events-none"
+          className="absolute left-1/2 -translate-x-1/2 bottom-0 w-[320px] xl:w-137.5 h-50 flex flex-col items-center justify-end z-20 pointer-events-none"
           style={{
             backgroundImage:
               "linear-gradient(180deg, rgba(10,10,10,0) 0%, rgba(10,10,10,0.7) 60%, rgba(10,10,10,1) 100%)",
@@ -89,7 +89,7 @@ export default function WorldMapSection() {
         </div>
 
         {/* 28 Countries card - left side */}
-        <div className="absolute top-[20%] left-[4.6%] bg-[#111] border border-[#2a2a2a] rounded-[20px] p-6 w-[320px] overflow-hidden z-20 hidden xl:flex flex-col gap-6">
+        <div className="absolute top-[20%] left-[4.6%] bg-[#111] border border-black-300 rounded-[20px] p-6 w-[320px] overflow-hidden z-20 hidden xl:flex flex-col gap-6">
           <p className="text-[20px] font-medium text-white tracking-[-0.5px] ds-font-display">
             28 Countries
           </p>
@@ -103,7 +103,7 @@ export default function WorldMapSection() {
                   fill
                   className="object-cover"
                 />
-                <div className="absolute inset-0 bg-gradient-to-b from-transparent from-70% to-black/50" />
+                <div className="absolute inset-0 bg-linear-to-b from-transparent from-70% to-black/50" />
                 <span className="absolute bottom-1.5 left-1.5 text-[12px] font-black text-white drop-shadow-sm">
                   Greece
                 </span>
@@ -115,7 +115,7 @@ export default function WorldMapSection() {
                   fill
                   className="object-cover"
                 />
-                <div className="absolute inset-0 bg-gradient-to-b from-transparent from-70% to-black/50" />
+                <div className="absolute inset-0 bg-linear-to-b from-transparent from-70% to-black/50" />
                 <span className="absolute bottom-1.5 left-1.5 text-[12px] font-black text-white drop-shadow-sm">
                   Thailand
                 </span>
@@ -127,7 +127,7 @@ export default function WorldMapSection() {
                   fill
                   className="object-cover"
                 />
-                <div className="absolute inset-0 bg-gradient-to-b from-transparent from-70% to-black/50" />
+                <div className="absolute inset-0 bg-linear-to-b from-transparent from-70% to-black/50" />
                 <span className="absolute bottom-1.5 left-1.5 text-[12px] font-black text-white drop-shadow-sm">
                   Switzerland
                 </span>
@@ -142,7 +142,7 @@ export default function WorldMapSection() {
                   fill
                   className="object-cover"
                 />
-                <div className="absolute inset-0 bg-gradient-to-b from-transparent from-70% to-black/50" />
+                <div className="absolute inset-0 bg-linear-to-b from-transparent from-70% to-black/50" />
                 <span className="absolute bottom-1.5 left-1.5 text-[12px] font-black text-white drop-shadow-sm">
                   Italy
                 </span>
@@ -154,7 +154,7 @@ export default function WorldMapSection() {
                   fill
                   className="object-cover"
                 />
-                <div className="absolute inset-0 bg-gradient-to-b from-transparent from-70% to-black/50" />
+                <div className="absolute inset-0 bg-linear-to-b from-transparent from-70% to-black/50" />
                 <span className="absolute bottom-1.5 left-1.5 text-[12px] font-black text-white drop-shadow-sm">
                   Nepal
                 </span>
@@ -166,7 +166,7 @@ export default function WorldMapSection() {
                   fill
                   className="object-cover"
                 />
-                <div className="absolute inset-0 bg-gradient-to-b from-transparent from-70% to-black/50" />
+                <div className="absolute inset-0 bg-linear-to-b from-transparent from-70% to-black/50" />
                 <span className="absolute bottom-1.5 left-1.5 text-[12px] font-black text-white drop-shadow-sm">
                   France
                 </span>
@@ -176,33 +176,33 @@ export default function WorldMapSection() {
         </div>
 
         {/* 16 Collections card - right side */}
-        <div className="absolute top-[33%] right-[4.6%] bg-[#111] border border-[#2a2a2a] rounded-[20px] p-6 w-[320px] overflow-hidden z-20 hidden xl:flex flex-col gap-6">
+        <div className="absolute top-[33%] right-[4.6%] bg-[#111] border border-black-300 rounded-[20px] p-6 w-[320px] overflow-hidden z-20 hidden xl:flex flex-col gap-6">
           <p className="text-[20px] font-medium text-white tracking-[-0.5px] ds-font-display">
             16 Collections
           </p>
           <div className="flex flex-col gap-2">
             {/* Row 1 */}
             <div className="flex gap-2">
-              <div className="flex-1 h-[85px] rounded-[10px] overflow-hidden relative">
+              <div className="flex-1 h-21.25 rounded-[10px] overflow-hidden relative">
                 <Image
                   src={toLandingAssetUrl("/images/collection-streetshots.jpg")}
                   alt="Street Shots"
                   fill
                   className="object-cover"
                 />
-                <div className="absolute inset-0 bg-gradient-to-b from-transparent from-70% to-black/50" />
+                <div className="absolute inset-0 bg-linear-to-b from-transparent from-70% to-black/50" />
                 <span className="absolute bottom-2 left-2 text-[12px] font-black text-white drop-shadow-sm">
                   Street Shots
                 </span>
               </div>
-              <div className="flex-1 h-[85px] rounded-[10px] overflow-hidden relative">
+              <div className="flex-1 h-21.25 rounded-[10px] overflow-hidden relative">
                 <Image
                   src={toLandingAssetUrl("/images/collection-nightportraits.jpg")}
                   alt="Night Portraits"
                   fill
                   className="object-cover"
                 />
-                <div className="absolute inset-0 bg-gradient-to-b from-transparent from-70% to-black/50" />
+                <div className="absolute inset-0 bg-linear-to-b from-transparent from-70% to-black/50" />
                 <span className="absolute bottom-2 left-2 text-[12px] font-black text-white drop-shadow-sm">
                   Night Portraits
                 </span>
@@ -210,26 +210,26 @@ export default function WorldMapSection() {
             </div>
             {/* Row 2 */}
             <div className="flex gap-2">
-              <div className="flex-1 h-[88px] rounded-[10px] overflow-hidden relative">
+              <div className="flex-1 h-22 rounded-[10px] overflow-hidden relative">
                 <Image
                   src={toLandingAssetUrl("/images/collection-skiing.jpg")}
                   alt="Swiss Skiing"
                   fill
                   className="object-cover"
                 />
-                <div className="absolute inset-0 bg-gradient-to-b from-transparent from-70% to-black/50" />
+                <div className="absolute inset-0 bg-linear-to-b from-transparent from-70% to-black/50" />
                 <span className="absolute bottom-2 left-2 text-[12px] font-black text-white drop-shadow-sm">
                   Swiss Skiing
                 </span>
               </div>
-              <div className="flex-1 h-[88px] rounded-[10px] overflow-hidden relative">
+              <div className="flex-1 h-22 rounded-[10px] overflow-hidden relative">
                 <Image
                   src={toLandingAssetUrl("/images/collection-franceroadtrip.jpg")}
                   alt="France Road Trip"
                   fill
                   className="object-cover"
                 />
-                <div className="absolute inset-0 bg-gradient-to-b from-transparent from-70% to-black/50" />
+                <div className="absolute inset-0 bg-linear-to-b from-transparent from-70% to-black/50" />
                 <span className="absolute bottom-2 left-2 text-[12px] font-black text-white drop-shadow-sm">
                   France Road Trip
                 </span>
