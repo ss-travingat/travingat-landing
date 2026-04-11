@@ -4,7 +4,7 @@
     "name": "Michael Thompson",
     "handle": "@micheal.th99",
     "country": "Colombia",
-    "flag": "\ud83c\udde8\ud83c\uddf4",
+    "flag": "🇨🇴",
     "flagCode": "CO",
     "homelandFlagCode": "CO",
     "currentlyInFlagCode": "CO",
@@ -175,7 +175,7 @@
     "name": "Olivia Martinez",
     "handle": "@olivia.m",
     "country": "Spain",
-    "flag": "\ud83c\uddea\ud83c\uddf8",
+    "flag": "🇪🇸",
     "flagCode": "ES",
     "homelandFlagCode": "ES",
     "currentlyInFlagCode": "PT",
@@ -330,7 +330,7 @@
     "name": "Robert Williamson",
     "handle": "@robert.wando",
     "country": "United States",
-    "flag": "\ud83c\uddfa\ud83c\uddf8",
+    "flag": "🇺🇸",
     "flagCode": "US",
     "homelandFlagCode": "US",
     "currentlyInFlagCode": "CO",
@@ -485,7 +485,7 @@
     "name": "Daniel Harris",
     "handle": "@dh_88",
     "country": "Mexico",
-    "flag": "\ud83c\uddf2\ud83c\uddfd",
+    "flag": "🇲🇽",
     "flagCode": "MX",
     "homelandFlagCode": "MX",
     "currentlyInFlagCode": "MX",
@@ -614,7 +614,7 @@
     "name": "Sarah Mitchell",
     "handle": "@sarah.mitchell",
     "country": "Thailand",
-    "flag": "\ud83c\uddf9\ud83c\udded",
+    "flag": "🇹🇭",
     "flagCode": "TH",
     "homelandFlagCode": "TH",
     "currentlyInFlagCode": "TH",
@@ -749,7 +749,7 @@
     "name": "Arun Varma",
     "handle": "@arun.wanders",
     "country": "India",
-    "flag": "\ud83c\uddee\ud83c\uddf3",
+    "flag": "🇮🇳",
     "flagCode": "IN",
     "homelandFlagCode": "IN",
     "currentlyInFlagCode": "AU",
@@ -877,7 +877,7 @@
     "name": "Matheus Silva",
     "handle": "@matheus.explore",
     "country": "Brazil",
-    "flag": "\ud83c\udde7\ud83c\uddf7",
+    "flag": "🇧🇷",
     "flagCode": "BR",
     "homelandFlagCode": "BR",
     "currentlyInFlagCode": "AU",
@@ -899,7 +899,7 @@
       ]
     },
     "align": "start",
-    "bio": "A restless soul with a permanent tan and a well-stamped passport, I specialize in the \"slow and local\" approach to global exploration. Whether I\u2019m navigating the intricate metro lines of a sprawling megacity or sharing a moka pot of Brazilian coffee with new friends in a remote mountain village, my goal is always to find the extraordinary in the everyday. I travel with one bag, an open mind, and a relentless curiosity for hidden street food spots and architectural marvels. For me, the journey isn't about ticking off landmarks\u2014it's about the stories gathered between destinations and the belief that the best way to understand a culture is to simply sit, observe, and take the scenic route every single time.",
+    "bio": "A restless soul with a permanent tan and a well-stamped passport, I specialize in the \"slow and local\" approach to global exploration. Whether I’m navigating the intricate metro lines of a sprawling megacity or sharing a moka pot of Brazilian coffee with new friends in a remote mountain village, my goal is always to find the extraordinary in the everyday. I travel with one bag, an open mind, and a relentless curiosity for hidden street food spots and architectural marvels. For me, the journey isn't about ticking off landmarks—it's about the stories gathered between destinations and the belief that the best way to understand a culture is to simply sit, observe, and take the scenic route every single time.",
     "interests": [],
     "languages": [],
     "homeland": "Brazil",
@@ -998,6 +998,84 @@
           "https://picsum.photos/seed/river2/800/600",
           "https://picsum.photos/seed/river3/800/600",
           "https://picsum.photos/seed/river4/800/600"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "008",
+    "name": "Julien Beaumont",
+    "handle": "@jules.errant",
+    "country": "France",
+    "flag": "🇫🇷",
+    "flagCode": "FR",
+    "homelandFlagCode": "FR",
+    "currentlyInFlagCode": "MA",
+    "countries": 10,
+    "media": 12,
+    "collections": 2,
+    "images": {
+      "cover": "https://cdn.travingat.com/landingpage-assets/profiles/cover-1775885674947.jpg",
+      "avatar": "https://cdn.travingat.com/landingpage-assets/profiles/avatar-1775885681572.jpg",
+      "gallery": [
+        "https://cdn.travingat.com/landingpage-assets/profiles/gallery-1775888193239.jpg",
+        "https://cdn.travingat.com/landingpage-assets/profiles/gallery-1775888196877.jpg",
+        "https://cdn.travingat.com/landingpage-assets/profiles/gallery-1775888197850.jpg",
+        "https://cdn.travingat.com/landingpage-assets/profiles/gallery-1775888199309.jpg"
+      ]
+    },
+    "align": "start",
+    "bio": "Architect by day, \"flâneur\" by heart. I believe the best way to see a city is to get lost in its side streets without a map. Exploring the dialogue between heritage buildings and modern sustainable design across Europe and North Africa. Always hunting for the perfect espresso and a quiet bookstore.",
+    "interests": [
+      "Brutalist Architecture",
+      "Analog Photography",
+      "Vineyard Cycling",
+      "Slow Food"
+    ],
+    "languages": [
+      "French (Native)",
+      "English (Fluent)",
+      "Italian (Intermediate)"
+    ],
+    "homeland": "France",
+    "currentlyIn": "Morocco",
+    "socials": {
+      "instagram": "jules_errant",
+      "x": "j_beaumont",
+      "linkedin": "julien-beaumont-arch",
+      "youtube": "JulesNotes"
+    },
+    "visitedCountryCodes": [
+      "FR",
+      "IT",
+      "ES",
+      "PT",
+      "MA",
+      "GR",
+      "CH",
+      "BE",
+      "NL",
+      "DE"
+    ],
+    "countryImages": [
+      {
+        "countryCode": "JP",
+        "images": [
+          "https://cdn.travingat.com/landingpage-assets/profiles/country-1775887055526.jpg",
+          "https://cdn.travingat.com/landingpage-assets/profiles/country-1775887127969.jpg",
+          "https://cdn.travingat.com/landingpage-assets/profiles/country-1775887129492.jpg"
+        ]
+      }
+    ],
+    "collectionImages": [
+      {
+        "title": "Europe",
+        "images": [
+          "https://cdn.travingat.com/landingpage-assets/profiles/collection-1775887167800.jpg",
+          "https://cdn.travingat.com/landingpage-assets/profiles/collection-1775887168972.jpg",
+          "https://cdn.travingat.com/landingpage-assets/profiles/collection-1775887170826.jpg",
+          "https://cdn.travingat.com/landingpage-assets/profiles/collection-1775887171965.jpg",
+          "https://cdn.travingat.com/landingpage-assets/profiles/collection-1775887173301.jpg"
         ]
       }
     ]

@@ -613,18 +613,23 @@ export default function AdminProfilesPage() {
 
     setSaving(true);
     try {
+      const computedMedia =
+        form.images.gallery.length +
+        form.countryImages.reduce((sum, c) => sum + c.images.length, 0) +
+        form.collectionImages.reduce((sum, c) => sum + c.images.length, 0);
+      const payload = { ...form, media: computedMedia };
       if (editing) {
         await fetch(`/api/profiles/${editing.id}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(form),
+          body: JSON.stringify(payload),
         });
         showToast("Profile updated");
       } else {
         await fetch("/api/profiles", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(form),
+          body: JSON.stringify(payload),
         });
         showToast("Profile added");
       }
@@ -881,11 +886,11 @@ export default function AdminProfilesPage() {
                                   multiple
                                   className="hidden"
                                   onChange={async (e) => {
-                                    const files = e.target.files;
-                                    if (!files || files.length === 0) return;
+                                    const files = Array.from(e.target.files ?? []);
+                                    if (files.length === 0) return;
                                     e.target.value = "";
                                     const urls: string[] = [];
-                                    for (const file of Array.from(files)) {
+                                    for (const file of files) {
                                       const url = await handleImageUpload(file, "country");
                                       if (url) urls.push(url);
                                     }
@@ -998,11 +1003,11 @@ export default function AdminProfilesPage() {
                                 multiple
                                 className="hidden"
                                 onChange={async (e) => {
-                                  const files = e.target.files;
-                                  if (!files || files.length === 0) return;
+                                  const files = Array.from(e.target.files ?? []);
+                                  if (files.length === 0) return;
                                   e.target.value = "";
                                   const urls: string[] = [];
-                                  for (const file of Array.from(files)) {
+                                  for (const file of files) {
                                     const url = await handleImageUpload(file, "collection");
                                     if (url) urls.push(url);
                                   }
@@ -1307,14 +1312,13 @@ export default function AdminProfilesPage() {
                     </label>
                     <input
                       type="number"
-                      value={form.media}
-                      onChange={(e) =>
-                        setForm((prev) => ({
-                          ...prev,
-                          media: Number(e.target.value) || 0,
-                        }))
+                      readOnly
+                      value={
+                        form.images.gallery.length +
+                        form.countryImages.reduce((sum, c) => sum + c.images.length, 0) +
+                        form.collectionImages.reduce((sum, c) => sum + c.images.length, 0)
                       }
-                      className="w-full px-3 py-2.5 bg-white/5 border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-[#5A45F9] transition-colors"
+                      className="w-full px-3 py-2.5 bg-white/5 border border-white/10 rounded-lg text-sm text-white/50 cursor-not-allowed"
                     />
                   </div>
                   <div>

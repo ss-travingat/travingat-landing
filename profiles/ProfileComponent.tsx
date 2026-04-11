@@ -162,12 +162,15 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
   const currentlyInFlagSrc = toFlagAssetPath(currentlyInFlagCode);
 
   const allMediaItems = useMemo<MediaItem[]>(() => {
-    return profile.images.gallery.map((fileUrl, index) => ({
+    const galleryUrls = profile.images.gallery;
+    const countryUrls = (profile.countryImages ?? []).flatMap((c) => c.images);
+    const collectionUrls = (profile.collectionImages ?? []).flatMap((c) => c.images);
+    return [...galleryUrls, ...countryUrls, ...collectionUrls].map((fileUrl, index) => ({
       id: `${profile.id}-${index}`,
       fileUrl,
       isVideo: isVideoAsset(fileUrl),
     }));
-  }, [profile.id, profile.images.gallery]);
+  }, [profile.id, profile.images.gallery, profile.countryImages, profile.collectionImages]);
 
   const headerFlagCodes = useMemo(() => {
     const codes = profile.visitedCountryCodes ?? [];
