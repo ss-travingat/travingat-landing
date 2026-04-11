@@ -33,7 +33,21 @@ export default async function CountryDetailPage({
     (ci) => ci.countryCode.toUpperCase() === code.toUpperCase()
   );
 
-  if (!countryEntry || countryEntry.images.length === 0) {
+  // Fallback: profile uses visitedCountryCodes / flagCode fields for countries tab
+  // Allow viewing if this code appears in visitedCountryCodes or top-level flag codes
+  const isKnownFallbackCountry =
+    profile.visitedCountryCodes?.map((c) => c.toUpperCase()).includes(code.toUpperCase()) ||
+    profile.flagCode?.toUpperCase() === code.toUpperCase() ||
+    profile.homelandFlagCode?.toUpperCase() === code.toUpperCase() ||
+    profile.currentlyInFlagCode?.toUpperCase() === code.toUpperCase();
+
+  const images = countryEntry?.images.length
+    ? countryEntry.images
+    : isKnownFallbackCountry
+    ? profile.images.gallery
+    : null;
+
+  if (!images || images.length === 0) {
     notFound();
   }
 
@@ -41,7 +55,7 @@ export default async function CountryDetailPage({
     <CountryDetailComponent
       profile={profile}
       countryCode={code.toUpperCase()}
-      images={countryEntry.images}
+      images={images!}
     />
   );
 }

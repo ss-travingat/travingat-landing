@@ -81,7 +81,7 @@ const plans: Plan[] = [
 function FeatureItem({ feature }: { feature: string }) {
   return (
     <li className="flex items-start gap-3">
-      <span className="mt-px inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-[20px] border border-[#1e1e1e] bg-[#1e1e1e]">
+      <span className="mt-px inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-[20px] border border-black-600 bg-black-600">
         <svg
           aria-hidden="true"
           className="h-3 w-4"
@@ -122,16 +122,16 @@ export default function PricingSection() {
 
   return (
     <section id="pricing" className="px-4 py-14 md:px-12 md:py-16 xl:px-24 xl:py-20">
-      <div className="mx-auto w-full max-w-[738px] space-y-12 xl:max-w-[1200px]">
+      <div className="mx-auto w-full max-w-184.5 space-y-12 xl:max-w-300">
         <div className="flex flex-col items-center gap-8 text-center">
           <div className="space-y-4 text-white">
-            <h2 className="ds-font-display text-[44px] font-semibold leading-[52px] tracking-[-0.5px] md:text-[44px]">Pricing</h2>
+            <h2 className="ds-font-display text-[44px] font-semibold leading-13 tracking-[-0.5px] md:text-[44px]">Pricing</h2>
             <p className="text-[18px] leading-[1.45] tracking-[-0.198px] text-white">
               Built for travelers at every stage: from first trips to premium profile presence.
             </p>
           </div>
 
-          <div className="inline-flex items-center rounded-full bg-[#1e1e1e] p-1">
+          <div className="inline-flex items-center rounded-full bg-black-600 p-1">
             <button
               type="button"
               onClick={() => setIsAnnual(false)}
@@ -147,7 +147,7 @@ export default function PricingSection() {
                 }`}
             >
               Annual
-              <span className="rounded-full bg-[#2a9919] px-2 py-0.5 text-[10px] font-medium leading-4 text-white">
+              <span className="rounded-full bg-success-600 px-2 py-0.5 text-[10px] font-medium leading-4 text-white">
                 Save 20%
               </span>
             </button>
@@ -156,29 +156,29 @@ export default function PricingSection() {
 
         <div className="space-y-6 xl:grid xl:grid-cols-3 xl:gap-6 xl:space-y-0">
           {cardData.map((plan) => (
-            <article key={plan.name} className="rounded-[24px] border border-[#212121] bg-[#111111] p-6 md:p-8 xl:min-w-[340px]">
+            <article key={plan.name} className="rounded-3xl border border-black-500 bg-black-900 p-6 md:p-8 xl:min-w-85">
               <div className="flex flex-col gap-6 md:gap-8">
-                <div className="flex flex-col gap-6 xl:min-h-[236px]">
-                  <div className="space-y-4 xl:min-h-[160px]">
+                <div className="flex flex-col gap-6 xl:min-h-59">
+                  <div className="space-y-4 xl:min-h-40">
                     <h3 className="ds-font-display text-[24px] font-semibold leading-8 tracking-[-0.5px] text-white">{plan.name}</h3>
 
                     <div className="flex items-baseline gap-1">
                       <span className="ds-font-display text-[44px] font-semibold leading-[1.1] tracking-[-0.5px] text-white">${plan.price}</span>
-                      <span className="text-[18px] font-medium leading-[26px] tracking-[-0.198px] text-[#656565]">/per month</span>
+                      <span className="text-[18px] font-medium leading-6.5 tracking-[-0.198px] text-white-600">/per month</span>
                     </div>
 
-                    <p className="text-[18px] leading-[26px] tracking-[-0.198px] text-white">{plan.description}</p>
+                    <p className="text-[18px] leading-6.5 tracking-[-0.198px] text-white">{plan.description}</p>
                   </div>
 
                   <a
                     href={onboardingUrl}
-                    className={`mt-auto inline-flex w-full items-center justify-center rounded-full px-[18px] py-[10px] text-[16px] font-medium leading-6 tracking-[-0.096px] transition ${plan.buttonClass}`}
+                    className={`mt-auto inline-flex w-full items-center justify-center rounded-full px-4.5 py-2.5 text-[16px] font-medium leading-6 tracking-[-0.096px] transition ${plan.buttonClass}`}
                   >
                     Get Started
                   </a>
                 </div>
 
-                <div className="border border-dashed border-[#303030]" />
+                <div className="border border-dashed border-black-200" />
 
                 <ul className="space-y-5">
                   {plan.features.map((feature) => (

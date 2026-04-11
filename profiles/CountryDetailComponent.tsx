@@ -206,14 +206,10 @@ export default function CountryDetailComponent({
                 <div key={colIdx} className="flex-1 flex flex-col gap-5">
                   {col.map((imgUrl, imgIdx) => {
                     const isVideo = isVideoAsset(imgUrl);
-                    // Vary heights for visual interest
-                    const heights = [362, 278, 289, 392, 237, 255, 311, 406, 262, 249, 276, 411, 230, 405, 236, 418];
-                    const height = heights[(colIdx * 6 + imgIdx) % heights.length];
                     return (
                       <div
                         key={imgIdx}
                         className="group relative rounded-2xl overflow-hidden bg-[#151515]"
-                        style={{ height: `${height}px` }}
                       >
                         {isVideo ? (
                           <>
@@ -223,7 +219,7 @@ export default function CountryDetailComponent({
                               playsInline
                               loop
                               preload="metadata"
-                              className="absolute inset-0 w-full h-full object-cover"
+                              className="w-full h-auto block"
                               onMouseEnter={(e) => e.currentTarget.play().catch(() => {})}
                               onMouseLeave={(e) => { e.currentTarget.pause(); e.currentTarget.currentTime = 0; }}
                               onClick={(e) => { const v = e.currentTarget; if (v.paused) v.play().catch(() => {}); else { v.pause(); v.currentTime = 0; } }}
@@ -238,7 +234,7 @@ export default function CountryDetailComponent({
                             alt={`${countryName} photo ${colIdx * col.length + imgIdx + 1}`}
                             loading="lazy"
                             decoding="async"
-                            className="absolute inset-0 w-full h-full object-cover"
+                            className="w-full h-auto block"
                           />
                         )}
                       </div>

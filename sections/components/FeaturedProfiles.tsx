@@ -250,7 +250,7 @@ export default function FeaturedProfiles() {
   return (
     <section id="featured" className="py-12 md:py-16 xl:py-28 overflow-hidden">
       <div className="mb-8 flex items-start justify-center px-3 md:mb-12 md:px-12 xl:mb-27">
-        <h2 className="ds-font-display max-w-200 text-center text-[32px] font-semibold leading-tight tracking-[-1px] text-white md:text-[52px] md:leading-[60px] xl:text-[64px] xl:leading-18">
+        <h2 className="ds-font-display max-w-200 text-center text-[32px] font-semibold leading-tight tracking-[-1px] text-white md:text-[52px] md:leading-15 xl:text-[64px] xl:leading-18">
           Featured travel profiles &mdash; a look at what&apos;s coming
         </h2>
       </div>

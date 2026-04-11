@@ -424,7 +424,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
             <div className="space-y-10 pt-12 self-end">
               <div className="space-y-8">
                 <div className="relative h-30 w-30 overflow-hidden rounded-2xl bg-[#151515]">
-                  <img src={toLandingAssetUrl(profile.images.avatar)} alt="Profile avatar" className="h-full w-full object-cover rounded-2xl" />
+                  <img src={toLandingAssetUrl(profile.images.avatar)} alt="Profile avatar" loading="lazy" decoding="async" className="h-full w-full object-cover rounded-2xl" />
                 </div>
 
                 <div className="flex flex-col gap-3">
@@ -524,7 +524,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
 
             <div className="flex flex-row items-end justify-end self-stretch">
               <div className="relative aspect-640/662 h-full w-full max-w-160 overflow-hidden rounded-4xl bg-[#111]">
-                <img src={toLandingAssetUrl(profile.images.cover)} alt="Profile cover" className="w-full h-full object-cover rounded-4xl" />
+                <img src={toLandingAssetUrl(profile.images.cover)} alt="Profile cover" loading="lazy" decoding="async" className="w-full h-full object-cover rounded-4xl" />
               </div>
             </div>
           </section>
@@ -661,7 +661,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                     <div className="flex items-center gap-3">
                       {COUNTRIES_EMPTY_PREVIEW_IMAGES.map((src, idx) => (
                         <div key={src} className="w-19 h-19 md:w-25 md:h-25 rounded-[10px] overflow-hidden">
-                          <img src={toLandingAssetUrl(src)} alt={`Country preview ${idx + 1}`} className="w-full h-full object-cover" />
+                          <img src={toLandingAssetUrl(src)} alt={`Country preview ${idx + 1}`} loading="lazy" decoding="async" className="w-full h-full object-cover" />
                         </div>
                       ))}
                     </div>
@@ -678,13 +678,13 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                   {countryCards.map((country) => (
                     <Link key={country.code} href={`/profiles/${profile.id}/country/${country.flagCode.toUpperCase()}`} className="flex flex-col gap-4 group">
                       {/* Photo */}
-                      <div className="aspect-square w-full overflow-hidden rounded-2xl bg-[#151515]">
+                      <div className="w-full overflow-hidden rounded-2xl bg-[#151515]">
                         <img
                           src={toLandingAssetUrl(country.thumbnailUrl)}
                           alt={country.name}
                           loading="lazy"
                           decoding="async"
-                          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+                          className="w-full h-auto block transition-transform duration-300 group-hover:scale-[1.03]"
                         />
                       </div>
                       {/* Country info */}
@@ -722,7 +722,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                     <div className="flex items-center gap-3">
                       {COLLECTIONS_EMPTY_PREVIEW_IMAGES.map((src, idx) => (
                         <div key={src} className="w-19 h-19 md:w-25 md:h-25 rounded-[10px] overflow-hidden">
-                          <img src={toLandingAssetUrl(src)} alt={`Collection preview ${idx + 1}`} className="w-full h-full object-cover" />
+                          <img src={toLandingAssetUrl(src)} alt={`Collection preview ${idx + 1}`} loading="lazy" decoding="async" className="w-full h-full object-cover" />
                         </div>
                       ))}
                     </div>
@@ -739,8 +739,8 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
                   {collectionCards.map((collection, idx) => (
                     <Link key={collection.id} href={`/profiles/${profile.id}/collection/${idx}`} className="group block">
-                      <div className="relative aspect-[1.22] rounded-2xl overflow-hidden bg-[#151515] border border-[#1f1f1f]">
-                        <img src={toLandingAssetUrl(collection.thumbnailUrl)} alt={collection.title} className="w-full h-full object-cover" />
+                      <div className="rounded-2xl overflow-hidden bg-[#151515] border border-[#1f1f1f]">
+                        <img src={toLandingAssetUrl(collection.thumbnailUrl)} alt={collection.title} loading="lazy" decoding="async" className="w-full h-auto block" />
                       </div>
                       <div className="pt-2 px-1 space-y-1.5">
                         <p className="text-white-400 text-[11px] leading-[1.4] tracking-[-0.3px]">{collection.createdLabel}</p>
@@ -927,10 +927,10 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
             <div className="flex flex-col gap-5 items-center">
               <div className="flex flex-col items-center pb-8 w-full">
                 <div className="-mb-8 h-48.5 w-50 overflow-hidden rounded-xl shrink-0">
-                  <img src={toLandingAssetUrl(profile.images.cover)} alt={displayName} className="w-full h-full object-cover" />
+                  <img src={toLandingAssetUrl(profile.images.cover)} alt={displayName} loading="lazy" decoding="async" className="w-full h-full object-cover" />
                 </div>
                 <div className="-mb-8 h-15 w-15 overflow-hidden rounded-xl shadow-[8px_8px_12px_0px_rgba(0,0,0,0.25)] shrink-0">
-                  <img src={toLandingAssetUrl(profile.images.avatar)} alt={displayName} className="w-full h-full object-cover" />
+                  <img src={toLandingAssetUrl(profile.images.avatar)} alt={displayName} loading="lazy" decoding="async" className="w-full h-full object-cover" />
                 </div>
               </div>
               <div className="flex flex-col gap-1 text-center w-full">

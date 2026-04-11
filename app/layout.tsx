@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Righteous } from "next/font/google";
 import localFont from "next/font/local";
+import Script from "next/script";
 import "./globals.css";
 import LandingLayout from "@landing/LandingLayout";
 
@@ -70,9 +71,18 @@ export default function RootLayout({
     <html lang="en">
       <head>
         <link
+          rel="preload"
+          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap"
+          as="style"
+        />
+        <link
           rel="stylesheet"
           href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap"
+          media="print"
         />
+        <Script id="material-icons-swap" strategy="afterInteractive">
+          {`document.querySelector('link[href*="Material+Symbols"][media="print"]').media='all'`}
+        </Script>
       </head>
       <body className={`${inter.variable} ${interDisplay.variable} ${righteous.variable} ${openSauceTwo.variable}`}>
         <LandingLayout>{children}</LandingLayout>
