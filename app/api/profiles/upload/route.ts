@@ -37,6 +37,15 @@ export async function POST(request: Request) {
       );
     }
 
+    const isVideo = file instanceof File && file.type.startsWith("video/");
+    const maxBytes = isVideo ? 50 * 1024 * 1024 : 5 * 1024 * 1024;
+    if (buffer.length > maxBytes) {
+      return NextResponse.json(
+        { error: isVideo ? "Video too large. Max 50MB." : "Image too large. Max 5MB." },
+        { status: 400 }
+      );
+    }
+
     const originalName = file instanceof File ? file.name : "upload.png";
     const ext = path.extname(originalName) || ".png";
     const prefix = imageType || "profile";

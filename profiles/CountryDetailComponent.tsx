@@ -33,7 +33,7 @@ const COUNTRY_LIST_LOOKUP: Record<string, string> = {
   US: "United States", UY: "Uruguay", UZ: "Uzbekistan", VE: "Venezuela", VN: "Vietnam",
 };
 
-type MediaTab = "all" | "photos";
+type MediaTab = "all" | "photos" | "videos";
 
 function isVideoAsset(url: string) {
   return /\.(mp4|mov|webm|m4v|3gp|3g2)$/i.test(url);
@@ -56,7 +56,10 @@ export default function CountryDetailComponent({
   const photos = images.filter((url) => !isVideoAsset(url));
   const videos = images.filter((url) => isVideoAsset(url));
 
-  const displayImages = activeTab === "photos" ? photos : images;
+  const displayImages =
+    activeTab === "photos" ? photos :
+    activeTab === "videos" ? videos :
+    images;
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -77,12 +80,8 @@ export default function CountryDetailComponent({
   const tabs: { key: MediaTab; label: string }[] = [
     { key: "all", label: "All media" },
     { key: "photos", label: "Photos" },
+    { key: "videos", label: "Videos" },
   ];
-
-  // Add Videos tab only if there are videos
-  if (videos.length > 0) {
-    tabs.push({ key: "all", label: "Videos" });
-  }
 
   return (
     <div className="min-h-screen bg-black text-white flex flex-col items-center px-4 md:px-10 xl:px-24">
@@ -213,20 +212,34 @@ export default function CountryDetailComponent({
                     return (
                       <div
                         key={imgIdx}
-                        className="relative rounded-2xl overflow-hidden bg-[#151515]"
+                        className="group relative rounded-2xl overflow-hidden bg-[#151515]"
                         style={{ height: `${height}px` }}
                       >
-                        <img
-                          src={toLandingAssetUrl(imgUrl)}
-                          alt={`${countryName} photo ${colIdx * col.length + imgIdx + 1}`}
-                          loading="lazy"
-                          decoding="async"
-                          className="absolute inset-0 w-full h-full object-cover"
-                        />
-                        {isVideo && (
-                          <div className="absolute top-4 left-4">
-                            <span className="material-symbols-rounded text-white text-[24px]">play_arrow</span>
-                          </div>
+                        {isVideo ? (
+                          <>
+                            <video
+                              src={toLandingAssetUrl(imgUrl)}
+                              muted
+                              playsInline
+                              loop
+                              preload="metadata"
+                              className="absolute inset-0 w-full h-full object-cover"
+                              onMouseEnter={(e) => e.currentTarget.play().catch(() => {})}
+                              onMouseLeave={(e) => { e.currentTarget.pause(); e.currentTarget.currentTime = 0; }}
+                              onClick={(e) => { const v = e.currentTarget; if (v.paused) v.play().catch(() => {}); else { v.pause(); v.currentTime = 0; } }}
+                            />
+                            <div className="absolute inset-0 flex items-center justify-center pointer-events-none group-hover:opacity-0 transition-opacity">
+                              <span className="text-white text-3xl drop-shadow-lg">▶</span>
+                            </div>
+                          </>
+                        ) : (
+                          <img
+                            src={toLandingAssetUrl(imgUrl)}
+                            alt={`${countryName} photo ${colIdx * col.length + imgIdx + 1}`}
+                            loading="lazy"
+                            decoding="async"
+                            className="absolute inset-0 w-full h-full object-cover"
+                          />
                         )}
                       </div>
                     );

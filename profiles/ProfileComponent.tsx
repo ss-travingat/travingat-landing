@@ -628,8 +628,18 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                     <div key={item.id} className="group break-inside-avoid rounded-2xl overflow-hidden bg-[#111] relative">
                       {item.isVideo ? (
                         <>
-                          <video src={toLandingAssetUrl(item.fileUrl)} muted playsInline preload="metadata" className="w-full object-cover rounded-2xl" />
-                          <div className="absolute top-4 left-4">
+                          <video
+                            src={toLandingAssetUrl(item.fileUrl)}
+                            muted
+                            playsInline
+                            loop
+                            preload="metadata"
+                            className="w-full object-cover rounded-2xl"
+                            onMouseEnter={(e) => e.currentTarget.play().catch(() => {})}
+                            onMouseLeave={(e) => { e.currentTarget.pause(); e.currentTarget.currentTime = 0; }}
+                            onClick={(e) => { const v = e.currentTarget; if (v.paused) v.play().catch(() => {}); else { v.pause(); v.currentTime = 0; } }}
+                          />
+                          <div className="absolute top-4 left-4 group-hover:opacity-0 transition-opacity pointer-events-none">
                             <span className="material-symbols-rounded text-[24px] text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]" style={{ fontVariationSettings: "'FILL' 1, 'wght' 700, 'GRAD' 200, 'opsz' 24" }}>play_arrow</span>
                           </div>
                         </>

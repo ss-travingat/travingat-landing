@@ -492,6 +492,7 @@ export default function AdminProfilesPage() {
   const galleryInputRef = useRef<HTMLInputElement>(null);
   const [pendingCountryCode, setPendingCountryCode] = useState<string>("");
   const [pendingCollectionTitle, setPendingCollectionTitle] = useState<string>("");
+  const [mediaPickerTarget, setMediaPickerTarget] = useState<{ type: "country" | "collection"; idx: number } | null>(null);
 
   const showToast = (msg: string, error = false) => {
     setToast({ msg, error });
@@ -513,6 +514,66 @@ export default function AdminProfilesPage() {
   useEffect(() => {
     fetchProfiles();
   }, []);
+
+  const handleVideoUpload = async (
+    file: File,
+    type: "country" | "collection"
+  ) => {
+    if (file.size > 50 * 1024 * 1024) {
+      showToast("Video too large. Max 50MB.", true);
+      return null;
+    }
+    if (!file.type.startsWith("video/")) {
+      showToast("Please upload a video file", true);
+      return null;
+    }
+
+    // Check duration client-side via a temporary object URL
+    const duration = await new Promise<number>((resolve) => {
+      const vid = document.createElement("video");
+      vid.preload = "metadata";
+      const objUrl = URL.createObjectURL(file);
+      vid.src = objUrl;
+      vid.onloadedmetadata = () => {
+        URL.revokeObjectURL(objUrl);
+        resolve(vid.duration);
+      };
+      vid.onerror = () => {
+        URL.revokeObjectURL(objUrl);
+        resolve(0);
+      };
+    });
+
+    if (duration > 30) {
+      showToast("Video must be 30 seconds or less.", true);
+      return null;
+    }
+
+    setUploading(type);
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("type", type);
+
+    try {
+      const res = await fetch("/api/profiles/upload", {
+        method: "POST",
+        body: formData,
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        showToast(data.error || "Upload failed", true);
+        return null;
+      }
+      showToast("Video uploaded");
+      return data.url as string;
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Network error";
+      showToast(`Upload failed: ${msg}`, true);
+      return null;
+    } finally {
+      setUploading(null);
+    }
+  };
 
   const handleImageUpload = async (
     file: File,
@@ -586,6 +647,23 @@ export default function AdminProfilesPage() {
     e.target.value = "";
     for (const file of files) {
       const url = await handleImageUpload(file, "gallery");
+      if (url) {
+        setForm((prev) => ({
+          ...prev,
+          images: { ...prev.images, gallery: [...prev.images.gallery, url] },
+        }));
+      }
+    }
+  };
+
+  const handleGalleryVideoUpload = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const files = Array.from(e.target.files ?? []);
+    if (files.length === 0) return;
+    e.target.value = "";
+    for (const file of files) {
+      const url = await handleVideoUpload(file, "country");
       if (url) {
         setForm((prev) => ({
           ...prev,
@@ -696,6 +774,92 @@ export default function AdminProfilesPage() {
       {toast && (
         <div className={`fixed top-4 right-4 z-50 text-white px-5 py-3 rounded-xl text-sm font-medium shadow-lg animate-[fadeIn_0.2s_ease-out] ${toast.error ? "bg-red-500" : "bg-[#5A45F9]"}`}>
           {toast.msg}
+        </div>
+      )}
+
+      {/* Media Picker Modal */}
+      {mediaPickerTarget && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm" onClick={() => setMediaPickerTarget(null)}>
+          <div className="bg-black-700 border border-white/10 rounded-2xl p-6 max-w-3xl w-full mx-4 max-h-[80vh] flex flex-col" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-base font-semibold">Select from your media</h3>
+              <button onClick={() => setMediaPickerTarget(null)} className="text-white/40 hover:text-white text-lg cursor-pointer">✕</button>
+            </div>
+            <p className="text-xs text-white/40 mb-3">Tap items to add them. Already added items are dimmed.</p>
+            <div className="overflow-y-auto flex-1 -mx-1">
+              <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 gap-3 px-1">
+                {(() => {
+                  const allUrls = Array.from(new Set([
+                    ...form.images.gallery,
+                    ...form.countryImages.flatMap((c) => c.images),
+                    ...form.collectionImages.flatMap((c) => c.images),
+                  ]));
+                  return allUrls.map((url, i) => {
+                  const existing = mediaPickerTarget.type === "country"
+                    ? form.countryImages[mediaPickerTarget.idx]?.images ?? []
+                    : form.collectionImages[mediaPickerTarget.idx]?.images ?? [];
+                  const alreadyAdded = existing.includes(url);
+                  const isVid = /\.(mp4|mov|webm|m4v)$/i.test(url);
+                  return (
+                    <button
+                      key={i}
+                      type="button"
+                      disabled={alreadyAdded}
+                      onClick={() => {
+                        if (alreadyAdded) return;
+                        const { type, idx } = mediaPickerTarget;
+                        if (type === "country") {
+                          setForm((prev) => ({
+                            ...prev,
+                            countryImages: prev.countryImages.map((c, ci) =>
+                              ci === idx ? { ...c, images: [...c.images, url] } : c
+                            ),
+                          }));
+                        } else {
+                          setForm((prev) => ({
+                            ...prev,
+                            collectionImages: prev.collectionImages.map((c, ci) =>
+                              ci === idx ? { ...c, images: [...c.images, url] } : c
+                            ),
+                          }));
+                        }
+                      }}
+                      className={`group relative aspect-square rounded-xl overflow-hidden bg-white/5 transition-all ${alreadyAdded ? "opacity-30 cursor-not-allowed" : "hover:ring-2 hover:ring-[#5A45F9] cursor-pointer"}`}
+                    >
+                      {isVid ? (
+                        <>
+                          <video
+                            src={toLandingAssetUrl(url)}
+                            muted
+                            playsInline
+                            loop
+                            preload="metadata"
+                            className="w-full h-full object-cover"
+                            onMouseEnter={(e) => e.currentTarget.play().catch(() => {})}
+                            onMouseLeave={(e) => { e.currentTarget.pause(); e.currentTarget.currentTime = 0; }}
+                          />
+                          <div className="absolute inset-0 flex items-center justify-center pointer-events-none group-hover:opacity-0 transition-opacity">
+                            <span className="text-white text-[14px] drop-shadow">▶</span>
+                          </div>
+                        </>
+                      ) : (
+                        <Image src={toLandingAssetUrl(url)} alt={`Media ${i + 1}`} fill className="object-cover" />
+                      )}
+                      {alreadyAdded && (
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <span className="text-white text-sm font-bold">✓</span>
+                        </div>
+                      )}
+                    </button>
+                  );
+                });
+                })()}
+              </div>
+            </div>
+            <button onClick={() => setMediaPickerTarget(null)} className="mt-4 w-full py-2.5 bg-[#5A45F9] hover:bg-[#4a35e9] rounded-lg text-sm font-medium transition-colors cursor-pointer">
+              Done
+            </button>
+          </div>
         </div>
       )}
 
@@ -815,44 +979,78 @@ export default function AdminProfilesPage() {
                 {/* Gallery Images */}
                 <div>
                   <label className="text-sm text-white/60 block mb-2">
-                    Gallery ({form.images.gallery.length} images)
+                    All Media ({form.images.gallery.filter(u => !/\.(mp4|mov|webm|m4v)$/i.test(u)).length} photos · {form.images.gallery.filter(u => /\.(mp4|mov|webm|m4v)$/i.test(u)).length} videos)
                   </label>
                   <div className="flex flex-wrap gap-2 mb-2">
-                    {form.images.gallery.map((url, i) => (
-                      <div
-                        key={i}
-                        className="relative w-20 h-16 rounded-lg overflow-hidden bg-white/5 group"
-                      >
-                        <Image
-                          src={toLandingAssetUrl(url)}
-                          alt={`Gallery ${i + 1}`}
-                          fill
-                          className="object-cover"
-                        />
-                        <button
-                          onClick={() => removeGalleryImage(i)}
-                          className="absolute top-0.5 right-0.5 w-5 h-5 bg-black/70 rounded-full text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500 cursor-pointer"
+                    {form.images.gallery.map((url, i) => {
+                      const isVid = /\.(mp4|mov|webm|m4v)$/i.test(url);
+                      return (
+                        <div
+                          key={i}
+                          className="relative w-20 h-16 rounded-lg overflow-hidden bg-white/5 group"
                         >
-                          ×
-                        </button>
-                      </div>
-                    ))}
+                          {isVid ? (
+                            <>
+                              <video
+                                src={toLandingAssetUrl(url)}
+                                muted
+                                playsInline
+                                loop
+                                preload="metadata"
+                                className="w-full h-full object-cover"
+                                onMouseEnter={(e) => e.currentTarget.play().catch(() => {})}
+                                onMouseLeave={(e) => { e.currentTarget.pause(); e.currentTarget.currentTime = 0; }}
+                                onClick={(e) => { const v = e.currentTarget; if (v.paused) v.play().catch(() => {}); else { v.pause(); v.currentTime = 0; } }}
+                              />
+                              <div className="absolute inset-0 flex items-center justify-center pointer-events-none group-hover:opacity-0 transition-opacity">
+                                <span className="text-white text-[16px] drop-shadow">▶</span>
+                              </div>
+                            </>
+                          ) : (
+                            <Image
+                              src={toLandingAssetUrl(url)}
+                              alt={`Gallery ${i + 1}`}
+                              fill
+                              className="object-cover"
+                            />
+                          )}
+                          <button
+                            onClick={() => removeGalleryImage(i)}
+                            className="absolute top-0.5 right-0.5 w-5 h-5 bg-black/70 rounded-full text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500 cursor-pointer"
+                          >
+                            ×
+                          </button>
+                        </div>
+                      );
+                    })}
                   </div>
-                  <button
-                    onClick={() => galleryInputRef.current?.click()}
-                    disabled={uploading !== null}
-                    className="px-4 py-2 bg-white/10 hover:bg-white/15 rounded-lg text-sm font-medium transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {uploading === "gallery" ? "Uploading…" : "+ Add Gallery Images"}
-                  </button>
-                  <input
-                    ref={galleryInputRef}
-                    type="file"
-                    accept="image/*"
-                    multiple
-                    onChange={handleGalleryUpload}
-                    className="hidden"
-                  />
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => galleryInputRef.current?.click()}
+                      disabled={uploading !== null}
+                      className="px-4 py-2 bg-white/10 hover:bg-white/15 rounded-lg text-sm font-medium transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {uploading === "gallery" ? "Uploading…" : "+ Add Images"}
+                    </button>
+                    <input
+                      ref={galleryInputRef}
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      onChange={handleGalleryUpload}
+                      className="hidden"
+                    />
+                    <label className="px-4 py-2 bg-white/10 hover:bg-white/15 rounded-lg text-sm font-medium transition-colors cursor-pointer">
+                      + Add Videos
+                      <input
+                        type="file"
+                        accept="video/*"
+                        multiple
+                        className="hidden"
+                        onChange={handleGalleryVideoUpload}
+                      />
+                    </label>
+                  </div>
                 </div>
 
                 {/* Country Images */}
@@ -875,9 +1073,9 @@ export default function AdminProfilesPage() {
                                 />
                               )}
                               <span className="text-sm text-white font-medium">{country?.name || ci.countryCode}</span>
-                              <span className="text-xs text-white/40 ml-1">({ci.images.length} {ci.images.length === 1 ? "photo" : "photos"})</span>
+                              <span className="text-xs text-white/40 ml-1">({ci.images.filter(u => !u.match(/\.(mp4|mov|webm|m4v)$/i)).length} photos · {ci.images.filter(u => u.match(/\.(mp4|mov|webm|m4v)$/i)).length} videos)</span>
                             </div>
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-2 flex-wrap">
                               <label className="px-2 py-1 bg-white/10 hover:bg-white/15 rounded-md text-xs font-medium transition-colors cursor-pointer whitespace-nowrap">
                                 + Add Photos
                                 <input
@@ -905,6 +1103,42 @@ export default function AdminProfilesPage() {
                                   }}
                                 />
                               </label>
+                              <label className="px-2 py-1 bg-white/10 hover:bg-white/15 rounded-md text-xs font-medium transition-colors cursor-pointer whitespace-nowrap">
+                                + Add Videos
+                                <input
+                                  type="file"
+                                  accept="video/*"
+                                  multiple
+                                  className="hidden"
+                                  onChange={async (e) => {
+                                    const files = Array.from(e.target.files ?? []);
+                                    if (files.length === 0) return;
+                                    e.target.value = "";
+                                    const urls: string[] = [];
+                                    for (const file of files) {
+                                      const url = await handleVideoUpload(file, "country");
+                                      if (url) urls.push(url);
+                                    }
+                                    if (urls.length > 0) {
+                                      setForm((prev) => ({
+                                        ...prev,
+                                        countryImages: prev.countryImages.map((c, i) =>
+                                          i === idx ? { ...c, images: [...c.images, ...urls] } : c
+                                        ),
+                                      }));
+                                    }
+                                  }}
+                                />
+                              </label>
+                              {form.images.gallery.length > 0 && (
+                                <button
+                                  type="button"
+                                  onClick={() => setMediaPickerTarget({ type: "country", idx })}
+                                  className="px-2 py-1 bg-[#5A45F9]/20 hover:bg-[#5A45F9]/30 text-[#8B7BFF] rounded-md text-xs font-medium transition-colors cursor-pointer whitespace-nowrap"
+                                >
+                                  Select from media
+                                </button>
+                              )}
                               <button
                                 onClick={() =>
                                   setForm((prev) => ({
@@ -919,29 +1153,51 @@ export default function AdminProfilesPage() {
                             </div>
                           </div>
                           <div className="flex flex-wrap gap-2">
-                            {ci.images.map((imgUrl, imgIdx) => (
-                              <div key={imgIdx} className="relative group w-16 h-12 rounded-md overflow-hidden bg-white/5 shrink-0">
-                                <Image
-                                  src={toLandingAssetUrl(imgUrl)}
-                                  alt={`${country?.name || ci.countryCode} ${imgIdx + 1}`}
-                                  fill
-                                  className="object-cover"
-                                />
-                                <button
-                                  onClick={() =>
-                                    setForm((prev) => ({
-                                      ...prev,
-                                      countryImages: prev.countryImages.map((c, i) =>
-                                        i === idx ? { ...c, images: c.images.filter((_, j) => j !== imgIdx) } : c
-                                      ).filter((c) => c.images.length > 0),
-                                    }))
-                                  }
-                                  className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity cursor-pointer text-red-400 text-xs"
-                                >
-                                  ✕
-                                </button>
-                              </div>
-                            ))}
+                            {ci.images.map((imgUrl, imgIdx) => {
+                              const isVid = /\.(mp4|mov|webm|m4v)$/i.test(imgUrl);
+                              return (
+                                <div key={imgIdx} className="relative group w-16 h-12 rounded-md overflow-hidden bg-white/5 shrink-0">
+                                  {isVid ? (
+                                    <>
+                                      <video
+                                        src={toLandingAssetUrl(imgUrl)}
+                                        muted
+                                        playsInline
+                                        loop
+                                        preload="metadata"
+                                        className="w-full h-full object-cover"
+                                        onMouseEnter={(e) => e.currentTarget.play().catch(() => {})}
+                                        onMouseLeave={(e) => { e.currentTarget.pause(); e.currentTarget.currentTime = 0; }}
+                                        onClick={(e) => { const v = e.currentTarget; if (v.paused) v.play().catch(() => {}); else { v.pause(); v.currentTime = 0; } }}
+                                      />
+                                      <div className="absolute inset-0 flex items-center justify-center pointer-events-none group-hover:opacity-0 transition-opacity">
+                                        <span className="text-white text-[16px] drop-shadow">▶</span>
+                                      </div>
+                                    </>
+                                  ) : (
+                                    <Image
+                                      src={toLandingAssetUrl(imgUrl)}
+                                      alt={`${country?.name || ci.countryCode} ${imgIdx + 1}`}
+                                      fill
+                                      className="object-cover"
+                                    />
+                                  )}
+                                  <button
+                                    onClick={() =>
+                                      setForm((prev) => ({
+                                        ...prev,
+                                        countryImages: prev.countryImages.map((c, i) =>
+                                          i === idx ? { ...c, images: c.images.filter((_, j) => j !== imgIdx) } : c
+                                        ).filter((c) => c.images.length > 0),
+                                      }))
+                                    }
+                                    className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity cursor-pointer text-red-400 text-xs"
+                                  >
+                                    ✕
+                                  </button>
+                                </div>
+                              );
+                            })}
                           </div>
                         </div>
                       );
@@ -992,9 +1248,9 @@ export default function AdminProfilesPage() {
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-1.5">
                             <span className="text-sm text-white font-medium">{ci.title}</span>
-                            <span className="text-xs text-white/40 ml-1">({ci.images.length} {ci.images.length === 1 ? "photo" : "photos"})</span>
+                            <span className="text-xs text-white/40 ml-1">({ci.images.filter(u => !u.match(/\.(mp4|mov|webm|m4v)$/i)).length} photos · {ci.images.filter(u => u.match(/\.(mp4|mov|webm|m4v)$/i)).length} videos)</span>
                           </div>
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-2 flex-wrap">
                             <label className="px-2 py-1 bg-white/10 hover:bg-white/15 rounded-md text-xs font-medium transition-colors cursor-pointer whitespace-nowrap">
                               + Add Photos
                               <input
@@ -1022,6 +1278,42 @@ export default function AdminProfilesPage() {
                                 }}
                               />
                             </label>
+                            <label className="px-2 py-1 bg-white/10 hover:bg-white/15 rounded-md text-xs font-medium transition-colors cursor-pointer whitespace-nowrap">
+                              + Add Videos
+                              <input
+                                type="file"
+                                accept="video/*"
+                                multiple
+                                className="hidden"
+                                onChange={async (e) => {
+                                  const files = Array.from(e.target.files ?? []);
+                                  if (files.length === 0) return;
+                                  e.target.value = "";
+                                  const urls: string[] = [];
+                                  for (const file of files) {
+                                    const url = await handleVideoUpload(file, "collection");
+                                    if (url) urls.push(url);
+                                  }
+                                  if (urls.length > 0) {
+                                    setForm((prev) => ({
+                                      ...prev,
+                                      collectionImages: prev.collectionImages.map((c, i) =>
+                                        i === idx ? { ...c, images: [...c.images, ...urls] } : c
+                                      ),
+                                    }));
+                                  }
+                                }}
+                              />
+                            </label>
+                            {form.images.gallery.length > 0 && (
+                              <button
+                                type="button"
+                                onClick={() => setMediaPickerTarget({ type: "collection", idx })}
+                                className="px-2 py-1 bg-[#5A45F9]/20 hover:bg-[#5A45F9]/30 text-[#8B7BFF] rounded-md text-xs font-medium transition-colors cursor-pointer whitespace-nowrap"
+                              >
+                                Select from media
+                              </button>
+                            )}
                             <button
                               onClick={() =>
                                 setForm((prev) => ({
@@ -1036,29 +1328,51 @@ export default function AdminProfilesPage() {
                           </div>
                         </div>
                         <div className="flex flex-wrap gap-2">
-                          {ci.images.map((imgUrl, imgIdx) => (
-                            <div key={imgIdx} className="relative group w-16 h-12 rounded-md overflow-hidden bg-white/5 shrink-0">
-                              <Image
-                                src={toLandingAssetUrl(imgUrl)}
-                                alt={`${ci.title} ${imgIdx + 1}`}
-                                fill
-                                className="object-cover"
-                              />
-                              <button
-                                onClick={() =>
-                                  setForm((prev) => ({
-                                    ...prev,
-                                    collectionImages: prev.collectionImages.map((c, i) =>
-                                      i === idx ? { ...c, images: c.images.filter((_, j) => j !== imgIdx) } : c
-                                    ).filter((c) => c.images.length > 0),
-                                  }))
-                                }
-                                className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity cursor-pointer text-red-400 text-xs"
-                              >
-                                ✕
-                              </button>
-                            </div>
-                          ))}
+                          {ci.images.map((imgUrl, imgIdx) => {
+                            const isVid = /\.(mp4|mov|webm|m4v)$/i.test(imgUrl);
+                            return (
+                              <div key={imgIdx} className="relative group w-16 h-12 rounded-md overflow-hidden bg-white/5 shrink-0">
+                                {isVid ? (
+                                  <>
+                                    <video
+                                      src={toLandingAssetUrl(imgUrl)}
+                                      muted
+                                      playsInline
+                                      loop
+                                      preload="metadata"
+                                      className="w-full h-full object-cover"
+                                      onMouseEnter={(e) => e.currentTarget.play().catch(() => {})}
+                                      onMouseLeave={(e) => { e.currentTarget.pause(); e.currentTarget.currentTime = 0; }}
+                                      onClick={(e) => { const v = e.currentTarget; if (v.paused) v.play().catch(() => {}); else { v.pause(); v.currentTime = 0; } }}
+                                    />
+                                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none group-hover:opacity-0 transition-opacity">
+                                      <span className="text-white text-[16px] drop-shadow">▶</span>
+                                    </div>
+                                  </>
+                                ) : (
+                                  <Image
+                                    src={toLandingAssetUrl(imgUrl)}
+                                    alt={`${ci.title} ${imgIdx + 1}`}
+                                    fill
+                                    className="object-cover"
+                                  />
+                                )}
+                                <button
+                                  onClick={() =>
+                                    setForm((prev) => ({
+                                      ...prev,
+                                      collectionImages: prev.collectionImages.map((c, i) =>
+                                        i === idx ? { ...c, images: c.images.filter((_, j) => j !== imgIdx) } : c
+                                      ).filter((c) => c.images.length > 0),
+                                    }))
+                                  }
+                                  className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity cursor-pointer text-red-400 text-xs"
+                                >
+                                  ✕
+                                </button>
+                              </div>
+                            );
+                          })}
                         </div>
                       </div>
                     ))}

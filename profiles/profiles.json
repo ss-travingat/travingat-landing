@@ -1012,7 +1012,7 @@
     "homelandFlagCode": "FR",
     "currentlyInFlagCode": "MA",
     "countries": 10,
-    "media": 12,
+    "media": 10,
     "collections": 2,
     "images": {
       "cover": "https://cdn.travingat.com/landingpage-assets/profiles/cover-1775885674947.jpg",
@@ -1021,7 +1021,8 @@
         "https://cdn.travingat.com/landingpage-assets/profiles/gallery-1775888193239.jpg",
         "https://cdn.travingat.com/landingpage-assets/profiles/gallery-1775888196877.jpg",
         "https://cdn.travingat.com/landingpage-assets/profiles/gallery-1775888197850.jpg",
-        "https://cdn.travingat.com/landingpage-assets/profiles/gallery-1775888199309.jpg"
+        "https://cdn.travingat.com/landingpage-assets/profiles/gallery-1775888199309.jpg",
+        "https://cdn.travingat.com/landingpage-assets/profiles/country-1775915886968.mp4"
       ]
     },
     "align": "start",
@@ -1057,16 +1058,7 @@
       "NL",
       "DE"
     ],
-    "countryImages": [
-      {
-        "countryCode": "JP",
-        "images": [
-          "https://cdn.travingat.com/landingpage-assets/profiles/country-1775887055526.jpg",
-          "https://cdn.travingat.com/landingpage-assets/profiles/country-1775887127969.jpg",
-          "https://cdn.travingat.com/landingpage-assets/profiles/country-1775887129492.jpg"
-        ]
-      }
-    ],
+    "countryImages": [],
     "collectionImages": [
       {
         "title": "Europe",
