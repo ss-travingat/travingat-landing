@@ -20,7 +20,7 @@ export default function OrganizeSection() {
           {/* Organize text — top left */}
           <div className="absolute left-0 top-[13.2%] max-w-130 z-10">
             <h2 className="ds-font-display text-[64px] leading-18 font-semibold text-white mb-6 tracking-[-1px]">
-              Organize your travels by country
+              Organize your travels<br />by country
             </h2>
             <p className="text-[18px] leading-[1.8] text-gray-400">
               Add countries to your profile and neatly group photos and videos
@@ -30,7 +30,7 @@ export default function OrganizeSection() {
           {/* Collections text — bottom right */}
           <div className="absolute right-0 top-[69.1%] max-w-130 z-10">
             <h2 className="ds-font-display text-[64px] leading-18 font-semibold text-white mb-6 tracking-[-1px]">
-              Create collections that tell a story
+              Create collections that<br />tell a story
             </h2>
             <p className="text-[18px] leading-[1.8] text-gray-400">
               Create collections for photography, journeys, moods—or anything
