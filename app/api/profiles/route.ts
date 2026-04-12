@@ -1,25 +1,8 @@
 import { NextResponse } from "next/server";
-import fs from "fs";
-import path from "path";
 import { toLandingAssetUrl } from "@/lib/landing-assets";
+import { readJsonFromR2, writeJsonToR2 } from "@/lib/r2-upload";
 
-const DATA_PATH = path.join(process.cwd(), "profiles/profiles.json");
-
-interface CountryImage {
-  countryCode: string;
-  images: string[];
-}
-
-interface CollectionImage {
-  title: string;
-  images: string[];
-}
-
-interface ProfileImages {
-  cover: string;
-  avatar: string;
-  gallery: string[];
-}
+const R2_KEY = "landingpage-assets/data/profiles.json";
 
 interface Profile {
   id: string;
@@ -33,31 +16,25 @@ interface Profile {
   countries: number;
   media: number;
   collections: number;
-  images: ProfileImages;
+  images: { cover: string; avatar: string; gallery: string[] };
   align: "start" | "end";
   bio: string;
   interests: string[];
   languages: string[];
   homeland: string;
   currentlyIn: string;
-  socials: {
-    x?: string;
-    instagram?: string;
-    linkedin?: string;
-    youtube?: string;
-  };
+  socials: { x?: string; instagram?: string; linkedin?: string; youtube?: string };
   visitedCountryCodes: string[];
-  countryImages?: CountryImage[];
-  collectionImages?: CollectionImage[];
+  countryImages?: { countryCode: string; images: string[] }[];
+  collectionImages?: { title: string; images: string[] }[];
 }
 
-function readProfiles(): Profile[] {
-  const raw = fs.readFileSync(DATA_PATH, "utf-8");
-  return JSON.parse(raw);
+async function readProfiles(): Promise<Profile[]> {
+  return readJsonFromR2<Profile[]>(R2_KEY);
 }
 
-function writeProfiles(data: Profile[]) {
-  fs.writeFileSync(DATA_PATH, JSON.stringify(data, null, 2), "utf-8");
+async function writeProfiles(profiles: Profile[]): Promise<void> {
+  await writeJsonToR2(R2_KEY, profiles);
 }
 
 function normalizeProfile(profile: Profile): Profile {
@@ -74,7 +51,7 @@ function normalizeProfile(profile: Profile): Profile {
 // GET — return all profiles
 export async function GET() {
   try {
-    const profiles = readProfiles();
+    const profiles = await readProfiles();
     return NextResponse.json(profiles.map(normalizeProfile));
   } catch {
     return NextResponse.json([], { status: 200 });
@@ -85,7 +62,7 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { name, handle, country, flag, flagCode, homelandFlagCode, currentlyInFlagCode, countries, media, collections, images, align, bio, interests, languages, homeland, currentlyIn, socials, visitedCountryCodes } = body;
+    const { name, handle } = body;
 
     if (!name || !handle) {
       return NextResponse.json(
@@ -94,7 +71,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const profiles = readProfiles();
+    const profiles = await readProfiles();
     const newId = String(
       Math.max(0, ...profiles.map((p) => Number(p.id))) + 1
     ).padStart(3, "0");
@@ -103,41 +80,42 @@ export async function POST(request: Request) {
       id: newId,
       name,
       handle: handle.startsWith("@") ? handle : `@${handle}`,
-      country: country || "",
-      flag: flag || "",
-      flagCode: flagCode || "",
-      homelandFlagCode: homelandFlagCode || "",
-      currentlyInFlagCode: currentlyInFlagCode || "",
-      countries: Number(countries) || 0,
-      media: Number(media) || 0,
-      collections: Number(collections) || 0,
+      country: body.country || "",
+      flag: body.flag || "",
+      flagCode: body.flagCode || "",
+      homelandFlagCode: body.homelandFlagCode || "",
+      currentlyInFlagCode: body.currentlyInFlagCode || "",
+      countries: Number(body.countries) || 0,
+      media: Number(body.media) || 0,
+      collections: Number(body.collections) || 0,
       images: {
-        cover: images?.cover || "",
-        avatar: images?.avatar || "",
-        gallery: images?.gallery || [],
+        cover: body.images?.cover || "",
+        avatar: body.images?.avatar || "",
+        gallery: body.images?.gallery || [],
       },
-      align: align === "start" ? "start" : "end",
-      bio: bio || "",
-      interests: interests || [],
-      languages: languages || [],
-      homeland: homeland || "",
-      currentlyIn: currentlyIn || "",
+      align: body.align === "start" ? "start" : "end",
+      bio: body.bio || "",
+      interests: body.interests || [],
+      languages: body.languages || [],
+      homeland: body.homeland || "",
+      currentlyIn: body.currentlyIn || "",
       socials: {
-        instagram: socials?.instagram || "",
-        x: socials?.x || "",
-        linkedin: socials?.linkedin || "",
-        youtube: socials?.youtube || "",
+        instagram: body.socials?.instagram || "",
+        x: body.socials?.x || "",
+        linkedin: body.socials?.linkedin || "",
+        youtube: body.socials?.youtube || "",
       },
-      visitedCountryCodes: visitedCountryCodes || [],
+      visitedCountryCodes: body.visitedCountryCodes || [],
       countryImages: body.countryImages || [],
       collectionImages: body.collectionImages || [],
     };
 
     profiles.push(newProfile);
-    writeProfiles(profiles);
+    await writeProfiles(profiles);
 
     return NextResponse.json(normalizeProfile(newProfile), { status: 201 });
-  } catch {
+  } catch (err) {
+    console.error("Failed to create profile:", err);
     return NextResponse.json(
       { error: "Failed to create profile" },
       { status: 500 }

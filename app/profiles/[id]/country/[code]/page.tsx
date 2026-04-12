@@ -1,20 +1,29 @@
 import { notFound } from "next/navigation";
 
 import CountryDetailComponent from "@/profiles/CountryDetailComponent";
-import { getSampleProfileById, sampleProfiles } from "@/profiles/profile-data";
+import { readJsonFromR2 } from "@/lib/r2-upload";
+import type { SampleProfile } from "@/profiles/profile-data";
+
+const R2_KEY = "landingpage-assets/data/profiles.json";
 
 export const dynamicParams = true;
+export const revalidate = 60;
 
-export function generateStaticParams() {
-  const params: { id: string; code: string }[] = [];
-  for (const profile of sampleProfiles) {
-    if (profile.countryImages) {
-      for (const ci of profile.countryImages) {
-        params.push({ id: profile.id, code: ci.countryCode.toUpperCase() });
+export async function generateStaticParams() {
+  try {
+    const profiles = await readJsonFromR2<SampleProfile[]>(R2_KEY);
+    const params: { id: string; code: string }[] = [];
+    for (const profile of profiles) {
+      if (profile.countryImages) {
+        for (const ci of profile.countryImages) {
+          params.push({ id: profile.id, code: ci.countryCode.toUpperCase() });
+        }
       }
     }
+    return params;
+  } catch {
+    return [];
   }
-  return params;
 }
 
 export default async function CountryDetailPage({
@@ -23,7 +32,15 @@ export default async function CountryDetailPage({
   params: Promise<{ id: string; code: string }>;
 }) {
   const { id, code } = await params;
-  const profile = getSampleProfileById(id);
+
+  let profiles: SampleProfile[];
+  try {
+    profiles = await readJsonFromR2<SampleProfile[]>(R2_KEY);
+  } catch {
+    notFound();
+  }
+
+  const profile = profiles.find((p) => p.id === id);
 
   if (!profile) {
     notFound();

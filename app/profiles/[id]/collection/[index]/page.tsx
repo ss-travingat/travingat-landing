@@ -1,20 +1,29 @@
 import { notFound } from "next/navigation";
 
 import CollectionDetailComponent from "@/profiles/CollectionDetailComponent";
-import { getSampleProfileById, sampleProfiles } from "@/profiles/profile-data";
+import { readJsonFromR2 } from "@/lib/r2-upload";
+import type { SampleProfile } from "@/profiles/profile-data";
+
+const R2_KEY = "landingpage-assets/data/profiles.json";
 
 export const dynamicParams = true;
+export const revalidate = 60;
 
-export function generateStaticParams() {
-  const params: { id: string; index: string }[] = [];
-  for (const profile of sampleProfiles) {
-    if (profile.collectionImages) {
-      profile.collectionImages.forEach((_, i) => {
-        params.push({ id: profile.id, index: String(i) });
-      });
+export async function generateStaticParams() {
+  try {
+    const profiles = await readJsonFromR2<SampleProfile[]>(R2_KEY);
+    const params: { id: string; index: string }[] = [];
+    for (const profile of profiles) {
+      if (profile.collectionImages) {
+        profile.collectionImages.forEach((_, i) => {
+          params.push({ id: profile.id, index: String(i) });
+        });
+      }
     }
+    return params;
+  } catch {
+    return [];
   }
-  return params;
 }
 
 export default async function CollectionDetailPage({
@@ -23,7 +32,15 @@ export default async function CollectionDetailPage({
   params: Promise<{ id: string; index: string }>;
 }) {
   const { id, index } = await params;
-  const profile = getSampleProfileById(id);
+
+  let profiles: SampleProfile[];
+  try {
+    profiles = await readJsonFromR2<SampleProfile[]>(R2_KEY);
+  } catch {
+    notFound();
+  }
+
+  const profile = profiles.find((p) => p.id === id);
 
   if (!profile) {
     notFound();

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import { toLandingAssetUrl } from "@/lib/landing-assets";
-import { sampleProfiles, type SampleProfile } from "@/profiles/profile-data";
+import type { SampleProfile } from "@/profiles/profile-data";
 
 /* eslint-disable @next/next/no-img-element */
 

@@ -1,6 +1,10 @@
 import "server-only";
 
-import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import {
+  PutObjectCommand,
+  GetObjectCommand,
+  S3Client,
+} from "@aws-sdk/client-s3";
 import { getLandingAssetsCdnBase } from "@/lib/landing-assets";
 
 function requireEnv(name: string): string {
@@ -100,4 +104,35 @@ export async function uploadProfileAsset(params: {
     keySuffix: `profiles/${cleanName}`,
     contentType,
   });
+}
+
+/**
+ * Read a JSON file from R2.
+ */
+export async function readJsonFromR2<T>(objectKey: string): Promise<T> {
+  const { client, bucketName } = getR2Client();
+  const res = await client.send(
+    new GetObjectCommand({ Bucket: bucketName, Key: objectKey })
+  );
+  const body = await res.Body!.transformToString("utf-8");
+  return JSON.parse(body) as T;
+}
+
+/**
+ * Write a JSON file to R2.
+ */
+export async function writeJsonToR2(
+  objectKey: string,
+  data: unknown
+): Promise<void> {
+  const { client, bucketName } = getR2Client();
+  await client.send(
+    new PutObjectCommand({
+      Bucket: bucketName,
+      Key: objectKey,
+      Body: JSON.stringify(data, null, 2),
+      ContentType: "application/json",
+      CacheControl: "no-cache",
+    })
+  );
 }

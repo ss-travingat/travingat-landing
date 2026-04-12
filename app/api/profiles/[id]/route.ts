@@ -1,25 +1,8 @@
 import { NextResponse } from "next/server";
-import fs from "fs";
-import path from "path";
 import { toLandingAssetUrl } from "@/lib/landing-assets";
+import { readJsonFromR2, writeJsonToR2 } from "@/lib/r2-upload";
 
-const DATA_PATH = path.join(process.cwd(), "profiles/profiles.json");
-
-interface CountryImage {
-  countryCode: string;
-  images: string[];
-}
-
-interface CollectionImage {
-  title: string;
-  images: string[];
-}
-
-interface ProfileImages {
-  cover: string;
-  avatar: string;
-  gallery: string[];
-}
+const R2_KEY = "landingpage-assets/data/profiles.json";
 
 interface Profile {
   id: string;
@@ -33,31 +16,25 @@ interface Profile {
   countries: number;
   media: number;
   collections: number;
-  images: ProfileImages;
+  images: { cover: string; avatar: string; gallery: string[] };
   align: "start" | "end";
   bio: string;
   interests: string[];
   languages: string[];
   homeland: string;
   currentlyIn: string;
-  socials: {
-    x?: string;
-    instagram?: string;
-    linkedin?: string;
-    youtube?: string;
-  };
+  socials: { x?: string; instagram?: string; linkedin?: string; youtube?: string };
   visitedCountryCodes: string[];
-  countryImages?: CountryImage[];
-  collectionImages?: CollectionImage[];
+  countryImages?: { countryCode: string; images: string[] }[];
+  collectionImages?: { title: string; images: string[] }[];
 }
 
-function readProfiles(): Profile[] {
-  const raw = fs.readFileSync(DATA_PATH, "utf-8");
-  return JSON.parse(raw);
+async function readProfiles(): Promise<Profile[]> {
+  return readJsonFromR2<Profile[]>(R2_KEY);
 }
 
-function writeProfiles(data: Profile[]) {
-  fs.writeFileSync(DATA_PATH, JSON.stringify(data, null, 2), "utf-8");
+async function writeProfiles(profiles: Profile[]): Promise<void> {
+  await writeJsonToR2(R2_KEY, profiles);
 }
 
 function normalizeProfile(profile: Profile): Profile {
@@ -71,6 +48,24 @@ function normalizeProfile(profile: Profile): Profile {
   };
 }
 
+// GET — return a single profile
+export async function GET(
+  _request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params;
+    const profiles = await readProfiles();
+    const profile = profiles.find((p) => p.id === id);
+    if (!profile) {
+      return NextResponse.json({ error: "Profile not found" }, { status: 404 });
+    }
+    return NextResponse.json(normalizeProfile(profile));
+  } catch {
+    return NextResponse.json({ error: "Failed to fetch profile" }, { status: 500 });
+  }
+}
+
 // PUT — update a profile
 export async function PUT(
   request: Request,
@@ -79,14 +74,11 @@ export async function PUT(
   try {
     const { id } = await params;
     const body = await request.json();
-    const profiles = readProfiles();
+    const profiles = await readProfiles();
     const index = profiles.findIndex((p) => p.id === id);
 
     if (index === -1) {
-      return NextResponse.json(
-        { error: "Profile not found" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "Profile not found" }, { status: 404 });
     }
 
     profiles[index] = {
@@ -113,23 +105,21 @@ export async function PUT(
       homeland: body.homeland ?? profiles[index].homeland,
       currentlyIn: body.currentlyIn ?? profiles[index].currentlyIn,
       socials: {
-        instagram: body.socials?.instagram ?? profiles[index].socials.instagram,
-        x: body.socials?.x ?? profiles[index].socials.x,
-        linkedin: body.socials?.linkedin ?? profiles[index].socials.linkedin,
-        youtube: body.socials?.youtube ?? profiles[index].socials.youtube,
+        instagram: body.socials?.instagram ?? profiles[index].socials?.instagram,
+        x: body.socials?.x ?? profiles[index].socials?.x,
+        linkedin: body.socials?.linkedin ?? profiles[index].socials?.linkedin,
+        youtube: body.socials?.youtube ?? profiles[index].socials?.youtube,
       },
       visitedCountryCodes: body.visitedCountryCodes ?? profiles[index].visitedCountryCodes,
       countryImages: body.countryImages ?? profiles[index].countryImages ?? [],
       collectionImages: body.collectionImages ?? profiles[index].collectionImages ?? [],
     };
 
-    writeProfiles(profiles);
+    await writeProfiles(profiles);
     return NextResponse.json(normalizeProfile(profiles[index]));
-  } catch {
-    return NextResponse.json(
-      { error: "Failed to update profile" },
-      { status: 500 }
-    );
+  } catch (err) {
+    console.error("Failed to update profile:", err);
+    return NextResponse.json({ error: "Failed to update profile" }, { status: 500 });
   }
 }
 
@@ -140,22 +130,16 @@ export async function DELETE(
 ) {
   try {
     const { id } = await params;
-    const profiles = readProfiles();
+    const profiles = await readProfiles();
     const filtered = profiles.filter((p) => p.id !== id);
 
     if (filtered.length === profiles.length) {
-      return NextResponse.json(
-        { error: "Profile not found" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "Profile not found" }, { status: 404 });
     }
 
-    writeProfiles(filtered);
+    await writeProfiles(filtered);
     return NextResponse.json({ success: true });
   } catch {
-    return NextResponse.json(
-      { error: "Failed to delete profile" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Failed to delete profile" }, { status: 500 });
   }
 }
