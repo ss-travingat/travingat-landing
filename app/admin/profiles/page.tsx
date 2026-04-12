@@ -685,7 +685,7 @@ export default function AdminProfilesPage() {
 
   const handleSave = async () => {
     if (!form.name.trim() || !form.handle.trim()) {
-      showToast("Name and handle are required");
+      showToast("Name and handle are required", true);
       return;
     }
 
@@ -696,26 +696,32 @@ export default function AdminProfilesPage() {
         form.countryImages.reduce((sum, c) => sum + c.images.length, 0) +
         form.collectionImages.reduce((sum, c) => sum + c.images.length, 0);
       const payload = { ...form, media: computedMedia };
+      let res: Response;
       if (editing) {
-        await fetch(`/api/profiles/${editing.id}`, {
+        res = await fetch(`/api/profiles/${editing.id}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
         });
-        showToast("Profile updated");
       } else {
-        await fetch("/api/profiles", {
+        res = await fetch("/api/profiles", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
         });
-        showToast("Profile added");
       }
+      if (!res.ok) {
+        const errData = await res.json().catch(() => null);
+        showToast(errData?.error || `Save failed (${res.status})`, true);
+        setSaving(false);
+        return;
+      }
+      showToast(editing ? "Profile updated" : "Profile added");
       setForm(emptyForm);
       setEditing(null);
       await fetchProfiles();
-    } catch {
-      showToast("Failed to save");
+    } catch (err) {
+      showToast(`Failed to save: ${err instanceof Error ? err.message : "Network error"}`, true);
     }
     setSaving(false);
   };

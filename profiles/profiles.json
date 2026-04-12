@@ -1071,5 +1071,71 @@
         ]
       }
     ]
+  },
+  {
+    "id": "009",
+    "name": "Anika Shrestha",
+    "handle": "@anika.peaks",
+    "country": "Nepal",
+    "flag": "🇳🇵",
+    "flagCode": "NP",
+    "homelandFlagCode": "NP",
+    "currentlyInFlagCode": "AU",
+    "countries": 5,
+    "media": 14,
+    "collections": 0,
+    "images": {
+      "cover": "https://cdn.travingat.com/landingpage-assets/profiles/cover-1776000733586.jpg",
+      "avatar": "https://cdn.travingat.com/landingpage-assets/profiles/avatar-1776000763625.jpg",
+      "gallery": [
+        "https://cdn.travingat.com/landingpage-assets/profiles/gallery-1776000771518.jpg",
+        "https://cdn.travingat.com/landingpage-assets/profiles/gallery-1776000772640.jpg",
+        "https://cdn.travingat.com/landingpage-assets/profiles/gallery-1776000773313.jpg",
+        "https://cdn.travingat.com/landingpage-assets/profiles/gallery-1776000773919.jpg",
+        "https://cdn.travingat.com/landingpage-assets/profiles/gallery-1776000774503.jpg"
+      ]
+    },
+    "align": "start",
+    "bio": "Himalayan storyteller and documentary photographer. I trade city lights for starlit base camps, capturing the soul of mountain communities and the changing face of the high altitudes. Always looking for the perfect cup of butter tea.",
+    "interests": [],
+    "languages": [],
+    "homeland": "Nepal",
+    "currentlyIn": "Australia",
+    "socials": {
+      "instagram": "",
+      "x": "",
+      "linkedin": "",
+      "youtube": ""
+    },
+    "visitedCountryCodes": [
+      "AU",
+      "BD",
+      "BR",
+      "CN",
+      "DK"
+    ],
+    "countryImages": [
+      {
+        "countryCode": "AU",
+        "images": [
+          "https://cdn.travingat.com/landingpage-assets/profiles/country-1776000794498.jpg",
+          "https://cdn.travingat.com/landingpage-assets/profiles/country-1776000795265.jpg",
+          "https://cdn.travingat.com/landingpage-assets/profiles/country-1776000795823.jpg",
+          "https://cdn.travingat.com/landingpage-assets/profiles/country-1776000796434.jpg"
+        ]
+      }
+    ],
+    "collectionImages": [
+      {
+        "title": "Sea",
+        "images": [
+          "https://cdn.travingat.com/landingpage-assets/profiles/collection-1776000832697.jpg",
+          "https://cdn.travingat.com/landingpage-assets/profiles/collection-1776000833349.jpg",
+          "https://cdn.travingat.com/landingpage-assets/profiles/collection-1776000834087.jpg",
+          "https://cdn.travingat.com/landingpage-assets/profiles/collection-1776000835312.jpg",
+          "https://cdn.travingat.com/landingpage-assets/profiles/collection-1776000835970.jpg"
+        ]
+      }
+    ]
   }
 ]
