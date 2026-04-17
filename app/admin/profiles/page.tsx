@@ -44,6 +44,7 @@ interface Profile {
     linkedin: string;
     youtube: string;
   };
+  aboutImages: string[];
   visitedCountryCodes: string[];
   countryImages: CountryImage[];
   collectionImages: CollectionImage[];
@@ -184,6 +185,7 @@ const emptyForm: Omit<Profile, "id"> = {
   homeland: "",
   currentlyIn: "",
   socials: { x: "", instagram: "", linkedin: "", youtube: "" },
+  aboutImages: [],
   visitedCountryCodes: [],
   countryImages: [],
   collectionImages: [],
@@ -486,13 +488,14 @@ export default function AdminProfilesPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [toast, setToast] = useState<{ msg: string; error?: boolean } | null>(null);
-  const [uploading, setUploading] = useState<"cover" | "avatar" | "gallery" | "country" | "collection" | null>(null);
+  const [uploading, setUploading] = useState<"cover" | "avatar" | "gallery" | "about" | "country" | "collection" | null>(null);
   const coverInputRef = useRef<HTMLInputElement>(null);
   const avatarInputRef = useRef<HTMLInputElement>(null);
   const galleryInputRef = useRef<HTMLInputElement>(null);
+  const aboutInputRef = useRef<HTMLInputElement>(null);
   const [pendingCountryCode, setPendingCountryCode] = useState<string>("");
   const [pendingCollectionTitle, setPendingCollectionTitle] = useState<string>("");
-  const [mediaPickerTarget, setMediaPickerTarget] = useState<{ type: "country" | "collection"; idx: number } | null>(null);
+  const [mediaPickerTarget, setMediaPickerTarget] = useState<{ type: "country" | "collection" | "about"; idx?: number } | null>(null);
 
   const showToast = (msg: string, error = false) => {
     setToast({ msg, error });
@@ -504,7 +507,13 @@ export default function AdminProfilesPage() {
     try {
       const res = await fetch("/api/profiles");
       const data = await res.json();
-      setProfiles([...data].reverse());
+      const normalizedProfiles = (Array.isArray(data) ? data : []).map((profile) => ({
+        ...profile,
+        aboutImages: Array.isArray(profile.aboutImages) ? profile.aboutImages : [],
+        countryImages: Array.isArray(profile.countryImages) ? profile.countryImages : [],
+        collectionImages: Array.isArray(profile.collectionImages) ? profile.collectionImages : [],
+      })) as Profile[];
+      setProfiles([...normalizedProfiles].reverse());
     } catch {
       showToast("Failed to load profiles");
     }
@@ -577,7 +586,7 @@ export default function AdminProfilesPage() {
 
   const handleImageUpload = async (
     file: File,
-    type: "avatar" | "cover" | "gallery" | "country" | "collection"
+    type: "avatar" | "cover" | "gallery" | "about" | "country" | "collection"
   ) => {
     if (file.size > 5 * 1024 * 1024) {
       showToast("File too large. Max 5MB.", true);
@@ -673,6 +682,39 @@ export default function AdminProfilesPage() {
     }
   };
 
+  const handleAboutUpload = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const files = Array.from(e.target.files ?? []);
+    if (files.length === 0) return;
+    e.target.value = "";
+
+    const availableSlots = Math.max(0, 4 - form.aboutImages.length);
+    if (availableSlots === 0) {
+      showToast("About section supports up to 4 photos.", true);
+      return;
+    }
+
+    const filesToUpload = files.slice(0, availableSlots);
+    const uploadedUrls: string[] = [];
+
+    for (const file of filesToUpload) {
+      const url = await handleImageUpload(file, "about");
+      if (url) uploadedUrls.push(url);
+    }
+
+    if (uploadedUrls.length > 0) {
+      setForm((prev) => ({
+        ...prev,
+        aboutImages: [...prev.aboutImages, ...uploadedUrls].slice(0, 4),
+      }));
+    }
+
+    if (files.length > filesToUpload.length) {
+      showToast("Only the first 4 About photos are kept.");
+    }
+  };
+
   const removeGalleryImage = (index: number) => {
     setForm((prev) => ({
       ...prev,
@@ -680,6 +722,13 @@ export default function AdminProfilesPage() {
         ...prev.images,
         gallery: prev.images.gallery.filter((_, i) => i !== index),
       },
+    }));
+  };
+
+  const removeAboutImage = (index: number) => {
+    setForm((prev) => ({
+      ...prev,
+      aboutImages: prev.aboutImages.filter((_, i) => i !== index),
     }));
   };
 
@@ -762,6 +811,7 @@ export default function AdminProfilesPage() {
       homeland: p.homeland,
       currentlyIn: p.currentlyIn,
       socials: { ...p.socials, x: p.socials.x || "", instagram: p.socials.instagram || "", linkedin: p.socials.linkedin || "", youtube: p.socials.youtube || "" },
+      aboutImages: p.aboutImages ? [...p.aboutImages] : [],
       visitedCountryCodes: [...p.visitedCountryCodes],
       countryImages: p.countryImages ? [...p.countryImages] : [],
       collectionImages: p.collectionImages ? [...p.collectionImages] : [],
@@ -773,6 +823,15 @@ export default function AdminProfilesPage() {
     setEditing(null);
     setForm(emptyForm);
   };
+
+  const selectableMediaUrls = Array.from(
+    new Set([
+      ...form.images.gallery,
+      ...form.countryImages.flatMap((c) => c.images),
+      ...form.collectionImages.flatMap((c) => c.images),
+    ])
+  );
+  const canPickFromMedia = selectableMediaUrls.length > 0;
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white">
@@ -791,46 +850,59 @@ export default function AdminProfilesPage() {
               <h3 className="text-base font-semibold">Select from your media</h3>
               <button onClick={() => setMediaPickerTarget(null)} className="text-white/40 hover:text-white text-lg cursor-pointer">✕</button>
             </div>
-            <p className="text-xs text-white/40 mb-3">Tap items to add them. Already added items are dimmed.</p>
+            <p className="text-xs text-white/40 mb-3">
+              {mediaPickerTarget.type === "about"
+                ? `Tap photos to add them to About (${form.aboutImages.length}/4 selected).`
+                : "Tap items to add them. Already added items are dimmed."}
+            </p>
             <div className="overflow-y-auto flex-1 -mx-1">
               <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 gap-3 px-1">
-                {(() => {
-                  const allUrls = Array.from(new Set([
-                    ...form.images.gallery,
-                    ...form.countryImages.flatMap((c) => c.images),
-                    ...form.collectionImages.flatMap((c) => c.images),
-                  ]));
-                  return allUrls.map((url, i) => {
+                {selectableMediaUrls.map((url, i) => {
                   const existing = mediaPickerTarget.type === "country"
-                    ? form.countryImages[mediaPickerTarget.idx]?.images ?? []
-                    : form.collectionImages[mediaPickerTarget.idx]?.images ?? [];
-                  const alreadyAdded = existing.includes(url);
+                    ? form.countryImages[mediaPickerTarget.idx ?? -1]?.images ?? []
+                    : mediaPickerTarget.type === "collection"
+                      ? form.collectionImages[mediaPickerTarget.idx ?? -1]?.images ?? []
+                      : form.aboutImages;
+                  const isAlreadyAdded = existing.includes(url);
                   const isVid = /\.(mp4|mov|webm|m4v)$/i.test(url);
+                  const aboutLimitReached = mediaPickerTarget.type === "about" && form.aboutImages.length >= 4;
+                  const videoBlockedForAbout = mediaPickerTarget.type === "about" && isVid;
+                  const disabled = isAlreadyAdded || aboutLimitReached || videoBlockedForAbout;
+
                   return (
                     <button
                       key={i}
                       type="button"
-                      disabled={alreadyAdded}
+                      disabled={disabled}
                       onClick={() => {
-                        if (alreadyAdded) return;
+                        if (disabled) return;
                         const { type, idx } = mediaPickerTarget;
-                        if (type === "country") {
+                        if (type === "country" && typeof idx === "number") {
                           setForm((prev) => ({
                             ...prev,
                             countryImages: prev.countryImages.map((c, ci) =>
                               ci === idx ? { ...c, images: [...c.images, url] } : c
                             ),
                           }));
-                        } else {
+                          return;
+                        }
+
+                        if (type === "collection" && typeof idx === "number") {
                           setForm((prev) => ({
                             ...prev,
                             collectionImages: prev.collectionImages.map((c, ci) =>
                               ci === idx ? { ...c, images: [...c.images, url] } : c
                             ),
                           }));
+                          return;
                         }
+
+                        setForm((prev) => ({
+                          ...prev,
+                          aboutImages: [...prev.aboutImages, url].slice(0, 4),
+                        }));
                       }}
-                      className={`group relative aspect-square rounded-xl overflow-hidden bg-white/5 transition-all ${alreadyAdded ? "opacity-30 cursor-not-allowed" : "hover:ring-2 hover:ring-[#5A45F9] cursor-pointer"}`}
+                      className={`group relative aspect-square rounded-xl overflow-hidden bg-white/5 transition-all ${disabled ? "opacity-30 cursor-not-allowed" : "hover:ring-2 hover:ring-[#5A45F9] cursor-pointer"}`}
                     >
                       {isVid ? (
                         <>
@@ -851,15 +923,14 @@ export default function AdminProfilesPage() {
                       ) : (
                         <Image src={toLandingAssetUrl(url)} alt={`Media ${i + 1}`} fill className="object-cover" />
                       )}
-                      {alreadyAdded && (
+                      {isAlreadyAdded && (
                         <div className="absolute inset-0 flex items-center justify-center">
                           <span className="text-white text-sm font-bold">✓</span>
                         </div>
                       )}
                     </button>
                   );
-                });
-                })()}
+                })}
               </div>
             </div>
             <button onClick={() => setMediaPickerTarget(null)} className="mt-4 w-full py-2.5 bg-[#5A45F9] hover:bg-[#4a35e9] rounded-lg text-sm font-medium transition-colors cursor-pointer">
@@ -1059,6 +1130,72 @@ export default function AdminProfilesPage() {
                   </div>
                 </div>
 
+                {/* About Photos */}
+                <div>
+                  <label className="text-sm text-white/60 block mb-2">
+                    About Photos ({form.aboutImages.length}/4)
+                  </label>
+                  <div className="flex flex-wrap gap-2 mb-2">
+                    {form.aboutImages.map((url, i) => (
+                      <div
+                        key={i}
+                        className="relative w-20 h-16 rounded-lg overflow-hidden bg-white/5 group"
+                      >
+                        <Image
+                          src={toLandingAssetUrl(url)}
+                          alt={`About ${i + 1}`}
+                          fill
+                          className="object-cover"
+                        />
+                        <button
+                          onClick={() => removeAboutImage(i)}
+                          className="absolute top-0.5 right-0.5 w-5 h-5 bg-black/70 rounded-full text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500 cursor-pointer"
+                        >
+                          ×
+                        </button>
+                      </div>
+                    ))}
+                    {Array.from({ length: Math.max(0, 4 - form.aboutImages.length) }).map((_, i) => (
+                      <div
+                        key={`about-placeholder-${i}`}
+                        className="w-20 h-16 rounded-lg border border-dashed border-white/15 bg-white/5 flex items-center justify-center text-[10px] text-white/30"
+                      >
+                        Slot {form.aboutImages.length + i + 1}
+                      </div>
+                    ))}
+                  </div>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => aboutInputRef.current?.click()}
+                      disabled={uploading !== null || form.aboutImages.length >= 4}
+                      className="px-4 py-2 bg-white/10 hover:bg-white/15 rounded-lg text-sm font-medium transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {uploading === "about" ? "Uploading…" : "+ Add About Photos"}
+                    </button>
+                    <input
+                      ref={aboutInputRef}
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      onChange={handleAboutUpload}
+                      className="hidden"
+                    />
+                    {canPickFromMedia && (
+                      <button
+                        type="button"
+                        onClick={() => setMediaPickerTarget({ type: "about" })}
+                        disabled={form.aboutImages.length >= 4}
+                        className="px-4 py-2 bg-[#5A45F9]/20 hover:bg-[#5A45F9]/30 text-[#8B7BFF] rounded-lg text-sm font-medium transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        Select from media
+                      </button>
+                    )}
+                  </div>
+                  <p className="text-xs text-white/30 mt-1">
+                    Only displayed in the About tab. Max 4 photos.
+                  </p>
+                </div>
+
                 {/* Country Images */}
                 <div>
                   <label className="text-sm text-white/60 block mb-2">
@@ -1136,7 +1273,7 @@ export default function AdminProfilesPage() {
                                   }}
                                 />
                               </label>
-                              {form.images.gallery.length > 0 && (
+                              {canPickFromMedia && (
                                 <button
                                   type="button"
                                   onClick={() => setMediaPickerTarget({ type: "country", idx })}
@@ -1311,7 +1448,7 @@ export default function AdminProfilesPage() {
                                 }}
                               />
                             </label>
-                            {form.images.gallery.length > 0 && (
+                            {canPickFromMedia && (
                               <button
                                 type="button"
                                 onClick={() => setMediaPickerTarget({ type: "collection", idx })}

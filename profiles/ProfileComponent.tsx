@@ -273,11 +273,10 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
   }, [allMediaItems, countryCards, profile.bio, profile.images.cover, profile.id, profile.interests, profile.collectionImages]);
 
   const aboutPhotos = useMemo(() => {
-    return allMediaItems
-      .filter((item) => !item.isVideo)
-      .map((item) => item.fileUrl)
+    return (profile.aboutImages ?? [])
+      .filter((url) => Boolean(url) && !isVideoAsset(url))
       .slice(0, 4);
-  }, [allMediaItems]);
+  }, [profile.aboutImages]);
 
   const socialRows = useMemo(() => {
     const { x, instagram, linkedin, youtube } = profile.socials;
@@ -623,9 +622,9 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                   </p>
                 </div>
               ) : (
-                <div className="columns-2 md:columns-3 xl:columns-4 gap-5 space-y-5">
+                <div className="columns-2 md:columns-3 xl:columns-4 gap-5">
                   {allMediaItems.map((item) => (
-                    <div key={item.id} className="group break-inside-avoid rounded-2xl overflow-hidden bg-[#111] relative">
+                    <div key={item.id} className="group mb-5 inline-block w-full break-inside-avoid rounded-2xl overflow-hidden bg-[#111] relative [-webkit-column-break-inside:avoid]">
                       {item.isVideo ? (
                         <>
                           <video

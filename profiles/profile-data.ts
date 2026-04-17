@@ -29,6 +29,7 @@ export type SampleProfile = {
     linkedin?: string;
     youtube?: string;
   };
+  aboutImages?: string[];
   visitedCountryCodes: string[];
   countryImages?: { countryCode: string; images: string[] }[];
   collectionImages?: { title: string; images: string[] }[];

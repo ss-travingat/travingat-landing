@@ -65,7 +65,7 @@ export default function JoinSection() {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full h-12 rounded-full bg-white text-[16px] font-medium text-black transition hover:bg-[#ececec] disabled:opacity-50"
+            className="ds-font-display w-full h-12 rounded-full bg-white text-[20px] font-medium leading-7 tracking-[-0.5px] text-black transition hover:bg-[#ececec] disabled:opacity-50"
           >
             {isLoading ? "Joining..." : "Get early access"}
           </button>
@@ -83,7 +83,7 @@ export default function JoinSection() {
           <button
             type="submit"
             disabled={isLoading}
-            className="h-13 shrink-0 rounded-full bg-white px-8 text-[20px] font-medium leading-7 tracking-[-0.5px] text-black transition hover:bg-white-100 disabled:opacity-50"
+            className="ds-font-display h-13 shrink-0 rounded-full bg-white px-8 text-[20px] font-medium leading-7 tracking-[-0.5px] text-black transition hover:bg-white-100 disabled:opacity-50"
           >
             {isLoading ? "Joining..." : "Get early access"}
           </button>

@@ -40,7 +40,7 @@ export default function HeroSection() {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full h-12 rounded-full bg-white text-black font-medium text-[16px] hover:bg-gray-200 transition-colors disabled:opacity-50"
+            className="ds-font-display w-full h-12 rounded-full bg-white text-black font-medium text-[20px] leading-7 tracking-[-0.5px] hover:bg-gray-200 transition-colors disabled:opacity-50"
           >
             {isLoading ? "Joining..." : "Get early access"}
           </button>
@@ -58,7 +58,7 @@ export default function HeroSection() {
           <button
             type="submit"
             disabled={isLoading}
-            className="h-13 px-8 rounded-full bg-white text-black font-semibold text-[15px] hover:bg-gray-200 transition-colors disabled:opacity-50"
+            className="ds-font-display h-13 px-8 rounded-full bg-white text-black font-medium text-[20px] leading-7 tracking-[-0.5px] hover:bg-gray-200 transition-colors disabled:opacity-50"
           >
             {isLoading ? "Joining..." : "Get early access"}
           </button>

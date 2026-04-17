@@ -24,6 +24,7 @@ interface Profile {
   homeland: string;
   currentlyIn: string;
   socials: { x?: string; instagram?: string; linkedin?: string; youtube?: string };
+  aboutImages?: string[];
   visitedCountryCodes: string[];
   countryImages?: { countryCode: string; images: string[] }[];
   collectionImages?: { title: string; images: string[] }[];
@@ -45,6 +46,7 @@ function normalizeProfile(profile: Profile): Profile {
       avatar: toLandingAssetUrl(profile.images.avatar),
       gallery: profile.images.gallery.map(toLandingAssetUrl),
     },
+    aboutImages: (profile.aboutImages ?? []).map(toLandingAssetUrl),
   };
 }
 
@@ -105,6 +107,7 @@ export async function POST(request: Request) {
         linkedin: body.socials?.linkedin || "",
         youtube: body.socials?.youtube || "",
       },
+      aboutImages: body.aboutImages || [],
       visitedCountryCodes: body.visitedCountryCodes || [],
       countryImages: body.countryImages || [],
       collectionImages: body.collectionImages || [],

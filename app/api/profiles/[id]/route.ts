@@ -24,6 +24,7 @@ interface Profile {
   homeland: string;
   currentlyIn: string;
   socials: { x?: string; instagram?: string; linkedin?: string; youtube?: string };
+  aboutImages?: string[];
   visitedCountryCodes: string[];
   countryImages?: { countryCode: string; images: string[] }[];
   collectionImages?: { title: string; images: string[] }[];
@@ -45,6 +46,7 @@ function normalizeProfile(profile: Profile): Profile {
       avatar: toLandingAssetUrl(profile.images.avatar),
       gallery: profile.images.gallery.map(toLandingAssetUrl),
     },
+    aboutImages: (profile.aboutImages ?? []).map(toLandingAssetUrl),
   };
 }
 
@@ -110,6 +112,7 @@ export async function PUT(
         linkedin: body.socials?.linkedin ?? profiles[index].socials?.linkedin,
         youtube: body.socials?.youtube ?? profiles[index].socials?.youtube,
       },
+      aboutImages: body.aboutImages ?? profiles[index].aboutImages ?? [],
       visitedCountryCodes: body.visitedCountryCodes ?? profiles[index].visitedCountryCodes,
       countryImages: body.countryImages ?? profiles[index].countryImages ?? [],
       collectionImages: body.collectionImages ?? profiles[index].collectionImages ?? [],
