@@ -673,17 +673,17 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                   </div>
                 </div>
               ) : (
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-5">
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5">
                   {countryCards.map((country) => (
                     <Link key={country.code} href={`/profiles/${profile.id}/country/${country.flagCode.toUpperCase()}`} className="flex flex-col gap-4 group">
                       {/* Photo */}
-                      <div className="w-full overflow-hidden rounded-2xl bg-[#151515]">
+                      <div className="w-full aspect-square overflow-hidden rounded-2xl bg-[#151515]">
                         <img
                           src={toLandingAssetUrl(country.thumbnailUrl)}
                           alt={country.name}
                           loading="lazy"
                           decoding="async"
-                          className="w-full h-auto block transition-transform duration-300 group-hover:scale-[1.03]"
+                          className="w-full h-full object-cover block transition-transform duration-300 group-hover:scale-[1.03]"
                         />
                       </div>
                       {/* Country info */}
