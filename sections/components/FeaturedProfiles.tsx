@@ -289,6 +289,15 @@ export default function FeaturedProfiles() {
           })}
         </div>
       </div>
+
+      <div className="mt-8 flex justify-center px-3 md:mt-10 xl:mt-12">
+        <Link
+          href="/newprofiles"
+          className="inline-flex items-center justify-center rounded-full border border-black-100 bg-black-700 px-6 py-3 text-sm font-medium leading-5 tracking-[-0.084px] text-white hover:border-white-700 hover:bg-black-600 transition-colors"
+        >
+          View more profile
+        </Link>
+      </div>
     </section>
   );
 }
