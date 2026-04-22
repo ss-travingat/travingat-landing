@@ -1,12 +1,6 @@
 import Image from "next/image";
 import { toLandingAssetUrl } from "@/lib/landing-assets";
 
-const mapPins = [
-  { left: "17.34%", top: "34.84%" },
-  { left: "73.57%", top: "16.05%" },
-  { left: "76.06%", top: "50.63%" },
-];
-
 export default function WorldMapSection() {
   return (
     <section className="py-12 md:py-16 xl:px-0 xl:py-20">
@@ -37,14 +31,14 @@ export default function WorldMapSection() {
           />
           {/* Gradient overlay */}
           <div
-            className="absolute inset-x-0 bottom-0 h-[45%] pointer-events-none"
+            className="absolute inset-x-0 bottom-0 h-[45%] pointer-events-none z-20"
             style={{
               backgroundImage:
                 "linear-gradient(180deg, rgba(10,10,10,0) 0%, rgba(10,10,10,0.75) 55%, rgba(10,10,10,1) 100%)",
             }}
           />
           {/* Text */}
-          <div className="absolute inset-x-0 bottom-0 pb-7 flex flex-col items-center gap-1">
+          <div className="absolute inset-x-0 bottom-0 pb-7 flex flex-col items-center gap-1 z-30">
             <p className="text-[28px] font-bold text-white tracking-[-0.5px] leading-none ds-font-display">
               Rachel, 28
             </p>
@@ -57,61 +51,26 @@ export default function WorldMapSection() {
 
         {/* Desktop: full illustration */}
         <div className="hidden xl:block relative w-full h-137.5">
-        {/* World map background */}
-        <div className="pointer-events-none absolute left-1/2 top-[7.6%] z-0 h-[96%] w-[61.6%] -translate-x-1/2">
-          <Image
-            src={toLandingAssetUrl("/images/dotted-world-map.svg")}
-            alt=""
-            fill
+          {/* World map background */}
+          <div className="pointer-events-none absolute left-1/2 top-[7.6%] z-0 h-[96%] w-[61.6%] -translate-x-1/2">
+            <Image
+              src="/images/Map.png"
+              alt=""
+              fill
               className="object-contain opacity-100"
-          />
-
-            {mapPins.map((pin) => (
-              <div
-                key={`${pin.left}-${pin.top}`}
-                className="absolute -translate-x-1/2"
-                style={{ left: pin.left, top: pin.top }}
-              >
-                <span className="block h-3.5 w-3.5 rounded-full bg-[radial-gradient(circle_at_35%_35%,#ff9aa6_0%,#f0526a_55%,#cb2e47_100%)] shadow-[0_0_0_2px_rgba(240,82,106,0.2)]" />
-                <span className="mx-auto mt-0.5 block h-3.5 w-0.5 rounded-full bg-[#cfd0d1]" />
-              </div>
-            ))}
-        </div>
-
-        {/* Central explore.png image (already contains tags + pins) */}
-        <div className="absolute left-1/2 -translate-x-1/2 bottom-0 w-[320px] xl:w-165 h-full z-10">
-          <Image
-            src={toLandingAssetUrl("/images/traveler-rachel-figma.png")}
-            alt="Traveler exploring the world"
-            fill
-            className="object-contain object-bottom"
-            priority
-          />
-        </div>
-
-        {/* Gradient overlay at bottom for name */}
-        <div
-          className="absolute left-1/2 -translate-x-1/2 bottom-0 w-[320px] xl:w-137.5 h-50 flex flex-col items-center justify-end z-20 pointer-events-none"
-          style={{
-            backgroundImage:
-              "linear-gradient(180deg, rgba(10,10,10,0) 0%, rgba(10,10,10,0.7) 60%, rgba(10,10,10,1) 100%)",
-          }}
-        >
-          <div className="flex flex-col items-center gap-1 pb-1">
-            <div className="flex items-center gap-1 text-white">
-              <span className="text-[24px] xl:text-[32px] font-bold tracking-[-0.5px] ds-font-display">
-                Rachel,
-              </span>
-              <span className="text-[24px] xl:text-[32px] font-bold tracking-[-0.5px] ds-font-display">
-                28
-              </span>
-            </div>
-            <div className="flex items-center gap-1 text-[14px] xl:text-[16px] font-medium tracking-[-0.1px]">
-              <span className="text-[#a8a8a8]">From</span>
-              <span className="text-white">Switzerland</span>
-            </div>
+            />
           </div>
-        </div>
+
+          {/* Rachel illustration with built-in map and pins */}
+          <div className="pointer-events-none absolute left-1/2 top-[7.6%] z-10 h-[96%] w-[61.6%] -translate-x-1/2">
+            <Image
+              src="/images/Rachell.png"
+              alt="Rachel exploring the world"
+              fill
+              className="object-contain object-bottom"
+              priority
+            />
+          </div>
 
         {/* 28 Countries card - left side */}
         <div className="absolute top-[20%] left-[4.6%] bg-[#111] border border-black-300 rounded-[20px] p-6 w-[320px] overflow-hidden z-20 hidden xl:flex flex-col gap-6">

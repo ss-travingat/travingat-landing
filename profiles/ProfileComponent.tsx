@@ -473,7 +473,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                   <div className="flex items-center gap-4 rounded-xl">
                     <div className="relative h-15 w-15 shrink-0">
                       <img
-                        src="/images/stat-icon-globe.png"
+                        src="/images/Globe.png"
                         alt="Globe icon"
                         className="pointer-events-none absolute top-1/2 left-1/2 h-15 w-15 -translate-x-1/2 -translate-y-1/2 -rotate-[14.68deg] object-contain"
                       />
@@ -486,7 +486,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                   <div className="flex items-center gap-4 rounded-xl">
                     <div className="relative h-15 w-15 shrink-0">
                       <img
-                        src="/images/stat-icon-media.png"
+                        src="/images/media.png"
                         alt="Media icon"
                         className="pointer-events-none absolute top-1/2 left-1/2 h-15 w-15 -translate-x-1/2 -translate-y-1/2 object-contain"
                       />
@@ -499,7 +499,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                   <div className="flex items-center gap-4 rounded-xl">
                     <div className="relative h-15 w-15 shrink-0">
                       <img
-                        src="/images/stat-icon-collections.png"
+                        src="/images/collections.png"
                         alt="Collections icon"
                         className="pointer-events-none absolute top-1/2 left-1/2 h-15 w-15 -translate-x-1/2 -translate-y-1/2 object-contain"
                       />
