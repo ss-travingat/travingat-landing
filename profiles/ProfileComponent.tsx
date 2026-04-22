@@ -475,7 +475,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                       <img
                         src="/images/Globe.png"
                         alt="Globe icon"
-                        className="pointer-events-none absolute top-1/2 left-1/2 h-15 w-15 -translate-x-1/2 -translate-y-1/2 -rotate-[14.68deg] object-contain"
+                        className="pointer-events-none absolute top-1/2 left-1/2 h-15 w-15 -translate-x-1/2 -translate-y-1/2 object-contain"
                       />
                     </div>
                     <div className="flex flex-col gap-1">
