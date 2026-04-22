@@ -471,11 +471,11 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
               <div className="w-full rounded-2xl border-l border-black-100 bg-linear-to-r from-[#1c1c1c] to-[rgba(0,0,0,0.1)] px-4 py-5">
                 <div className="flex items-center gap-10">
                   <div className="flex items-center gap-4 rounded-xl">
-                    <div className="w-15 h-15 overflow-hidden shrink-0 relative">
+                    <div className="relative h-15 w-15 shrink-0">
                       <img
                         src="/images/stat-icon-globe.png"
                         alt="Globe icon"
-                        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-19 h-19 -rotate-[14.68deg] object-cover pointer-events-none"
+                        className="pointer-events-none absolute top-1/2 left-1/2 h-15 w-15 -translate-x-1/2 -translate-y-1/2 -rotate-[14.68deg] object-contain"
                       />
                     </div>
                     <div className="flex flex-col gap-1">
@@ -484,11 +484,11 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                     </div>
                   </div>
                   <div className="flex items-center gap-4 rounded-xl">
-                    <div className="w-15 h-15 overflow-hidden shrink-0 relative">
+                    <div className="relative h-15 w-15 shrink-0">
                       <img
                         src="/images/stat-icon-media.png"
                         alt="Media icon"
-                        className="absolute top-1/2 left-[calc(50%-1px)] -translate-x-1/2 -translate-y-1/2 w-15.5 h-17.25 object-cover pointer-events-none"
+                        className="pointer-events-none absolute top-1/2 left-1/2 h-15 w-15 -translate-x-1/2 -translate-y-1/2 object-contain"
                       />
                     </div>
                     <div className="flex flex-col gap-1">
@@ -497,11 +497,11 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                     </div>
                   </div>
                   <div className="flex items-center gap-4 rounded-xl">
-                    <div className="w-15 h-15 overflow-hidden shrink-0 relative">
+                    <div className="relative h-15 w-15 shrink-0">
                       <img
                         src="/images/stat-icon-collections.png"
                         alt="Collections icon"
-                        className="absolute top-1/2 left-[calc(50%+4px)] -translate-x-1/2 -translate-y-1/2 w-15.25 h-17 object-cover pointer-events-none"
+                        className="pointer-events-none absolute top-1/2 left-1/2 h-15 w-15 -translate-x-1/2 -translate-y-1/2 object-contain"
                       />
                     </div>
                     <div className="flex flex-col gap-1">

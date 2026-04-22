@@ -1,6 +1,12 @@
 import Image from "next/image";
 import { toLandingAssetUrl } from "@/lib/landing-assets";
 
+const mapPins = [
+  { left: "17.34%", top: "34.84%" },
+  { left: "73.57%", top: "16.05%" },
+  { left: "76.06%", top: "50.63%" },
+];
+
 export default function WorldMapSection() {
   return (
     <section className="py-12 md:py-16 xl:px-0 xl:py-20">
@@ -12,13 +18,21 @@ export default function WorldMapSection() {
       {/* Illustration area */}
       <div className="relative mx-0 xl:max-w-325 xl:mx-auto xl:h-137.5 overflow-hidden">
         {/* Mobile and iPad: single image with gradient + text overlay */}
-        <div className="xl:hidden relative">
+        <div className="xl:hidden relative overflow-hidden">
+          <div className="pointer-events-none absolute inset-x-0 top-4 mx-auto h-36 w-full md:h-48">
+            <Image
+              src={toLandingAssetUrl("/images/dotted-world-map.svg")}
+              alt=""
+              fill
+              className="object-contain opacity-65"
+            />
+          </div>
           <Image
             src={toLandingAssetUrl("/images/travel-mobile-mockup.png")}
             alt="One place for everywhere you've explored"
             width={393}
             height={450}
-            className="w-full h-auto block"
+            className="relative z-10 w-full h-auto block"
             priority
           />
           {/* Gradient overlay */}
@@ -44,13 +58,24 @@ export default function WorldMapSection() {
         {/* Desktop: full illustration */}
         <div className="hidden xl:block relative w-full h-137.5">
         {/* World map background */}
-        <div className="absolute inset-0">
+        <div className="pointer-events-none absolute left-1/2 top-[7.6%] z-0 h-[96%] w-[61.6%] -translate-x-1/2">
           <Image
             src={toLandingAssetUrl("/images/dotted-world-map.svg")}
             alt=""
             fill
-            className="object-contain opacity-[0.18]"
+              className="object-contain opacity-100"
           />
+
+            {mapPins.map((pin) => (
+              <div
+                key={`${pin.left}-${pin.top}`}
+                className="absolute -translate-x-1/2"
+                style={{ left: pin.left, top: pin.top }}
+              >
+                <span className="block h-3.5 w-3.5 rounded-full bg-[radial-gradient(circle_at_35%_35%,#ff9aa6_0%,#f0526a_55%,#cb2e47_100%)] shadow-[0_0_0_2px_rgba(240,82,106,0.2)]" />
+                <span className="mx-auto mt-0.5 block h-3.5 w-0.5 rounded-full bg-[#cfd0d1]" />
+              </div>
+            ))}
         </div>
 
         {/* Central explore.png image (already contains tags + pins) */}
