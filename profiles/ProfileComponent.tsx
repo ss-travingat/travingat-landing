@@ -742,30 +742,44 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                   </div>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-x-3 gap-y-6 xl:gap-y-8">
+                <div
+                  className="w-full flex flex-wrap gap-x-5 gap-y-10"
+                  style={{ maxWidth: 1488 }}
+                >
                   {collectionCards.map((collection, idx) => (
-                    <Link key={collection.id} href={`/profiles/${profile.id}/collection/${idx}`} className="group block">
-                      <div className="overflow-hidden rounded-2xl border border-black-200 bg-[#151515]">
+                    <Link
+                      key={collection.id}
+                      href={`/profiles/${profile.id}/collection/${idx}`}
+                      className="group"
+                      style={{ width: 357, height: 386, flex: '0 0 357px' }}
+                    >
+                      <div
+                        className="overflow-hidden rounded-2xl border border-[#262626] bg-[#151515]"
+                        style={{ width: 357, height: 278 }}
+                      >
                         <img
                           src={toLandingAssetUrl(collection.thumbnailUrl)}
                           alt={collection.title}
                           loading="lazy"
                           decoding="async"
-                          className="block w-full aspect-[1.42] object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+                          className="block w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+                          style={{ width: 357, height: 278 }}
                         />
                       </div>
-                      <div className="px-0.5 pt-2.5 space-y-1.5">
-                        <p className="text-white-500 text-[10px] leading-[1.4] tracking-[-0.3px]">{collection.createdLabel}</p>
-                        <p className="text-white text-[14px] leading-[1.35] tracking-[-0.5px] font-semibold line-clamp-1">{collection.title}</p>
-
+                      <div className="px-1.5 pt-2.5 flex flex-col gap-2" style={{ width: 357 - 12 }}>
+                        <p className="text-[#646464] text-[14px] leading-normal tracking-[-0.41px]">{collection.createdLabel}</p>
+                        <p className="text-white text-[16px] font-medium leading-6 tracking-[-0.096px] min-w-full w-min line-clamp-1">{collection.title}</p>
                         <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
                           {collection.countries.map((country) => (
-                            <span key={`${collection.id}-${country}`} className="inline-flex items-center rounded-full border border-black-100 bg-black-600 px-2 py-0.75 text-[10px] leading-none text-white-300">
+                            <span
+                              key={`${collection.id}-${country}`}
+                              className="backdrop-blur-[2px] bg-black-800 border border-[#262626] border-solid flex items-center justify-center pb-1.25 pt-0.75 px-2.5 rounded-full text-[#a8a8a8] text-[12px] leading-none tracking-[-0.408px]"
+                            >
                               {country}
                             </span>
                           ))}
                           {collection.countryOverflowCount > 0 ? (
-                            <span className="inline-flex items-center rounded-full border border-black-100 bg-black-600 px-2 py-0.75 text-[10px] leading-none text-white-300">
+                            <span className="backdrop-blur-[2px] bg-black-800 border border-[#262626] border-solid flex items-center justify-center pb-1.25 pt-0.75 px-2.5 rounded-full text-[#a8a8a8] text-[12px] leading-none tracking-[-0.408px]">
                               +{collection.countryOverflowCount}
                             </span>
                           ) : null}
