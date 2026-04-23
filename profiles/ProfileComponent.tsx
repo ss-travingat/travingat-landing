@@ -69,6 +69,7 @@ type CollectionCard = {
   createdLabel: string;
   thumbnailUrl: string;
   countries: string[];
+  countryOverflowCount: number;
 };
 
 function isVideoAsset(url: string) {
@@ -231,6 +232,10 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
   }, [allMediaItems, basedIn, profile.images.cover, profile.currentlyIn, profile.flagCode, profile.homelandFlagCode, profile.currentlyInFlagCode, profile.homeland, profile.id, profile.countryImages]);
 
   const collectionCards = useMemo<CollectionCard[]>(() => {
+    const allCountryNames = countryCards.map((country) => country.name);
+    const visibleCountries = allCountryNames.slice(0, 3);
+    const countryOverflowCount = Math.max(0, allCountryNames.length - visibleCountries.length);
+
     // Use admin-uploaded collection images if available
     if (profile.collectionImages && profile.collectionImages.length > 0) {
       return profile.collectionImages.map((ci, index) => {
@@ -245,7 +250,8 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
             year: "numeric",
           }),
           thumbnailUrl: ci.images[0] || profile.images.cover,
-          countries: countryCards.map((country) => country.name).slice(0, 3),
+          countries: visibleCountries,
+          countryOverflowCount,
         };
       });
     }
@@ -267,7 +273,8 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
           year: "numeric",
         }),
         thumbnailUrl: thumbnailItem ? thumbnailItem.fileUrl : profile.images.cover,
-        countries: countryCards.map((country) => country.name).slice(0, 3),
+        countries: visibleCountries,
+        countryOverflowCount,
       };
     });
   }, [allMediaItems, countryCards, profile.bio, profile.images.cover, profile.id, profile.interests, profile.collectionImages]);
@@ -735,16 +742,21 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                   </div>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-x-3 gap-y-6 xl:gap-y-8">
                   {collectionCards.map((collection, idx) => (
                     <Link key={collection.id} href={`/profiles/${profile.id}/collection/${idx}`} className="group block">
-                      <div className="rounded-2xl overflow-hidden bg-[#151515] border border-[#1f1f1f]">
-                        <img src={toLandingAssetUrl(collection.thumbnailUrl)} alt={collection.title} loading="lazy" decoding="async" className="w-full h-auto block" />
+                      <div className="overflow-hidden rounded-2xl border border-black-200 bg-[#151515]">
+                        <img
+                          src={toLandingAssetUrl(collection.thumbnailUrl)}
+                          alt={collection.title}
+                          loading="lazy"
+                          decoding="async"
+                          className="block w-full aspect-[1.42] object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+                        />
                       </div>
-                      <div className="pt-2 px-1 space-y-1.5">
-                        <p className="text-white-400 text-[11px] leading-[1.4] tracking-[-0.3px]">{collection.createdLabel}</p>
+                      <div className="px-0.5 pt-2.5 space-y-1.5">
+                        <p className="text-white-500 text-[10px] leading-[1.4] tracking-[-0.3px]">{collection.createdLabel}</p>
                         <p className="text-white text-[14px] leading-[1.35] tracking-[-0.5px] font-semibold line-clamp-1">{collection.title}</p>
-                        <p className="text-white-400 text-[12px] leading-[1.4] tracking-[-0.4px] line-clamp-1">{collection.description}</p>
 
                         <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
                           {collection.countries.map((country) => (
@@ -752,6 +764,11 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                               {country}
                             </span>
                           ))}
+                          {collection.countryOverflowCount > 0 ? (
+                            <span className="inline-flex items-center rounded-full border border-black-100 bg-black-600 px-2 py-0.75 text-[10px] leading-none text-white-300">
+                              +{collection.countryOverflowCount}
+                            </span>
+                          ) : null}
                         </div>
                       </div>
                     </Link>
