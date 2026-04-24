@@ -18,7 +18,8 @@ function getTransporter() {
 // ---------------------------------------------------------------------------
 
 export function buildConfirmationEmail(email: string, token: string) {
-  const confirmUrl = `${BASE_URL}/waitlist/confirm?token=${encodeURIComponent(token)}`;
+  const confirmUrl = `${BASE_URL}/api/waitlist/confirm?token=${encodeURIComponent(token)}`;
+
 
   const html = `
 <!DOCTYPE html>
