@@ -17,7 +17,7 @@ export default async function WaitlistConfirmPage({ searchParams }: Props) {
     const sql = getDb();
 
     const rows = await sql`
-      SELECT id, confirmed
+      SELECT id, confirmed, token_expires_at
       FROM waitlist
       WHERE confirmation_token = ${token.trim()}
       LIMIT 1
@@ -28,8 +28,15 @@ export default async function WaitlistConfirmPage({ searchParams }: Props) {
       redirect("/waitlist/confirmed?already=true");
     }
 
-    if (rows[0].confirmed) {
+    const entry = rows[0];
+
+    if (entry.confirmed) {
       redirect("/waitlist/confirmed?already=true");
+    }
+
+    if (entry.token_expires_at && new Date(entry.token_expires_at) < new Date()) {
+      // Token has expired
+      redirect("/waitlist/confirmed?error=expired");
     }
 
     // Mark confirmed and clear token

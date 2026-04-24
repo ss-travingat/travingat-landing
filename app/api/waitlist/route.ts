@@ -84,18 +84,36 @@ export async function POST(req: NextRequest) {
     const sql = getDb();
 
     // Check for existing email
-    const existing = await sql`SELECT id FROM waitlist WHERE email = ${email}`;
-    if (existing.length > 0) {
-      return NextResponse.json({ error: "Already on the waitlist" }, { status: 409 });
-    }
-
+    const existing = await sql`SELECT id, confirmed FROM waitlist WHERE email = ${email}`;
+    
     // Generate a unique confirmation token
     const token = crypto.randomUUID();
 
-    await sql`
-      INSERT INTO waitlist (email, browser, device, country, city, ip, confirmed, confirmation_token)
-      VALUES (${email}, ${browser}, ${device}, ${country}, ${city}, ${ip}, FALSE, ${token})
-    `;
+    if (existing.length > 0) {
+      const entry = existing[0];
+      if (entry.confirmed) {
+        return NextResponse.json({ error: "Already on the waitlist" }, { status: 409 });
+      }
+
+      // If unconfirmed, generate a new token and extend expiry by 24 hours, then resend email
+      await sql`
+        UPDATE waitlist
+        SET confirmation_token = ${token},
+            token_expires_at = NOW() + INTERVAL '24 hours',
+            browser = ${browser},
+            device = ${device},
+            country = ${country},
+            city = ${city},
+            ip = ${ip}
+        WHERE id = ${entry.id}
+      `;
+    } else {
+      // New user
+      await sql`
+        INSERT INTO waitlist (email, browser, device, country, city, ip, confirmed, confirmation_token, token_expires_at)
+        VALUES (${email}, ${browser}, ${device}, ${country}, ${city}, ${ip}, FALSE, ${token}, NOW() + INTERVAL '24 hours')
+      `;
+    }
 
     // Send confirmation email — must await on serverless (function terminates after response)
     try {

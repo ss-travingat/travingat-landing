@@ -13,7 +13,8 @@ interface Props {
 export default async function WaitlistConfirmedPage({ searchParams }: Props) {
   const params = await searchParams;
   const isAlready = params.already === "true";
-  const hasError = !!params.error;
+  const errorType = params.error;
+  const hasError = !!errorType;
 
   return (
     <main
@@ -70,7 +71,9 @@ export default async function WaitlistConfirmedPage({ searchParams }: Props) {
           }}
         >
           {hasError
-            ? "Something went wrong"
+            ? errorType === "expired"
+              ? "Link expired"
+              : "Something went wrong"
             : isAlready
             ? "Already confirmed"
             : "You're on the waitlist."}
@@ -86,7 +89,9 @@ export default async function WaitlistConfirmedPage({ searchParams }: Props) {
           }}
         >
           {hasError
-            ? "We couldn't confirm your spot. The link may be invalid. Please try signing up again."
+            ? errorType === "expired"
+              ? "This confirmation link has expired (they are only valid for 24 hours). Please sign up again to get a new link."
+              : "We couldn't confirm your spot. The link may be invalid. Please try signing up again."
             : isAlready
             ? "Your spot was already confirmed — you're all set. We'll let you know when Travingat launches."
             : "We'll let you know when it's launched."}
