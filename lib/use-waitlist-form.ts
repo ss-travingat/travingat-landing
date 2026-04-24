@@ -37,7 +37,7 @@ export function useWaitlistForm() {
       }
 
       setStatus("success");
-      setMessage("You're in! Check your email.");
+      setMessage("Check your email to confirm your spot.");
       setEmail("");
     } catch {
       setStatus("error");

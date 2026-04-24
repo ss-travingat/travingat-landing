@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
-import { sendWelcomeEmail } from "@/lib/waitlist-email";
+import { sendConfirmationEmail } from "@/lib/waitlist-email";
 import {
   getAdminSessionCookieName,
   verifyAdminSessionToken,
@@ -21,7 +21,7 @@ function parseBrowser(ua: string): string {
   return "Other";
 }
 
-// POST — join waitlist
+// POST — join waitlist (unconfirmed; sends confirmation email)
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
@@ -89,16 +89,19 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Already on the waitlist" }, { status: 409 });
     }
 
+    // Generate a unique confirmation token
+    const token = crypto.randomUUID();
+
     await sql`
-      INSERT INTO waitlist (email, browser, device, country, city, ip)
-      VALUES (${email}, ${browser}, ${device}, ${country}, ${city}, ${ip})
+      INSERT INTO waitlist (email, browser, device, country, city, ip, confirmed, confirmation_token)
+      VALUES (${email}, ${browser}, ${device}, ${country}, ${city}, ${ip}, FALSE, ${token})
     `;
 
-    // Send welcome email — must await on serverless (function terminates after response)
+    // Send confirmation email — must await on serverless (function terminates after response)
     try {
-      await sendWelcomeEmail(email);
+      await sendConfirmationEmail(email, token);
     } catch (err) {
-      console.error("Failed to send welcome email:", err);
+      console.error("Failed to send confirmation email:", err);
     }
 
     return NextResponse.json({ success: true });
@@ -119,19 +122,26 @@ export async function GET(req: NextRequest) {
 
     const sql = getDb();
     const rows = await sql`
-      SELECT id, email, browser, device, country, city, ip, created_at
+      SELECT id, email, browser, device, country, city, ip, confirmed, confirmed_at, created_at
       FROM waitlist
       ORDER BY created_at DESC
     `;
 
     const countResult = await sql`SELECT COUNT(*)::int as total FROM waitlist`;
+    const confirmedResult = await sql`SELECT COUNT(*)::int as confirmed FROM waitlist WHERE confirmed = TRUE`;
+
+    const total: number = countResult[0]?.total ?? 0;
+    const confirmedCount: number = confirmedResult[0]?.confirmed ?? 0;
 
     return NextResponse.json({
       entries: rows,
-      total: countResult[0]?.total ?? 0,
+      total,
+      confirmed: confirmedCount,
+      unconfirmed: total - confirmedCount,
     });
   } catch (err) {
     console.error("Waitlist fetch error:", err);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
+
