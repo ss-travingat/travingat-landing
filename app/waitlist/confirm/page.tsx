@@ -13,6 +13,8 @@ export default async function WaitlistConfirmPage({ searchParams }: Props) {
     redirect("/waitlist/confirmed?error=invalid");
   }
 
+  let redirectUrl = "/waitlist/confirmed?error=server";
+
   try {
     const sql = getDb();
 
@@ -25,31 +27,32 @@ export default async function WaitlistConfirmPage({ searchParams }: Props) {
 
     if (rows.length === 0) {
       // Token not found — already confirmed (token cleared) or invalid
-      redirect("/waitlist/confirmed?already=true");
+      redirectUrl = "/waitlist/confirmed?already=true";
+    } else {
+      const entry = rows[0];
+
+      if (entry.confirmed) {
+        redirectUrl = "/waitlist/confirmed?already=true";
+      } else if (entry.token_expires_at && new Date(entry.token_expires_at) < new Date()) {
+        // Token has expired
+        redirectUrl = "/waitlist/confirmed?error=expired";
+      } else {
+        // Mark confirmed and clear token
+        await sql`
+          UPDATE waitlist
+          SET confirmed = TRUE,
+              confirmed_at = NOW(),
+              confirmation_token = NULL
+          WHERE id = ${entry.id}
+        `;
+        redirectUrl = "/waitlist/confirmed";
+      }
     }
-
-    const entry = rows[0];
-
-    if (entry.confirmed) {
-      redirect("/waitlist/confirmed?already=true");
-    }
-
-    if (entry.token_expires_at && new Date(entry.token_expires_at) < new Date()) {
-      // Token has expired
-      redirect("/waitlist/confirmed?error=expired");
-    }
-
-    // Mark confirmed and clear token
-    await sql`
-      UPDATE waitlist
-      SET confirmed = TRUE,
-          confirmed_at = NOW(),
-          confirmation_token = NULL
-      WHERE id = ${rows[0].id}
-    `;
-
-    redirect("/waitlist/confirmed");
-  } catch {
-    redirect("/waitlist/confirmed?error=server");
+  } catch (err) {
+    console.error("Confirmation error:", err);
+    redirectUrl = "/waitlist/confirmed?error=server";
   }
+
+  // Redirect must happen outside try/catch because Next.js redirect() throws an error internally
+  redirect(redirectUrl);
 }
