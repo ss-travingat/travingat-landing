@@ -742,31 +742,23 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                   </div>
                 </div>
               ) : (
-                <div
-                  className="w-full flex flex-wrap gap-x-5 gap-y-10"
-                  style={{ maxWidth: 1488 }}
-                >
+                <div className="grid grid-cols-1 gap-x-5 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                   {collectionCards.map((collection, idx) => (
                     <Link
                       key={collection.id}
                       href={`/profiles/${profile.id}/collection/${idx}`}
-                      className="group"
-                      style={{ width: 357, height: 386, flex: '0 0 357px' }}
+                      className="group flex flex-col"
                     >
-                      <div
-                        className="overflow-hidden rounded-2xl border border-[#262626] bg-[#151515]"
-                        style={{ width: 357, height: 278 }}
-                      >
+                      <div className="aspect-357/278 overflow-hidden rounded-2xl border border-[#262626] bg-[#151515]">
                         <img
                           src={toLandingAssetUrl(collection.thumbnailUrl)}
                           alt={collection.title}
                           loading="lazy"
                           decoding="async"
-                          className="block w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
-                          style={{ width: 357, height: 278 }}
+                          className="block h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
                         />
                       </div>
-                      <div className="px-1.5 pt-2.5 flex flex-col gap-2" style={{ width: 357 - 12 }}>
+                      <div className="flex flex-col gap-2 px-1.5 pt-2.5">
                         <p className="text-[#646464] text-[14px] leading-normal tracking-[-0.41px]">{collection.createdLabel}</p>
                         <p className="text-white text-[16px] font-medium leading-6 tracking-[-0.096px] min-w-full w-min line-clamp-1">{collection.title}</p>
                         <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
