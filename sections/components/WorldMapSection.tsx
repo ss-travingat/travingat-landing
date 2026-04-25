@@ -22,7 +22,7 @@ export default function WorldMapSection() {
             />
           </div>
 
-          <div className="relative z-10 mx-auto w-full max-w-90 md:max-w-110">
+          <div className="relative z-10 mx-auto w-full max-w-129.5 md:max-w-129.5">
             <Image
               src="/images/Rachel.png"
               alt="Rachel exploring the world"
@@ -56,7 +56,7 @@ export default function WorldMapSection() {
               />
             </div>
 
-            <div className="relative mx-auto h-full w-full max-w-140">
+            <div className="relative mx-auto h-full w-full max-w-129.5">
               <Image
                 src="/images/Rachel.png"
                 alt="Rachel exploring the world"
