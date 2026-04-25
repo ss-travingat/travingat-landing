@@ -23,18 +23,34 @@ export default function JoinSection() {
 
       <div className="relative z-10 mx-auto max-w-384">
         {/* Image collage */}
-        <div className="mb-8 flex justify-center gap-1 md:gap-2 xl:mb-12 xl:gap-3">
-          <div className="relative h-13.75 w-13.75 -rotate-3 overflow-hidden rounded-xl md:h-16.25 md:w-16.25 xl:h-20 xl:w-20">
-          <Image src={toLandingAssetUrl("/images/join-avatar1-figma.png")} alt="Traveler" fill className="object-cover" />
+        <div className="mb-8 flex items-center justify-center pr-[19.156px] md:mb-10 xl:mb-12">
+          <div className="flex items-center justify-center mr-[-19.156px] relative shrink-0 size-[90.032px]">
+            <div className="flex-none rotate-[4.28deg]">
+              <div className="relative size-21 rounded-2xl border-[4.8px] border-black border-solid overflow-hidden">
+                <Image src={toLandingAssetUrl("/images/join-avatar1-figma.png")} alt="Traveler" fill className="object-cover" />
+              </div>
+            </div>
           </div>
-          <div className="relative z-10 -mt-1 h-16.25 w-16.25 overflow-hidden rounded-xl md:h-18.75 md:w-18.75 xl:h-22.5 xl:w-22.5">
-          <Image src={toLandingAssetUrl("/images/join-avatar2-figma.png")} alt="Traveler" fill className="object-cover" />
+          <div className="flex items-center justify-center mr-[-19.156px] relative shrink-0 size-[105.646px]">
+            <div className="flex-none rotate-[-17.79deg]">
+              <div className="relative size-21 rounded-2xl border-[4.8px] border-black border-solid overflow-hidden">
+                <Image src={toLandingAssetUrl("/images/join-avatar2-figma.png")} alt="Traveler" fill className="object-cover" />
+              </div>
+            </div>
           </div>
-          <div className="relative h-13.75 w-13.75 rotate-2 overflow-hidden rounded-xl md:h-16.25 md:w-16.25 xl:h-20 xl:w-20">
-          <Image src={toLandingAssetUrl("/images/join-avatar3-figma.png")} alt="Traveler" fill className="object-cover" />
+          <div className="flex items-center justify-center mr-[-19.156px] relative shrink-0 size-[90.687px]">
+            <div className="flex-none rotate-[4.76deg]">
+              <div className="relative size-21 rounded-2xl border-[4.8px] border-black border-solid overflow-hidden">
+                <Image src={toLandingAssetUrl("/images/join-avatar3-figma.png")} alt="Traveler" fill className="object-cover" />
+              </div>
+            </div>
           </div>
-          <div className="relative -mt-0.5 h-15 w-15 -rotate-1 overflow-hidden rounded-xl md:h-17.5 md:w-17.5 xl:h-21.25 xl:w-21.25">
-          <Image src={toLandingAssetUrl("/images/join-avatar4-figma.png")} alt="Traveler" fill className="object-cover" />
+          <div className="flex items-center justify-center mr-[-19.156px] relative shrink-0 size-[97.453px]">
+            <div className="flex-none rotate-[-10.12deg]">
+              <div className="relative size-21 rounded-2xl border-[4.8px] border-black border-solid overflow-hidden">
+                <Image src={toLandingAssetUrl("/images/join-avatar4-figma.png")} alt="Traveler" fill className="object-cover" />
+              </div>
+            </div>
           </div>
         </div>
 
