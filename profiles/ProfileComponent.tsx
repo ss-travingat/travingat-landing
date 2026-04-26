@@ -58,6 +58,7 @@ type CountryCard = {
   name: string;
   flagCode: string;
   thumbnailUrl: string;
+  previewImages: string[];
   photoCount: number;
   videoCount: number;
 };
@@ -131,6 +132,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
   const [activeTab, setActiveTab] = useState<TabKey>("all");
   const [showNavMenu, setShowNavMenu] = useState(false);
   const [showFollowModal, setShowFollowModal] = useState(false);
+  const [countryPhotoIndexByCode, setCountryPhotoIndexByCode] = useState<Record<string, number>>({});
   const navMenuRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -183,16 +185,16 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
   const countryCards = useMemo<CountryCard[]>(() => {
     // Use admin-uploaded country images if available
     if (profile.countryImages && profile.countryImages.length > 0) {
-      const totalPhotos = allMediaItems.filter((m) => !m.isVideo).length;
-      const totalVideos = allMediaItems.filter((m) => m.isVideo).length;
-      const count = profile.countryImages.length;
       return profile.countryImages.map((ci, index) => {
         const countryName = COUNTRY_LIST_LOOKUP[ci.countryCode.toUpperCase()] || ci.countryCode;
+        const photoPreviewImages = ci.images.filter((url) => !isVideoAsset(url)).slice(0, 5);
+        const previewImages = (photoPreviewImages.length > 0 ? photoPreviewImages : ci.images).slice(0, 5);
         return {
           code: `${profile.id}-ci-${index}`,
           name: countryName,
           flagCode: ci.countryCode,
-          thumbnailUrl: ci.images[0] || profile.images.cover,
+          thumbnailUrl: previewImages[0] || profile.images.cover,
+          previewImages,
           photoCount: ci.images.filter((url) => !isVideoAsset(url)).length,
           videoCount: ci.images.filter((url) => isVideoAsset(url)).length,
         };
@@ -219,17 +221,31 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
     const count = unique.length || 1;
 
     return unique.map(({ name, flagCode }, index) => {
-      const fallback = allMediaItems[index % Math.max(allMediaItems.length, 1)]?.fileUrl || profile.images.cover;
+      const photoFallbacks = allMediaItems.filter((item) => !item.isVideo).map((item) => item.fileUrl);
+      const defaultFallbacks = photoFallbacks.length > 0
+        ? photoFallbacks
+        : allMediaItems.map((item) => item.fileUrl);
+      const fallback = defaultFallbacks[index % Math.max(defaultFallbacks.length, 1)] || profile.images.cover;
+      const previewImages = defaultFallbacks.length > 0
+        ? Array.from({ length: Math.min(5, defaultFallbacks.length) }, (_, imageIndex) => {
+            return defaultFallbacks[(index + imageIndex) % defaultFallbacks.length];
+          })
+        : [profile.images.cover];
       return {
         code: `${profile.id}-${index}`,
         name,
         flagCode,
         thumbnailUrl: fallback,
+        previewImages,
         photoCount: Math.floor(totalPhotos / count),
         videoCount: Math.floor(totalVideos / count),
       };
     });
   }, [allMediaItems, basedIn, profile.images.cover, profile.currentlyIn, profile.flagCode, profile.homelandFlagCode, profile.currentlyInFlagCode, profile.homeland, profile.id, profile.countryImages]);
+
+  useEffect(() => {
+    setCountryPhotoIndexByCode({});
+  }, [profile.id, activeTab]);
 
   const collectionCards = useMemo<CollectionCard[]>(() => {
     const allCountryNames = countryCards.map((country) => country.name);
@@ -684,14 +700,55 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                   {countryCards.map((country) => (
                     <Link key={country.code} href={`/profiles/${profile.id}/country/${country.flagCode.toUpperCase()}`} className="flex flex-col gap-4 group">
                       {/* Photo */}
-                      <div className="w-full aspect-square overflow-hidden rounded-2xl bg-[#151515]">
+                      <div className="relative w-full aspect-square overflow-hidden rounded-2xl bg-[#151515]">
                         <img
-                          src={toLandingAssetUrl(country.thumbnailUrl)}
+                          src={toLandingAssetUrl(
+                            country.previewImages[countryPhotoIndexByCode[country.code] ?? 0] || country.thumbnailUrl
+                          )}
                           alt={country.name}
                           loading="lazy"
                           decoding="async"
                           className="w-full h-full object-cover block transition-transform duration-300 group-hover:scale-[1.03]"
                         />
+
+                        {country.previewImages.length > 1 ? (
+                          <>
+                            <button
+                              type="button"
+                              onClick={(event) => {
+                                event.preventDefault();
+                                event.stopPropagation();
+                                setCountryPhotoIndexByCode((prev) => {
+                                  const current = prev[country.code] ?? 0;
+                                  const next =
+                                    (current - 1 + country.previewImages.length) % country.previewImages.length;
+                                  return { ...prev, [country.code]: next };
+                                });
+                              }}
+                              className="hidden md:grid absolute left-3 top-1/2 -translate-y-1/2 h-8 w-8 place-items-center rounded-full bg-black/55 text-white opacity-0 transition-opacity duration-200 group-hover:opacity-100 hover:bg-black/70 focus-visible:opacity-100"
+                              aria-label={`Previous photo for ${country.name}`}
+                            >
+                              <span className="material-symbols-rounded text-[20px]">chevron_left</span>
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={(event) => {
+                                event.preventDefault();
+                                event.stopPropagation();
+                                setCountryPhotoIndexByCode((prev) => {
+                                  const current = prev[country.code] ?? 0;
+                                  const next = (current + 1) % country.previewImages.length;
+                                  return { ...prev, [country.code]: next };
+                                });
+                              }}
+                              className="hidden md:grid absolute right-3 top-1/2 -translate-y-1/2 h-8 w-8 place-items-center rounded-full bg-black/55 text-white opacity-0 transition-opacity duration-200 group-hover:opacity-100 hover:bg-black/70 focus-visible:opacity-100"
+                              aria-label={`Next photo for ${country.name}`}
+                            >
+                              <span className="material-symbols-rounded text-[20px]">chevron_right</span>
+                            </button>
+                          </>
+                        ) : null}
                       </div>
                       {/* Country info */}
                       <div className="flex flex-col gap-2">

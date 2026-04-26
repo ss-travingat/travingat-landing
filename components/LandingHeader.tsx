@@ -49,7 +49,7 @@ export default function LandingHeader() {
           <div className="hidden xl:flex items-center justify-end gap-6">
             <nav className="flex items-center gap-3">
               <Link
-                href="/featured-profiles"
+                href="/newprofiles"
                 className="rounded-full px-4.5 py-2.5 text-[16px] font-medium leading-6 tracking-[-0.096px] text-white hover:bg-white/5 transition"
               >
                 Featured Profiles
@@ -113,7 +113,7 @@ export default function LandingHeader() {
             }`}
         >
           <Link
-            href="/featured-profiles"
+            href="/newprofiles"
             onClick={() => setMenuOpen(false)}
             className="block rounded-xl px-3 py-2 text-sm text-[#d8d8d8] hover:bg-[#1b1b1b]"
           >
