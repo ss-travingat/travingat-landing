@@ -48,27 +48,24 @@ export default function LandingHeader() {
 
           <div className="hidden xl:flex items-center justify-end gap-6">
             <nav className="flex items-center gap-3">
-              <a
-                href="#featured"
-                onClick={(event) => scrollToSection(event, "featured")}
+              <Link
+                href="/featured-profiles"
                 className="rounded-full px-4.5 py-2.5 text-[16px] font-medium leading-6 tracking-[-0.096px] text-white hover:bg-white/5 transition"
               >
                 Featured Profiles
-              </a>
-              <a
-                href="#templates"
-                onClick={(event) => scrollToSection(event, "templates")}
+              </Link>
+              <Link
+                href="/templates"
                 className="rounded-full px-4.5 py-2.5 text-[16px] font-medium leading-6 tracking-[-0.096px] text-white hover:bg-white/5 transition"
               >
                 Templates
-              </a>
-              <a
-                href="#pricing"
-                onClick={(event) => scrollToSection(event, "pricing")}
+              </Link>
+              <Link
+                href="/pricing"
                 className="rounded-full px-4.5 py-2.5 text-[16px] font-medium leading-6 tracking-[-0.096px] text-white hover:bg-white/5 transition"
               >
                 Pricing
-              </a>
+              </Link>
               <Link href="/blog" className="rounded-full px-4.5 py-2.5 text-[16px] font-medium leading-6 tracking-[-0.096px] text-white hover:bg-white/5 transition">
                 Blog
               </Link>
@@ -115,27 +112,27 @@ export default function LandingHeader() {
           className={`rounded-2xl border border-black-400 bg-[#101010] p-2 shadow-[0_12px_40px_rgba(0,0,0,0.45)] transition-transform duration-300 ${menuOpen ? "translate-y-0" : "-translate-y-2"
             }`}
         >
-          <a
-            href="#featured"
-            onClick={(event) => scrollToSection(event, "featured")}
+          <Link
+            href="/featured-profiles"
+            onClick={() => setMenuOpen(false)}
             className="block rounded-xl px-3 py-2 text-sm text-[#d8d8d8] hover:bg-[#1b1b1b]"
           >
             Featured Profiles
-          </a>
-          <a
-            href="#templates"
-            onClick={(event) => scrollToSection(event, "templates")}
+          </Link>
+          <Link
+            href="/templates"
+            onClick={() => setMenuOpen(false)}
             className="block rounded-xl px-3 py-2 text-sm text-[#d8d8d8] hover:bg-[#1b1b1b]"
           >
             Templates
-          </a>
-          <a
-            href="#pricing"
-            onClick={(event) => scrollToSection(event, "pricing")}
+          </Link>
+          <Link
+            href="/pricing"
+            onClick={() => setMenuOpen(false)}
             className="block rounded-xl px-3 py-2 text-sm text-[#d8d8d8] hover:bg-[#1b1b1b]"
           >
             Pricing
-          </a>
+          </Link>
           <Link href="/blog" onClick={() => setMenuOpen(false)} className="block rounded-xl px-3 py-2 text-sm text-[#d8d8d8] hover:bg-[#1b1b1b]">
             Blog
           </Link>

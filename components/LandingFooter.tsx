@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function LandingFooter() {
   return (
     <footer className="bg-[#0a0a0a] border-t border-gray-800">
@@ -49,10 +51,10 @@ export default function LandingFooter() {
         <div>
           <div className="flex gap-16 xl:gap-25 mb-12">
             <div className="space-y-3">
-              <a href="#" className="block text-[14px] text-gray-400 hover:text-white transition-colors">About us</a>
-              <a href="#" className="block text-[14px] text-gray-400 hover:text-white transition-colors">Featured profiles</a>
-              <a href="#" className="block text-[14px] text-gray-400 hover:text-white transition-colors">Blog</a>
-              <a href="#" className="block text-[14px] text-gray-400 hover:text-white transition-colors">Join waiting list</a>
+              <Link href="/" className="block text-[14px] text-gray-400 hover:text-white transition-colors">About us</Link>
+              <Link href="/featured-profiles" className="block text-[14px] text-gray-400 hover:text-white transition-colors">Featured profiles</Link>
+              <Link href="/blog" className="block text-[14px] text-gray-400 hover:text-white transition-colors">Blog</Link>
+              <a href="/#join" className="block text-[14px] text-gray-400 hover:text-white transition-colors">Join waiting list</a>
             </div>
             <div className="space-y-3">
               <a href="#" className="block text-[14px] text-gray-400 hover:text-white transition-colors">Contact us</a>
