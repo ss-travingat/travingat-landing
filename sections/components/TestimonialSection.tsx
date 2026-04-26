@@ -193,30 +193,6 @@ export default function TestimonialSection() {
         </div>
       </div>
 
-      {/* Slide indicators */}
-      {testimonials.length > 1 && (
-        <div className="flex items-center justify-center gap-2 mt-8 xl:mt-12">
-          {testimonials.map((_, i) => (
-            <button
-              key={i}
-              onClick={() => {
-                if (i === current || isAnimating) return;
-                setDirection(i > current ? "right" : "left");
-                setIsAnimating(true);
-                setTimeout(() => {
-                  setCurrent(i);
-                  setIsAnimating(false);
-                }, 300);
-              }}
-              className={`rounded-full transition-all duration-300 cursor-pointer ${
-                i === current
-                  ? "w-8 h-2 bg-white"
-                  : "w-2 h-2 bg-white/40 hover:bg-white/60"
-              }`}
-            />
-          ))}
-        </div>
-      )}
     </section>
   );
 }
