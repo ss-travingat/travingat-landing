@@ -18,7 +18,11 @@ export function toLandingAssetUrl(assetPath: string): string {
   if (!assetPath) return assetPath;
   if (/^https?:\/\//i.test(assetPath)) return assetPath;
 
-  const normalizedPath = assetPath.replace(/^\/+/, "");
+  const normalizedPath = assetPath
+    .replace(/^\/+/, "")
+    .split("/")
+    .map((segment) => encodeURIComponent(segment))
+    .join("/");
   return `${getLandingAssetsCdnBase()}/${normalizedPath}`;
 }
 

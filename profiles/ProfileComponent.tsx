@@ -69,6 +69,7 @@ type CollectionCard = {
   description: string;
   createdLabel: string;
   thumbnailUrl: string;
+  previewImages: string[];
   countries: string[];
   countryOverflowCount: number;
 };
@@ -133,6 +134,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
   const [showNavMenu, setShowNavMenu] = useState(false);
   const [showFollowModal, setShowFollowModal] = useState(false);
   const [countryPhotoIndexByCode, setCountryPhotoIndexByCode] = useState<Record<string, number>>({});
+  const [collectionPhotoIndexById, setCollectionPhotoIndexById] = useState<Record<string, number>>({});
   const navMenuRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -245,6 +247,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
 
   useEffect(() => {
     setCountryPhotoIndexByCode({});
+    setCollectionPhotoIndexById({});
   }, [profile.id, activeTab]);
 
   const collectionCards = useMemo<CollectionCard[]>(() => {
@@ -256,6 +259,8 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
     if (profile.collectionImages && profile.collectionImages.length > 0) {
       return profile.collectionImages.map((ci, index) => {
         const createdAt = new Date(Date.now() - index * 1000 * 60 * 60 * 24 * 19);
+        const photoPreviewImages = ci.images.filter((url) => !isVideoAsset(url)).slice(0, 5);
+        const previewImages = (photoPreviewImages.length > 0 ? photoPreviewImages : ci.images).slice(0, 5);
         return {
           id: `${profile.id}-collection-${index}`,
           title: ci.title,
@@ -265,7 +270,8 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
             month: "short",
             year: "numeric",
           }),
-          thumbnailUrl: ci.images[0] || profile.images.cover,
+          thumbnailUrl: previewImages[0] || profile.images.cover,
+          previewImages,
           countries: visibleCountries,
           countryOverflowCount,
         };
@@ -278,6 +284,15 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
     return Array.from({ length: count }).map((_, index) => {
       const thumbnailItem = allMediaItems.length > 0 ? allMediaItems[index % allMediaItems.length] : null;
       const createdAt = new Date(Date.now() - index * 1000 * 60 * 60 * 24 * 19);
+      const photoFallbacks = allMediaItems.filter((item) => !item.isVideo).map((item) => item.fileUrl);
+      const defaultFallbacks = photoFallbacks.length > 0
+        ? photoFallbacks
+        : allMediaItems.map((item) => item.fileUrl);
+      const previewImages = defaultFallbacks.length > 0
+        ? Array.from({ length: Math.min(5, defaultFallbacks.length) }, (_, imageIndex) => {
+            return defaultFallbacks[(index + imageIndex) % defaultFallbacks.length];
+          })
+        : [profile.images.cover];
 
       return {
         id: `${profile.id}-collection-${index}`,
@@ -289,6 +304,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
           year: "numeric",
         }),
         thumbnailUrl: thumbnailItem ? thumbnailItem.fileUrl : profile.images.cover,
+        previewImages,
         countries: visibleCountries,
         countryOverflowCount,
       };
@@ -806,14 +822,55 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                       href={`/profiles/${profile.id}/collection/${idx}`}
                       className="group flex flex-col"
                     >
-                      <div className="aspect-357/278 overflow-hidden rounded-2xl border border-[#262626] bg-[#151515]">
+                      <div className="relative aspect-357/278 overflow-hidden rounded-2xl border border-[#262626] bg-[#151515]">
                         <img
-                          src={toLandingAssetUrl(collection.thumbnailUrl)}
+                          src={toLandingAssetUrl(
+                            collection.previewImages[collectionPhotoIndexById[collection.id] ?? 0] || collection.thumbnailUrl
+                          )}
                           alt={collection.title}
                           loading="lazy"
                           decoding="async"
                           className="block h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
                         />
+
+                        {collection.previewImages.length > 1 ? (
+                          <>
+                            <button
+                              type="button"
+                              onClick={(event) => {
+                                event.preventDefault();
+                                event.stopPropagation();
+                                setCollectionPhotoIndexById((prev) => {
+                                  const current = prev[collection.id] ?? 0;
+                                  const next =
+                                    (current - 1 + collection.previewImages.length) % collection.previewImages.length;
+                                  return { ...prev, [collection.id]: next };
+                                });
+                              }}
+                              className="hidden md:grid absolute left-3 top-1/2 -translate-y-1/2 h-8 w-8 place-items-center rounded-full bg-black/55 text-white opacity-0 transition-opacity duration-200 group-hover:opacity-100 hover:bg-black/70 focus-visible:opacity-100"
+                              aria-label={`Previous photo for ${collection.title}`}
+                            >
+                              <span className="material-symbols-rounded text-[20px]">chevron_left</span>
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={(event) => {
+                                event.preventDefault();
+                                event.stopPropagation();
+                                setCollectionPhotoIndexById((prev) => {
+                                  const current = prev[collection.id] ?? 0;
+                                  const next = (current + 1) % collection.previewImages.length;
+                                  return { ...prev, [collection.id]: next };
+                                });
+                              }}
+                              className="hidden md:grid absolute right-3 top-1/2 -translate-y-1/2 h-8 w-8 place-items-center rounded-full bg-black/55 text-white opacity-0 transition-opacity duration-200 group-hover:opacity-100 hover:bg-black/70 focus-visible:opacity-100"
+                              aria-label={`Next photo for ${collection.title}`}
+                            >
+                              <span className="material-symbols-rounded text-[20px]">chevron_right</span>
+                            </button>
+                          </>
+                        ) : null}
                       </div>
                       <div className="flex flex-col gap-2 px-1.5 pt-2.5">
                         <p className="text-[#646464] text-[14px] leading-normal tracking-[-0.41px]">{collection.createdLabel}</p>
