@@ -26,5 +26,21 @@
     "publishedAt": "2026-04-01T19:15:47.418Z",
     "tags": [],
     "readTime": 6
+  },
+  {
+    "id": "5",
+    "title": "5 Essential Gear Items for Every Digital Nomad",
+    "slug": "5-essential-gear-items-for-every-digital-nomad",
+    "excerpt": "From noise-canceling headphones to portable power, here is the gear that keeps you productive while exploring the world.",
+    "coverImage": "https://cdn.travingat.com/landingpage-assets/blogs/blog-1777259848916.jpg",
+    "content": "<meta charset=\"utf-8\"><h2 data-path-to-node=\"6\">The Modern Explorer's Toolkit</h2><p data-path-to-node=\"7\">Traveling the world while working isn't just about a laptop and a dream; it’s about having the right tools to stay connected and efficient. Whether you're in a cafe in Lisbon or a beach hut in Bali, these items are non-negotiable.</p><h3 data-path-to-node=\"8\">1. Noise-Canceling Headphones</h3><p data-path-to-node=\"9\">Focus is your most valuable currency. A good pair of headphones blocks out the hum of an airplane engine or the chatter of a busy coworking space.</p><h3 data-path-to-node=\"10\">2. Universal Travel Adapter</h3><p data-path-to-node=\"11\">Don't get caught with a dead battery because of a different socket. Look for one that includes multiple USB-A and USB-C ports to charge everything at once.</p><blockquote data-path-to-node=\"12\"><p data-path-to-node=\"12,0\">\"The best investment you can make is in gear that removes friction from your journey.\" — <i data-path-to-node=\"12,0\" data-index-in-node=\"89\">Travingat Team</i></p></blockquote><hr data-path-to-node=\"13\"><h3 data-path-to-node=\"14\"></h3>",
+    "author": "Travingat Team",
+    "publishedAt": "2026-04-27T03:17:50.739Z",
+    "tags": [
+      "travel tips",
+      "gear",
+      "digital nomad"
+    ],
+    "readTime": 1
   }
 ]

@@ -268,12 +268,55 @@ export default function AdminBlogsPage() {
     if (editorRef.current) editorRef.current.innerHTML = "";
   };
 
+  const appendUniqueTags = (nextTags: string[]) => {
+    if (nextTags.length === 0) return;
+    setForm((prev) => {
+      const existing = new Set(prev.tags);
+      const toAppend = nextTags.filter((tag) => !existing.has(tag));
+      if (toAppend.length === 0) return prev;
+      return { ...prev, tags: [...prev.tags, ...toAppend] };
+    });
+  };
+
+  const parseTags = (value: string) =>
+    value
+      .split(",")
+      .map((part) => part.trim().toLowerCase())
+      .filter(Boolean);
+
   const addTag = () => {
-    const t = tagInput.trim().toLowerCase();
-    if (t && !form.tags.includes(t)) {
-      setForm((prev) => ({ ...prev, tags: [...prev.tags, t] }));
-    }
+    const tags = parseTags(tagInput);
+    appendUniqueTags(tags);
     setTagInput("");
+  };
+
+  const handleTagInputChange = (value: string) => {
+    if (!value.includes(",")) {
+      setTagInput(value);
+      return;
+    }
+
+    const pieces = value.split(",");
+    const completedTags = pieces.slice(0, -1);
+    const remaining = pieces[pieces.length - 1] ?? "";
+    appendUniqueTags(
+      completedTags
+        .map((tag) => tag.trim().toLowerCase())
+        .filter(Boolean)
+    );
+    setTagInput(remaining.trimStart());
+  };
+
+  const handleTagInputPaste = (event: React.ClipboardEvent<HTMLInputElement>) => {
+    const pastedText = event.clipboardData.getData("text");
+    if (!pastedText) return;
+
+    if (pastedText.includes(",")) {
+      event.preventDefault();
+      const tags = parseTags(pastedText);
+      appendUniqueTags(tags);
+      setTagInput("");
+    }
   };
 
   const removeTag = (tag: string) => {
@@ -541,7 +584,8 @@ export default function AdminBlogsPage() {
                 <input
                   type="text"
                   value={tagInput}
-                  onChange={(e) => setTagInput(e.target.value)}
+                  onChange={(e) => handleTagInputChange(e.target.value)}
+                  onPaste={handleTagInputPaste}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
                       e.preventDefault();

@@ -1,11 +1,12 @@
 import { NextResponse } from "next/server";
-import fs from "fs";
-import path from "path";
 import { normalizeAssetHtml, toLandingAssetUrl } from "@/lib/landing-assets";
+import {
+  readBlogsFromStorage,
+  type StoredBlogPost,
+  writeBlogsToStorage,
+} from "@/lib/blog-storage";
 
-const DATA_PATH = path.join(process.cwd(), "src/data/blogs.json");
-
-interface BlogPost {
+interface BlogPost extends StoredBlogPost {
   id: string;
   title: string;
   slug: string;
@@ -16,15 +17,6 @@ interface BlogPost {
   publishedAt: string;
   tags: string[];
   readTime: number;
-}
-
-function readBlogs(): BlogPost[] {
-  const raw = fs.readFileSync(DATA_PATH, "utf-8");
-  return JSON.parse(raw);
-}
-
-function writeBlogs(data: BlogPost[]) {
-  fs.writeFileSync(DATA_PATH, JSON.stringify(data, null, 2), "utf-8");
 }
 
 function normalizeBlog(blog: BlogPost): BlogPost {
@@ -43,7 +35,7 @@ export async function PUT(
   try {
     const { id } = await params;
     const body = await request.json();
-    const blogs = readBlogs();
+    const blogs = await readBlogsFromStorage();
     const index = blogs.findIndex((b) => b.id === id);
 
     if (index === -1) {
@@ -62,7 +54,7 @@ export async function PUT(
       readTime: body.readTime ?? blogs[index].readTime,
     };
 
-    writeBlogs(blogs);
+    await writeBlogsToStorage(blogs);
     return NextResponse.json(normalizeBlog(blogs[index]));
   } catch {
     return NextResponse.json(
@@ -79,14 +71,14 @@ export async function DELETE(
 ) {
   try {
     const { id } = await params;
-    const blogs = readBlogs();
+    const blogs = await readBlogsFromStorage();
     const filtered = blogs.filter((b) => b.id !== id);
 
     if (filtered.length === blogs.length) {
       return NextResponse.json({ error: "Blog not found" }, { status: 404 });
     }
 
-    writeBlogs(filtered);
+    await writeBlogsToStorage(filtered);
     return NextResponse.json({ success: true });
   } catch {
     return NextResponse.json(

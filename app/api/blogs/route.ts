@@ -1,11 +1,12 @@
 import { NextResponse } from "next/server";
-import fs from "fs";
-import path from "path";
 import { normalizeAssetHtml, toLandingAssetUrl } from "@/lib/landing-assets";
+import {
+  readBlogsFromStorage,
+  type StoredBlogPost,
+  writeBlogsToStorage,
+} from "@/lib/blog-storage";
 
-const DATA_PATH = path.join(process.cwd(), "src/data/blogs.json");
-
-export interface BlogPost {
+export interface BlogPost extends StoredBlogPost {
   id: string;
   title: string;
   slug: string;
@@ -18,11 +19,6 @@ export interface BlogPost {
   readTime: number;
 }
 
-function readBlogs(): BlogPost[] {
-  const raw = fs.readFileSync(DATA_PATH, "utf-8");
-  return JSON.parse(raw);
-}
-
 function normalizeBlog(blog: BlogPost): BlogPost {
   return {
     ...blog,
@@ -31,16 +27,13 @@ function normalizeBlog(blog: BlogPost): BlogPost {
   };
 }
 
-function writeBlogs(data: BlogPost[]) {
-  fs.writeFileSync(DATA_PATH, JSON.stringify(data, null, 2), "utf-8");
-}
 
 // GET — return all blogs (optionally filter by slug)
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const slug = searchParams.get("slug");
-    const blogs = readBlogs();
+    const blogs = await readBlogsFromStorage();
 
     if (slug) {
       const blog = blogs.find((b) => b.slug === slug);
@@ -75,7 +68,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const blogs = readBlogs();
+    const blogs = await readBlogsFromStorage();
 
     // Auto-generate slug if not provided
     const generatedSlug =
@@ -111,7 +104,7 @@ export async function POST(request: Request) {
     };
 
     blogs.push(newBlog);
-    writeBlogs(blogs);
+    await writeBlogsToStorage(blogs);
 
     return NextResponse.json(normalizeBlog(newBlog), { status: 201 });
   } catch {
