@@ -23,7 +23,7 @@ export default function TestimonialSection() {
   const [isAnimating, setIsAnimating] = useState(false);
   const [direction, setDirection] = useState<"left" | "right">("right");
   const [paused, setPaused] = useState(false);
-  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     fetch("/api/testimonials")
@@ -55,12 +55,18 @@ export default function TestimonialSection() {
 
   // Auto-advance every 5 seconds (infinite scroll)
   useEffect(() => {
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+    }
+
     if (testimonials.length <= 1 || paused) return;
-    timerRef.current = setInterval(() => {
+
+    timerRef.current = setTimeout(() => {
       goTo("next");
     }, 5000);
+
     return () => {
-      if (timerRef.current) clearInterval(timerRef.current);
+      if (timerRef.current) clearTimeout(timerRef.current);
     };
   }, [testimonials.length, paused, goTo]);
 
