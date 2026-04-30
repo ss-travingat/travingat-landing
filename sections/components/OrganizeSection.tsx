@@ -5,7 +5,7 @@ export default function OrganizeSection() {
   return (
     <>
       {/* Desktop: Combined Organize + Collections with SVG */}
-      <section className="hidden 2xl:block xl:px-24 xl:py-20">
+      <section className="hidden xl:block xl:px-24 xl:py-20">
         <div
           className="relative max-w-7xl mx-auto"
           style={{ aspectRatio: "1280 / 1360" }}
@@ -41,7 +41,7 @@ export default function OrganizeSection() {
       </section>
 
       {/* Mobile and iPad: Organize section */}
-      <section className="px-3 py-12 md:px-12 md:py-16 2xl:hidden">
+      <section className="px-3 py-12 md:px-12 md:py-16 xl:hidden">
         {/* Text */}
         <div>
           <h2 className="ds-font-display text-[32px] leading-10 font-semibold text-white mb-4 text-center tracking-[-0.5px] md:text-[52px] md:leading-15 md:tracking-[-1px] md:mb-6 md:max-w-150 md:mx-auto">
