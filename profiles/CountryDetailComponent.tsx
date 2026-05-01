@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 
 import { toLandingAssetUrl } from "@/lib/landing-assets";
 import type { SampleProfile } from "@/profiles/profile-data";
@@ -39,6 +39,199 @@ function isVideoAsset(url: string) {
   return /\.(mp4|mov|webm|m4v|3gp|3g2)$/i.test(url);
 }
 
+function toFlagAssetPath(flagCode?: string) {
+  if (!flagCode) return null;
+  return `/flags/${flagCode.toUpperCase()}.svg`;
+}
+
+// ─── Lightbox Modal ──────────────────────────────────────────────────────────
+
+function PhotoLightbox({
+  items,
+  activeIndex,
+  onClose,
+  onNext,
+  onPrev,
+  profileName,
+  profileHandle,
+  profileAvatar,
+  profileFlagCode,
+  countryName,
+  countryCode,
+  description,
+  quote,
+}: {
+  items: string[];
+  activeIndex: number;
+  onClose: () => void;
+  onNext: () => void;
+  onPrev: () => void;
+  profileName: string;
+  profileHandle: string;
+  profileAvatar: string;
+  profileFlagCode?: string;
+  countryName: string;
+  countryCode: string;
+  description?: string;
+  quote?: string;
+}) {
+  const activeUrl = items[activeIndex];
+  const totalCount = items.length;
+  const displayIndex = activeIndex + 1;
+  const avatarSrc = toLandingAssetUrl(profileAvatar);
+  const profileFlagSrc = toFlagAssetPath(profileFlagCode);
+  const countryFlagSrc = toFlagAssetPath(countryCode);
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex bg-black/95"
+      onClick={onClose}
+    >
+      {/* Left image panel */}
+      <div
+        className="relative flex flex-1 flex-col min-w-0"
+        onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
+      >
+        {/* Top bar */}
+        <div className="flex items-center justify-between px-10 py-6 text-[15px] tracking-[-0.4px] text-[#a8a8a8]">
+          <span>{`${displayIndex} of ${totalCount}`}</span>
+          <button
+            type="button"
+            onClick={() => navigator.clipboard.writeText(window.location.href).catch(() => {})}
+            className="flex h-8 w-8 items-center justify-center text-[#a8a8a8] transition hover:text-white"
+            aria-label="Copy link"
+          >
+            <span className="material-symbols-rounded text-[22px]">photo_library</span>
+          </button>
+        </div>
+
+        {/* Image + nav arrows */}
+        <div className="relative flex flex-1 min-h-0 pb-8">
+          {/* Main media */}
+          <div className="h-full w-full overflow-hidden bg-[#0a0a0a]">
+            {isVideoAsset(activeUrl) ? (
+              <video
+                src={toLandingAssetUrl(activeUrl)}
+                controls
+                autoPlay
+                className="h-full w-full object-contain"
+              />
+            ) : (
+              <img
+                src={toLandingAssetUrl(activeUrl)}
+                alt={`${countryName} photo ${displayIndex}`}
+                className="h-full w-full object-contain"
+              />
+            )}
+          </div>
+
+          {/* Prev arrow */}
+          <button
+            type="button"
+            onClick={onPrev}
+            className="absolute left-3 top-1/2 -translate-y-1/2 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-black/50 text-white backdrop-blur-sm transition hover:bg-black/70"
+            aria-label="Previous photo"
+          >
+            <span className="material-symbols-rounded text-[28px]">chevron_left</span>
+          </button>
+
+          {/* Next arrow */}
+          <button
+            type="button"
+            onClick={onNext}
+            className="absolute right-3 top-1/2 -translate-y-1/2 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-black/50 text-white backdrop-blur-sm transition hover:bg-black/70"
+            aria-label="Next photo"
+          >
+            <span className="material-symbols-rounded text-[28px]">chevron_right</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Right sidebar */}
+      <aside
+        className="flex w-[360px] shrink-0 flex-col gap-8 overflow-y-auto bg-[#111111] p-8 text-white"
+        onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
+      >
+        {/* Avatar + close */}
+        <div className="flex items-start justify-between">
+          <div className="h-[72px] w-[72px] overflow-hidden rounded-2xl">
+            <img src={avatarSrc} alt={profileName} className="h-full w-full object-cover" />
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="flex h-8 w-8 items-center justify-center text-[#666] transition hover:text-white"
+            aria-label="Close"
+          >
+            <span className="material-symbols-rounded text-[24px]">close</span>
+          </button>
+        </div>
+
+        {/* Profile info */}
+        <div className="flex flex-col gap-3">
+          <div className="flex items-center gap-2 text-[13px] text-[#888]">
+            {profileFlagSrc ? (
+              <img src={profileFlagSrc} alt="" className="h-3 w-[18px] rounded-[2px] object-cover" />
+            ) : null}
+            <span>{profileName}</span>
+          </div>
+          <p className="text-[20px] font-semibold tracking-[-0.5px] text-white">{profileHandle}</p>
+        </div>
+
+        {/* Follow / Connect / More */}
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            className="h-[38px] flex-1 rounded-full bg-white text-[14px] font-medium text-black transition hover:bg-[#e8e8e8]"
+          >
+            Follow
+          </button>
+          <button
+            type="button"
+            className="h-[38px] flex-1 rounded-full border border-[#2e2e2e] bg-[#1a1a1a] text-[14px] font-medium text-white transition hover:bg-[#222]"
+          >
+            Connect
+          </button>
+          <button
+            type="button"
+            className="flex h-[38px] w-[38px] shrink-0 items-center justify-center rounded-full border border-[#2e2e2e] bg-[#1a1a1a] text-white transition hover:bg-[#222]"
+            aria-label="More options"
+          >
+            <span className="material-symbols-rounded text-[20px]">more_horiz</span>
+          </button>
+        </div>
+
+        {/* Country + description */}
+        <div className="flex flex-col gap-4">
+          <div className="flex items-center gap-3">
+            {countryFlagSrc ? (
+              <img src={countryFlagSrc} alt="" className="h-[18px] w-[26px] rounded-[3px] object-cover shadow-sm" />
+            ) : null}
+            <p className="text-[22px] font-semibold tracking-[-0.5px] text-[#ededed]">
+              {countryName}
+            </p>
+          </div>
+          {description ? (
+            <p className="text-[15px] leading-[1.6] tracking-[-0.3px] text-[#a0a0a0] line-clamp-6">{description}</p>
+          ) : null}
+          <button type="button" className="self-start text-[14px] tracking-[-0.3px] text-[#555] transition hover:text-[#888]">
+            Read more
+          </button>
+        </div>
+
+        {/* Divider + quote */}
+        {quote ? (
+          <div className="border-t border-[#222] pt-6">
+            <p className="text-[15px] leading-[1.6] tracking-[-0.3px] text-[#a0a0a0]">{quote}</p>
+          </div>
+        ) : null}
+      </aside>
+    </div>
+  );
+}
+
+// ─── Main Component ──────────────────────────────────────────────────────────
+
 export default function CountryDetailComponent({
   profile,
   countryCode,
@@ -53,6 +246,9 @@ export default function CountryDetailComponent({
   const [showMenu, setShowMenu] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
+  // Lightbox state
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+
   const photos = images.filter((url) => !isVideoAsset(url));
   const videos = images.filter((url) => isVideoAsset(url));
 
@@ -60,6 +256,33 @@ export default function CountryDetailComponent({
     activeTab === "photos" ? photos :
     activeTab === "videos" ? videos :
     images;
+
+  // Close lightbox on ESC, navigate on arrow keys
+  const handleKeyDown = useCallback((e: KeyboardEvent) => {
+    if (lightboxIndex === null) return;
+    if (e.key === "Escape") {
+      setLightboxIndex(null);
+    } else if (e.key === "ArrowRight") {
+      setLightboxIndex((prev) => prev === null ? null : (prev + 1) % displayImages.length);
+    } else if (e.key === "ArrowLeft") {
+      setLightboxIndex((prev) => prev === null ? null : (prev - 1 + displayImages.length) % displayImages.length);
+    }
+  }, [lightboxIndex, displayImages.length]);
+
+  useEffect(() => {
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [handleKeyDown]);
+
+  // Lock body scroll when lightbox is open
+  useEffect(() => {
+    if (lightboxIndex !== null) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => { document.body.style.overflow = ""; };
+  }, [lightboxIndex]);
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -71,10 +294,50 @@ export default function CountryDetailComponent({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  // When tab changes, close lightbox
+  useEffect(() => {
+    setLightboxIndex(null);
+  }, [activeTab]);
+
+  // Sync lightbox state to URL
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const url = new URL(window.location.href);
+    if (lightboxIndex !== null && displayImages.length > 0) {
+      const activeUrl = displayImages[lightboxIndex];
+      const encodedUrl = btoa(unescape(encodeURIComponent(activeUrl)));
+      if (url.searchParams.get("image") !== encodedUrl) {
+        url.searchParams.set("image", encodedUrl);
+        window.history.replaceState({}, "", url.toString());
+      }
+    } else {
+      if (url.searchParams.has("image")) {
+        url.searchParams.delete("image");
+        window.history.replaceState({}, "", url.toString());
+      }
+    }
+  }, [lightboxIndex, displayImages]);
+
+  // Read from URL on mount
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const url = new URL(window.location.href);
+    const encodedImage = url.searchParams.get("image");
+    if (encodedImage && displayImages.length > 0 && lightboxIndex === null) {
+      try {
+        const imageUrl = decodeURIComponent(escape(atob(encodedImage)));
+        const index = displayImages.indexOf(imageUrl);
+        if (index !== -1) {
+          setLightboxIndex(index);
+        }
+      } catch (e) {}
+    }
+  }, [displayImages, lightboxIndex]);
+
   // Distribute images across 3 columns for masonry layout
-  const columns: string[][] = [[], [], []];
+  const columns: { url: string; globalIndex: number }[][] = [[], [], []];
   displayImages.forEach((img, i) => {
-    columns[i % 3].push(img);
+    columns[i % 3].push({ url: img, globalIndex: i });
   });
 
   const tabs: { key: MediaTab; label: string }[] = [
@@ -83,8 +346,28 @@ export default function CountryDetailComponent({
     { key: "videos", label: "Videos" },
   ];
 
+  const profileHandle = profile.handle.startsWith("@") ? profile.handle : `@${profile.handle}`;
+
   return (
     <div className="min-h-screen bg-black text-white flex flex-col items-center px-4 md:px-10 xl:px-24">
+      {/* Lightbox */}
+      {lightboxIndex !== null && (
+        <PhotoLightbox
+          items={displayImages}
+          activeIndex={lightboxIndex}
+          onClose={() => setLightboxIndex(null)}
+          onNext={() => setLightboxIndex((prev) => prev === null ? null : (prev + 1) % displayImages.length)}
+          onPrev={() => setLightboxIndex((prev) => prev === null ? null : (prev - 1 + displayImages.length) % displayImages.length)}
+          profileName={profile.name}
+          profileHandle={profileHandle}
+          profileAvatar={profile.images.avatar}
+          profileFlagCode={profile.flagCode}
+          countryName={countryName}
+          countryCode={countryCode}
+          description={profile.bio}
+        />
+      )}
+
       {/* Header */}
       <header className="relative w-full max-w-372 flex items-center justify-between py-6 md:py-8">
         <Link href="/" className="ds-font-logo text-[28px] font-normal text-white tracking-[-0.41px] leading-normal">
@@ -204,12 +487,13 @@ export default function CountryDetailComponent({
             <div className="flex gap-5 w-full pb-25">
               {columns.map((col, colIdx) => (
                 <div key={colIdx} className="flex-1 flex flex-col gap-5">
-                  {col.map((imgUrl, imgIdx) => {
+                  {col.map(({ url: imgUrl, globalIndex }) => {
                     const isVideo = isVideoAsset(imgUrl);
                     return (
                       <div
-                        key={imgIdx}
-                        className="group relative rounded-2xl overflow-hidden bg-[#151515]"
+                        key={globalIndex}
+                        className="group relative rounded-2xl overflow-hidden bg-[#151515] cursor-pointer"
+                        onClick={() => setLightboxIndex(globalIndex)}
                       >
                         {isVideo ? (
                           <>
@@ -219,23 +503,24 @@ export default function CountryDetailComponent({
                               playsInline
                               loop
                               preload="metadata"
-                              className="w-full h-auto block"
-                              onMouseEnter={(e) => e.currentTarget.play().catch(() => {})}
-                              onMouseLeave={(e) => { e.currentTarget.pause(); e.currentTarget.currentTime = 0; }}
-                              onClick={(e) => { const v = e.currentTarget; if (v.paused) v.play().catch(() => {}); else { v.pause(); v.currentTime = 0; } }}
+                              className="w-full h-auto block pointer-events-none"
                             />
-                            <div className="absolute inset-0 flex items-center justify-center pointer-events-none group-hover:opacity-0 transition-opacity">
+                            <div className="absolute inset-0 flex items-center justify-center group-hover:opacity-0 transition-opacity">
                               <span className="text-white text-3xl drop-shadow-lg">▶</span>
                             </div>
                           </>
                         ) : (
-                          <img
-                            src={toLandingAssetUrl(imgUrl)}
-                            alt={`${countryName} photo ${colIdx * col.length + imgIdx + 1}`}
-                            loading="lazy"
-                            decoding="async"
-                            className="w-full h-auto block"
-                          />
+                          <>
+                            <img
+                              src={toLandingAssetUrl(imgUrl)}
+                              alt={`${countryName} photo ${globalIndex + 1}`}
+                              loading="lazy"
+                              decoding="async"
+                              className="w-full h-auto block"
+                            />
+                            {/* Hover overlay */}
+                            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-200" />
+                          </>
                         )}
                       </div>
                     );

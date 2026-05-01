@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
+import type { MouseEvent as ReactMouseEvent } from "react";
 
 import { toLandingAssetUrl } from "@/lib/landing-assets";
 import type { SampleProfile } from "@/profiles/profile-data";
@@ -51,6 +52,7 @@ type MediaItem = {
   id: string;
   fileUrl: string;
   isVideo: boolean;
+  countryCode?: string;
 };
 
 type CountryCard = {
@@ -72,6 +74,19 @@ type CollectionCard = {
   previewImages: string[];
   countries: string[];
   countryOverflowCount: number;
+};
+
+type ContextMenuKind = "media" | "country" | "collection";
+
+type ShareCardData = {
+  kind: ContextMenuKind;
+  title: string;
+  imageUrl: string;
+  shareUrl: string;
+  flagCode?: string;
+  ownerName: string;
+  ownerHandle: string;
+  ownerAvatar: string;
 };
 
 function isVideoAsset(url: string) {
@@ -129,13 +144,522 @@ function SocialIcon({ platform }: { platform: string }) {
   return null;
 }
 
+function ContextMenuTrigger({
+  isOpen,
+  onClick,
+  label,
+}: {
+  isOpen: boolean;
+  onClick: (event: ReactMouseEvent<HTMLButtonElement>) => void;
+  label: string;
+}) {
+  const baseClassName = "absolute right-3 top-3 z-20 grid h-8 w-8 place-items-center rounded-full border border-black-600 bg-black/70 text-white shadow-[0_6px_14px_rgba(0,0,0,0.35)] backdrop-blur-sm transition-opacity hover:bg-black/85 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70";
+  const visibilityClassName = isOpen
+    ? "opacity-100"
+    : "opacity-100 md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100";
+
+  return (
+    <button
+      type="button"
+      aria-label={label}
+      onClick={onClick}
+      className={`${baseClassName} ${visibilityClassName}`}
+    >
+      <span className="flex items-center gap-1">
+        <span className="block h-1 w-1 rounded-full bg-[#e3e3e3]" />
+        <span className="block h-1 w-1 rounded-full bg-[#e3e3e3]" />
+        <span className="block h-1 w-1 rounded-full bg-[#e3e3e3]" />
+      </span>
+    </button>
+  );
+}
+
+function ContextMenu({
+  kind,
+  viewLabel,
+  shareLabel,
+  flagCode,
+  viewHref,
+  onShare,
+  onClose,
+  menuRef,
+}: {
+  kind: ContextMenuKind;
+  viewLabel: string;
+  shareLabel: string;
+  flagCode?: string;
+  viewHref?: string;
+  onShare: () => void;
+  onClose: () => void;
+  menuRef: React.RefObject<HTMLDivElement>;
+}) {
+  const flagSrc = toFlagAssetPath(flagCode);
+  const handleView = () => {
+    if (viewHref) {
+      window.location.assign(viewHref);
+    }
+    onClose();
+  };
+
+  const handleShare = () => {
+    onShare();
+    onClose();
+  };
+
+  return (
+    <div
+      ref={menuRef}
+      role="menu"
+      className="absolute right-3 top-12 z-30 w-56 rounded-2xl border border-black-600 bg-black-800 p-6 shadow-[20px_20px_10px_rgba(0,0,0,0.25)]"
+      onClick={(event) => {
+        event.preventDefault();
+        event.stopPropagation();
+      }}
+    >
+      <div className="flex flex-col gap-6">
+        <button
+          type="button"
+          role="menuitem"
+          onClick={(event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            handleView();
+          }}
+          disabled={!viewHref}
+          className={`flex w-full items-center gap-2 text-[16px] font-medium leading-6 tracking-[-0.096px] text-white transition ${
+            viewHref ? "hover:text-white" : "opacity-50 cursor-not-allowed"
+          }`}
+        >
+          <span className="material-symbols-rounded text-[20px]">folder</span>
+          <span>{viewLabel}</span>
+          {flagSrc && kind !== "collection" ? (
+            <img
+              src={flagSrc}
+              alt=""
+              className="ml-auto h-3.25 w-5 rounded-xs object-cover shadow-[1.2px_1.2px_0.6px_rgba(0,0,0,0.18)]"
+            />
+          ) : null}
+        </button>
+
+        <button
+          type="button"
+          role="menuitem"
+          onClick={(event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            handleShare();
+          }}
+          className="flex w-full items-center gap-2 text-[16px] font-medium leading-6 tracking-[-0.096px] text-white"
+        >
+          <span className="material-symbols-rounded text-[20px]">share</span>
+          <span>{shareLabel}</span>
+        </button>
+
+        <button
+          type="button"
+          role="menuitem"
+          onClick={(event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            onClose();
+          }}
+          className="flex w-full items-center gap-2 text-[16px] font-medium leading-6 tracking-[-0.096px] text-white"
+        >
+          <span className="material-symbols-rounded text-[20px]">favorite</span>
+          <span>Add to favorites</span>
+        </button>
+
+        <button
+          type="button"
+          role="menuitem"
+          onClick={(event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            onClose();
+          }}
+          className="flex w-full items-center gap-2 text-[16px] font-medium leading-6 tracking-[-0.096px] text-white"
+        >
+          <span className="material-symbols-rounded text-[20px]">block</span>
+          <span>Report</span>
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function ShareIcon({ type }: { type: "whatsapp" | "messenger" | "facebook" | "instagram" | "x" }) {
+  if (type === "whatsapp") {
+    return (
+      <svg viewBox="0 0 24 24" aria-hidden="true" className="h-6 w-6" fill="currentColor">
+        <path d="M20.52 3.48A11.77 11.77 0 0 0 12.04.25C5.57.25.31 5.5.31 11.98c0 2.1.55 4.16 1.6 5.98L.25 23.75l5.93-1.64a11.7 11.7 0 0 0 5.85 1.5h.01c6.48 0 11.73-5.25 11.73-11.73 0-3.13-1.22-6.07-3.25-8.4zm-8.48 18.1h-.01a9.72 9.72 0 0 1-4.95-1.36l-.36-.21-3.52.97.94-3.44-.23-.36a9.73 9.73 0 1 1 8.13 4.4zm5.64-7.25c-.3-.15-1.78-.88-2.06-.98-.28-.1-.49-.15-.69.15-.2.3-.79.98-.97 1.18-.18.2-.36.23-.66.08-.3-.15-1.26-.46-2.4-1.47-.88-.78-1.47-1.74-1.64-2.04-.17-.3-.02-.46.13-.6.13-.13.3-.36.46-.54.15-.18.2-.3.3-.5.1-.2.05-.38-.02-.54-.08-.15-.69-1.66-.94-2.27-.25-.6-.5-.52-.69-.53h-.6c-.2 0-.54.08-.83.38-.28.3-1.1 1.07-1.1 2.6 0 1.53 1.12 3.01 1.27 3.22.15.2 2.2 3.36 5.33 4.72.75.32 1.33.51 1.78.65.75.24 1.43.2 1.97.12.6-.09 1.78-.73 2.03-1.43.25-.7.25-1.3.17-1.43-.08-.13-.28-.2-.58-.36z" />
+      </svg>
+    );
+  }
+  if (type === "messenger") {
+    return (
+      <svg viewBox="0 0 24 24" aria-hidden="true" className="h-6 w-6" fill="currentColor">
+        <path d="M12 2C6.48 2 2 6.02 2 11c0 2.84 1.52 5.39 3.9 7.05V22l3.54-1.94c.83.23 1.7.36 2.56.36 5.52 0 10-4.02 10-9s-4.48-9-10-9zm1 12.5-2.64-2.82L5 14.5l6.02-6.5 2.63 2.82L19 8l-6 6.5z" />
+      </svg>
+    );
+  }
+  if (type === "facebook") {
+    return (
+      <svg viewBox="0 0 24 24" aria-hidden="true" className="h-6 w-6" fill="currentColor">
+        <path d="M22 12a10 10 0 1 0-11.5 9.9v-7H8v-3h2.5V9.5c0-2.5 1.5-3.9 3.8-3.9 1.1 0 2.2.2 2.2.2v2.4h-1.24c-1.22 0-1.6.76-1.6 1.54V12H16l-.4 3h-2v7A10 10 0 0 0 22 12z" />
+      </svg>
+    );
+  }
+  if (type === "instagram") {
+    return (
+      <svg viewBox="0 0 24 24" aria-hidden="true" className="h-6 w-6" fill="currentColor">
+        <path d="M7 2C4.24 2 2 4.24 2 7v10c0 2.76 2.24 5 5 5h10c2.76 0 5-2.24 5-5V7c0-2.76-2.24-5-5-5H7zm10 2c1.65 0 3 1.35 3 3v10c0 1.65-1.35 3-3 3H7c-1.65 0-3-1.35-3-3V7c0-1.65 1.35-3 3-3h10zm-5 3.5A4.5 4.5 0 1 0 16.5 12 4.5 4.5 0 0 0 12 7.5zm0 2A2.5 2.5 0 1 1 9.5 12 2.5 2.5 0 0 1 12 9.5zm4.75-4.1a1.1 1.1 0 1 0 1.1 1.1 1.1 1.1 0 0 0-1.1-1.1z" />
+      </svg>
+    );
+  }
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true" className="h-6 w-6" fill="currentColor">
+      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.745l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+    </svg>
+  );
+}
+
+function ShareCard({
+  data,
+  onClose,
+}: {
+  data: ShareCardData;
+  onClose: () => void;
+}) {
+  const [isLinkCopied, setIsLinkCopied] = useState(false);
+  const avatarSrc = toLandingAssetUrl(data.ownerAvatar);
+  const flagSrc = toFlagAssetPath(data.flagCode);
+  const imageClassName = data.kind === "media"
+    ? "w-50 aspect-[200/194]"
+    : "w-full max-w-84 aspect-[336/262]";
+
+  const handleSocialShare = (platform: string) => {
+    const text = `Check out ${data.title} by ${data.ownerName} on Travingat`;
+    const url = data.shareUrl;
+
+    switch (platform) {
+      case "whatsapp":
+        window.open(`https://wa.me/?text=${encodeURIComponent(`${text}\n${url}`)}`, "_blank");
+        break;
+      case "messenger":
+        window.open(`https://www.facebook.com/dialog/send?app_id=YOUR_APP_ID&link=${encodeURIComponent(url)}&redirect_uri=${encodeURIComponent(window.location.origin)}`, "_blank");
+        break;
+      case "facebook":
+        window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, "_blank");
+        break;
+      case "instagram":
+        // Instagram doesn't support direct sharing from web, redirect to Instagram profile
+        window.open(`https://instagram.com`, "_blank");
+        break;
+      case "x":
+        window.open(`https://x.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, "_blank");
+        break;
+    }
+  };
+
+  const handleCopyLink = () => {
+    navigator.clipboard.writeText(data.shareUrl).catch(() => {});
+    setIsLinkCopied(true);
+    window.setTimeout(() => setIsLinkCopied(false), 1800);
+  };
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-start justify-center bg-black/90 px-4 py-10"
+      onClick={onClose}
+    >
+      <div
+        className="w-full max-w-100 rounded-2xl border border-black-300 bg-black-800 p-8 shadow-[20px_20px_10px_rgba(0,0,0,0.25)]"
+        onClick={(event) => {
+          event.preventDefault();
+          event.stopPropagation();
+        }}
+      >
+        <div className="flex flex-col items-center gap-8">
+          <div className="flex flex-col items-center gap-6 w-full">
+            <div className="flex flex-col items-center pb-8">
+              <div className={`relative overflow-hidden rounded-2xl bg-black-700 ${imageClassName}`}>
+                <img
+                  src={toLandingAssetUrl(data.imageUrl)}
+                  alt={data.title}
+                  loading="lazy"
+                  decoding="async"
+                  className="h-full w-full object-cover"
+                />
+              </div>
+              <div className="relative z-10 -mt-7 h-15 w-15 overflow-hidden rounded-xl border-2 border-[#111] shadow-[8px_8px_12px_rgba(0,0,0,0.25)]">
+                <img
+                  src={toLandingAssetUrl(avatarSrc)}
+                  alt="Profile avatar"
+                  loading="lazy"
+                  decoding="async"
+                  className="h-full w-full object-cover"
+                />
+              </div>
+            </div>
+
+            <div className="flex items-center justify-center gap-2 text-center w-full">
+              <p className="ds-font-display text-[24px] leading-8 tracking-[-0.5px] text-white font-medium">
+                {data.title}
+              </p>
+              {flagSrc ? (
+                <img
+                  src={flagSrc}
+                  alt=""
+                  className="h-4.5 w-7 rounded-xs object-cover shadow-[1.68px_1.68px_0.84px_rgba(0,0,0,0.18)]"
+                />
+              ) : null}
+            </div>
+
+            <div className="flex flex-col items-center gap-1 text-center w-full">
+              <p className="text-[16px] leading-6 tracking-[-0.096px] text-white font-medium">{data.ownerName}</p>
+              <p className="text-[14px] leading-5 tracking-[-0.084px] text-white-400">{data.ownerHandle}</p>
+            </div>
+          </div>
+
+          <div className="flex items-center justify-center gap-3 w-full">
+            {(
+              [
+                { type: "whatsapp", color: "text-[#25d366]" },
+                { type: "messenger", color: "text-[#0084ff]" },
+                { type: "facebook", color: "text-[#1877f2]" },
+                { type: "instagram", color: "text-[#f56040]" },
+                { type: "x", color: "text-white" },
+              ] as const
+            ).map((item) => (
+              <button
+                key={item.type}
+                type="button"
+                onClick={() => handleSocialShare(item.type)}
+                className="flex-1 aspect-square rounded-xl bg-black-300 p-2.5 grid place-items-center hover:bg-black-200 transition"
+                aria-label={`Share via ${item.type}`}
+              >
+                <span className={item.color}>
+                  <ShareIcon type={item.type} />
+                </span>
+              </button>
+            ))}
+          </div>
+
+          <button
+            type="button"
+            onClick={handleCopyLink}
+            className={`w-full flex items-center justify-center rounded-full px-4 py-3 text-[14px] font-medium tracking-[-0.084px] transition-all duration-200 ${
+              isLinkCopied ? "bg-black text-white" : "bg-white text-black hover:bg-[#ececec]"
+            }`}
+          >
+            <span className={isLinkCopied ? "inline-flex items-center gap-2 animate-pulse" : "inline-flex items-center gap-2"}>
+              <span className="material-symbols-rounded text-[18px]">{isLinkCopied ? "link" : "content_copy"}</span>
+              <span>{isLinkCopied ? "Link copied" : "Copy Link"}</span>
+            </span>
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function PhotoCarouselModal({
+  items,
+  activeIndex,
+  onClose,
+  onNext,
+  onPrev,
+  profileName,
+  profileHandle,
+  profileAvatar,
+  profileFlagCode,
+  countryName,
+  countryFlagCode,
+  description,
+  quote,
+}: {
+  items: MediaItem[];
+  activeIndex: number;
+  onClose: () => void;
+  onNext: () => void;
+  onPrev: () => void;
+  profileName: string;
+  profileHandle: string;
+  profileAvatar: string;
+  profileFlagCode?: string;
+  countryName?: string;
+  countryFlagCode?: string;
+  description?: string;
+  quote?: string;
+}) {
+  const activeItem = items[activeIndex];
+  const totalCount = items.length;
+  const displayIndex = activeIndex + 1;
+  const avatarSrc = toLandingAssetUrl(profileAvatar);
+  const profileFlagSrc = toFlagAssetPath(profileFlagCode);
+  const countryFlagSrc = toFlagAssetPath(countryFlagCode);
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex bg-black/90"
+      onClick={onClose}
+    >
+      {/* Left image panel */}
+      <div
+        className="relative flex flex-1 flex-col min-w-0"
+        onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
+      >
+        {/* Top bar: image counter + copy link */}
+        <div className="flex items-center justify-between px-10 py-6 text-[15px] tracking-[-0.4px] text-[#a8a8a8]">
+          <span>{`${displayIndex} of ${totalCount}`}</span>
+          <button
+            type="button"
+            onClick={() => {
+              navigator.clipboard.writeText(window.location.href).catch(() => {});
+            }}
+            className="flex h-8 w-8 items-center justify-center text-[#a8a8a8] transition hover:text-white"
+            aria-label="Copy link"
+          >
+            <span className="material-symbols-rounded text-[22px]">photo_library</span>
+          </button>
+        </div>
+
+        {/* Image + nav arrows */}
+        <div className="relative flex flex-1 min-h-0 pb-8">
+          {/* Main image */}
+          <div className="h-full w-full overflow-hidden bg-[#0a0a0a]">
+            {activeItem?.isVideo ? (
+              <video
+                src={toLandingAssetUrl(activeItem.fileUrl)}
+                controls
+                autoPlay
+                className="h-full w-full object-contain"
+              />
+            ) : (
+              <img
+                src={toLandingAssetUrl(activeItem?.fileUrl)}
+                alt="Carousel media"
+                className="h-full w-full object-contain"
+              />
+            )}
+          </div>
+
+          {/* Prev arrow */}
+          <button
+            type="button"
+            onClick={onPrev}
+            className="absolute left-3 top-1/2 -translate-y-1/2 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-black/50 text-white backdrop-blur-sm transition hover:bg-black/70"
+            aria-label="Previous photo"
+          >
+            <span className="material-symbols-rounded text-[28px]">chevron_left</span>
+          </button>
+
+          {/* Next arrow */}
+          <button
+            type="button"
+            onClick={onNext}
+            className="absolute right-3 top-1/2 -translate-y-1/2 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-black/50 text-white backdrop-blur-sm transition hover:bg-black/70"
+            aria-label="Next photo"
+          >
+            <span className="material-symbols-rounded text-[28px]">chevron_right</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Right sidebar */}
+      <aside
+        className="flex w-[360px] shrink-0 flex-col gap-8 overflow-y-auto bg-[#111111] p-8 text-white"
+        onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
+      >
+        {/* Avatar + close */}
+        <div className="flex items-start justify-between">
+          <div className="h-[72px] w-[72px] overflow-hidden rounded-2xl">
+            <img src={avatarSrc} alt={profileName} className="h-full w-full object-cover" />
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="flex h-8 w-8 items-center justify-center text-[#666] transition hover:text-white"
+            aria-label="Close"
+          >
+            <span className="material-symbols-rounded text-[24px]">close</span>
+          </button>
+        </div>
+
+        {/* Profile info */}
+        <div className="flex flex-col gap-3">
+          <div className="flex items-center gap-2 text-[13px] text-[#888]">
+            {profileFlagSrc ? (
+              <img src={profileFlagSrc} alt="" className="h-3 w-[18px] rounded-[2px] object-cover" />
+            ) : null}
+            <span>{profileName}</span>
+          </div>
+          <p className="text-[20px] font-semibold tracking-[-0.5px] text-white">{profileHandle}</p>
+        </div>
+
+        {/* Follow / Connect / More */}
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            className="h-[38px] flex-1 rounded-full bg-white text-[14px] font-medium text-black transition hover:bg-[#e8e8e8]"
+          >
+            Follow
+          </button>
+          <button
+            type="button"
+            className="h-[38px] flex-1 rounded-full border border-[#2e2e2e] bg-[#1a1a1a] text-[14px] font-medium text-white transition hover:bg-[#222]"
+          >
+            Connect
+          </button>
+          <button
+            type="button"
+            className="flex h-[38px] w-[38px] shrink-0 items-center justify-center rounded-full border border-[#2e2e2e] bg-[#1a1a1a] text-white transition hover:bg-[#222]"
+            aria-label="More options"
+          >
+            <span className="material-symbols-rounded text-[20px]">more_horiz</span>
+          </button>
+        </div>
+
+        {/* Country + description */}
+        <div className="flex flex-col gap-4">
+          <div className="flex items-center gap-3">
+            {countryFlagSrc ? (
+              <img src={countryFlagSrc} alt="" className="h-[18px] w-[26px] rounded-[3px] object-cover shadow-sm" />
+            ) : null}
+            <p className="text-[22px] font-semibold tracking-[-0.5px] text-[#ededed]">
+              {countryName || ""}
+            </p>
+          </div>
+          {description ? (
+            <p className="text-[15px] leading-[1.6] tracking-[-0.3px] text-[#a0a0a0] line-clamp-6">{description}</p>
+          ) : null}
+          <button type="button" className="self-start text-[14px] tracking-[-0.3px] text-[#555] transition hover:text-[#888]">
+            Read more
+          </button>
+        </div>
+
+        {/* Divider + quote */}
+        {quote ? (
+          <div className="border-t border-[#222] pt-6">
+            <p className="text-[15px] leading-[1.6] tracking-[-0.3px] text-[#a0a0a0]">{quote}</p>
+          </div>
+        ) : null}
+      </aside>
+    </div>
+  );
+}
+
 export default function ProfileComponent({ profile }: { profile: SampleProfile }) {
   const [activeTab, setActiveTab] = useState<TabKey>("all");
   const [showNavMenu, setShowNavMenu] = useState(false);
   const [showFollowModal, setShowFollowModal] = useState(false);
   const [countryPhotoIndexByCode, setCountryPhotoIndexByCode] = useState<Record<string, number>>({});
   const [collectionPhotoIndexById, setCollectionPhotoIndexById] = useState<Record<string, number>>({});
+  const [openContextMenuId, setOpenContextMenuId] = useState<string | null>(null);
+  const [shareCardData, setShareCardData] = useState<ShareCardData | null>(null);
+  const [carouselIndex, setCarouselIndex] = useState<number | null>(null);
   const navMenuRef = useRef<HTMLDivElement | null>(null);
+  const contextMenuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!showNavMenu) return;
@@ -156,6 +680,46 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
     };
   }, [showNavMenu]);
 
+  useEffect(() => {
+    if (!openContextMenuId) return;
+
+    const onPointerDown = (event: MouseEvent | TouchEvent) => {
+      const target = event.target as Node;
+      if (contextMenuRef.current && !contextMenuRef.current.contains(target)) {
+        setOpenContextMenuId(null);
+      }
+    };
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setOpenContextMenuId(null);
+      }
+    };
+
+    document.addEventListener("mousedown", onPointerDown);
+    document.addEventListener("touchstart", onPointerDown);
+    document.addEventListener("keydown", onKeyDown);
+
+    return () => {
+      document.removeEventListener("mousedown", onPointerDown);
+      document.removeEventListener("touchstart", onPointerDown);
+      document.removeEventListener("keydown", onKeyDown);
+    };
+  }, [openContextMenuId]);
+
+  useEffect(() => {
+    if (!shareCardData) return;
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setShareCardData(null);
+      }
+    };
+
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [shareCardData]);
+
   const displayName = profile.name;
   const handle = profile.handle.startsWith("@") ? profile.handle : `@${profile.handle}`;
   const basedIn = profile.country;
@@ -167,15 +731,64 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
   const currentlyInFlagSrc = toFlagAssetPath(currentlyInFlagCode);
 
   const allMediaItems = useMemo<MediaItem[]>(() => {
-    const galleryUrls = profile.images.gallery;
-    const countryUrls = (profile.countryImages ?? []).flatMap((c) => c.images);
-    const collectionUrls = (profile.collectionImages ?? []).flatMap((c) => c.images);
-    return [...galleryUrls, ...countryUrls, ...collectionUrls].map((fileUrl, index) => ({
-      id: `${profile.id}-${index}`,
-      fileUrl,
-      isVideo: isVideoAsset(fileUrl),
-    }));
+    const items: MediaItem[] = [];
+
+    profile.images.gallery.forEach((fileUrl) => {
+      items.push({
+        id: `media-${profile.id}-${items.length}`,
+        fileUrl,
+        isVideo: isVideoAsset(fileUrl),
+      });
+    });
+
+    (profile.countryImages ?? []).forEach((country) => {
+      country.images.forEach((fileUrl) => {
+        items.push({
+          id: `media-${profile.id}-${items.length}`,
+          fileUrl,
+          isVideo: isVideoAsset(fileUrl),
+          countryCode: country.countryCode,
+        });
+      });
+    });
+
+    (profile.collectionImages ?? []).forEach((collection) => {
+      collection.images.forEach((fileUrl) => {
+        items.push({
+          id: `media-${profile.id}-${items.length}`,
+          fileUrl,
+          isVideo: isVideoAsset(fileUrl),
+        });
+      });
+    });
+
+    return items;
   }, [profile.id, profile.images.gallery, profile.countryImages, profile.collectionImages]);
+
+  useEffect(() => {
+    if (carouselIndex === null) return;
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setCarouselIndex(null);
+      }
+      if (event.key === "ArrowLeft") {
+        setCarouselIndex((prev) => {
+          if (prev === null) return prev;
+          return (prev - 1 + allMediaItems.length) % allMediaItems.length;
+        });
+      }
+      if (event.key === "ArrowRight") {
+        setCarouselIndex((prev) => {
+          if (prev === null) return prev;
+          return (prev + 1) % allMediaItems.length;
+        });
+      }
+    };
+
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [carouselIndex, allMediaItems.length]);
 
   const headerFlagCodes = useMemo(() => {
     const codes = profile.visitedCountryCodes ?? [];
@@ -248,7 +861,92 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
   useEffect(() => {
     setCountryPhotoIndexByCode({});
     setCollectionPhotoIndexById({});
+    setOpenContextMenuId(null);
+    setShareCardData(null);
   }, [profile.id, activeTab]);
+
+  // Sync carousel state to URL
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const url = new URL(window.location.href);
+    if (carouselIndex !== null && allMediaItems.length > 0) {
+      const activeUrl = allMediaItems[carouselIndex].fileUrl;
+      const encodedUrl = btoa(unescape(encodeURIComponent(activeUrl)));
+      if (url.searchParams.get("image") !== encodedUrl) {
+        url.searchParams.set("image", encodedUrl);
+        window.history.replaceState({}, "", url.toString());
+      }
+    } else {
+      if (url.searchParams.has("image")) {
+        url.searchParams.delete("image");
+        window.history.replaceState({}, "", url.toString());
+      }
+    }
+  }, [carouselIndex, allMediaItems]);
+
+  // Read from URL on mount
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const url = new URL(window.location.href);
+    const encodedImage = url.searchParams.get("image");
+    if (encodedImage && allMediaItems.length > 0 && carouselIndex === null) {
+      try {
+        const imageUrl = decodeURIComponent(escape(atob(encodedImage)));
+        const index = allMediaItems.findIndex((item) => item.fileUrl === imageUrl);
+        if (index !== -1) {
+          setCarouselIndex(index);
+          // Don't change tab, allow it to just open over whatever tab is active
+        }
+      } catch (e) {}
+    }
+  }, [allMediaItems, carouselIndex]);
+
+  const shareOwnerName = profile.name;
+  const shareOwnerHandle = handle;
+  const shareOwnerAvatar = profile.images.avatar;
+
+  const activeCarouselItem = carouselIndex !== null ? allMediaItems[carouselIndex] : null;
+  const carouselCountryCode = activeCarouselItem?.countryCode?.toUpperCase();
+  const carouselCountryName = carouselCountryCode
+    ? COUNTRY_LIST_LOOKUP[carouselCountryCode] || carouselCountryCode
+    : basedIn;
+  const carouselDescription = profile.bio;
+  const carouselQuote = undefined;
+
+  const toShareUrl = (url: string) => {
+    if (!url) return url;
+    if (/^https?:\/\//i.test(url)) return url;
+    return new URL(url, window.location.origin).toString();
+  };
+
+  const openShareCard = (data: ShareCardData) => {
+    setShareCardData(data);
+    setOpenContextMenuId(null);
+  };
+
+  const openCarouselAt = (index: number) => {
+    if (allMediaItems.length === 0) return;
+    setCarouselIndex(index);
+    setOpenContextMenuId(null);
+  };
+
+  const closeCarousel = () => {
+    setCarouselIndex(null);
+  };
+
+  const goToNextCarouselItem = () => {
+    setCarouselIndex((prev) => {
+      if (prev === null) return prev;
+      return (prev + 1) % allMediaItems.length;
+    });
+  };
+
+  const goToPrevCarouselItem = () => {
+    setCarouselIndex((prev) => {
+      if (prev === null) return prev;
+      return (prev - 1 + allMediaItems.length) % allMediaItems.length;
+    });
+  };
 
   const collectionCards = useMemo<CollectionCard[]>(() => {
     const allCountryNames = countryCards.map((country) => country.name);
@@ -662,30 +1360,99 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                 </div>
               ) : (
                 <div className="columns-2 md:columns-3 xl:columns-4 gap-5">
-                  {allMediaItems.map((item) => (
-                    <div key={item.id} className="group mb-5 inline-block w-full break-inside-avoid rounded-2xl overflow-hidden bg-[#111] relative [-webkit-column-break-inside:avoid]">
-                      {item.isVideo ? (
-                        <>
-                          <video
-                            src={toLandingAssetUrl(item.fileUrl)}
-                            muted
-                            playsInline
-                            loop
-                            preload="metadata"
-                            className="w-full object-cover rounded-2xl"
-                            onMouseEnter={(e) => e.currentTarget.play().catch(() => {})}
-                            onMouseLeave={(e) => { e.currentTarget.pause(); e.currentTarget.currentTime = 0; }}
-                            onClick={(e) => { const v = e.currentTarget; if (v.paused) v.play().catch(() => {}); else { v.pause(); v.currentTime = 0; } }}
+                  {allMediaItems.map((item, index) => {
+                    const isMenuOpen = openContextMenuId === item.id;
+                    const viewHref = item.countryCode
+                      ? `/profiles/${profile.id}/country/${item.countryCode.toUpperCase()}`
+                      : undefined;
+                    return (
+                      <div
+                        key={item.id}
+                        className="group mb-5 inline-block w-full break-inside-avoid relative [-webkit-column-break-inside:avoid]"
+                      >
+                        <div className="relative overflow-hidden rounded-2xl bg-[#111]">
+                          {item.isVideo ? (
+                            <>
+                              <video
+                                src={toLandingAssetUrl(item.fileUrl)}
+                                muted
+                                playsInline
+                                loop
+                                preload="metadata"
+                                className="w-full object-cover rounded-2xl"
+                                onMouseEnter={(e) => e.currentTarget.play().catch(() => {})}
+                                onMouseLeave={(e) => { e.currentTarget.pause(); e.currentTarget.currentTime = 0; }}
+                                onClick={(e) => {
+                                  const v = e.currentTarget;
+                                  if (v.paused) v.play().catch(() => {});
+                                  else {
+                                    v.pause();
+                                    v.currentTime = 0;
+                                  }
+                                }}
+                              />
+                              <div className="absolute top-4 left-4 group-hover:opacity-0 transition-opacity pointer-events-none">
+                                <span
+                                  className="material-symbols-rounded text-[24px] text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]"
+                                  style={{ fontVariationSettings: "'FILL' 1, 'wght' 700, 'GRAD' 200, 'opsz' 24" }}
+                                >
+                                  play_arrow
+                                </span>
+                              </div>
+                            </>
+                          ) : (
+                            <img
+                              src={toLandingAssetUrl(item.fileUrl)}
+                              alt="Uploaded media"
+                              loading="lazy"
+                              decoding="async"
+                              className="w-full object-cover rounded-2xl cursor-pointer"
+                              onClick={(event) => {
+                                event.preventDefault();
+                                event.stopPropagation();
+                                openCarouselAt(index);
+                              }}
+                            />
+                          )}
+                        </div>
+
+                        <ContextMenuTrigger
+                          isOpen={isMenuOpen}
+                          label="Open media menu"
+                          onClick={(event) => {
+                            event.preventDefault();
+                            event.stopPropagation();
+                            setOpenContextMenuId(isMenuOpen ? null : item.id);
+                          }}
+                        />
+
+                        {isMenuOpen ? (
+                          <ContextMenu
+                            kind="media"
+                            viewLabel="View country"
+                            shareLabel="Share photo"
+                            flagCode={item.countryCode}
+                            viewHref={viewHref}
+                            onShare={() => {
+                              const shareUrl = new URL(window.location.href);
+                              shareUrl.searchParams.set("image", btoa(unescape(encodeURIComponent(item.fileUrl))));
+                              openShareCard({
+                                kind: "media",
+                                title: "Share moment",
+                                imageUrl: item.fileUrl,
+                                shareUrl: shareUrl.toString(),
+                                ownerName: shareOwnerName,
+                                ownerHandle: shareOwnerHandle,
+                                ownerAvatar: shareOwnerAvatar,
+                              });
+                            }}
+                            onClose={() => setOpenContextMenuId(null)}
+                            menuRef={contextMenuRef as React.RefObject<HTMLDivElement>}
                           />
-                          <div className="absolute top-4 left-4 group-hover:opacity-0 transition-opacity pointer-events-none">
-                            <span className="material-symbols-rounded text-[24px] text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]" style={{ fontVariationSettings: "'FILL' 1, 'wght' 700, 'GRAD' 200, 'opsz' 24" }}>play_arrow</span>
-                          </div>
-                        </>
-                      ) : (
-                        <img src={toLandingAssetUrl(item.fileUrl)} alt="Uploaded media" loading="lazy" decoding="async" className="w-full object-cover rounded-2xl" />
-                      )}
-                    </div>
-                  ))}
+                        ) : null}
+                      </div>
+                    );
+                  })}
                 </div>
               )}
             </section>
@@ -713,81 +1480,126 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                 </div>
               ) : (
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5">
-                  {countryCards.map((country) => (
-                    <Link key={country.code} href={`/profiles/${profile.id}/country/${country.flagCode.toUpperCase()}`} className="flex flex-col gap-4 group">
-                      {/* Photo */}
-                      <div className="relative w-full aspect-square overflow-hidden rounded-2xl bg-[#151515]">
-                        <img
-                          src={toLandingAssetUrl(
-                            country.previewImages[countryPhotoIndexByCode[country.code] ?? 0] || country.thumbnailUrl
-                          )}
-                          alt={country.name}
-                          loading="lazy"
-                          decoding="async"
-                          className="w-full h-full object-cover block transition-transform duration-300 group-hover:scale-[1.03]"
-                        />
-
-                        {country.previewImages.length > 1 ? (
-                          <>
-                            <button
-                              type="button"
-                              onClick={(event) => {
-                                event.preventDefault();
-                                event.stopPropagation();
-                                setCountryPhotoIndexByCode((prev) => {
-                                  const current = prev[country.code] ?? 0;
-                                  const next =
-                                    (current - 1 + country.previewImages.length) % country.previewImages.length;
-                                  return { ...prev, [country.code]: next };
-                                });
-                              }}
-                              className="hidden md:grid absolute left-3 top-1/2 -translate-y-1/2 h-8 w-8 place-items-center rounded-full bg-black/55 text-white opacity-0 transition-opacity duration-200 group-hover:opacity-100 hover:bg-black/70 focus-visible:opacity-100"
-                              aria-label={`Previous photo for ${country.name}`}
-                            >
-                              <span className="material-symbols-rounded text-[20px]">chevron_left</span>
-                            </button>
-
-                            <button
-                              type="button"
-                              onClick={(event) => {
-                                event.preventDefault();
-                                event.stopPropagation();
-                                setCountryPhotoIndexByCode((prev) => {
-                                  const current = prev[country.code] ?? 0;
-                                  const next = (current + 1) % country.previewImages.length;
-                                  return { ...prev, [country.code]: next };
-                                });
-                              }}
-                              className="hidden md:grid absolute right-3 top-1/2 -translate-y-1/2 h-8 w-8 place-items-center rounded-full bg-black/55 text-white opacity-0 transition-opacity duration-200 group-hover:opacity-100 hover:bg-black/70 focus-visible:opacity-100"
-                              aria-label={`Next photo for ${country.name}`}
-                            >
-                              <span className="material-symbols-rounded text-[20px]">chevron_right</span>
-                            </button>
-                          </>
-                        ) : null}
-                      </div>
-                      {/* Country info */}
-                      <div className="flex flex-col gap-2">
-                        <div className="flex items-center gap-2">
-                          <div className="h-[15.6px] w-6 overflow-hidden rounded-sm shadow-[1.62px_1.62px_1.62px_0px_rgba(0,0,0,0.18)] shrink-0">
+                  {countryCards.map((country) => {
+                    const contextMenuId = `country-${country.code}`;
+                    const isMenuOpen = openContextMenuId === contextMenuId;
+                    const countryHref = `/profiles/${profile.id}/country/${country.flagCode.toUpperCase()}`;
+                    return (
+                      <Link key={country.code} href={countryHref} className="flex flex-col gap-4 group">
+                        {/* Photo */}
+                        <div className="relative">
+                          <div className="relative w-full aspect-square overflow-hidden rounded-2xl bg-[#151515]">
                             <img
-                              src={`/flags/${country.flagCode.toUpperCase()}.svg`}
+                              src={toLandingAssetUrl(
+                                country.previewImages[countryPhotoIndexByCode[country.code] ?? 0] || country.thumbnailUrl
+                              )}
                               alt={country.name}
-                              className="block w-full h-full object-cover"
+                              loading="lazy"
+                              decoding="async"
+                              className="w-full h-full object-cover block transition-transform duration-300 group-hover:scale-[1.03]"
                             />
+
+                            {country.previewImages.length > 1 ? (
+                              <>
+                                <button
+                                  type="button"
+                                  onClick={(event) => {
+                                    event.preventDefault();
+                                    event.stopPropagation();
+                                    setCountryPhotoIndexByCode((prev) => {
+                                      const current = prev[country.code] ?? 0;
+                                      const next =
+                                        (current - 1 + country.previewImages.length) % country.previewImages.length;
+                                      return { ...prev, [country.code]: next };
+                                    });
+                                  }}
+                                  className="hidden md:grid absolute left-3 top-1/2 -translate-y-1/2 h-8 w-8 place-items-center rounded-full bg-black/55 text-white opacity-0 transition-opacity duration-200 group-hover:opacity-100 hover:bg-black/70 focus-visible:opacity-100"
+                                  aria-label={`Previous photo for ${country.name}`}
+                                >
+                                  <span className="material-symbols-rounded text-[20px]">chevron_left</span>
+                                </button>
+
+                                <button
+                                  type="button"
+                                  onClick={(event) => {
+                                    event.preventDefault();
+                                    event.stopPropagation();
+                                    setCountryPhotoIndexByCode((prev) => {
+                                      const current = prev[country.code] ?? 0;
+                                      const next = (current + 1) % country.previewImages.length;
+                                      return { ...prev, [country.code]: next };
+                                    });
+                                  }}
+                                  className="hidden md:grid absolute right-3 top-1/2 -translate-y-1/2 h-8 w-8 place-items-center rounded-full bg-black/55 text-white opacity-0 transition-opacity duration-200 group-hover:opacity-100 hover:bg-black/70 focus-visible:opacity-100"
+                                  aria-label={`Next photo for ${country.name}`}
+                                >
+                                  <span className="material-symbols-rounded text-[20px]">chevron_right</span>
+                                </button>
+                              </>
+                            ) : null}
                           </div>
-                          <p className="text-white text-[18px] font-semibold leading-6.5 tracking-[-0.198px] truncate">
-                            {country.name}
-                          </p>
+
+                          <ContextMenuTrigger
+                            isOpen={isMenuOpen}
+                            label={`Open menu for ${country.name}`}
+                            onClick={(event) => {
+                              event.preventDefault();
+                              event.stopPropagation();
+                              setOpenContextMenuId(isMenuOpen ? null : contextMenuId);
+                            }}
+                          />
+
+                          {isMenuOpen ? (
+                            <ContextMenu
+                              kind="country"
+                              viewLabel="View country"
+                              shareLabel="Share country"
+                              flagCode={country.flagCode}
+                              viewHref={countryHref}
+                              onShare={() => {
+                                const previewIndex = countryPhotoIndexByCode[country.code] ?? 0;
+                                const previewImage =
+                                  country.previewImages[previewIndex] || country.thumbnailUrl;
+                                openShareCard({
+                                  kind: "country",
+                                  title: `Share ${country.name}`,
+                                  imageUrl: previewImage,
+                                  shareUrl: toShareUrl(countryHref),
+                                  flagCode: country.flagCode,
+                                  ownerName: shareOwnerName,
+                                  ownerHandle: shareOwnerHandle,
+                                  ownerAvatar: shareOwnerAvatar,
+                                });
+                              }}
+                              onClose={() => setOpenContextMenuId(null)}
+                              menuRef={contextMenuRef as React.RefObject<HTMLDivElement>}
+                            />
+                          ) : null}
                         </div>
-                        <div className="flex items-center gap-2">
-                          <span className="text-[#646464] text-[14px] leading-normal tracking-[-0.41px]">{country.photoCount} photos</span>
-                          <span className="text-[#646464] text-[8px] leading-none">&bull;</span>
-                          <span className="text-[#646464] text-[14px] leading-normal tracking-[-0.41px]">{country.videoCount} Videos</span>
+
+                        {/* Country info */}
+                        <div className="flex flex-col gap-2">
+                          <div className="flex items-center gap-2">
+                            <div className="h-[15.6px] w-6 overflow-hidden rounded-sm shadow-[1.62px_1.62px_1.62px_0px_rgba(0,0,0,0.18)] shrink-0">
+                              <img
+                                src={`/flags/${country.flagCode.toUpperCase()}.svg`}
+                                alt={country.name}
+                                className="block w-full h-full object-cover"
+                              />
+                            </div>
+                            <p className="text-white text-[18px] font-semibold leading-6.5 tracking-[-0.198px] truncate">
+                              {country.name}
+                            </p>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="text-[#646464] text-[14px] leading-normal tracking-[-0.41px]">{country.photoCount} photos</span>
+                            <span className="text-[#646464] text-[8px] leading-none">&bull;</span>
+                            <span className="text-[#646464] text-[14px] leading-normal tracking-[-0.41px]">{country.videoCount} Videos</span>
+                          </div>
                         </div>
-                      </div>
-                    </Link>
-                  ))}
+                      </Link>
+                    );
+                  })}
                 </div>
               )}
             </section>
@@ -816,83 +1628,126 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                 </div>
               ) : (
                 <div className="grid grid-cols-1 gap-x-5 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                  {collectionCards.map((collection, idx) => (
-                    <Link
-                      key={collection.id}
-                      href={`/profiles/${profile.id}/collection/${idx}`}
-                      className="group flex flex-col"
-                    >
-                      <div className="relative aspect-357/278 overflow-hidden rounded-2xl border border-[#262626] bg-[#151515]">
-                        <img
-                          src={toLandingAssetUrl(
-                            collection.previewImages[collectionPhotoIndexById[collection.id] ?? 0] || collection.thumbnailUrl
-                          )}
-                          alt={collection.title}
-                          loading="lazy"
-                          decoding="async"
-                          className="block h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
-                        />
+                  {collectionCards.map((collection, idx) => {
+                    const collectionHref = `/profiles/${profile.id}/collection/${idx}`;
+                    const contextMenuId = `collection-${collection.id}`;
+                    const isMenuOpen = openContextMenuId === contextMenuId;
+                    return (
+                      <Link
+                        key={collection.id}
+                        href={collectionHref}
+                        className="group flex flex-col"
+                      >
+                        <div className="relative">
+                          <div className="relative aspect-357/278 overflow-hidden rounded-2xl border border-[#262626] bg-[#151515]">
+                            <img
+                              src={toLandingAssetUrl(
+                                collection.previewImages[collectionPhotoIndexById[collection.id] ?? 0] || collection.thumbnailUrl
+                              )}
+                              alt={collection.title}
+                              loading="lazy"
+                              decoding="async"
+                              className="block h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+                            />
 
-                        {collection.previewImages.length > 1 ? (
-                          <>
-                            <button
-                              type="button"
-                              onClick={(event) => {
-                                event.preventDefault();
-                                event.stopPropagation();
-                                setCollectionPhotoIndexById((prev) => {
-                                  const current = prev[collection.id] ?? 0;
-                                  const next =
-                                    (current - 1 + collection.previewImages.length) % collection.previewImages.length;
-                                  return { ...prev, [collection.id]: next };
+                            {collection.previewImages.length > 1 ? (
+                              <>
+                                <button
+                                  type="button"
+                                  onClick={(event) => {
+                                    event.preventDefault();
+                                    event.stopPropagation();
+                                    setCollectionPhotoIndexById((prev) => {
+                                      const current = prev[collection.id] ?? 0;
+                                      const next =
+                                        (current - 1 + collection.previewImages.length) % collection.previewImages.length;
+                                      return { ...prev, [collection.id]: next };
+                                    });
+                                  }}
+                                  className="hidden md:grid absolute left-3 top-1/2 -translate-y-1/2 h-8 w-8 place-items-center rounded-full bg-black/55 text-white opacity-0 transition-opacity duration-200 group-hover:opacity-100 hover:bg-black/70 focus-visible:opacity-100"
+                                  aria-label={`Previous photo for ${collection.title}`}
+                                >
+                                  <span className="material-symbols-rounded text-[20px]">chevron_left</span>
+                                </button>
+
+                                <button
+                                  type="button"
+                                  onClick={(event) => {
+                                    event.preventDefault();
+                                    event.stopPropagation();
+                                    setCollectionPhotoIndexById((prev) => {
+                                      const current = prev[collection.id] ?? 0;
+                                      const next = (current + 1) % collection.previewImages.length;
+                                      return { ...prev, [collection.id]: next };
+                                    });
+                                  }}
+                                  className="hidden md:grid absolute right-3 top-1/2 -translate-y-1/2 h-8 w-8 place-items-center rounded-full bg-black/55 text-white opacity-0 transition-opacity duration-200 group-hover:opacity-100 hover:bg-black/70 focus-visible:opacity-100"
+                                  aria-label={`Next photo for ${collection.title}`}
+                                >
+                                  <span className="material-symbols-rounded text-[20px]">chevron_right</span>
+                                </button>
+                              </>
+                            ) : null}
+                          </div>
+
+                          <ContextMenuTrigger
+                            isOpen={isMenuOpen}
+                            label={`Open menu for ${collection.title}`}
+                            onClick={(event) => {
+                              event.preventDefault();
+                              event.stopPropagation();
+                              setOpenContextMenuId(isMenuOpen ? null : contextMenuId);
+                            }}
+                          />
+
+                          {isMenuOpen ? (
+                            <ContextMenu
+                              kind="collection"
+                              viewLabel="View collection"
+                              shareLabel="Share collection"
+                              viewHref={collectionHref}
+                              onShare={() => {
+                                const previewIndex = collectionPhotoIndexById[collection.id] ?? 0;
+                                const previewImage =
+                                  collection.previewImages[previewIndex] || collection.thumbnailUrl;
+                                openShareCard({
+                                  kind: "collection",
+                                  title: `Share ${collection.title}`,
+                                  imageUrl: previewImage,
+                                  shareUrl: toShareUrl(collectionHref),
+                                  ownerName: shareOwnerName,
+                                  ownerHandle: shareOwnerHandle,
+                                  ownerAvatar: shareOwnerAvatar,
                                 });
                               }}
-                              className="hidden md:grid absolute left-3 top-1/2 -translate-y-1/2 h-8 w-8 place-items-center rounded-full bg-black/55 text-white opacity-0 transition-opacity duration-200 group-hover:opacity-100 hover:bg-black/70 focus-visible:opacity-100"
-                              aria-label={`Previous photo for ${collection.title}`}
-                            >
-                              <span className="material-symbols-rounded text-[20px]">chevron_left</span>
-                            </button>
-
-                            <button
-                              type="button"
-                              onClick={(event) => {
-                                event.preventDefault();
-                                event.stopPropagation();
-                                setCollectionPhotoIndexById((prev) => {
-                                  const current = prev[collection.id] ?? 0;
-                                  const next = (current + 1) % collection.previewImages.length;
-                                  return { ...prev, [collection.id]: next };
-                                });
-                              }}
-                              className="hidden md:grid absolute right-3 top-1/2 -translate-y-1/2 h-8 w-8 place-items-center rounded-full bg-black/55 text-white opacity-0 transition-opacity duration-200 group-hover:opacity-100 hover:bg-black/70 focus-visible:opacity-100"
-                              aria-label={`Next photo for ${collection.title}`}
-                            >
-                              <span className="material-symbols-rounded text-[20px]">chevron_right</span>
-                            </button>
-                          </>
-                        ) : null}
-                      </div>
-                      <div className="flex flex-col gap-2 px-1.5 pt-2.5">
-                        <p className="text-[#646464] text-[14px] leading-normal tracking-[-0.41px]">{collection.createdLabel}</p>
-                        <p className="text-white text-[16px] font-medium leading-6 tracking-[-0.096px] min-w-full w-min line-clamp-1">{collection.title}</p>
-                        <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
-                          {collection.countries.map((country) => (
-                            <span
-                              key={`${collection.id}-${country}`}
-                              className="backdrop-blur-[2px] bg-black-800 border border-[#262626] border-solid flex items-center justify-center pb-1.25 pt-0.75 px-2.5 rounded-full text-[#a8a8a8] text-[12px] leading-none tracking-[-0.408px]"
-                            >
-                              {country}
-                            </span>
-                          ))}
-                          {collection.countryOverflowCount > 0 ? (
-                            <span className="backdrop-blur-[2px] bg-black-800 border border-[#262626] border-solid flex items-center justify-center pb-1.25 pt-0.75 px-2.5 rounded-full text-[#a8a8a8] text-[12px] leading-none tracking-[-0.408px]">
-                              +{collection.countryOverflowCount}
-                            </span>
+                              onClose={() => setOpenContextMenuId(null)}
+                              menuRef={contextMenuRef as React.RefObject<HTMLDivElement>}
+                            />
                           ) : null}
                         </div>
-                      </div>
-                    </Link>
-                  ))}
+
+                        <div className="flex flex-col gap-2 px-1.5 pt-2.5">
+                          <p className="text-[#646464] text-[14px] leading-normal tracking-[-0.41px]">{collection.createdLabel}</p>
+                          <p className="text-white text-[16px] font-medium leading-6 tracking-[-0.096px] min-w-full w-min line-clamp-1">{collection.title}</p>
+                          <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
+                            {collection.countries.map((country) => (
+                              <span
+                                key={`${collection.id}-${country}`}
+                                className="backdrop-blur-[2px] bg-black-800 border border-[#262626] border-solid flex items-center justify-center pb-1.25 pt-0.75 px-2.5 rounded-full text-[#a8a8a8] text-[12px] leading-none tracking-[-0.408px]"
+                              >
+                                {country}
+                              </span>
+                            ))}
+                            {collection.countryOverflowCount > 0 ? (
+                              <span className="backdrop-blur-[2px] bg-black-800 border border-[#262626] border-solid flex items-center justify-center pb-1.25 pt-0.75 px-2.5 rounded-full text-[#a8a8a8] text-[12px] leading-none tracking-[-0.408px]">
+                                +{collection.countryOverflowCount}
+                              </span>
+                            ) : null}
+                          </div>
+                        </div>
+                      </Link>
+                    );
+                  })}
                 </div>
               )}
             </section>
@@ -1106,6 +1961,31 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
           </div>
         </div>
       )}
+
+      {shareCardData && (
+        <ShareCard
+          data={shareCardData}
+          onClose={() => setShareCardData(null)}
+        />
+      )}
+
+      {carouselIndex !== null && activeCarouselItem ? (
+        <PhotoCarouselModal
+          items={allMediaItems}
+          activeIndex={carouselIndex}
+          onClose={closeCarousel}
+          onNext={goToNextCarouselItem}
+          onPrev={goToPrevCarouselItem}
+          profileName={shareOwnerName}
+          profileHandle={shareOwnerHandle}
+          profileAvatar={shareOwnerAvatar}
+          profileFlagCode={profileFlagCode}
+          countryName={carouselCountryName}
+          countryFlagCode={carouselCountryCode}
+          description={carouselDescription}
+          quote={carouselQuote}
+        />
+      ) : null}
     </>
   );
 }
