@@ -153,7 +153,7 @@ function ContextMenuTrigger({
   onClick: (event: ReactMouseEvent<HTMLButtonElement>) => void;
   label: string;
 }) {
-  const baseClassName = "absolute right-3 top-3 z-20 grid h-8 w-8 place-items-center rounded-full border border-black-600 bg-black/70 text-white shadow-[0_6px_14px_rgba(0,0,0,0.35)] backdrop-blur-sm transition-opacity hover:bg-black/85 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70";
+  const baseClassName = "absolute right-3 bottom-3 z-20 grid h-8 w-8 place-items-center rounded-full border border-black-600 bg-black/70 text-white shadow-[0_6px_14px_rgba(0,0,0,0.35)] backdrop-blur-sm transition-opacity hover:bg-black/85 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70";
   const visibilityClassName = isOpen
     ? "opacity-100"
     : "opacity-100 md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100";
@@ -210,7 +210,7 @@ function ContextMenu({
     <div
       ref={menuRef}
       role="menu"
-      className="absolute right-3 top-12 z-30 w-56 rounded-2xl border border-black-600 bg-black-800 p-6 shadow-[20px_20px_10px_rgba(0,0,0,0.25)]"
+      className="absolute right-3 bottom-12 z-30 w-56 rounded-2xl border border-black-600 bg-black-800 p-6 shadow-[20px_20px_10px_rgba(0,0,0,0.25)]"
       onClick={(event) => {
         event.preventDefault();
         event.stopPropagation();
