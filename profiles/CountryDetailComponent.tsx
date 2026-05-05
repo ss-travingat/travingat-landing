@@ -5,6 +5,7 @@ import { useState, useRef, useEffect, useCallback } from "react";
 
 import { toLandingAssetUrl } from "@/lib/landing-assets";
 import type { SampleProfile } from "@/profiles/profile-data";
+import { ContextMenuTrigger, ContextMenu } from "./ProfileComponent";
 
 /* eslint-disable @next/next/no-img-element */
 
@@ -334,6 +335,9 @@ export default function CountryDetailComponent({
     }
   }, [displayImages, lightboxIndex]);
 
+  const [openContextMenuId, setOpenContextMenuId] = useState<string | null>(null);
+  const contextMenuRef = useRef<HTMLDivElement>(null);
+
   // Distribute images across 3 columns for masonry layout
   const columns: { url: string; globalIndex: number }[][] = [[], [], []];
   displayImages.forEach((img, i) => {
@@ -522,6 +526,32 @@ export default function CountryDetailComponent({
                             <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-200" />
                           </>
                         )}
+
+                        <ContextMenuTrigger
+                          isOpen={openContextMenuId === `media-${globalIndex}`}
+                          label={`Open menu for photo ${globalIndex + 1}`}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            setOpenContextMenuId(openContextMenuId === `media-${globalIndex}` ? null : `media-${globalIndex}`);
+                          }}
+                        />
+
+                        {openContextMenuId === `media-${globalIndex}` ? (
+                          <ContextMenu
+                            kind="media"
+                            viewLabel="View full size"
+                            shareLabel="Share"
+                            onShare={() => {
+                              // We can share the direct lightbox link
+                              const url = new URL(window.location.href);
+                              url.searchParams.set("image", btoa(unescape(encodeURIComponent(imgUrl))));
+                              navigator.clipboard.writeText(url.toString()).catch(() => {});
+                            }}
+                            onClose={() => setOpenContextMenuId(null)}
+                            menuRef={contextMenuRef}
+                          />
+                        ) : null}
                       </div>
                     );
                   })}

@@ -76,7 +76,7 @@ type CollectionCard = {
   countryOverflowCount: number;
 };
 
-type ContextMenuKind = "media" | "country" | "collection";
+export type ContextMenuKind = "media" | "country" | "collection";
 
 type ShareCardData = {
   kind: ContextMenuKind;
@@ -144,7 +144,7 @@ function SocialIcon({ platform }: { platform: string }) {
   return null;
 }
 
-function ContextMenuTrigger({
+export function ContextMenuTrigger({
   isOpen,
   onClick,
   label,
@@ -153,7 +153,7 @@ function ContextMenuTrigger({
   onClick: (event: ReactMouseEvent<HTMLButtonElement>) => void;
   label: string;
 }) {
-  const baseClassName = "absolute right-3 bottom-3 z-20 grid h-8 w-8 place-items-center rounded-full border border-white/10 bg-black/20 text-white shadow-sm backdrop-blur-md transition-colors hover:bg-black/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50";
+  const baseClassName = "absolute right-3 bottom-3 z-20 grid h-10 w-10 place-items-center rounded-full border border-white/10 bg-black/20 text-white shadow-sm backdrop-blur-md transition-colors hover:bg-black/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50";
   const visibilityClassName = isOpen
     ? "opacity-100"
     : "opacity-100 md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100";
@@ -165,16 +165,16 @@ function ContextMenuTrigger({
       onClick={onClick}
       className={`${baseClassName} ${visibilityClassName}`}
     >
-      <span className="flex items-center gap-[3px]">
-        <span className="block h-[3px] w-[3px] rounded-full bg-white" />
-        <span className="block h-[3px] w-[3px] rounded-full bg-white" />
-        <span className="block h-[3px] w-[3px] rounded-full bg-white" />
+      <span className="flex items-center gap-[4.5px]">
+        <span className="block h-[4.5px] w-[4.5px] rounded-full bg-white" />
+        <span className="block h-[4.5px] w-[4.5px] rounded-full bg-white" />
+        <span className="block h-[4.5px] w-[4.5px] rounded-full bg-white" />
       </span>
     </button>
   );
 }
 
-function ContextMenu({
+export function ContextMenu({
   kind,
   viewLabel,
   shareLabel,
@@ -1513,7 +1513,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                                       return { ...prev, [country.code]: next };
                                     });
                                   }}
-                                  className="hidden md:grid absolute left-3 top-1/2 -translate-y-1/2 h-8 w-8 place-items-center rounded-full bg-black/55 text-white opacity-0 transition-opacity duration-200 group-hover:opacity-100 hover:bg-black/70 focus-visible:opacity-100"
+                                  className="hidden md:grid absolute left-3 top-1/2 -translate-y-1/2 h-8 w-8 place-items-center rounded-full bg-white/95 text-black shadow-md opacity-0 transition-all duration-200 group-hover:opacity-100 hover:bg-white hover:scale-105 focus-visible:opacity-100"
                                   aria-label={`Previous photo for ${country.name}`}
                                 >
                                   <span className="material-symbols-rounded text-[20px]">chevron_left</span>
@@ -1530,7 +1530,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                                       return { ...prev, [country.code]: next };
                                     });
                                   }}
-                                  className="hidden md:grid absolute right-3 top-1/2 -translate-y-1/2 h-8 w-8 place-items-center rounded-full bg-black/55 text-white opacity-0 transition-opacity duration-200 group-hover:opacity-100 hover:bg-black/70 focus-visible:opacity-100"
+                                  className="hidden md:grid absolute right-3 top-1/2 -translate-y-1/2 h-8 w-8 place-items-center rounded-full bg-white/95 text-black shadow-md opacity-0 transition-all duration-200 group-hover:opacity-100 hover:bg-white hover:scale-105 focus-visible:opacity-100"
                                   aria-label={`Next photo for ${country.name}`}
                                 >
                                   <span className="material-symbols-rounded text-[20px]">chevron_right</span>
@@ -1664,7 +1664,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                                       return { ...prev, [collection.id]: next };
                                     });
                                   }}
-                                  className="hidden md:grid absolute left-3 top-1/2 -translate-y-1/2 h-8 w-8 place-items-center rounded-full bg-black/55 text-white opacity-0 transition-opacity duration-200 group-hover:opacity-100 hover:bg-black/70 focus-visible:opacity-100"
+                                  className="hidden md:grid absolute left-3 top-1/2 -translate-y-1/2 h-8 w-8 place-items-center rounded-full bg-white/95 text-black shadow-md opacity-0 transition-all duration-200 group-hover:opacity-100 hover:bg-white hover:scale-105 focus-visible:opacity-100"
                                   aria-label={`Previous photo for ${collection.title}`}
                                 >
                                   <span className="material-symbols-rounded text-[20px]">chevron_left</span>
@@ -1681,7 +1681,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                                       return { ...prev, [collection.id]: next };
                                     });
                                   }}
-                                  className="hidden md:grid absolute right-3 top-1/2 -translate-y-1/2 h-8 w-8 place-items-center rounded-full bg-black/55 text-white opacity-0 transition-opacity duration-200 group-hover:opacity-100 hover:bg-black/70 focus-visible:opacity-100"
+                                  className="hidden md:grid absolute right-3 top-1/2 -translate-y-1/2 h-8 w-8 place-items-center rounded-full bg-white/95 text-black shadow-md opacity-0 transition-all duration-200 group-hover:opacity-100 hover:bg-white hover:scale-105 focus-visible:opacity-100"
                                   aria-label={`Next photo for ${collection.title}`}
                                 >
                                   <span className="material-symbols-rounded text-[20px]">chevron_right</span>
