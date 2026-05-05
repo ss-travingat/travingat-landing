@@ -153,7 +153,7 @@ function ContextMenuTrigger({
   onClick: (event: ReactMouseEvent<HTMLButtonElement>) => void;
   label: string;
 }) {
-  const baseClassName = "absolute right-3 bottom-3 z-20 grid h-8 w-8 place-items-center rounded-full border border-black-600 bg-black/70 text-white shadow-[0_6px_14px_rgba(0,0,0,0.35)] backdrop-blur-sm transition-opacity hover:bg-black/85 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70";
+  const baseClassName = "absolute right-3 bottom-3 z-20 grid h-8 w-8 place-items-center rounded-full border border-white/10 bg-black/20 text-white shadow-sm backdrop-blur-md transition-colors hover:bg-black/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50";
   const visibilityClassName = isOpen
     ? "opacity-100"
     : "opacity-100 md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100";
@@ -165,10 +165,10 @@ function ContextMenuTrigger({
       onClick={onClick}
       className={`${baseClassName} ${visibilityClassName}`}
     >
-      <span className="flex items-center gap-1">
-        <span className="block h-1 w-1 rounded-full bg-[#e3e3e3]" />
-        <span className="block h-1 w-1 rounded-full bg-[#e3e3e3]" />
-        <span className="block h-1 w-1 rounded-full bg-[#e3e3e3]" />
+      <span className="flex items-center gap-[3px]">
+        <span className="block h-[3px] w-[3px] rounded-full bg-white" />
+        <span className="block h-[3px] w-[3px] rounded-full bg-white" />
+        <span className="block h-[3px] w-[3px] rounded-full bg-white" />
       </span>
     </button>
   );
@@ -1485,9 +1485,9 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                     const isMenuOpen = openContextMenuId === contextMenuId;
                     const countryHref = `/profiles/${profile.id}/country/${country.flagCode.toUpperCase()}`;
                     return (
-                      <Link key={country.code} href={countryHref} className="flex flex-col gap-4 group">
+                      <Link key={country.code} href={countryHref} className="flex flex-col gap-4">
                         {/* Photo */}
-                        <div className="relative">
+                        <div className="relative group">
                           <div className="relative w-full aspect-square overflow-hidden rounded-2xl bg-[#151515]">
                             <img
                               src={toLandingAssetUrl(
@@ -1636,9 +1636,9 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                       <Link
                         key={collection.id}
                         href={collectionHref}
-                        className="group flex flex-col"
+                        className="flex flex-col"
                       >
-                        <div className="relative">
+                        <div className="relative group">
                           <div className="relative aspect-357/278 overflow-hidden rounded-2xl border border-[#262626] bg-[#151515]">
                             <img
                               src={toLandingAssetUrl(
