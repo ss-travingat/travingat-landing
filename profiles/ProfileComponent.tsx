@@ -165,10 +165,10 @@ export function ContextMenuTrigger({
       onClick={onClick}
       className={`absolute right-3 bottom-3 z-20 hidden md:flex h-6 w-6 md:h-7 md:w-7 items-center justify-center rounded-full bg-black/40 backdrop-blur-sm text-white transition-opacity duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50 ${visibilityClassName}`}
     >
-      <span className="flex items-center gap-2">
-        <span className="block h-1.5 w-1.5 rounded-full bg-white" />
-        <span className="block h-1.5 w-1.5 rounded-full bg-white" />
-        <span className="block h-1.5 w-1.5 rounded-full bg-white" />
+      <span className="flex items-center gap-0.5">
+        <span className="block h-0.75 w-0.75 rounded-full bg-white" />
+        <span className="block h-0.75 w-0.75 rounded-full bg-white" />
+        <span className="block h-0.75 w-0.75 rounded-full bg-white" />
       </span>
     </button>
   );

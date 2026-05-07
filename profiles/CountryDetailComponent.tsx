@@ -490,10 +490,10 @@ export default function CountryDetailComponent({
                 className="hidden md:flex h-6 w-6 md:h-7 md:w-7 items-center justify-center rounded-full bg-black/40 backdrop-blur-sm text-white"
                 aria-label="More options"
               >
-                <span className="flex items-center gap-1">
-                  <span className="block h-1 w-1 rounded-full bg-white" />
-                  <span className="block h-1 w-1 rounded-full bg-white" />
-                  <span className="block h-1 w-1 rounded-full bg-white" />
+                <span className="flex items-center gap-0.5">
+                  <span className="block h-0.75 w-0.75 rounded-full bg-white" />
+                  <span className="block h-0.75 w-0.75 rounded-full bg-white" />
+                  <span className="block h-0.75 w-0.75 rounded-full bg-white" />
                 </span>
               </button>
               {showMenu && (
