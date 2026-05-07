@@ -14,11 +14,7 @@
     "images": {
       "cover": "/images/profile-cover1-figma.png",
       "avatar": "/images/profile-avatar1-figma.png",
-      "gallery": [
-        "/images/collection-franceroadtrip.jpg",
-        "/images/collection-portraits-figma.jpg",
-        "/images/collection-streetshots.jpg"
-      ]
+      "gallery": []
     },
     "align": "end",
     "bio": "Slow journeys, long train rides, and stories from mountain towns. I travel for human connection and local culture.",
@@ -96,7 +92,10 @@
           "https://picsum.photos/seed/colombia3/800/600",
           "https://picsum.photos/seed/colombia4/800/600",
           "https://picsum.photos/seed/colombia5/800/600",
-          "https://picsum.photos/seed/colombia6/800/600"
+          "https://picsum.photos/seed/colombia6/800/600",
+          "/images/collection-franceroadtrip.jpg",
+          "/images/collection-portraits-figma.jpg",
+          "/images/collection-streetshots.jpg"
         ]
       },
       {
@@ -185,11 +184,7 @@
     "images": {
       "cover": "/images/country-greece-figma.png",
       "avatar": "/images/profile-avatar2-figma.png",
-      "gallery": [
-        "/images/collection-europe-figma.png",
-        "/images/profile-cover2-figma.png",
-        "/images/country-switzerland-figma.png"
-      ]
+      "gallery": []
     },
     "align": "start",
     "bio": "Cities at golden hour, boutique stays, and culture-first travel guides.",
@@ -250,7 +245,10 @@
           "https://picsum.photos/seed/spain2/800/600",
           "https://picsum.photos/seed/spain3/800/600",
           "https://picsum.photos/seed/spain4/800/600",
-          "https://picsum.photos/seed/spain5/800/600"
+          "https://picsum.photos/seed/spain5/800/600",
+          "/images/collection-europe-figma.png",
+          "/images/profile-cover2-figma.png",
+          "/images/country-switzerland-figma.png"
         ]
       },
       {
@@ -340,11 +338,7 @@
     "images": {
       "cover": "/images/profile-cover3-figma.png",
       "avatar": "/images/profile-avatar3-figma.png",
-      "gallery": [
-        "/images/collection-hiking-figma.png",
-        "/images/country-thailand-figma.png",
-        "/images/collection-skiing.jpg"
-      ]
+      "gallery": []
     },
     "align": "end",
     "bio": "Trails, ocean winds, and backcountry camps. I share routes and moments from the wild.",
@@ -466,7 +460,10 @@
           "https://picsum.photos/seed/usa2/800/600",
           "https://picsum.photos/seed/usa3/800/600",
           "https://picsum.photos/seed/usa4/800/600",
-          "https://picsum.photos/seed/usa5/800/600"
+          "https://picsum.photos/seed/usa5/800/600",
+          "/images/collection-hiking-figma.png",
+          "/images/country-thailand-figma.png",
+          "/images/collection-skiing.jpg"
         ]
       },
       {
@@ -495,11 +492,7 @@
     "images": {
       "cover": "/images/profile-cover4-figma.png",
       "avatar": "/images/profile-avatar4-figma.jpg",
-      "gallery": [
-        "/images/collection-nightportraits.jpg",
-        "/images/collection-portraits.jpg",
-        "/images/country-greece.jpg"
-      ]
+      "gallery": []
     },
     "align": "start",
     "bio": "Weekend escapes and long-form photo essays from across Latin America.",
@@ -568,7 +561,10 @@
           "https://picsum.photos/seed/mexico7/800/600",
           "https://picsum.photos/seed/mexico8/800/600",
           "https://picsum.photos/seed/mexico9/800/600",
-          "https://picsum.photos/seed/mexico10/800/600"
+          "https://picsum.photos/seed/mexico10/800/600",
+          "/images/collection-nightportraits.jpg",
+          "/images/collection-portraits.jpg",
+          "/images/country-greece.jpg"
         ]
       },
       {
@@ -624,11 +620,7 @@
     "images": {
       "cover": "/images/profile-cover5-figma.png",
       "avatar": "/images/profile-avatar5-figma.png",
-      "gallery": [
-        "/images/country-thailand.jpg",
-        "/images/collection-europe.jpg",
-        "/images/map-thailand.jpg"
-      ]
+      "gallery": []
     },
     "align": "end",
     "bio": "I travel around coastal and island communities and focus on local wellness culture.",
@@ -670,7 +662,10 @@
           "https://picsum.photos/seed/thailand3/800/600",
           "https://picsum.photos/seed/thailand4/800/600",
           "https://picsum.photos/seed/thailand5/800/600",
-          "https://picsum.photos/seed/thailand6/800/600"
+          "https://picsum.photos/seed/thailand6/800/600",
+          "/images/country-thailand.jpg",
+          "/images/collection-europe.jpg",
+          "/images/map-thailand.jpg"
         ]
       },
       {
@@ -887,16 +882,7 @@
     "images": {
       "cover": "https://cdn.travingat.com/landingpage-assets/profiles/cover-1775657312044.jpg",
       "avatar": "https://cdn.travingat.com/landingpage-assets/profiles/avatar-1775657318279.jpg",
-      "gallery": [
-        "https://cdn.travingat.com/landingpage-assets/profiles/gallery-1775657341037.webp",
-        "https://cdn.travingat.com/landingpage-assets/profiles/gallery-1775657342294.jpg",
-        "https://cdn.travingat.com/landingpage-assets/profiles/gallery-1775657344420.webp",
-        "https://cdn.travingat.com/landingpage-assets/profiles/gallery-1775657345496.webp",
-        "https://cdn.travingat.com/landingpage-assets/profiles/gallery-1775657346771.webp",
-        "https://cdn.travingat.com/landingpage-assets/profiles/gallery-1775657348924.webp",
-        "https://cdn.travingat.com/landingpage-assets/profiles/gallery-1775657350896.jpg",
-        "https://cdn.travingat.com/landingpage-assets/profiles/gallery-1775657352423.jpg"
-      ]
+      "gallery": []
     },
     "align": "start",
     "bio": "A restless soul with a permanent tan and a well-stamped passport, I specialize in the \"slow and local\" approach to global exploration. Whether I’m navigating the intricate metro lines of a sprawling megacity or sharing a moka pot of Brazilian coffee with new friends in a remote mountain village, my goal is always to find the extraordinary in the everyday. I travel with one bag, an open mind, and a relentless curiosity for hidden street food spots and architectural marvels. For me, the journey isn't about ticking off landmarks—it's about the stories gathered between destinations and the belief that the best way to understand a culture is to simply sit, observe, and take the scenic route every single time.",
@@ -920,6 +906,19 @@
       "RU"
     ],
     "countryImages": [
+      {
+        "countryCode": "BR",
+        "images": [
+          "https://cdn.travingat.com/landingpage-assets/profiles/gallery-1775657341037.webp",
+          "https://cdn.travingat.com/landingpage-assets/profiles/gallery-1775657342294.jpg",
+          "https://cdn.travingat.com/landingpage-assets/profiles/gallery-1775657344420.webp",
+          "https://cdn.travingat.com/landingpage-assets/profiles/gallery-1775657345496.webp",
+          "https://cdn.travingat.com/landingpage-assets/profiles/gallery-1775657346771.webp",
+          "https://cdn.travingat.com/landingpage-assets/profiles/gallery-1775657348924.webp",
+          "https://cdn.travingat.com/landingpage-assets/profiles/gallery-1775657350896.jpg",
+          "https://cdn.travingat.com/landingpage-assets/profiles/gallery-1775657352423.jpg"
+        ]
+      },
       {
         "countryCode": "AU",
         "images": [
@@ -1017,13 +1016,7 @@
     "images": {
       "cover": "https://cdn.travingat.com/landingpage-assets/profiles/cover-1775885674947.jpg",
       "avatar": "https://cdn.travingat.com/landingpage-assets/profiles/avatar-1775885681572.jpg",
-      "gallery": [
-        "https://cdn.travingat.com/landingpage-assets/profiles/gallery-1775888193239.jpg",
-        "https://cdn.travingat.com/landingpage-assets/profiles/gallery-1775888196877.jpg",
-        "https://cdn.travingat.com/landingpage-assets/profiles/gallery-1775888197850.jpg",
-        "https://cdn.travingat.com/landingpage-assets/profiles/gallery-1775888199309.jpg",
-        "https://cdn.travingat.com/landingpage-assets/profiles/country-1775915886968.mp4"
-      ]
+      "gallery": []
     },
     "align": "start",
     "bio": "Architect by day, \"flâneur\" by heart. I believe the best way to see a city is to get lost in its side streets without a map. Exploring the dialogue between heritage buildings and modern sustainable design across Europe and North Africa. Always hunting for the perfect espresso and a quiet bookstore.",
@@ -1058,7 +1051,18 @@
       "NL",
       "DE"
     ],
-    "countryImages": [],
+    "countryImages": [
+      {
+        "countryCode": "FR",
+        "images": [
+          "https://cdn.travingat.com/landingpage-assets/profiles/gallery-1775888193239.jpg",
+          "https://cdn.travingat.com/landingpage-assets/profiles/gallery-1775888196877.jpg",
+          "https://cdn.travingat.com/landingpage-assets/profiles/gallery-1775888197850.jpg",
+          "https://cdn.travingat.com/landingpage-assets/profiles/gallery-1775888199309.jpg",
+          "https://cdn.travingat.com/landingpage-assets/profiles/country-1775915886968.mp4"
+        ]
+      }
+    ],
     "collectionImages": [
       {
         "title": "Europe",
@@ -1087,13 +1091,7 @@
     "images": {
       "cover": "https://cdn.travingat.com/landingpage-assets/profiles/cover-1776000733586.jpg",
       "avatar": "https://cdn.travingat.com/landingpage-assets/profiles/avatar-1776000763625.jpg",
-      "gallery": [
-        "https://cdn.travingat.com/landingpage-assets/profiles/gallery-1776000771518.jpg",
-        "https://cdn.travingat.com/landingpage-assets/profiles/gallery-1776000772640.jpg",
-        "https://cdn.travingat.com/landingpage-assets/profiles/gallery-1776000773313.jpg",
-        "https://cdn.travingat.com/landingpage-assets/profiles/gallery-1776000773919.jpg",
-        "https://cdn.travingat.com/landingpage-assets/profiles/gallery-1776000774503.jpg"
-      ]
+      "gallery": []
     },
     "align": "start",
     "bio": "Himalayan storyteller and documentary photographer. I trade city lights for starlit base camps, capturing the soul of mountain communities and the changing face of the high altitudes. Always looking for the perfect cup of butter tea.",
@@ -1115,6 +1113,16 @@
       "DK"
     ],
     "countryImages": [
+      {
+        "countryCode": "NP",
+        "images": [
+          "https://cdn.travingat.com/landingpage-assets/profiles/gallery-1776000771518.jpg",
+          "https://cdn.travingat.com/landingpage-assets/profiles/gallery-1776000772640.jpg",
+          "https://cdn.travingat.com/landingpage-assets/profiles/gallery-1776000773313.jpg",
+          "https://cdn.travingat.com/landingpage-assets/profiles/gallery-1776000773919.jpg",
+          "https://cdn.travingat.com/landingpage-assets/profiles/gallery-1776000774503.jpg"
+        ]
+      },
       {
         "countryCode": "AU",
         "images": [

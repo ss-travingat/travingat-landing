@@ -741,7 +741,6 @@ export default function AdminProfilesPage() {
     setSaving(true);
     try {
       const computedMedia =
-        form.images.gallery.length +
         form.countryImages.reduce((sum, c) => sum + c.images.length, 0) +
         form.collectionImages.reduce((sum, c) => sum + c.images.length, 0);
       const payload = { ...form, media: computedMedia };
@@ -826,7 +825,6 @@ export default function AdminProfilesPage() {
 
   const selectableMediaUrls = Array.from(
     new Set([
-      ...form.images.gallery,
       ...form.countryImages.flatMap((c) => c.images),
       ...form.collectionImages.flatMap((c) => c.images),
     ])
@@ -1053,82 +1051,6 @@ export default function AdminProfilesPage() {
                   </div>
                 </div>
 
-                {/* Gallery Images */}
-                <div>
-                  <label className="text-sm text-white/60 block mb-2">
-                    All Media ({form.images.gallery.filter(u => !/\.(mp4|mov|webm|m4v)$/i.test(u)).length} photos · {form.images.gallery.filter(u => /\.(mp4|mov|webm|m4v)$/i.test(u)).length} videos)
-                  </label>
-                  <div className="flex flex-wrap gap-2 mb-2">
-                    {form.images.gallery.map((url, i) => {
-                      const isVid = /\.(mp4|mov|webm|m4v)$/i.test(url);
-                      return (
-                        <div
-                          key={i}
-                          className="relative w-20 h-16 rounded-lg overflow-hidden bg-white/5 group"
-                        >
-                          {isVid ? (
-                            <>
-                              <video
-                                src={toLandingAssetUrl(url)}
-                                muted
-                                playsInline
-                                loop
-                                preload="metadata"
-                                className="w-full h-full object-cover"
-                                onMouseEnter={(e) => e.currentTarget.play().catch(() => {})}
-                                onMouseLeave={(e) => { e.currentTarget.pause(); e.currentTarget.currentTime = 0; }}
-                                onClick={(e) => { const v = e.currentTarget; if (v.paused) v.play().catch(() => {}); else { v.pause(); v.currentTime = 0; } }}
-                              />
-                              <div className="absolute inset-0 flex items-center justify-center pointer-events-none group-hover:opacity-0 transition-opacity">
-                                <span className="text-white text-[16px] drop-shadow">▶</span>
-                              </div>
-                            </>
-                          ) : (
-                            <Image
-                              src={toLandingAssetUrl(url)}
-                              alt={`Gallery ${i + 1}`}
-                              fill
-                              className="object-cover"
-                            />
-                          )}
-                          <button
-                            onClick={() => removeGalleryImage(i)}
-                            className="absolute top-0.5 right-0.5 w-5 h-5 bg-black/70 rounded-full text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500 cursor-pointer"
-                          >
-                            ×
-                          </button>
-                        </div>
-                      );
-                    })}
-                  </div>
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => galleryInputRef.current?.click()}
-                      disabled={uploading !== null}
-                      className="px-4 py-2 bg-white/10 hover:bg-white/15 rounded-lg text-sm font-medium transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      {uploading === "gallery" ? "Uploading…" : "+ Add Images"}
-                    </button>
-                    <input
-                      ref={galleryInputRef}
-                      type="file"
-                      accept="image/*"
-                      multiple
-                      onChange={handleGalleryUpload}
-                      className="hidden"
-                    />
-                    <label className="px-4 py-2 bg-white/10 hover:bg-white/15 rounded-lg text-sm font-medium transition-colors cursor-pointer">
-                      + Add Videos
-                      <input
-                        type="file"
-                        accept="video/*"
-                        multiple
-                        className="hidden"
-                        onChange={handleGalleryVideoUpload}
-                      />
-                    </label>
-                  </div>
-                </div>
 
                 {/* About Photos */}
                 <div>

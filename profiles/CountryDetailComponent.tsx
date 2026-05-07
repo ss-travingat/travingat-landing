@@ -40,8 +40,8 @@ function isVideoAsset(url: string) {
   return /\.(mp4|mov|webm|m4v|3gp|3g2)$/i.test(url);
 }
 
-function toFlagAssetPath(flagCode?: string) {
-  if (!flagCode) return null;
+function toFlagAssetPath(flagCode?: string): string | undefined {
+  if (!flagCode) return undefined;
   return `/flags/${flagCode.toUpperCase()}.svg`;
 }
 
@@ -130,7 +130,7 @@ function PhotoLightbox({
           <button
             type="button"
             onClick={onPrev}
-            className="absolute left-3 top-1/2 -translate-y-1/2 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-black/50 text-white backdrop-blur-sm transition hover:bg-black/70"
+            className="absolute left-3 top-1/2 -translate-y-1/2 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-white text-black shadow-md transition hover:bg-[#f0f0f0]"
             aria-label="Previous photo"
           >
             <span className="material-symbols-rounded text-[28px]">chevron_left</span>
@@ -140,7 +140,7 @@ function PhotoLightbox({
           <button
             type="button"
             onClick={onNext}
-            className="absolute right-3 top-1/2 -translate-y-1/2 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-black/50 text-white backdrop-blur-sm transition hover:bg-black/70"
+            className="absolute right-3 top-1/2 -translate-y-1/2 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-white text-black shadow-md transition hover:bg-[#f0f0f0]"
             aria-label="Next photo"
           >
             <span className="material-symbols-rounded text-[28px]">chevron_right</span>
@@ -231,6 +231,36 @@ function PhotoLightbox({
   );
 }
 
+// ─── Custom Trigger for Media ────────────────────────────────────────────────
+function MediaMenuTrigger({
+  isOpen,
+  onClick,
+  label,
+}: {
+  isOpen: boolean;
+  onClick: (event: React.MouseEvent<HTMLButtonElement>) => void;
+  label: string;
+}) {
+  const visibilityClassName = isOpen
+    ? "opacity-100"
+    : "opacity-100 md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100";
+
+  return (
+    <button
+      type="button"
+      aria-label={label}
+      onClick={onClick}
+      className={`absolute right-3 bottom-3 z-20 flex h-11 w-11 items-center justify-center rounded-full bg-black/40 backdrop-blur-sm text-white transition-opacity duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50 ${visibilityClassName}`}
+    >
+      <span className="flex items-center gap-[5px]">
+        <span className="block h-[4px] w-[4px] rounded-full bg-white" />
+        <span className="block h-[4px] w-[4px] rounded-full bg-white" />
+        <span className="block h-[4px] w-[4px] rounded-full bg-white" />
+      </span>
+    </button>
+  );
+}
+
 // ─── Main Component ──────────────────────────────────────────────────────────
 
 export default function CountryDetailComponent({
@@ -249,6 +279,7 @@ export default function CountryDetailComponent({
 
   // Lightbox state
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+  const didReadFromUrl = useRef(false);
 
   const photos = images.filter((url) => !isVideoAsset(url));
   const videos = images.filter((url) => isVideoAsset(url));
@@ -290,9 +321,21 @@ export default function CountryDetailComponent({
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
         setShowMenu(false);
       }
+      if (contextMenuRef.current && !contextMenuRef.current.contains(e.target as Node)) {
+        setOpenContextMenuId(null);
+      }
+    }
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") {
+        setOpenContextMenuId(null);
+      }
     }
     document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
   }, []);
 
   // When tab changes, close lightbox
@@ -300,7 +343,31 @@ export default function CountryDetailComponent({
     setLightboxIndex(null);
   }, [activeTab]);
 
-  // Sync lightbox state to URL
+  // Read from URL on mount (runs once)
+  useEffect(() => {
+    if (typeof window === "undefined" || didReadFromUrl.current) return;
+    didReadFromUrl.current = true;
+    const url = new URL(window.location.href);
+    const encodedImage = url.searchParams.get("image");
+    if (encodedImage && images.length > 0) {
+      try {
+        const imageUrl = decodeURIComponent(escape(atob(encodedImage)));
+        // Search in the full images array regardless of active tab
+        const indexInAll = images.indexOf(imageUrl);
+        if (indexInAll !== -1) {
+          // Ensure we're on the "all" tab so the index lines up with displayImages
+          setActiveTab("all");
+          setLightboxIndex(indexInAll);
+          return;
+        }
+        // Fallback: open at index 0
+        setLightboxIndex(0);
+      } catch (e) {}
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Sync lightbox state to URL (only after initial read)
   useEffect(() => {
     if (typeof window === "undefined") return;
     const url = new URL(window.location.href);
@@ -311,29 +378,13 @@ export default function CountryDetailComponent({
         url.searchParams.set("image", encodedUrl);
         window.history.replaceState({}, "", url.toString());
       }
-    } else {
+    } else if (didReadFromUrl.current && lightboxIndex === null) {
       if (url.searchParams.has("image")) {
         url.searchParams.delete("image");
         window.history.replaceState({}, "", url.toString());
       }
     }
   }, [lightboxIndex, displayImages]);
-
-  // Read from URL on mount
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    const url = new URL(window.location.href);
-    const encodedImage = url.searchParams.get("image");
-    if (encodedImage && displayImages.length > 0 && lightboxIndex === null) {
-      try {
-        const imageUrl = decodeURIComponent(escape(atob(encodedImage)));
-        const index = displayImages.indexOf(imageUrl);
-        if (index !== -1) {
-          setLightboxIndex(index);
-        }
-      } catch (e) {}
-    }
-  }, [displayImages, lightboxIndex]);
 
   const [openContextMenuId, setOpenContextMenuId] = useState<string | null>(null);
   const contextMenuRef = useRef<HTMLDivElement>(null);
@@ -496,25 +547,27 @@ export default function CountryDetailComponent({
                     return (
                       <div
                         key={globalIndex}
-                        className="group relative rounded-2xl overflow-hidden bg-[#151515] cursor-pointer"
-                        onClick={() => setLightboxIndex(globalIndex)}
+                        className="group relative"
                       >
-                        {isVideo ? (
-                          <>
-                            <video
-                              src={toLandingAssetUrl(imgUrl)}
-                              muted
-                              playsInline
-                              loop
-                              preload="metadata"
-                              className="w-full h-auto block pointer-events-none"
-                            />
-                            <div className="absolute inset-0 flex items-center justify-center group-hover:opacity-0 transition-opacity">
-                              <span className="text-white text-3xl drop-shadow-lg">▶</span>
-                            </div>
-                          </>
-                        ) : (
-                          <>
+                        <div
+                          className="relative rounded-2xl overflow-hidden bg-[#151515] cursor-pointer"
+                          onClick={() => setLightboxIndex(globalIndex)}
+                        >
+                          {isVideo ? (
+                            <>
+                              <video
+                                src={toLandingAssetUrl(imgUrl)}
+                                muted
+                                playsInline
+                                loop
+                                preload="metadata"
+                                className="w-full h-auto block pointer-events-none"
+                              />
+                              <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
+                                <span className="text-white text-3xl drop-shadow-lg">▶</span>
+                              </div>
+                            </>
+                          ) : (
                             <img
                               src={toLandingAssetUrl(imgUrl)}
                               alt={`${countryName} photo ${globalIndex + 1}`}
@@ -522,12 +575,13 @@ export default function CountryDetailComponent({
                               decoding="async"
                               className="w-full h-auto block"
                             />
-                            {/* Hover overlay */}
-                            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-200" />
-                          </>
-                        )}
+                          )}
+                          {/* Hover overlay */}
+                          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-200 pointer-events-none" />
+                        </div>
 
-                        <ContextMenuTrigger
+
+                        <MediaMenuTrigger
                           isOpen={openContextMenuId === `media-${globalIndex}`}
                           label={`Open menu for photo ${globalIndex + 1}`}
                           onClick={(e) => {
@@ -538,19 +592,45 @@ export default function CountryDetailComponent({
                         />
 
                         {openContextMenuId === `media-${globalIndex}` ? (
-                          <ContextMenu
-                            kind="media"
-                            viewLabel="View full size"
-                            shareLabel="Share"
-                            onShare={() => {
-                              // We can share the direct lightbox link
-                              const url = new URL(window.location.href);
-                              url.searchParams.set("image", btoa(unescape(encodeURIComponent(imgUrl))));
-                              navigator.clipboard.writeText(url.toString()).catch(() => {});
+                          <div
+                            ref={contextMenuRef}
+                            role="menu"
+                            className="absolute right-3 bottom-14 z-30 w-[200px] rounded-2xl border border-[#2e2e2e] bg-[#1a1a1a] p-4 shadow-[0_8px_30px_rgb(0,0,0,0.5)]"
+                            onClick={(event) => {
+                              event.preventDefault();
+                              event.stopPropagation();
                             }}
-                            onClose={() => setOpenContextMenuId(null)}
-                            menuRef={contextMenuRef}
-                          />
+                          >
+                            <div className="flex flex-col gap-4">
+                              <button
+                                type="button"
+                                role="menuitem"
+                                onClick={(event) => {
+                                  event.preventDefault();
+                                  event.stopPropagation();
+                                  setOpenContextMenuId(null);
+                                }}
+                                className="flex w-full items-center gap-3 text-[15px] font-medium tracking-[-0.3px] text-white hover:text-[#d4d4d4] transition-colors"
+                              >
+                                <span className="material-symbols-rounded text-[22px]">favorite_border</span>
+                                <span>Add to favorites</span>
+                              </button>
+
+                              <button
+                                type="button"
+                                role="menuitem"
+                                onClick={(event) => {
+                                  event.preventDefault();
+                                  event.stopPropagation();
+                                  setOpenContextMenuId(null);
+                                }}
+                                className="flex w-full items-center gap-3 text-[15px] font-medium tracking-[-0.3px] text-white hover:text-[#d4d4d4] transition-colors"
+                              >
+                                <span className="material-symbols-rounded text-[22px]">block</span>
+                                <span>Report</span>
+                              </button>
+                            </div>
+                          </div>
                         ) : null}
                       </div>
                     );

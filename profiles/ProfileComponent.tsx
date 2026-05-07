@@ -53,6 +53,7 @@ type MediaItem = {
   fileUrl: string;
   isVideo: boolean;
   countryCode?: string;
+  collectionIndex?: number;
 };
 
 type CountryCard = {
@@ -106,8 +107,8 @@ function toLocationCountry(value: string) {
   return parts.length > 0 ? parts[parts.length - 1] : value;
 }
 
-function toFlagAssetPath(flagCode?: string) {
-  if (!flagCode) return null;
+function toFlagAssetPath(flagCode?: string): string | undefined {
+  if (!flagCode) return undefined;
   return `/flags/${flagCode.toUpperCase()}.svg`;
 }
 
@@ -153,7 +154,6 @@ export function ContextMenuTrigger({
   onClick: (event: ReactMouseEvent<HTMLButtonElement>) => void;
   label: string;
 }) {
-  const baseClassName = "absolute right-3 bottom-3 z-20 grid h-10 w-10 place-items-center rounded-full border border-white/10 bg-black/20 text-white shadow-sm backdrop-blur-md transition-colors hover:bg-black/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50";
   const visibilityClassName = isOpen
     ? "opacity-100"
     : "opacity-100 md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100";
@@ -163,12 +163,12 @@ export function ContextMenuTrigger({
       type="button"
       aria-label={label}
       onClick={onClick}
-      className={`${baseClassName} ${visibilityClassName}`}
+      className={`absolute right-3 bottom-3 z-20 flex h-11 w-11 items-center justify-center rounded-full bg-black/40 backdrop-blur-sm text-white transition-opacity duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50 ${visibilityClassName}`}
     >
-      <span className="flex items-center gap-[4.5px]">
-        <span className="block h-[4.5px] w-[4.5px] rounded-full bg-white" />
-        <span className="block h-[4.5px] w-[4.5px] rounded-full bg-white" />
-        <span className="block h-[4.5px] w-[4.5px] rounded-full bg-white" />
+      <span className="flex items-center gap-[5px]">
+        <span className="block h-[4px] w-[4px] rounded-full bg-white" />
+        <span className="block h-[4px] w-[4px] rounded-full bg-white" />
+        <span className="block h-[4px] w-[4px] rounded-full bg-white" />
       </span>
     </button>
   );
@@ -210,36 +210,40 @@ export function ContextMenu({
     <div
       ref={menuRef}
       role="menu"
-      className="absolute right-3 bottom-12 z-30 w-56 rounded-2xl border border-black-600 bg-black-800 p-6 shadow-[20px_20px_10px_rgba(0,0,0,0.25)]"
+      className="absolute right-3 bottom-14 z-30 w-[220px] rounded-2xl border border-[#2a2a2a] bg-[#111] p-5 shadow-[0_8px_40px_rgba(0,0,0,0.7)]"
       onClick={(event) => {
         event.preventDefault();
         event.stopPropagation();
       }}
     >
-      <div className="flex flex-col gap-6">
-        <button
-          type="button"
-          role="menuitem"
-          onClick={(event) => {
-            event.preventDefault();
-            event.stopPropagation();
-            handleView();
-          }}
-          disabled={!viewHref}
-          className={`flex w-full items-center gap-2 text-[16px] font-medium leading-6 tracking-[-0.096px] text-white transition ${
-            viewHref ? "hover:text-white" : "opacity-50 cursor-not-allowed"
-          }`}
-        >
-          <span className="material-symbols-rounded text-[20px]">folder</span>
-          <span>{viewLabel}</span>
-          {flagSrc && kind !== "collection" ? (
-            <img
-              src={flagSrc}
-              alt=""
-              className="ml-auto h-3.25 w-5 rounded-xs object-cover shadow-[1.2px_1.2px_0.6px_rgba(0,0,0,0.18)]"
-            />
-          ) : null}
-        </button>
+      <div className="flex flex-col gap-5">
+        {kind === "media" && (
+          <button
+            type="button"
+            role="menuitem"
+            onClick={(event) => {
+              event.preventDefault();
+              event.stopPropagation();
+              handleView();
+            }}
+            disabled={!viewHref}
+            className={`flex w-full items-center gap-3 text-[17px] font-medium tracking-[-0.3px] text-white transition ${
+              viewHref ? "hover:text-[#d4d4d4]" : "opacity-50 cursor-not-allowed"
+            }`}
+          >
+            <span className="material-symbols-rounded text-[24px]">folder_open</span>
+            <span>{viewLabel}</span>
+            {flagSrc ? (
+              <div className="ml-auto flex items-center justify-center rounded-[5px] overflow-hidden shadow-sm w-[26px] h-[18px] flex-shrink-0">
+                <img
+                  src={flagSrc}
+                  alt=""
+                  className="h-full w-full object-cover"
+                />
+              </div>
+            ) : null}
+          </button>
+        )}
 
         <button
           type="button"
@@ -249,9 +253,9 @@ export function ContextMenu({
             event.stopPropagation();
             handleShare();
           }}
-          className="flex w-full items-center gap-2 text-[16px] font-medium leading-6 tracking-[-0.096px] text-white"
+          className="flex w-full items-center gap-3 text-[17px] font-medium tracking-[-0.3px] text-white hover:text-[#d4d4d4] transition-colors"
         >
-          <span className="material-symbols-rounded text-[20px]">share</span>
+          <span className="material-symbols-rounded text-[24px]">ios_share</span>
           <span>{shareLabel}</span>
         </button>
 
@@ -263,9 +267,9 @@ export function ContextMenu({
             event.stopPropagation();
             onClose();
           }}
-          className="flex w-full items-center gap-2 text-[16px] font-medium leading-6 tracking-[-0.096px] text-white"
+          className="flex w-full items-center gap-3 text-[17px] font-medium tracking-[-0.3px] text-white hover:text-[#d4d4d4] transition-colors"
         >
-          <span className="material-symbols-rounded text-[20px]">favorite</span>
+          <span className="material-symbols-rounded text-[24px]">favorite_border</span>
           <span>Add to favorites</span>
         </button>
 
@@ -277,9 +281,9 @@ export function ContextMenu({
             event.stopPropagation();
             onClose();
           }}
-          className="flex w-full items-center gap-2 text-[16px] font-medium leading-6 tracking-[-0.096px] text-white"
+          className="flex w-full items-center gap-3 text-[17px] font-medium tracking-[-0.3px] text-white hover:text-[#d4d4d4] transition-colors"
         >
-          <span className="material-symbols-rounded text-[20px]">block</span>
+          <span className="material-symbols-rounded text-[24px]">block</span>
           <span>Report</span>
         </button>
       </div>
@@ -548,7 +552,7 @@ function PhotoCarouselModal({
           <button
             type="button"
             onClick={onPrev}
-            className="absolute left-3 top-1/2 -translate-y-1/2 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-black/50 text-white backdrop-blur-sm transition hover:bg-black/70"
+            className="absolute left-3 top-1/2 -translate-y-1/2 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-white text-black shadow-md transition hover:bg-[#f0f0f0]"
             aria-label="Previous photo"
           >
             <span className="material-symbols-rounded text-[28px]">chevron_left</span>
@@ -558,7 +562,7 @@ function PhotoCarouselModal({
           <button
             type="button"
             onClick={onNext}
-            className="absolute right-3 top-1/2 -translate-y-1/2 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-black/50 text-white backdrop-blur-sm transition hover:bg-black/70"
+            className="absolute right-3 top-1/2 -translate-y-1/2 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-white text-black shadow-md transition hover:bg-[#f0f0f0]"
             aria-label="Next photo"
           >
             <span className="material-symbols-rounded text-[28px]">chevron_right</span>
@@ -752,12 +756,13 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
       });
     });
 
-    (profile.collectionImages ?? []).forEach((collection) => {
+    (profile.collectionImages ?? []).forEach((collection, collectionIdx) => {
       collection.images.forEach((fileUrl) => {
         items.push({
           id: `media-${profile.id}-${items.length}`,
           fileUrl,
           isVideo: isVideoAsset(fileUrl),
+          collectionIndex: collectionIdx,
         });
       });
     });
@@ -894,12 +899,17 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
         const imageUrl = decodeURIComponent(escape(atob(encodedImage)));
         const index = allMediaItems.findIndex((item) => item.fileUrl === imageUrl);
         if (index !== -1) {
+          const itemCountry = allMediaItems[index].countryCode || profile.flagCode;
+          if (itemCountry && !window.location.pathname.includes('/country/')) {
+            window.location.replace(`/profiles/${profile.id}/country/${itemCountry.toUpperCase()}?image=${encodedImage}`);
+            return;
+          }
           setCarouselIndex(index);
           // Don't change tab, allow it to just open over whatever tab is active
         }
       } catch (e) {}
     }
-  }, [allMediaItems, carouselIndex]);
+  }, [allMediaItems, carouselIndex, profile.id, profile.flagCode]);
 
   const shareOwnerName = profile.name;
   const shareOwnerHandle = handle;
@@ -1362,9 +1372,16 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                 <div className="columns-2 md:columns-3 xl:columns-4 gap-5">
                   {allMediaItems.map((item, index) => {
                     const isMenuOpen = openContextMenuId === item.id;
-                    const viewHref = item.countryCode
-                      ? `/profiles/${profile.id}/country/${item.countryCode.toUpperCase()}`
-                      : undefined;
+                    const displayCountryCode = item.countryCode || profileFlagCode;
+                    const collectionHref =
+                      typeof item.collectionIndex === "number" && profile.collectionImages?.[item.collectionIndex]
+                        ? `/profiles/${profile.id}/collection/${item.collectionIndex}`
+                        : undefined;
+                    const viewHref = collectionHref || (displayCountryCode
+                      ? `/profiles/${profile.id}/country/${displayCountryCode.toUpperCase()}`
+                      : undefined);
+                    const viewLabel = collectionHref ? "View collection" : "View country";
+                    const shareHref = collectionHref || viewHref;
                     return (
                       <div
                         key={item.id}
@@ -1401,20 +1418,46 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                               </div>
                             </>
                           ) : (
-                            <img
-                              src={toLandingAssetUrl(item.fileUrl)}
-                              alt="Uploaded media"
-                              loading="lazy"
-                              decoding="async"
-                              className="w-full object-cover rounded-2xl cursor-pointer"
-                              onClick={(event) => {
-                                event.preventDefault();
-                                event.stopPropagation();
-                                openCarouselAt(index);
-                              }}
-                            />
+                            <>
+                              <img
+                                src={toLandingAssetUrl(item.fileUrl)}
+                                alt="Uploaded media"
+                                loading="lazy"
+                                decoding="async"
+                                className="w-full object-cover rounded-2xl cursor-pointer"
+                                onClick={(event) => {
+                                  event.preventDefault();
+                                  event.stopPropagation();
+                                  openCarouselAt(index);
+                                }}
+                              />
+                              {/* Hover overlay */}
+                              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-200 pointer-events-none" />
+                            </>
                           )}
                         </div>
+
+                        {/* Hover Flag */}
+                        {displayCountryCode ? (
+                          <div className="absolute top-3 right-3 z-20 transition-opacity duration-200 opacity-0 group-hover:opacity-100 pointer-events-auto group/flag">
+                            <div className="flex items-center drop-shadow-md cursor-pointer">
+                              <img
+                                src={toFlagAssetPath(displayCountryCode)}
+                                alt={displayCountryCode}
+                                className="h-3.5 w-5 rounded-xs object-cover"
+                              />
+                            </div>
+
+                            {/* Tooltip */}
+                            <div className="absolute bottom-full right-1/2 translate-x-1/2 mb-2.5 flex flex-col items-center opacity-0 transition-all duration-200 group-hover/flag:opacity-100 pointer-events-none origin-bottom scale-95 group-hover/flag:scale-100 drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]">
+                              <div className="whitespace-nowrap rounded-xl bg-white px-3.5 py-1.5 text-[15px] font-medium tracking-tight text-black">
+                                {COUNTRY_LIST_LOOKUP[displayCountryCode.toUpperCase()] || displayCountryCode}
+                              </div>
+                              <div className="-mt-1.5 h-3 w-3 rotate-45 bg-white rounded-[2px]" />
+                            </div>
+                          </div>
+                        ) : null}
+
 
                         <ContextMenuTrigger
                           isOpen={isMenuOpen}
@@ -1429,18 +1472,26 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                         {isMenuOpen ? (
                           <ContextMenu
                             kind="media"
-                            viewLabel="View country"
+                            viewLabel={viewLabel}
                             shareLabel="Share photo"
-                            flagCode={item.countryCode}
+                            flagCode={collectionHref ? undefined : displayCountryCode}
                             viewHref={viewHref}
                             onShare={() => {
-                              const shareUrl = new URL(window.location.href);
+                              const shareUrl = new URL(window.location.origin);
+                              if (shareHref?.includes("/collection/")) {
+                                shareUrl.pathname = shareHref;
+                              } else if (displayCountryCode) {
+                                shareUrl.pathname = `/profiles/${profile.id}/country/${displayCountryCode.toUpperCase()}`;
+                              } else {
+                                shareUrl.pathname = `/profiles/${profile.id}`;
+                              }
                               shareUrl.searchParams.set("image", btoa(unescape(encodeURIComponent(item.fileUrl))));
                               openShareCard({
                                 kind: "media",
                                 title: "Share moment",
                                 imageUrl: item.fileUrl,
                                 shareUrl: shareUrl.toString(),
+                                flagCode: displayCountryCode,
                                 ownerName: shareOwnerName,
                                 ownerHandle: shareOwnerHandle,
                                 ownerAvatar: shareOwnerAvatar,
