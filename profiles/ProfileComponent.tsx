@@ -163,12 +163,12 @@ export function ContextMenuTrigger({
       type="button"
       aria-label={label}
       onClick={onClick}
-      className={`absolute right-3 bottom-3 z-20 flex h-11 w-11 items-center justify-center rounded-full bg-black/40 backdrop-blur-sm text-white transition-opacity duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50 ${visibilityClassName}`}
+      className={`absolute right-3 bottom-3 z-20 hidden md:flex h-6 w-6 md:h-7 md:w-7 items-center justify-center rounded-full bg-black/40 backdrop-blur-sm text-white transition-opacity duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50 ${visibilityClassName}`}
     >
-      <span className="flex items-center gap-[5px]">
-        <span className="block h-[4px] w-[4px] rounded-full bg-white" />
-        <span className="block h-[4px] w-[4px] rounded-full bg-white" />
-        <span className="block h-[4px] w-[4px] rounded-full bg-white" />
+      <span className="flex items-center gap-2">
+        <span className="block h-1.5 w-1.5 rounded-full bg-white" />
+        <span className="block h-1.5 w-1.5 rounded-full bg-white" />
+        <span className="block h-1.5 w-1.5 rounded-full bg-white" />
       </span>
     </button>
   );
@@ -662,6 +662,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
   const [openContextMenuId, setOpenContextMenuId] = useState<string | null>(null);
   const [shareCardData, setShareCardData] = useState<ShareCardData | null>(null);
   const [carouselIndex, setCarouselIndex] = useState<number | null>(null);
+  const [carouselItems, setCarouselItems] = useState<MediaItem[]>([]);
   const navMenuRef = useRef<HTMLDivElement | null>(null);
   const contextMenuRef = useRef<HTMLDivElement>(null);
 
@@ -780,20 +781,20 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
       if (event.key === "ArrowLeft") {
         setCarouselIndex((prev) => {
           if (prev === null) return prev;
-          return (prev - 1 + allMediaItems.length) % allMediaItems.length;
+          return (prev - 1 + carouselItems.length) % Math.max(carouselItems.length, 1);
         });
       }
       if (event.key === "ArrowRight") {
         setCarouselIndex((prev) => {
           if (prev === null) return prev;
-          return (prev + 1) % allMediaItems.length;
+          return (prev + 1) % Math.max(carouselItems.length, 1);
         });
       }
     };
 
     document.addEventListener("keydown", onKeyDown);
     return () => document.removeEventListener("keydown", onKeyDown);
-  }, [carouselIndex, allMediaItems.length]);
+  }, [carouselIndex, carouselItems.length]);
 
   const headerFlagCodes = useMemo(() => {
     const codes = profile.visitedCountryCodes ?? [];
@@ -874,8 +875,8 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
   useEffect(() => {
     if (typeof window === "undefined") return;
     const url = new URL(window.location.href);
-    if (carouselIndex !== null && allMediaItems.length > 0) {
-      const activeUrl = allMediaItems[carouselIndex].fileUrl;
+    if (carouselIndex !== null && carouselItems.length > 0) {
+      const activeUrl = carouselItems[carouselIndex].fileUrl;
       const encodedUrl = btoa(unescape(encodeURIComponent(activeUrl)));
       if (url.searchParams.get("image") !== encodedUrl) {
         url.searchParams.set("image", encodedUrl);
@@ -887,7 +888,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
         window.history.replaceState({}, "", url.toString());
       }
     }
-  }, [carouselIndex, allMediaItems]);
+  }, [carouselIndex, carouselItems]);
 
   // Read from URL on mount
   useEffect(() => {
@@ -899,12 +900,35 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
         const imageUrl = decodeURIComponent(escape(atob(encodedImage)));
         const index = allMediaItems.findIndex((item) => item.fileUrl === imageUrl);
         if (index !== -1) {
-          const itemCountry = allMediaItems[index].countryCode || profile.flagCode;
-          if (itemCountry && !window.location.pathname.includes('/country/')) {
-            window.location.replace(`/profiles/${profile.id}/country/${itemCountry.toUpperCase()}?image=${encodedImage}`);
-            return;
+          const active = allMediaItems[index];
+          // If the image belongs to a collection, prefer collection route
+          if (typeof active.collectionIndex === "number" && profile.collectionImages?.[active.collectionIndex]) {
+            const collectionHref = `/profiles/${profile.id}/collection/${active.collectionIndex}`;
+            if (!window.location.pathname.includes('/collection/')) {
+              window.location.replace(`${collectionHref}?image=${encodedImage}`);
+              return;
+            }
+            const filtered = allMediaItems.filter((it) => it.collectionIndex === active.collectionIndex);
+            setCarouselItems(filtered);
+            const newIndex = filtered.findIndex((it) => it.fileUrl === active.fileUrl);
+            setCarouselIndex(newIndex === -1 ? 0 : newIndex);
+          } else {
+            const itemCountry = active.countryCode || profile.flagCode;
+            if (itemCountry && !window.location.pathname.includes('/country/')) {
+              window.location.replace(`/profiles/${profile.id}/country/${itemCountry.toUpperCase()}?image=${encodedImage}`);
+              return;
+            }
+            const originCode = (itemCountry || "").toUpperCase();
+            if (originCode) {
+              const filtered = allMediaItems.filter((it) => ((it.countryCode || profile.flagCode) || "").toUpperCase() === originCode);
+              setCarouselItems(filtered);
+              const newIndex = filtered.findIndex((it) => it.fileUrl === active.fileUrl);
+              setCarouselIndex(newIndex === -1 ? 0 : newIndex);
+            } else {
+              setCarouselItems(allMediaItems);
+              setCarouselIndex(index);
+            }
           }
-          setCarouselIndex(index);
           // Don't change tab, allow it to just open over whatever tab is active
         }
       } catch (e) {}
@@ -915,7 +939,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
   const shareOwnerHandle = handle;
   const shareOwnerAvatar = profile.images.avatar;
 
-  const activeCarouselItem = carouselIndex !== null ? allMediaItems[carouselIndex] : null;
+  const activeCarouselItem = carouselIndex !== null ? carouselItems[carouselIndex] : null;
   const carouselCountryCode = activeCarouselItem?.countryCode?.toUpperCase();
   const carouselCountryName = carouselCountryCode
     ? COUNTRY_LIST_LOOKUP[carouselCountryCode] || carouselCountryCode
@@ -936,25 +960,45 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
 
   const openCarouselAt = (index: number) => {
     if (allMediaItems.length === 0) return;
-    setCarouselIndex(index);
+    // Determine if clicked item belongs to a collection — prefer collection scope
+    const active = allMediaItems[index];
+    if (typeof active.collectionIndex === "number" && profile.collectionImages?.[active.collectionIndex]) {
+      const filtered = allMediaItems.filter((it) => it.collectionIndex === active.collectionIndex);
+      setCarouselItems(filtered);
+      const newIndex = filtered.findIndex((it) => it.fileUrl === active.fileUrl);
+      setCarouselIndex(newIndex === -1 ? 0 : newIndex);
+    } else {
+      // Fallback to country-scoped carousel (use profile flag if item has no explicit country)
+      const originCode = (active.countryCode || profile.flagCode || "").toUpperCase();
+      if (originCode) {
+        const filtered = allMediaItems.filter((it) => ((it.countryCode || profile.flagCode) || "").toUpperCase() === originCode);
+        setCarouselItems(filtered);
+        const newIndex = filtered.findIndex((it) => it.fileUrl === active.fileUrl);
+        setCarouselIndex(newIndex === -1 ? 0 : newIndex);
+      } else {
+        setCarouselItems(allMediaItems);
+        setCarouselIndex(index);
+      }
+    }
     setOpenContextMenuId(null);
   };
 
   const closeCarousel = () => {
     setCarouselIndex(null);
+    setCarouselItems([]);
   };
 
   const goToNextCarouselItem = () => {
     setCarouselIndex((prev) => {
       if (prev === null) return prev;
-      return (prev + 1) % allMediaItems.length;
+      return (prev + 1) % Math.max(carouselItems.length, 1);
     });
   };
 
   const goToPrevCarouselItem = () => {
     setCarouselIndex((prev) => {
       if (prev === null) return prev;
-      return (prev - 1 + allMediaItems.length) % allMediaItems.length;
+      return (prev - 1 + Math.max(carouselItems.length, 1)) % Math.max(carouselItems.length, 1);
     });
   };
 
@@ -2022,7 +2066,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
 
       {carouselIndex !== null && activeCarouselItem ? (
         <PhotoCarouselModal
-          items={allMediaItems}
+          items={carouselItems}
           activeIndex={carouselIndex}
           onClose={closeCarousel}
           onNext={goToNextCarouselItem}

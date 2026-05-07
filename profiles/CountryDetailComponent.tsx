@@ -250,12 +250,12 @@ function MediaMenuTrigger({
       type="button"
       aria-label={label}
       onClick={onClick}
-      className={`absolute right-3 bottom-3 z-20 flex h-11 w-11 items-center justify-center rounded-full bg-black/40 backdrop-blur-sm text-white transition-opacity duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50 ${visibilityClassName}`}
+      className={`absolute right-3 bottom-3 z-20 hidden md:flex h-8 w-8 md:h-11 md:w-11 items-center justify-center rounded-full bg-black/40 backdrop-blur-sm text-white transition-opacity duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50 ${visibilityClassName}`}
     >
-      <span className="flex items-center gap-[5px]">
-        <span className="block h-[4px] w-[4px] rounded-full bg-white" />
-        <span className="block h-[4px] w-[4px] rounded-full bg-white" />
-        <span className="block h-[4px] w-[4px] rounded-full bg-white" />
+      <span className="flex items-center gap-2">
+        <span className="block h-1.5 w-1.5 rounded-full bg-white" />
+        <span className="block h-1.5 w-1.5 rounded-full bg-white" />
+        <span className="block h-1.5 w-1.5 rounded-full bg-white" />
       </span>
     </button>
   );
@@ -487,12 +487,14 @@ export default function CountryDetailComponent({
             <div className="relative" ref={menuRef}>
               <button
                 onClick={() => setShowMenu((prev) => !prev)}
-                className="flex items-center gap-1.75 rounded-full border border-[#363636] bg-[#181818] px-3 py-2"
+                className="hidden md:flex h-6 w-6 md:h-7 md:w-7 items-center justify-center rounded-full bg-black/40 backdrop-blur-sm text-white"
                 aria-label="More options"
               >
-                <span className="block w-0.75 h-0.75 rounded-full bg-[#a8a8a8]" />
-                <span className="block w-0.75 h-0.75 rounded-full bg-[#a8a8a8]" />
-                <span className="block w-0.75 h-0.75 rounded-full bg-[#a8a8a8]" />
+                <span className="flex items-center gap-1">
+                  <span className="block h-1 w-1 rounded-full bg-white" />
+                  <span className="block h-1 w-1 rounded-full bg-white" />
+                  <span className="block h-1 w-1 rounded-full bg-white" />
+                </span>
               </button>
               {showMenu && (
                 <div className="absolute right-0 top-full mt-2 z-20 w-40 rounded-xl border border-black-300 bg-[#101010] p-1.5 shadow-lg">
