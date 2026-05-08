@@ -5,6 +5,8 @@ import { useState, useRef, useEffect } from "react";
 
 import { toLandingAssetUrl } from "@/lib/landing-assets";
 import type { SampleProfile } from "@/profiles/profile-data";
+import { ContextMenu } from "./ProfileComponent";
+import { MoreOptionsButton } from "@/components/ui/MoreOptionsButton";
 
 /* eslint-disable @next/next/no-img-element */
 
@@ -114,29 +116,28 @@ export default function CollectionDetailComponent({
             </div>
             <span className="text-[#505050]">|</span>
             <div className="relative" ref={menuRef}>
-              <button
+              <MoreOptionsButton
+                isOpen={showMenu}
                 onClick={() => setShowMenu((prev) => !prev)}
-                className="hidden md:flex h-6 w-6 md:h-7 md:w-7 items-center justify-center rounded-full bg-black/40 backdrop-blur-sm text-white"
-                aria-label="More options"
-              >
-                <span className="flex items-center gap-0.5">
-                  <span className="block h-0.75 w-0.75 rounded-full bg-white" />
-                  <span className="block h-0.75 w-0.75 rounded-full bg-white" />
-                  <span className="block h-0.75 w-0.75 rounded-full bg-white" />
-                </span>
-              </button>
+                label="More options"
+                size="sm"
+                showOnHover={false}
+                positioned={false}
+              />
               {showMenu && (
-                <div className="absolute right-0 top-full mt-2 z-20 w-40 rounded-xl border border-black-300 bg-[#101010] p-1.5 shadow-lg">
-                  <button
-                    onClick={() => {
-                      navigator.clipboard.writeText(window.location.href).catch(() => {});
-                      setShowMenu(false);
-                    }}
-                    className="w-full text-left rounded-lg px-3 py-2 text-sm text-[#d8d8d8] hover:bg-[#1b1b1b]"
-                  >
-                    Copy link
-                  </button>
-                </div>
+                <ContextMenu
+                  kind="collection"
+                  viewLabel="View collection"
+                  shareLabel="Share collection"
+                  viewHref={`/profiles/${profile.id}`}
+                  showViewAction={false}
+                  onShare={() => {
+                    navigator.clipboard.writeText(window.location.href).catch(() => {});
+                    setShowMenu(false);
+                  }}
+                  onClose={() => setShowMenu(false)}
+                  menuRef={menuRef}
+                />
               )}
             </div>
           </div>

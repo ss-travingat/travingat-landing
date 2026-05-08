@@ -6,6 +6,8 @@ import type { MouseEvent as ReactMouseEvent } from "react";
 
 import { toLandingAssetUrl } from "@/lib/landing-assets";
 import type { SampleProfile } from "@/profiles/profile-data";
+import { MoreOptionsButton } from "@/components/ui/MoreOptionsButton";
+import { WaitlistPopup } from "@/components/ui/WaitlistPopup";
 
 /* eslint-disable @next/next/no-img-element */
 
@@ -145,41 +147,13 @@ function SocialIcon({ platform }: { platform: string }) {
   return null;
 }
 
-export function ContextMenuTrigger({
-  isOpen,
-  onClick,
-  label,
-}: {
-  isOpen: boolean;
-  onClick: (event: ReactMouseEvent<HTMLButtonElement>) => void;
-  label: string;
-}) {
-  const visibilityClassName = isOpen
-    ? "opacity-100"
-    : "opacity-100 md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100";
-
-  return (
-    <button
-      type="button"
-      aria-label={label}
-      onClick={onClick}
-      className={`absolute right-3 bottom-3 z-20 hidden md:flex h-6 w-6 md:h-7 md:w-7 items-center justify-center rounded-full bg-black/40 backdrop-blur-sm text-white transition-opacity duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50 ${visibilityClassName}`}
-    >
-      <span className="flex items-center gap-0.5">
-        <span className="block h-0.75 w-0.75 rounded-full bg-white" />
-        <span className="block h-0.75 w-0.75 rounded-full bg-white" />
-        <span className="block h-0.75 w-0.75 rounded-full bg-white" />
-      </span>
-    </button>
-  );
-}
-
 export function ContextMenu({
   kind,
   viewLabel,
   shareLabel,
   flagCode,
   viewHref,
+  showViewAction = true,
   onShare,
   onClose,
   menuRef,
@@ -189,10 +163,12 @@ export function ContextMenu({
   shareLabel: string;
   flagCode?: string;
   viewHref?: string;
+  showViewAction?: boolean;
   onShare: () => void;
   onClose: () => void;
-  menuRef: React.RefObject<HTMLDivElement>;
+  menuRef: React.RefObject<HTMLDivElement | null>;
 }) {
+  const [isWaitlistOpen, setIsWaitlistOpen] = useState(false);
   const flagSrc = toFlagAssetPath(flagCode);
   const handleView = () => {
     if (viewHref) {
@@ -207,17 +183,17 @@ export function ContextMenu({
   };
 
   return (
-    <div
-      ref={menuRef}
-      role="menu"
-      className="absolute right-3 bottom-14 z-30 w-[220px] rounded-2xl border border-[#2a2a2a] bg-[#111] p-5 shadow-[0_8px_40px_rgba(0,0,0,0.7)]"
-      onClick={(event) => {
-        event.preventDefault();
-        event.stopPropagation();
-      }}
-    >
-      <div className="flex flex-col gap-5">
-        {kind === "media" && (
+    <div ref={menuRef}>
+      <div
+        role="menu"
+        className="absolute right-3 bottom-14 z-30 w-[220px] rounded-2xl border border-[#2a2a2a] bg-[#111] p-5 shadow-[0_8px_40px_rgba(0,0,0,0.7)]"
+        onClick={(event) => {
+          event.preventDefault();
+          event.stopPropagation();
+        }}
+      >
+        <div className="flex flex-col gap-5">
+        {showViewAction && (kind === "media" || kind === "country" || kind === "collection") && (
           <button
             type="button"
             role="menuitem"
@@ -265,7 +241,7 @@ export function ContextMenu({
           onClick={(event) => {
             event.preventDefault();
             event.stopPropagation();
-            onClose();
+            setIsWaitlistOpen(true);
           }}
           className="flex w-full items-center gap-3 text-[17px] font-medium tracking-[-0.3px] text-white hover:text-[#d4d4d4] transition-colors"
         >
@@ -286,7 +262,16 @@ export function ContextMenu({
           <span className="material-symbols-rounded text-[24px]">block</span>
           <span>Report</span>
         </button>
+        </div>
       </div>
+
+      <WaitlistPopup
+        open={isWaitlistOpen}
+        onClose={() => {
+          setIsWaitlistOpen(false);
+          onClose();
+        }}
+      />
     </div>
   );
 }
@@ -615,13 +600,16 @@ function PhotoCarouselModal({
           >
             Connect
           </button>
-          <button
-            type="button"
-            className="flex h-[38px] w-[38px] shrink-0 items-center justify-center rounded-full border border-[#2e2e2e] bg-[#1a1a1a] text-white transition hover:bg-[#222]"
-            aria-label="More options"
-          >
-            <span className="material-symbols-rounded text-[20px]">more_horiz</span>
-          </button>
+          <div className="relative">
+            <MoreOptionsButton
+              isOpen={false}
+              onClick={() => {}}
+              label="More options"
+              size="sm"
+              showOnHover={false}
+              positioned={false}
+            />
+          </div>
         </div>
 
         {/* Country + description */}
@@ -1503,9 +1491,10 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                         ) : null}
 
 
-                        <ContextMenuTrigger
+                        <MoreOptionsButton
                           isOpen={isMenuOpen}
                           label="Open media menu"
+                          size="sm"
                           onClick={(event) => {
                             event.preventDefault();
                             event.stopPropagation();
@@ -1634,9 +1623,10 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                             ) : null}
                           </div>
 
-                          <ContextMenuTrigger
+                          <MoreOptionsButton
                             isOpen={isMenuOpen}
                             label={`Open menu for ${country.name}`}
+                            size="sm"
                             onClick={(event) => {
                               event.preventDefault();
                               event.stopPropagation();
@@ -1785,9 +1775,10 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                             ) : null}
                           </div>
 
-                          <ContextMenuTrigger
+                          <MoreOptionsButton
                             isOpen={isMenuOpen}
                             label={`Open menu for ${collection.title}`}
+                            size="sm"
                             onClick={(event) => {
                               event.preventDefault();
                               event.stopPropagation();

@@ -5,7 +5,9 @@ import { useState, useRef, useEffect, useCallback } from "react";
 
 import { toLandingAssetUrl } from "@/lib/landing-assets";
 import type { SampleProfile } from "@/profiles/profile-data";
-import { ContextMenuTrigger, ContextMenu } from "./ProfileComponent";
+import { ContextMenu } from "./ProfileComponent";
+import { MoreOptionsButton } from "@/components/ui/MoreOptionsButton";
+import { WaitlistPopup } from "@/components/ui/WaitlistPopup";
 
 /* eslint-disable @next/next/no-img-element */
 
@@ -232,35 +234,6 @@ function PhotoLightbox({
 }
 
 // ─── Custom Trigger for Media ────────────────────────────────────────────────
-function MediaMenuTrigger({
-  isOpen,
-  onClick,
-  label,
-}: {
-  isOpen: boolean;
-  onClick: (event: React.MouseEvent<HTMLButtonElement>) => void;
-  label: string;
-}) {
-  const visibilityClassName = isOpen
-    ? "opacity-100"
-    : "opacity-100 md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100";
-
-  return (
-    <button
-      type="button"
-      aria-label={label}
-      onClick={onClick}
-      className={`absolute right-3 bottom-3 z-20 hidden md:flex h-8 w-8 md:h-11 md:w-11 items-center justify-center rounded-full bg-black/40 backdrop-blur-sm text-white transition-opacity duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50 ${visibilityClassName}`}
-    >
-      <span className="flex items-center gap-2">
-        <span className="block h-1.5 w-1.5 rounded-full bg-white" />
-        <span className="block h-1.5 w-1.5 rounded-full bg-white" />
-        <span className="block h-1.5 w-1.5 rounded-full bg-white" />
-      </span>
-    </button>
-  );
-}
-
 // ─── Main Component ──────────────────────────────────────────────────────────
 
 export default function CountryDetailComponent({
@@ -275,6 +248,7 @@ export default function CountryDetailComponent({
   const countryName = COUNTRY_LIST_LOOKUP[countryCode] || countryCode;
   const [activeTab, setActiveTab] = useState<MediaTab>("all");
   const [showMenu, setShowMenu] = useState(false);
+  const [isWaitlistOpen, setIsWaitlistOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
   // Lightbox state
@@ -485,29 +459,28 @@ export default function CountryDetailComponent({
             </div>
             <span className="text-[#505050]">|</span>
             <div className="relative" ref={menuRef}>
-              <button
+              <MoreOptionsButton
+                isOpen={showMenu}
                 onClick={() => setShowMenu((prev) => !prev)}
-                className="hidden md:flex h-6 w-6 md:h-7 md:w-7 items-center justify-center rounded-full bg-black/40 backdrop-blur-sm text-white"
-                aria-label="More options"
-              >
-                <span className="flex items-center gap-0.5">
-                  <span className="block h-0.75 w-0.75 rounded-full bg-white" />
-                  <span className="block h-0.75 w-0.75 rounded-full bg-white" />
-                  <span className="block h-0.75 w-0.75 rounded-full bg-white" />
-                </span>
-              </button>
+                label="More options"
+                size="sm"
+                showOnHover={false}
+                positioned={false}
+              />
               {showMenu && (
-                <div className="absolute right-0 top-full mt-2 z-20 w-40 rounded-xl border border-black-300 bg-[#101010] p-1.5 shadow-lg">
-                  <button
-                    onClick={() => {
-                      navigator.clipboard.writeText(window.location.href).catch(() => {});
-                      setShowMenu(false);
-                    }}
-                    className="w-full text-left rounded-lg px-3 py-2 text-sm text-[#d8d8d8] hover:bg-[#1b1b1b]"
-                  >
-                    Copy link
-                  </button>
-                </div>
+                <ContextMenu
+                  kind="country"
+                  viewLabel="View country"
+                  shareLabel="Share country"
+                  viewHref={`/profiles/${profile.id}`}
+                  showViewAction={false}
+                  onShare={() => {
+                    navigator.clipboard.writeText(window.location.href).catch(() => {});
+                    setShowMenu(false);
+                  }}
+                  onClose={() => setShowMenu(false)}
+                  menuRef={menuRef}
+                />
               )}
             </div>
           </div>
@@ -583,9 +556,10 @@ export default function CountryDetailComponent({
                         </div>
 
 
-                        <MediaMenuTrigger
+                        <MoreOptionsButton
                           isOpen={openContextMenuId === `media-${globalIndex}`}
                           label={`Open menu for photo ${globalIndex + 1}`}
+                          size="sm"
                           onClick={(e) => {
                             e.preventDefault();
                             e.stopPropagation();
@@ -611,6 +585,7 @@ export default function CountryDetailComponent({
                                   event.preventDefault();
                                   event.stopPropagation();
                                   setOpenContextMenuId(null);
+                                  setIsWaitlistOpen(true);
                                 }}
                                 className="flex w-full items-center gap-3 text-[15px] font-medium tracking-[-0.3px] text-white hover:text-[#d4d4d4] transition-colors"
                               >
@@ -642,6 +617,8 @@ export default function CountryDetailComponent({
             </div>
           )}
         </div>
+
+        <WaitlistPopup open={isWaitlistOpen} onClose={() => setIsWaitlistOpen(false)} />
       </main>
 
       {/* Footer */}

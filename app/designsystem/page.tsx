@@ -3,6 +3,7 @@ import ColorPaletteShowcase from "@/components/designsystem/ColorPaletteShowcase
 import ButtonShowcase from "@/components/designsystem/ButtonShowcase";
 import TabsShowcase from "@/components/designsystem/TabsShowcase";
 import TooltipShowcase from "@/components/designsystem/TooltipShowcase";
+import MoreOptionsButtonShowcase from "@/components/designsystem/MoreOptionsButtonShowcase";
 
 export default function DesignSystemPage() {
   return (
@@ -26,6 +27,7 @@ export default function DesignSystemPage() {
       <TypographyShowcase />
       <ColorPaletteShowcase withSidebar />
       <ButtonShowcase />
+      <MoreOptionsButtonShowcase />
       <TabsShowcase />
       <TooltipShowcase />
     </main>
