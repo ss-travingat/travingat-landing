@@ -4,6 +4,9 @@ import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { toLandingAssetUrl } from "@/lib/landing-assets";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
+import { Textarea } from "@/components/ui/Textarea";
 
 interface CountryImage {
   countryCode: string;
@@ -247,12 +250,12 @@ function CountrySelect({
       {open && (
         <div className="absolute z-50 mt-1 w-full bg-black-700 border border-white/10 rounded-lg shadow-xl max-h-60 overflow-hidden">
           <div className="p-2 border-b border-white/10">
-            <input
+            <Input
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search countries..."
-              className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-md text-sm text-white placeholder:text-white/25 focus:outline-none focus:border-[#5A45F9]"
+              className="bg-white/5 border border-white/10 text-sm placeholder:text-white/25 focus:border-[#5A45F9]"
               autoFocus
             />
           </div>
@@ -367,12 +370,12 @@ function MultiCountrySelect({
       {open && (
         <div className="absolute z-50 mt-1 w-full bg-black-700 border border-white/10 rounded-lg shadow-xl max-h-72 overflow-hidden">
           <div className="p-2 border-b border-white/10">
-            <input
+            <Input
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search countries..."
-              className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-md text-sm text-white placeholder:text-white/25 focus:outline-none focus:border-[#5A45F9]"
+              className="bg-white/5 border border-white/10 text-sm placeholder:text-white/25 focus:border-[#5A45F9]"
               autoFocus
             />
           </div>
@@ -496,7 +499,7 @@ function TagInput({
         ))}
       </div>
       <div className="flex gap-2">
-        <input
+        <Input
           type="text"
           value={input}
           onChange={(e) => handleInputChange(e.target.value)}
@@ -508,15 +511,17 @@ function TagInput({
           }}
           onPaste={handlePaste}
           placeholder={placeholder}
-          className="flex-1 px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-xs text-white placeholder:text-white/25 focus:outline-none focus:border-[#5A45F9] transition-colors"
+          className="flex-1 bg-white/5 border border-white/10 text-xs placeholder:text-white/25 focus:border-[#5A45F9]"
         />
-        <button
+        <Button
           type="button"
           onClick={addTag}
-          className="px-3 py-2 bg-white/10 hover:bg-white/15 rounded-lg text-xs font-medium transition-colors cursor-pointer"
+          size="sm"
+          variant="ghost"
+          className="px-3 py-2 bg-white/10 hover:bg-white/15 rounded-lg text-xs font-medium"
         >
           Add
-        </button>
+        </Button>
       </div>
     </div>
   );
@@ -982,34 +987,84 @@ export default function AdminProfilesPage() {
       )}
 
       {/* Header */}
-      <header className="border-b border-white/10 px-6 py-4 flex items-center justify-between sticky top-0 bg-[#0a0a0a]/95 backdrop-blur-sm z-40">
-        <div className="flex items-center gap-3">
-          <a
-            href="/admin"
-            className="text-white/50 hover:text-white text-sm transition-colors"
-          >
-            ← Dashboard
-          </a>
-          <span className="text-white/20">|</span>
-          <h1 className="text-lg font-semibold">Featured Profiles CMS</h1>
+      <header className="sticky top-0 z-40 border-b border-white/10 bg-[#0a0a0a]/90 backdrop-blur-xl">
+        <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3 min-w-0">
+            <a
+              href="/admin"
+              className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-white/60 transition hover:border-white/20 hover:text-white"
+            >
+              <span aria-hidden>←</span>
+              <span>Dashboard</span>
+            </a>
+            <span className="hidden sm:block text-white/15">/</span>
+            <div className="min-w-0">
+              <h1 className="truncate text-lg font-semibold tracking-[-0.02em]">Featured Profiles CMS</h1>
+              <p className="hidden md:block text-xs text-white/35">Design-driven profile editing, media curation, and quick publishing.</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-3 shrink-0">
+            <span className="inline-flex items-center rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-white/55">
+              {profiles.length} profile{profiles.length !== 1 ? "s" : ""}
+            </span>
+          </div>
         </div>
-        <span className="text-white/40 text-sm">
-          {profiles.length} profile{profiles.length !== 1 && "s"}
-        </span>
       </header>
 
-      <div className="max-w-6xl mx-auto px-6 py-8 flex flex-col xl:flex-row gap-8">
-        {/* Form Panel */}
-        <div className="xl:w-120 shrink-0">
-          <div className="bg-[#141414] rounded-2xl border border-white/10 p-6 sticky top-20">
-            <h2 className="text-lg font-semibold mb-6">
-              {editing ? "Edit Profile" : "Add New Profile"}
-            </h2>
+      <div className="relative overflow-hidden border-b border-white/10 bg-[#0a0a0a]">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(90,69,249,0.18),transparent_34%),radial-gradient(circle_at_top_right,rgba(255,255,255,0.08),transparent_28%)]" />
+        <div className="max-w-6xl mx-auto px-6 py-8 lg:py-10 relative z-10">
+          <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+            <div className="max-w-2xl space-y-4">
+              <span className="inline-flex items-center rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs uppercase tracking-[0.24em] text-white/50">
+                Profile studio
+              </span>
+              <div className="space-y-3">
+                <h2 className="text-[30px] leading-[1.05] tracking-[-0.04em] font-semibold text-white md:text-[42px] lg:text-[48px]">
+                  Polish and publish profiles
+                </h2>
+              </div>
+            </div>
+            <div className="grid grid-cols-3 gap-3 sm:max-w-md">
+              <div className="rounded-2xl border border-white/10 bg-white/4 px-4 py-4 backdrop-blur-sm">
+                <p className="text-[11px] uppercase tracking-[0.18em] text-white/35">Profiles</p>
+                <p className="mt-2 text-2xl font-semibold tracking-[-0.04em]">{profiles.length}</p>
+              </div>
+              <div className="rounded-2xl border border-white/10 bg-white/4 px-4 py-4 backdrop-blur-sm">
+                <p className="text-[11px] uppercase tracking-[0.18em] text-white/35">Media</p>
+                <p className="mt-2 text-2xl font-semibold tracking-[-0.04em]">
+                  {profiles.reduce((sum, profile) => sum + profile.media, 0)}
+                </p>
+              </div>
+              <div className="rounded-2xl border border-white/10 bg-white/4 px-4 py-4 backdrop-blur-sm">
+                <p className="text-[11px] uppercase tracking-[0.18em] text-white/35">Published</p>
+                <p className="mt-2 text-2xl font-semibold tracking-[-0.04em]">Live</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
-            <div className="space-y-5 max-h-[calc(100vh-180px)] overflow-y-auto pr-1">
+      <div className="max-w-7xl mx-auto px-6 py-8 grid grid-cols-1 xl:grid-cols-[minmax(0,460px)_minmax(0,1fr)] gap-6 xl:gap-8">
+        {/* Form Panel */}
+        <div className="shrink-0">
+          <div className="sticky top-22 rounded-[28px] border border-white/10 bg-white/4 p-6 shadow-[0_30px_80px_rgba(0,0,0,0.35)] backdrop-blur-xl">
+            <div className="mb-6 flex items-start justify-between gap-4">
+              <div>
+                <p className="text-xs uppercase tracking-[0.2em] text-white/35">Editor</p>
+                <h2 className="mt-2 text-lg font-semibold tracking-[-0.02em]">
+              {editing ? "Edit Profile" : "Add New Profile"}
+                </h2>
+              </div>
+              <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-white/45">
+                Step 1 of 2
+              </span>
+            </div>
+
+            <div className="space-y-6 max-h-[calc(100vh-200px)] overflow-y-auto pr-1">
               {/* Images Section */}
-              <div className="space-y-4">
-                <h3 className="text-sm font-medium text-white/80 border-b border-white/10 pb-2">
+              <div className="space-y-4 rounded-2xl border border-white/10 bg-black/20 p-4">
+                <h3 className="text-sm font-medium text-white/80 pb-2 border-b border-white/10">
                   Images
                 </h3>
 
@@ -1034,13 +1089,15 @@ export default function AdminProfilesPage() {
                       )}
                     </div>
                     <div>
-                      <button
+                      <Button
+                        type="button"
                         onClick={() => coverInputRef.current?.click()}
                         disabled={uploading !== null}
-                        className="px-4 py-2 bg-white/10 hover:bg-white/15 rounded-lg text-sm font-medium transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                        variant="ghost"
+                        className="px-4 py-2 bg-white/10 hover:bg-white/15 rounded-lg text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         {uploading?.field === "cover" ? "Uploading…" : "Upload Cover"}
-                      </button>
+                      </Button>
                       <input
                         ref={coverInputRef}
                         type="file"
@@ -1076,13 +1133,15 @@ export default function AdminProfilesPage() {
                       )}
                     </div>
                     <div>
-                      <button
+                      <Button
+                        type="button"
                         onClick={() => avatarInputRef.current?.click()}
                         disabled={uploading !== null}
-                        className="px-4 py-2 bg-white/10 hover:bg-white/15 rounded-lg text-sm font-medium transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                        variant="ghost"
+                        className="px-4 py-2 bg-white/10 hover:bg-white/15 rounded-lg text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         {uploading?.field === "avatar" ? "Uploading…" : "Upload Avatar"}
-                      </button>
+                      </Button>
                       <input
                         ref={avatarInputRef}
                         type="file"
@@ -1130,13 +1189,15 @@ export default function AdminProfilesPage() {
                     ))}
                   </div>
                   <div className="flex gap-2 items-center">
-                    <button
+                    <Button
+                      type="button"
                       onClick={() => aboutInputRef.current?.click()}
                       disabled={uploading !== null || form.aboutImages.length >= 4}
-                      className="px-4 py-2 bg-white/10 hover:bg-white/15 rounded-lg text-sm font-medium transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                      variant="ghost"
+                      className="px-4 py-2 bg-white/10 hover:bg-white/15 rounded-lg text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {uploading?.field === "about" ? "Uploading…" : "+ Add Media"}
-                    </button>
+                    </Button>
                     <input
                       ref={aboutInputRef}
                       type="file"
@@ -1183,14 +1244,15 @@ export default function AdminProfilesPage() {
                       <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
                     )}
                     {canPickFromMedia && (
-                      <button
+                      <Button
                         type="button"
                         onClick={() => setMediaPickerTarget({ type: "about" })}
                         disabled={form.aboutImages.length >= 4}
-                        className="px-4 py-2 bg-[#5A45F9]/20 hover:bg-[#5A45F9]/30 text-[#8B7BFF] rounded-lg text-sm font-medium transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                        variant="ghost"
+                        className="px-4 py-2 bg-[#5A45F9]/20 hover:bg-[#5A45F9]/30 text-[#8B7BFF] rounded-lg text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         Select from media
-                      </button>
+                      </Button>
                     )}
                   </div>
                   <p className="text-xs text-white/30 mt-1">
@@ -1257,25 +1319,28 @@ export default function AdminProfilesPage() {
                                 )}
                               </label>
                               {canPickFromMedia && (
-                                <button
+                                <Button
                                   type="button"
                                   onClick={() => setMediaPickerTarget({ type: "country", idx })}
-                                  className="px-2 py-1 bg-[#5A45F9]/20 hover:bg-[#5A45F9]/30 text-[#8B7BFF] rounded-md text-xs font-medium transition-colors cursor-pointer whitespace-nowrap"
+                                  variant="ghost"
+                                  className="px-2 py-1 bg-[#5A45F9]/20 hover:bg-[#5A45F9]/30 text-[#8B7BFF] rounded-md text-xs font-medium whitespace-nowrap"
                                 >
                                   Select from media
-                                </button>
+                                </Button>
                               )}
-                              <button
+                              <Button
+                                type="button"
                                 onClick={() =>
                                   setForm((prev) => ({
                                     ...prev,
                                     countryImages: prev.countryImages.filter((_, i) => i !== idx),
                                   }))
                                 }
+                                variant="ghost"
                                 className="p-1 hover:bg-red-500/20 rounded-md text-white/40 hover:text-red-400 transition-colors cursor-pointer text-xs"
                               >
                                 ✕
-                              </button>
+                              </Button>
                             </div>
                           </div>
                           <div className="flex flex-wrap gap-2">
@@ -1413,25 +1478,28 @@ export default function AdminProfilesPage() {
                               )}
                             </label>
                             {canPickFromMedia && (
-                              <button
+                              <Button
                                 type="button"
                                 onClick={() => setMediaPickerTarget({ type: "collection", idx })}
-                                className="px-2 py-1 bg-[#5A45F9]/20 hover:bg-[#5A45F9]/30 text-[#8B7BFF] rounded-md text-xs font-medium transition-colors cursor-pointer whitespace-nowrap"
+                                variant="ghost"
+                                className="px-2 py-1 bg-[#5A45F9]/20 hover:bg-[#5A45F9]/30 text-[#8B7BFF] rounded-md text-xs font-medium whitespace-nowrap"
                               >
                                 Select from media
-                              </button>
+                              </Button>
                             )}
-                            <button
+                            <Button
+                              type="button"
                               onClick={() =>
                                 setForm((prev) => ({
                                   ...prev,
                                   collectionImages: prev.collectionImages.filter((_, i) => i !== idx),
                                 }))
                               }
+                              variant="ghost"
                               className="p-1 hover:bg-red-500/20 rounded-md text-white/40 hover:text-red-400 transition-colors cursor-pointer text-xs"
                             >
                               ✕
-                            </button>
+                            </Button>
                           </div>
                         </div>
                         <div className="flex flex-wrap gap-2">
@@ -1533,8 +1601,8 @@ export default function AdminProfilesPage() {
               </div>
 
               {/* Basic Info */}
-              <div className="space-y-4">
-                <h3 className="text-sm font-medium text-white/80 border-b border-white/10 pb-2">
+              <div className="space-y-4 rounded-2xl border border-white/10 bg-black/20 p-4">
+                <h3 className="text-sm font-medium text-white/80 pb-2 border-b border-white/10">
                   Basic Info
                 </h3>
 
@@ -1543,14 +1611,14 @@ export default function AdminProfilesPage() {
                   <label className="text-sm text-white/60 block mb-1.5">
                     Name <span className="text-red-400">*</span>
                   </label>
-                  <input
+                  <Input
                     type="text"
                     value={form.name}
                     onChange={(e) =>
                       setForm((prev) => ({ ...prev, name: e.target.value }))
                     }
                     placeholder="e.g. Michael Thompson"
-                    className="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-lg text-sm text-white placeholder:text-white/25 focus:outline-none focus:border-[#5A45F9] transition-colors"
+                    className="bg-white/5 border border-white/10 placeholder:text-white/25 focus:border-[#5A45F9]"
                   />
                 </div>
 
@@ -1559,14 +1627,14 @@ export default function AdminProfilesPage() {
                   <label className="text-sm text-white/60 block mb-1.5">
                     Handle <span className="text-red-400">*</span>
                   </label>
-                  <input
+                  <Input
                     type="text"
                     value={form.handle}
                     onChange={(e) =>
                       setForm((prev) => ({ ...prev, handle: e.target.value }))
                     }
                     placeholder="e.g. @micheal.th99"
-                    className="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-lg text-sm text-white placeholder:text-white/25 focus:outline-none focus:border-[#5A45F9] transition-colors"
+                    className="bg-white/5 border border-white/10 placeholder:text-white/25 focus:border-[#5A45F9]"
                   />
                 </div>
 
@@ -1575,14 +1643,14 @@ export default function AdminProfilesPage() {
                   <label className="text-sm text-white/60 block mb-1.5">
                     Bio
                   </label>
-                  <textarea
+                  <Textarea
                     value={form.bio}
                     onChange={(e) =>
                       setForm((prev) => ({ ...prev, bio: e.target.value }))
                     }
                     placeholder="Short bio about this traveler..."
                     rows={3}
-                    className="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-lg text-sm text-white placeholder:text-white/25 focus:outline-none focus:border-[#5A45F9] transition-colors resize-none"
+                    className="bg-white/5 border border-white/10 placeholder:text-white/25 focus:border-[#5A45F9] resize-none"
                   />
                 </div>
 
@@ -1592,39 +1660,39 @@ export default function AdminProfilesPage() {
                     Card Alignment
                   </label>
                   <div className="flex gap-2">
-                    <button
+                    <Button
                       type="button"
                       onClick={() =>
                         setForm((prev) => ({ ...prev, align: "start" }))
                       }
-                      className={`flex-1 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer ${
+                      className={`flex-1 py-2 rounded-lg text-sm font-medium ${
                         form.align === "start"
                           ? "bg-[#5A45F9] text-white"
                           : "bg-white/10 text-white/60 hover:bg-white/15"
                       }`}
                     >
                       Start
-                    </button>
-                    <button
+                    </Button>
+                    <Button
                       type="button"
                       onClick={() =>
                         setForm((prev) => ({ ...prev, align: "end" }))
                       }
-                      className={`flex-1 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer ${
+                      className={`flex-1 py-2 rounded-lg text-sm font-medium ${
                         form.align === "end"
                           ? "bg-[#5A45F9] text-white"
                           : "bg-white/10 text-white/60 hover:bg-white/15"
                       }`}
                     >
                       End
-                    </button>
+                    </Button>
                   </div>
                 </div>
               </div>
 
               {/* Country & Location */}
-              <div className="space-y-4">
-                <h3 className="text-sm font-medium text-white/80 border-b border-white/10 pb-2">
+              <div className="space-y-4 rounded-2xl border border-white/10 bg-black/20 p-4">
+                <h3 className="text-sm font-medium text-white/80 pb-2 border-b border-white/10">
                   Country & Location
                 </h3>
 
@@ -1656,14 +1724,14 @@ export default function AdminProfilesPage() {
                       }))
                     }
                   />
-                  <input
+                  <Input
                     type="text"
                     value={form.homeland}
                     onChange={(e) =>
                       setForm((prev) => ({ ...prev, homeland: e.target.value }))
                     }
                     placeholder="City, e.g. Bogota"
-                    className="w-full px-3 py-2.5 bg-white/5 border border-white/10 rounded-lg text-sm text-white placeholder:text-white/25 focus:outline-none focus:border-[#5A45F9] transition-colors"
+                    className="bg-white/5 border border-white/10 placeholder:text-white/25 focus:border-[#5A45F9]"
                   />
                 </div>
 
@@ -1680,14 +1748,14 @@ export default function AdminProfilesPage() {
                       }))
                     }
                   />
-                  <input
+                  <Input
                     type="text"
                     value={form.currentlyIn}
                     onChange={(e) =>
                       setForm((prev) => ({ ...prev, currentlyIn: e.target.value }))
                     }
                     placeholder="City, e.g. Medellin"
-                    className="w-full px-3 py-2.5 bg-white/5 border border-white/10 rounded-lg text-sm text-white placeholder:text-white/25 focus:outline-none focus:border-[#5A45F9] transition-colors"
+                    className="bg-white/5 border border-white/10 placeholder:text-white/25 focus:border-[#5A45F9]"
                   />
                 </div>
 
@@ -1706,8 +1774,8 @@ export default function AdminProfilesPage() {
               </div>
 
               {/* Stats */}
-              <div className="space-y-4">
-                <h3 className="text-sm font-medium text-white/80 border-b border-white/10 pb-2">
+              <div className="space-y-4 rounded-2xl border border-white/10 bg-black/20 p-4">
+                <h3 className="text-sm font-medium text-white/80 pb-2 border-b border-white/10">
                   Stats
                 </h3>
                 <div className="grid grid-cols-3 gap-3">
@@ -1715,7 +1783,7 @@ export default function AdminProfilesPage() {
                     <label className="text-sm text-white/60 block mb-1.5">
                       Countries
                     </label>
-                    <input
+                    <Input
                       type="number"
                       value={form.countries}
                       onChange={(e) =>
@@ -1724,14 +1792,14 @@ export default function AdminProfilesPage() {
                           countries: Number(e.target.value) || 0,
                         }))
                       }
-                      className="w-full px-3 py-2.5 bg-white/5 border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-[#5A45F9] transition-colors"
+                      className="bg-white/5 border border-white/10 focus:border-[#5A45F9]"
                     />
                   </div>
                   <div>
                     <label className="text-sm text-white/60 block mb-1.5">
                       Media
                     </label>
-                    <input
+                    <Input
                       type="number"
                       readOnly
                       value={
@@ -1739,14 +1807,14 @@ export default function AdminProfilesPage() {
                         form.countryImages.reduce((sum, c) => sum + c.images.length, 0) +
                         form.collectionImages.reduce((sum, c) => sum + c.images.length, 0)
                       }
-                      className="w-full px-3 py-2.5 bg-white/5 border border-white/10 rounded-lg text-sm text-white/50 cursor-not-allowed"
+                      className="bg-white/5 border border-white/10 text-white/50"
                     />
                   </div>
                   <div>
                     <label className="text-sm text-white/60 block mb-1.5">
                       Collections
                     </label>
-                    <input
+                    <Input
                       type="number"
                       value={form.collections}
                       onChange={(e) =>
@@ -1755,15 +1823,15 @@ export default function AdminProfilesPage() {
                           collections: Number(e.target.value) || 0,
                         }))
                       }
-                      className="w-full px-3 py-2.5 bg-white/5 border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-[#5A45F9] transition-colors"
+                      className="bg-white/5 border border-white/10 focus:border-[#5A45F9]"
                     />
                   </div>
                 </div>
               </div>
 
               {/* Tags */}
-              <div className="space-y-4">
-                <h3 className="text-sm font-medium text-white/80 border-b border-white/10 pb-2">
+              <div className="space-y-4 rounded-2xl border border-white/10 bg-black/20 p-4">
+                <h3 className="text-sm font-medium text-white/80 pb-2 border-b border-white/10">
                   Interests & Languages
                 </h3>
                 <TagInput
@@ -1785,8 +1853,8 @@ export default function AdminProfilesPage() {
               </div>
 
               {/* Social Links */}
-              <div className="space-y-4">
-                <h3 className="text-sm font-medium text-white/80 border-b border-white/10 pb-2">
+              <div className="space-y-4 rounded-2xl border border-white/10 bg-black/20 p-4">
+                <h3 className="text-sm font-medium text-white/80 pb-2 border-b border-white/10">
                   Social Links
                 </h3>
                 <div className="space-y-2">
@@ -1794,7 +1862,7 @@ export default function AdminProfilesPage() {
                     <span className="text-white/30 text-xs w-16">
                       Instagram
                     </span>
-                    <input
+                    <Input
                       type="text"
                       value={form.socials.instagram}
                       onChange={(e) =>
@@ -1807,12 +1875,12 @@ export default function AdminProfilesPage() {
                         }))
                       }
                       placeholder="username"
-                      className="flex-1 px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-xs text-white placeholder:text-white/25 focus:outline-none focus:border-[#5A45F9] transition-colors"
+                      className="flex-1 bg-white/5 border border-white/10 text-xs placeholder:text-white/25 focus:border-[#5A45F9]"
                     />
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="text-white/30 text-xs w-16">X</span>
-                    <input
+                    <Input
                       type="text"
                       value={form.socials.x}
                       onChange={(e) =>
@@ -1822,12 +1890,12 @@ export default function AdminProfilesPage() {
                         }))
                       }
                       placeholder="username"
-                      className="flex-1 px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-xs text-white placeholder:text-white/25 focus:outline-none focus:border-[#5A45F9] transition-colors"
+                      className="flex-1 bg-white/5 border border-white/10 text-xs placeholder:text-white/25 focus:border-[#5A45F9]"
                     />
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="text-white/30 text-xs w-16">LinkedIn</span>
-                    <input
+                    <Input
                       type="text"
                       value={form.socials.linkedin}
                       onChange={(e) =>
@@ -1840,12 +1908,12 @@ export default function AdminProfilesPage() {
                         }))
                       }
                       placeholder="username"
-                      className="flex-1 px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-xs text-white placeholder:text-white/25 focus:outline-none focus:border-[#5A45F9] transition-colors"
+                      className="flex-1 bg-white/5 border border-white/10 text-xs placeholder:text-white/25 focus:border-[#5A45F9]"
                     />
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="text-white/30 text-xs w-16">YouTube</span>
-                    <input
+                    <Input
                       type="text"
                       value={form.socials.youtube}
                       onChange={(e) =>
@@ -1858,7 +1926,7 @@ export default function AdminProfilesPage() {
                         }))
                       }
                       placeholder="channel"
-                      className="flex-1 px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-xs text-white placeholder:text-white/25 focus:outline-none focus:border-[#5A45F9] transition-colors"
+                      className="flex-1 bg-white/5 border border-white/10 text-xs placeholder:text-white/25 focus:border-[#5A45F9]"
                     />
                   </div>
                 </div>
@@ -1866,24 +1934,28 @@ export default function AdminProfilesPage() {
 
               {/* Actions */}
               <div className="flex items-center gap-3 pt-2">
-                <button
+                <Button
+                  type="button"
                   onClick={handleSave}
                   disabled={saving}
-                  className="flex-1 py-2.5 bg-[#5A45F9] hover:bg-[#4935e0] rounded-lg text-sm font-semibold transition-colors disabled:opacity-50 cursor-pointer"
+                  loading={saving}
+                  className="flex-1 py-2.5 bg-white text-black hover:bg-white/90 rounded-full text-sm font-semibold shadow-[0_12px_30px_rgba(255,255,255,0.08)]"
                 >
                   {saving
                     ? "Saving..."
                     : editing
                       ? "Update Profile"
                       : "Add Profile"}
-                </button>
+                </Button>
                 {editing && (
-                  <button
+                  <Button
+                    type="button"
                     onClick={cancelEdit}
-                    className="py-2.5 px-4 bg-white/10 hover:bg-white/15 rounded-lg text-sm font-medium transition-colors cursor-pointer"
+                    variant="ghost"
+                    className="py-2.5 px-4 bg-white/10 hover:bg-white/15 rounded-full text-sm font-medium"
                   >
                     Cancel
-                  </button>
+                  </Button>
                 )}
               </div>
             </div>
@@ -1892,14 +1964,22 @@ export default function AdminProfilesPage() {
 
         {/* List Panel */}
         <div className="flex-1 min-w-0">
-          <h2 className="text-lg font-semibold mb-4">All Profiles</h2>
+          <div className="mb-4 flex items-end justify-between gap-3">
+            <div>
+              <p className="text-xs uppercase tracking-[0.2em] text-white/35">Directory</p>
+              <h2 className="mt-2 text-lg font-semibold tracking-[-0.02em]">All Profiles</h2>
+            </div>
+            <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-white/45">
+              {profiles.length} entries
+            </span>
+          </div>
 
           {loading ? (
             <div className="text-white/40 text-sm py-12 text-center">
               Loading...
             </div>
           ) : profiles.length === 0 ? (
-            <div className="bg-[#141414] rounded-2xl border border-white/10 p-12 text-center">
+            <div className="rounded-2xl border border-white/10 bg-white/4 p-12 text-center backdrop-blur-sm">
               <p className="text-white/40 text-sm">No profiles yet</p>
               <p className="text-white/20 text-xs mt-1">
                 Add your first one using the form
@@ -1910,10 +1990,10 @@ export default function AdminProfilesPage() {
               {profiles.map((p) => (
                 <div
                   key={p.id}
-                  className={`bg-[#141414] rounded-xl border p-4 transition-colors ${
+                  className={`rounded-2xl border p-4 transition-all duration-200 hover:-translate-y-0.5 hover:border-white/20 hover:bg-white/6 ${
                     editing?.id === p.id
-                      ? "border-[#5A45F9]"
-                      : "border-white/10"
+                      ? "border-[#5A45F9]/60 bg-[#5A45F9]/8 shadow-[0_18px_40px_rgba(90,69,249,0.12)]"
+                      : "border-white/10 bg-white/4"
                   }`}
                 >
                   <div className="flex gap-4 items-start">
@@ -1951,12 +2031,10 @@ export default function AdminProfilesPage() {
                       <p className="text-white/50 text-xs leading-relaxed line-clamp-2 mb-2">
                         {p.bio}
                       </p>
-                      <div className="flex items-center gap-3 text-xs text-white/30">
-                        <span>{p.countries} countries</span>
-                        <span>•</span>
-                        <span>{p.media} media</span>
-                        <span>•</span>
-                        <span>{p.collections} collections</span>
+                      <div className="flex flex-wrap items-center gap-2 text-[11px] text-white/40">
+                        <span className="rounded-full border border-white/10 bg-black/20 px-2 py-1">{p.countries} countries</span>
+                        <span className="rounded-full border border-white/10 bg-black/20 px-2 py-1">{p.media} media</span>
+                        <span className="rounded-full border border-white/10 bg-black/20 px-2 py-1">{p.collections} collections</span>
                       </div>
                       {/* Visited flags preview */}
                       {p.visitedCountryCodes.length > 0 && (
@@ -1979,25 +2057,25 @@ export default function AdminProfilesPage() {
                     </div>
 
                     {/* Actions */}
-                    <div className="flex items-center gap-1 shrink-0">
+                    <div className="flex items-center gap-1 shrink-0 rounded-full border border-white/10 bg-black/20 p-1">
                       <Link
                         href={`/profiles/${p.id}`}
                         target="_blank"
-                        className="p-2 hover:bg-white/10 rounded-lg text-xs text-white/60 hover:text-white transition-colors"
+                        className="p-2 hover:bg-white/10 rounded-full text-xs text-white/60 hover:text-white transition-colors"
                         title="View profile"
                       >
                         🔗
                       </Link>
                       <button
                         onClick={() => startEdit(p)}
-                        className="p-2 hover:bg-white/10 rounded-lg text-xs text-white/60 hover:text-white transition-colors cursor-pointer"
+                        className="p-2 hover:bg-white/10 rounded-full text-xs text-white/60 hover:text-white transition-colors cursor-pointer"
                         title="Edit"
                       >
                         ✏️
                       </button>
                       <button
                         onClick={() => handleDelete(p.id)}
-                        className="p-2 hover:bg-red-500/20 rounded-lg text-xs text-white/60 hover:text-red-400 transition-colors cursor-pointer"
+                        className="p-2 hover:bg-red-500/20 rounded-full text-xs text-white/60 hover:text-red-400 transition-colors cursor-pointer"
                         title="Delete"
                       >
                         🗑️
@@ -2007,7 +2085,7 @@ export default function AdminProfilesPage() {
 
                   {/* Cover preview */}
                   {p.images.cover && (
-                    <div className="mt-3 h-20 rounded-lg overflow-hidden relative">
+                    <div className="mt-3 h-24 rounded-xl overflow-hidden relative ring-1 ring-white/10">
                       <Image
                         src={toLandingAssetUrl(p.images.cover)}
                         alt="Cover"

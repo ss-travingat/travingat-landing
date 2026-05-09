@@ -1,6 +1,8 @@
 "use client";
 
 import { FormEvent, useState } from "react";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
 
 export default function AdminLoginPage() {
   const [password, setPassword] = useState("");
@@ -45,24 +47,24 @@ export default function AdminLoginPage() {
         <form onSubmit={onSubmit} className="space-y-4">
           <div className="space-y-1.5">
             <label className="text-sm text-white/70">Password</label>
-            <input
+            <Input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Enter admin password"
-              className="w-full rounded-xl border border-white/15 bg-[#0d0d0d] px-3.5 py-2.5 text-sm focus:outline-none focus:border-white/35"
+              className="rounded-xl border border-white/15 bg-[#0d0d0d] focus:border-white/35"
             />
           </div>
 
           {error ? <p className="text-red-400 text-sm">{error}</p> : null}
 
-          <button
+          <Button
             type="submit"
-            disabled={submitting}
-            className="w-full rounded-xl bg-white text-black text-sm font-medium py-2.5 hover:bg-white/90 transition disabled:opacity-60 disabled:cursor-not-allowed"
+            loading={submitting}
+            className="w-full rounded-xl bg-white text-black text-sm font-medium hover:bg-white/90"
           >
             {submitting ? "Signing in..." : "Sign in"}
-          </button>
+          </Button>
         </form>
       </div>
     </div>

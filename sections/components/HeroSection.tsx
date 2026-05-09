@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { toLandingAssetUrl } from "@/lib/landing-assets";
 import { useWaitlistForm } from "@/lib/use-waitlist-form";
+import { Button } from "@/components/ui/Button";
 
 export default function HeroSection() {
   const { email, setEmail, status, message, submit } = useWaitlistForm();
@@ -37,13 +38,14 @@ export default function HeroSection() {
             onChange={(e) => setEmail(e.target.value)}
             className="w-full h-12 rounded-full border border-white-900 px-6 bg-black text-white text-[16px] font-medium placeholder:text-white-800 focus:outline-none focus:border-gray-500 transition-colors"
           />
-          <button
+          <Button
             type="submit"
-            disabled={isLoading}
-            className="ds-font-display w-full h-12 rounded-full bg-white text-black font-medium text-[20px] leading-7 tracking-[-0.5px] hover:bg-gray-200 transition-colors disabled:opacity-50"
+            size="xl"
+            loading={isLoading}
+            className="ds-font-display w-full text-[20px] leading-7 tracking-[-0.5px]"
           >
             {isLoading ? "Joining..." : "Get early access"}
-          </button>
+          </Button>
         </form>
 
         {/* Tablet/Desktop: inline input with button */}
@@ -55,13 +57,14 @@ export default function HeroSection() {
             onChange={(e) => setEmail(e.target.value)}
             className="flex-1 bg-transparent text-white text-[16px] placeholder:text-gray-500 focus:outline-none"
           />
-          <button
+          <Button
             type="submit"
-            disabled={isLoading}
-            className="ds-font-display h-13 px-8 rounded-full bg-white text-black font-medium text-[20px] leading-7 tracking-[-0.5px] hover:bg-gray-200 transition-colors disabled:opacity-50"
+            size="xl"
+            loading={isLoading}
+            className="ds-font-display h-13 px-8 text-[20px] leading-7 tracking-[-0.5px]"
           >
             {isLoading ? "Joining..." : "Get early access"}
-          </button>
+          </Button>
         </form>
       </div>
 

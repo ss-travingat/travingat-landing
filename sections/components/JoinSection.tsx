@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { toLandingAssetUrl } from "@/lib/landing-assets";
 import { useWaitlistForm } from "@/lib/use-waitlist-form";
+import { Button } from "@/components/ui/Button";
 
 export default function JoinSection() {
   const { email, setEmail, status, message, submit } = useWaitlistForm();
@@ -78,13 +79,14 @@ export default function JoinSection() {
             onChange={(e) => setEmail(e.target.value)}
             className="w-full h-12 rounded-full border border-white-900 bg-black px-6 text-[16px] font-medium text-white placeholder:text-white-800 focus:outline-none focus:border-gray-500 transition-colors"
           />
-          <button
+          <Button
             type="submit"
-            disabled={isLoading}
-            className="ds-font-display w-full h-12 rounded-full bg-white text-[20px] font-medium leading-7 tracking-[-0.5px] text-black transition hover:bg-[#ececec] disabled:opacity-50"
+            size="xl"
+            loading={isLoading}
+            className="ds-font-display w-full text-[20px] leading-7 tracking-[-0.5px]"
           >
             {isLoading ? "Joining..." : "Get early access"}
-          </button>
+          </Button>
         </form>
 
         {/* Tablet/Desktop: inline pill */}
@@ -96,13 +98,14 @@ export default function JoinSection() {
             onChange={(e) => setEmail(e.target.value)}
             className="w-full bg-transparent text-[20px] font-medium leading-7 tracking-[-0.5px] text-white placeholder:text-white-800 focus:outline-none"
           />
-          <button
+          <Button
             type="submit"
-            disabled={isLoading}
-            className="ds-font-display h-13 shrink-0 rounded-full bg-white px-8 text-[20px] font-medium leading-7 tracking-[-0.5px] text-black transition hover:bg-white-100 disabled:opacity-50"
+            size="xl"
+            loading={isLoading}
+            className="ds-font-display h-13 shrink-0 px-8 text-[20px] leading-7 tracking-[-0.5px]"
           >
             {isLoading ? "Joining..." : "Get early access"}
-          </button>
+          </Button>
         </form>
       </div>
     </section>

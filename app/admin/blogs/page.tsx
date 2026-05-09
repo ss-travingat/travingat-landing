@@ -4,6 +4,9 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import Image from "next/image";
 import { toLandingAssetUrl } from "@/lib/landing-assets";
 import ImageCropModal from "@/components/ImageCropModal";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
+import { Textarea } from "@/components/ui/Textarea";
 
 interface BlogPost {
   id: string;
@@ -373,25 +376,28 @@ export default function AdminBlogsPage() {
             ← Site
           </a>
           {view === "list" ? (
-            <button
+            <Button
+              type="button"
               onClick={() => {
                 resetForm();
                 setView("editor");
               }}
-              className="px-4 py-2 bg-[#5A45F9] hover:bg-[#4935e0] rounded-lg text-sm font-semibold transition-colors cursor-pointer"
+              className="px-4 py-2 bg-[#5A45F9] hover:bg-[#4935e0] rounded-lg text-sm font-semibold"
             >
               + New Post
-            </button>
+            </Button>
           ) : (
-            <button
+            <Button
+              type="button"
               onClick={() => {
                 resetForm();
                 setView("list");
               }}
-              className="px-4 py-2 bg-white/10 hover:bg-white/15 rounded-lg text-sm font-medium transition-colors cursor-pointer"
+              variant="ghost"
+              className="px-4 py-2 bg-white/10 hover:bg-white/15 rounded-lg text-sm font-medium"
             >
               ← Back
-            </button>
+            </Button>
           )}
         </div>
       </header>
@@ -421,7 +427,7 @@ export default function AdminBlogsPage() {
                   className="bg-[#141414] rounded-xl border border-white/10 p-4 flex gap-4 items-start"
                 >
                   {/* Cover thumbnail */}
-                  <div className="w-20 h-14 rounded-lg overflow-hidden bg-white/5 relative flex-shrink-0">
+                  <div className="w-20 h-14 rounded-lg overflow-hidden bg-white/5 relative shrink-0">
                     <Image
                       src={toLandingAssetUrl(b.coverImage)}
                       alt=""
@@ -456,21 +462,27 @@ export default function AdminBlogsPage() {
                     </div>
                   </div>
                   {/* Actions */}
-                  <div className="flex items-center gap-1 flex-shrink-0">
-                    <button
+                  <div className="flex items-center gap-1 shrink-0">
+                    <Button
+                      type="button"
                       onClick={() => startEdit(b)}
-                      className="p-2 hover:bg-white/10 rounded-lg text-xs transition-colors cursor-pointer"
+                      variant="ghost"
+                      size="sm"
+                      className="p-2 hover:bg-white/10 rounded-lg text-xs"
                       title="Edit"
                     >
                       ✏️
-                    </button>
-                    <button
+                    </Button>
+                    <Button
+                      type="button"
                       onClick={() => handleDelete(b.id)}
-                      className="p-2 hover:bg-red-500/20 rounded-lg text-xs transition-colors cursor-pointer"
+                      variant="ghost"
+                      size="sm"
+                      className="p-2 hover:bg-red-500/20 rounded-lg text-xs"
                       title="Delete"
                     >
                       🗑️
-                    </button>
+                    </Button>
                   </div>
                 </div>
               ))}
@@ -484,7 +496,7 @@ export default function AdminBlogsPage() {
           <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 mb-6">
             {/* Title */}
             <div className="xl:col-span-2">
-              <input
+              <Input
                 type="text"
                 value={form.title}
                 onChange={(e) => {
@@ -496,7 +508,7 @@ export default function AdminBlogsPage() {
                   }));
                 }}
                 placeholder="Post title…"
-                className="w-full px-0 py-3 bg-transparent text-[28px] xl:text-[36px] font-bold text-white placeholder:text-white/20 focus:outline-none tracking-[-1px]"
+                className="px-0 py-3 bg-transparent text-[28px] xl:text-[36px] font-bold text-white placeholder:text-white/20 tracking-[-1px]"
                 style={{
                   fontFamily: "'Georgia', 'Times New Roman', serif",
                 }}
@@ -506,28 +518,28 @@ export default function AdminBlogsPage() {
             {/* Slug */}
             <div>
               <label className="text-xs text-white/40 block mb-1">Slug</label>
-              <input
+              <Input
                 type="text"
                 value={form.slug}
                 onChange={(e) =>
                   setForm((prev) => ({ ...prev, slug: e.target.value }))
                 }
                 placeholder="auto-generated-from-title"
-                className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-[#5A45F9]"
+                className="bg-white/5 border border-white/10 placeholder:text-white/20 focus:border-[#5A45F9]"
               />
             </div>
 
             {/* Author */}
             <div>
               <label className="text-xs text-white/40 block mb-1">Author</label>
-              <input
+              <Input
                 type="text"
                 value={form.author}
                 onChange={(e) =>
                   setForm((prev) => ({ ...prev, author: e.target.value }))
                 }
                 placeholder="Author name"
-                className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-[#5A45F9]"
+                className="bg-white/5 border border-white/10 placeholder:text-white/20 focus:border-[#5A45F9]"
               />
             </div>
 
@@ -536,14 +548,14 @@ export default function AdminBlogsPage() {
               <label className="text-xs text-white/40 block mb-1">
                 Excerpt
               </label>
-              <textarea
+              <Textarea
                 value={form.excerpt}
                 onChange={(e) =>
                   setForm((prev) => ({ ...prev, excerpt: e.target.value }))
                 }
                 placeholder="Brief description for the blog card…"
                 rows={2}
-                className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-[#5A45F9] resize-none"
+                className="bg-white/5 border border-white/10 placeholder:text-white/20 focus:border-[#5A45F9] resize-none"
               />
             </div>
 
@@ -553,7 +565,7 @@ export default function AdminBlogsPage() {
                 Cover Image
               </label>
               <div className="flex items-center gap-3">
-                <div className="w-16 h-10 rounded-lg overflow-hidden bg-white/5 relative flex-shrink-0">
+                <div className="w-16 h-10 rounded-lg overflow-hidden bg-white/5 relative shrink-0">
                   <Image
                     src={toLandingAssetUrl(form.coverImage)}
                     alt=""
@@ -561,12 +573,15 @@ export default function AdminBlogsPage() {
                     className="object-cover"
                   />
                 </div>
-                <button
+                <Button
+                  type="button"
                   onClick={() => coverInputRef.current?.click()}
-                  className="px-3 py-1.5 bg-white/10 hover:bg-white/15 rounded-lg text-xs font-medium transition-colors cursor-pointer"
+                  size="sm"
+                  variant="ghost"
+                  className="px-3 py-1.5 bg-white/10 hover:bg-white/15 rounded-lg text-xs font-medium"
                 >
                   Upload
-                </button>
+                </Button>
                 <input
                   ref={coverInputRef}
                   type="file"
@@ -581,7 +596,7 @@ export default function AdminBlogsPage() {
             <div>
               <label className="text-xs text-white/40 block mb-1">Tags</label>
               <div className="flex items-center gap-2">
-                <input
+                <Input
                   type="text"
                   value={tagInput}
                   onChange={(e) => handleTagInputChange(e.target.value)}
@@ -593,14 +608,17 @@ export default function AdminBlogsPage() {
                     }
                   }}
                   placeholder="Add tag…"
-                  className="flex-1 px-3 py-1.5 bg-white/5 border border-white/10 rounded-lg text-xs text-white placeholder:text-white/20 focus:outline-none focus:border-[#5A45F9]"
+                  className="flex-1 bg-white/5 border border-white/10 text-xs placeholder:text-white/20 focus:border-[#5A45F9]"
                 />
-                <button
+                <Button
+                  type="button"
                   onClick={addTag}
-                  className="px-2 py-1.5 bg-white/10 hover:bg-white/15 rounded-lg text-xs transition-colors cursor-pointer"
+                  size="sm"
+                  variant="ghost"
+                  className="px-2 py-1.5 bg-white/10 hover:bg-white/15 rounded-lg text-xs"
                 >
                   +
-                </button>
+                </Button>
               </div>
               {form.tags.length > 0 && (
                 <div className="flex flex-wrap gap-1.5 mt-2">
@@ -624,7 +642,7 @@ export default function AdminBlogsPage() {
           </div>
 
           {/* ─── WYSIWYG TOOLBAR ──────────────────────────────── */}
-          <div className="sticky top-[65px] z-30 bg-[#0a0a0a] border-b border-white/10 pb-2 mb-4">
+          <div className="sticky top-16.25 z-30 bg-[#0a0a0a] border-b border-white/10 pb-2 mb-4">
             <div className="flex flex-wrap items-center gap-1">
               {/* Text formatting */}
               <ToolbarBtn label="B" title="Bold" onClick={() => exec("bold")} bold />
@@ -715,7 +733,7 @@ export default function AdminBlogsPage() {
               range.collapse(false);
               syncContent();
             }}
-            className="blog-content min-h-[400px] px-1 py-2 focus:outline-none text-white/90"
+            className="blog-content min-h-100 px-1 py-2 focus:outline-none text-white/90"
             style={{
               fontFamily: "'Georgia', 'Times New Roman', serif",
               fontSize: "18px",
@@ -726,26 +744,29 @@ export default function AdminBlogsPage() {
 
           {/* Action bar */}
           <div className="flex items-center gap-3 mt-8 pt-6 border-t border-white/10">
-            <button
+            <Button
+              type="button"
               onClick={handleSave}
-              disabled={saving}
-              className="px-6 py-2.5 bg-[#5A45F9] hover:bg-[#4935e0] rounded-lg text-sm font-semibold transition-colors disabled:opacity-50 cursor-pointer"
+              loading={saving}
+              className="px-6 py-2.5 bg-[#5A45F9] hover:bg-[#4935e0] rounded-lg text-sm font-semibold"
             >
               {saving
                 ? "Saving…"
                 : editing
                   ? "Update Post"
                   : "Publish Post"}
-            </button>
-            <button
+            </Button>
+            <Button
+              type="button"
               onClick={() => {
                 resetForm();
                 setView("list");
               }}
-              className="px-4 py-2.5 bg-white/10 hover:bg-white/15 rounded-lg text-sm font-medium transition-colors cursor-pointer"
+              variant="ghost"
+              className="px-4 py-2.5 bg-white/10 hover:bg-white/15 rounded-lg text-sm font-medium"
             >
               Cancel
-            </button>
+            </Button>
           </div>
         </div>
       )}

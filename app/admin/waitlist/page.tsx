@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
 
 type WaitlistEntry = {
   id: number;
@@ -105,18 +107,20 @@ export default function AdminWaitlistPage() {
 
         {/* Search + Filter */}
         <div className="flex flex-col sm:flex-row gap-3 mb-6">
-          <input
+          <Input
             type="text"
             placeholder="Search by email, country, or city..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full max-w-md h-10 rounded-lg border border-white/10 bg-[#141414] px-4 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-[#5A45F9]/50"
+            className="max-w-md border border-white/10 bg-[#141414] placeholder:text-white/30 focus:border-[#5A45F9]/50"
           />
           <div className="flex gap-2">
             {(["all", "confirmed", "unconfirmed"] as Filter[]).map((f) => (
-              <button
+              <Button
                 key={f}
+                type="button"
                 onClick={() => setFilter(f)}
+                variant="ghost"
                 className={`h-10 px-4 rounded-lg text-sm font-medium transition-colors capitalize ${
                   filter === f
                     ? "bg-white text-black"
@@ -124,7 +128,7 @@ export default function AdminWaitlistPage() {
                 }`}
               >
                 {f}
-              </button>
+              </Button>
             ))}
           </div>
         </div>

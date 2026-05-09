@@ -2,6 +2,8 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
 
 type AdminUser = {
   id: string;
@@ -143,9 +145,15 @@ export default function AdminUsersPage() {
           <Link href="/admin" className="text-white/40 hover:text-white text-sm transition-colors">
             ← Back to admin
           </Link>
-          <button onClick={onSignOut} className="text-sm text-white/50 hover:text-white transition-colors">
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={onSignOut}
+            className="text-sm text-white/50 hover:text-white"
+          >
             Sign out
-          </button>
+          </Button>
         </div>
       </header>
 
@@ -155,11 +163,11 @@ export default function AdminUsersPage() {
             <h2 className="text-[28px] font-bold tracking-[-0.5px]">Users</h2>
             <p className="text-white/40 text-sm">View account analytics, activity patterns, media usage, and admin controls.</p>
           </div>
-          <input
+          <Input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search by email / username / country"
-            className="w-full max-w-[320px] bg-[#141414] border border-white/10 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#5A45F9]/60"
+            className="max-w-[320px] bg-[#141414] border border-white/10 rounded-lg px-3 py-2 text-sm focus:border-[#5A45F9]/60"
           />
         </div>
 
@@ -236,20 +244,26 @@ export default function AdminUsersPage() {
                     </td>
                     <td className="px-4 py-3 min-w-[220px]">
                       <div className="flex items-center gap-2">
-                        <button
+                        <Button
+                          type="button"
                           onClick={() => onToggleStatus(u)}
-                          disabled={processingUserID === u.id}
-                          className={`px-2.5 py-1.5 rounded-md text-xs font-medium transition ${u.status === "active" ? "bg-yellow-500/15 text-yellow-300 hover:bg-yellow-500/25" : "bg-emerald-500/15 text-emerald-300 hover:bg-emerald-500/25"} disabled:opacity-60`}
+                          variant="ghost"
+                          size="sm"
+                          loading={processingUserID === u.id}
+                          className={`px-2.5 py-1.5 rounded-md text-xs font-medium transition ${u.status === "active" ? "bg-yellow-500/15 text-yellow-300 hover:bg-yellow-500/25" : "bg-emerald-500/15 text-emerald-300 hover:bg-emerald-500/25"}`}
                         >
                           {processingUserID === u.id ? "Working..." : u.status === "active" ? "Disable" : "Enable"}
-                        </button>
-                        <button
+                        </Button>
+                        <Button
+                          type="button"
                           onClick={() => onDeleteUser(u)}
-                          disabled={processingUserID === u.id}
-                          className="px-2.5 py-1.5 rounded-md text-xs font-medium bg-red-500/15 text-red-300 hover:bg-red-500/25 transition disabled:opacity-60"
+                          variant="ghost"
+                          size="sm"
+                          loading={processingUserID === u.id}
+                          className="px-2.5 py-1.5 rounded-md text-xs font-medium bg-red-500/15 text-red-300 hover:bg-red-500/25 transition"
                         >
                           Delete
-                        </button>
+                        </Button>
                       </div>
                     </td>
                   </tr>

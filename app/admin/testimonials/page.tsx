@@ -3,6 +3,9 @@
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { toLandingAssetUrl } from "@/lib/landing-assets";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
+import { Textarea } from "@/components/ui/Textarea";
 
 interface Testimonial {
   id: string;
@@ -197,7 +200,7 @@ export default function AdminTestimonialsPage() {
 
       <div className="max-w-5xl mx-auto px-6 py-8 flex flex-col xl:flex-row gap-8">
         {/* Form Panel */}
-        <div className="xl:w-[420px] flex-shrink-0">
+        <div className="xl:w-105 shrink-0">
           <div className="bg-[#141414] rounded-2xl border border-white/10 p-6 sticky top-20">
             <h2 className="text-lg font-semibold mb-6">
               {editing ? "Edit Testimonial" : "Add New Testimonial"}
@@ -207,7 +210,7 @@ export default function AdminTestimonialsPage() {
             <div className="mb-5">
               <label className="text-sm text-white/60 block mb-2">Photo</label>
               <div className="flex items-center gap-4">
-                <div className="w-16 h-24 rounded-lg overflow-hidden bg-white/5 flex-shrink-0 relative">
+                <div className="w-16 h-24 rounded-lg overflow-hidden bg-white/5 shrink-0 relative">
                   <Image
                     src={toLandingAssetUrl(form.photo)}
                     alt="Preview"
@@ -216,12 +219,14 @@ export default function AdminTestimonialsPage() {
                   />
                 </div>
                 <div>
-                  <button
+                  <Button
+                    type="button"
                     onClick={() => fileInputRef.current?.click()}
-                    className="px-4 py-2 bg-white/10 hover:bg-white/15 rounded-lg text-sm font-medium transition-colors cursor-pointer"
+                    variant="ghost"
+                    className="px-4 py-2 bg-white/10 hover:bg-white/15 rounded-lg text-sm font-medium"
                   >
                     Upload Photo
-                  </button>
+                  </Button>
                   <input
                     ref={fileInputRef}
                     type="file"
@@ -239,14 +244,14 @@ export default function AdminTestimonialsPage() {
               <label className="text-sm text-white/60 block mb-1.5">
                 Name <span className="text-red-400">*</span>
               </label>
-              <input
+              <Input
                 type="text"
                 value={form.name}
                 onChange={(e) =>
                   setForm((prev) => ({ ...prev, name: e.target.value }))
                 }
                 placeholder="e.g. Sophia"
-                className="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-lg text-sm text-white placeholder:text-white/25 focus:outline-none focus:border-[#5A45F9] transition-colors"
+                className="bg-white/5 border border-white/10 placeholder:text-white/25 focus:border-[#5A45F9]"
               />
             </div>
 
@@ -255,14 +260,14 @@ export default function AdminTestimonialsPage() {
               <label className="text-sm text-white/60 block mb-1.5">
                 Location
               </label>
-              <input
+              <Input
                 type="text"
                 value={form.location}
                 onChange={(e) =>
                   setForm((prev) => ({ ...prev, location: e.target.value }))
                 }
                 placeholder="e.g. USA"
-                className="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-lg text-sm text-white placeholder:text-white/25 focus:outline-none focus:border-[#5A45F9] transition-colors"
+                className="bg-white/5 border border-white/10 placeholder:text-white/25 focus:border-[#5A45F9]"
               />
             </div>
 
@@ -276,7 +281,7 @@ export default function AdminTestimonialsPage() {
                   {form.quote.length}/100
                 </span>
               </div>
-              <textarea
+              <Textarea
                 value={form.quote}
                 onChange={(e) =>
                   setForm((prev) => ({ ...prev, quote: e.target.value.slice(0, 100) }))
@@ -284,7 +289,7 @@ export default function AdminTestimonialsPage() {
                 placeholder="What did they say about Travingat?"
                 rows={4}
                 maxLength={100}
-                className={`w-full px-4 py-2.5 bg-white/5 border rounded-lg text-sm text-white placeholder:text-white/25 focus:outline-none transition-colors resize-none ${form.quote.length >= 100 ? "border-red-400/50 focus:border-red-400" : "border-white/10 focus:border-[#5A45F9]"}`}
+                className={`bg-white/5 border placeholder:text-white/25 resize-none ${form.quote.length >= 100 ? "border-red-400/50 focus:border-red-400" : "border-white/10 focus:border-[#5A45F9]"}`}
               />
             </div>
 
@@ -296,7 +301,7 @@ export default function AdminTestimonialsPage() {
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
                   <span className="text-white/30 text-xs w-16">Instagram</span>
-                  <input
+                  <Input
                     type="url"
                     value={form.socials.instagram}
                     onChange={(e) =>
@@ -306,12 +311,12 @@ export default function AdminTestimonialsPage() {
                       }))
                     }
                     placeholder="https://instagram.com/..."
-                    className="flex-1 px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-xs text-white placeholder:text-white/25 focus:outline-none focus:border-[#5A45F9] transition-colors"
+                    className="flex-1 bg-white/5 border border-white/10 text-xs placeholder:text-white/25 focus:border-[#5A45F9]"
                   />
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="text-white/30 text-xs w-16">TikTok</span>
-                  <input
+                  <Input
                     type="url"
                     value={form.socials.tiktok}
                     onChange={(e) =>
@@ -321,12 +326,12 @@ export default function AdminTestimonialsPage() {
                       }))
                     }
                     placeholder="https://tiktok.com/@..."
-                    className="flex-1 px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-xs text-white placeholder:text-white/25 focus:outline-none focus:border-[#5A45F9] transition-colors"
+                    className="flex-1 bg-white/5 border border-white/10 text-xs placeholder:text-white/25 focus:border-[#5A45F9]"
                   />
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="text-white/30 text-xs w-16">LinkedIn</span>
-                  <input
+                  <Input
                     type="url"
                     value={form.socials.linkedin}
                     onChange={(e) =>
@@ -336,7 +341,7 @@ export default function AdminTestimonialsPage() {
                       }))
                     }
                     placeholder="https://linkedin.com/in/..."
-                    className="flex-1 px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-xs text-white placeholder:text-white/25 focus:outline-none focus:border-[#5A45F9] transition-colors"
+                    className="flex-1 bg-white/5 border border-white/10 text-xs placeholder:text-white/25 focus:border-[#5A45F9]"
                   />
                 </div>
               </div>
@@ -344,24 +349,27 @@ export default function AdminTestimonialsPage() {
 
             {/* Actions */}
             <div className="flex items-center gap-3">
-              <button
+              <Button
+                type="button"
                 onClick={handleSave}
-                disabled={saving}
-                className="flex-1 py-2.5 bg-[#5A45F9] hover:bg-[#4935e0] rounded-lg text-sm font-semibold transition-colors disabled:opacity-50 cursor-pointer"
+                loading={saving}
+                className="flex-1 py-2.5 bg-[#5A45F9] hover:bg-[#4935e0] rounded-lg text-sm font-semibold"
               >
                 {saving
                   ? "Saving..."
                   : editing
                     ? "Update Testimonial"
                     : "Add Testimonial"}
-              </button>
+              </Button>
               {editing && (
-                <button
+                <Button
+                  type="button"
                   onClick={cancelEdit}
-                  className="py-2.5 px-4 bg-white/10 hover:bg-white/15 rounded-lg text-sm font-medium transition-colors cursor-pointer"
+                  variant="ghost"
+                  className="py-2.5 px-4 bg-white/10 hover:bg-white/15 rounded-lg text-sm font-medium"
                 >
                   Cancel
-                </button>
+                </Button>
               )}
             </div>
           </div>
@@ -396,7 +404,7 @@ export default function AdminTestimonialsPage() {
                   }`}
                 >
                   {/* Photo thumbnail */}
-                  <div className="w-12 h-18 rounded-lg overflow-hidden bg-white/5 flex-shrink-0 relative">
+                  <div className="w-12 h-18 rounded-lg overflow-hidden bg-white/5 shrink-0 relative">
                     <Image
                       src={toLandingAssetUrl(t.photo)}
                       alt={t.name}
@@ -439,21 +447,27 @@ export default function AdminTestimonialsPage() {
                   </div>
 
                   {/* Actions */}
-                  <div className="flex items-center gap-1 flex-shrink-0">
-                    <button
+                  <div className="flex items-center gap-1 shrink-0">
+                    <Button
+                      type="button"
                       onClick={() => startEdit(t)}
-                      className="p-2 hover:bg-white/10 rounded-lg text-xs text-white/60 hover:text-white transition-colors cursor-pointer"
+                      variant="ghost"
+                      size="sm"
+                      className="p-2 hover:bg-white/10 rounded-lg text-xs text-white/60 hover:text-white"
                       title="Edit"
                     >
                       ✏️
-                    </button>
-                    <button
+                    </Button>
+                    <Button
+                      type="button"
                       onClick={() => handleDelete(t.id)}
-                      className="p-2 hover:bg-red-500/20 rounded-lg text-xs text-white/60 hover:text-red-400 transition-colors cursor-pointer"
+                      variant="ghost"
+                      size="sm"
+                      className="p-2 hover:bg-red-500/20 rounded-lg text-xs text-white/60 hover:text-red-400"
                       title="Delete"
                     >
                       🗑️
-                    </button>
+                    </Button>
                   </div>
                 </div>
               ))}
