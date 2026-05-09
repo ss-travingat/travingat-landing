@@ -276,39 +276,28 @@ export function ContextMenu({
   );
 }
 
-function ShareIcon({ type }: { type: "whatsapp" | "messenger" | "facebook" | "instagram" | "x" }) {
-  if (type === "whatsapp") {
-    return (
-      <svg viewBox="0 0 24 24" aria-hidden="true" className="h-6 w-6" fill="currentColor">
-        <path d="M20.52 3.48A11.77 11.77 0 0 0 12.04.25C5.57.25.31 5.5.31 11.98c0 2.1.55 4.16 1.6 5.98L.25 23.75l5.93-1.64a11.7 11.7 0 0 0 5.85 1.5h.01c6.48 0 11.73-5.25 11.73-11.73 0-3.13-1.22-6.07-3.25-8.4zm-8.48 18.1h-.01a9.72 9.72 0 0 1-4.95-1.36l-.36-.21-3.52.97.94-3.44-.23-.36a9.73 9.73 0 1 1 8.13 4.4zm5.64-7.25c-.3-.15-1.78-.88-2.06-.98-.28-.1-.49-.15-.69.15-.2.3-.79.98-.97 1.18-.18.2-.36.23-.66.08-.3-.15-1.26-.46-2.4-1.47-.88-.78-1.47-1.74-1.64-2.04-.17-.3-.02-.46.13-.6.13-.13.3-.36.46-.54.15-.18.2-.3.3-.5.1-.2.05-.38-.02-.54-.08-.15-.69-1.66-.94-2.27-.25-.6-.5-.52-.69-.53h-.6c-.2 0-.54.08-.83.38-.28.3-1.1 1.07-1.1 2.6 0 1.53 1.12 3.01 1.27 3.22.15.2 2.2 3.36 5.33 4.72.75.32 1.33.51 1.78.65.75.24 1.43.2 1.97.12.6-.09 1.78-.73 2.03-1.43.25-.7.25-1.3.17-1.43-.08-.13-.28-.2-.58-.36z" />
-      </svg>
-    );
-  }
-  if (type === "messenger") {
-    return (
-      <svg viewBox="0 0 24 24" aria-hidden="true" className="h-6 w-6" fill="currentColor">
-        <path d="M12 2C6.48 2 2 6.02 2 11c0 2.84 1.52 5.39 3.9 7.05V22l3.54-1.94c.83.23 1.7.36 2.56.36 5.52 0 10-4.02 10-9s-4.48-9-10-9zm1 12.5-2.64-2.82L5 14.5l6.02-6.5 2.63 2.82L19 8l-6 6.5z" />
-      </svg>
-    );
-  }
-  if (type === "facebook") {
-    return (
-      <svg viewBox="0 0 24 24" aria-hidden="true" className="h-6 w-6" fill="currentColor">
-        <path d="M22 12a10 10 0 1 0-11.5 9.9v-7H8v-3h2.5V9.5c0-2.5 1.5-3.9 3.8-3.9 1.1 0 2.2.2 2.2.2v2.4h-1.24c-1.22 0-1.6.76-1.6 1.54V12H16l-.4 3h-2v7A10 10 0 0 0 22 12z" />
-      </svg>
-    );
-  }
-  if (type === "instagram") {
-    return (
-      <svg viewBox="0 0 24 24" aria-hidden="true" className="h-6 w-6" fill="currentColor">
-        <path d="M7 2C4.24 2 2 4.24 2 7v10c0 2.76 2.24 5 5 5h10c2.76 0 5-2.24 5-5V7c0-2.76-2.24-5-5-5H7zm10 2c1.65 0 3 1.35 3 3v10c0 1.65-1.35 3-3 3H7c-1.65 0-3-1.35-3-3V7c0-1.65 1.35-3 3-3h10zm-5 3.5A4.5 4.5 0 1 0 16.5 12 4.5 4.5 0 0 0 12 7.5zm0 2A2.5 2.5 0 1 1 9.5 12 2.5 2.5 0 0 1 12 9.5zm4.75-4.1a1.1 1.1 0 1 0 1.1 1.1 1.1 1.1 0 0 0-1.1-1.1z" />
-      </svg>
-    );
-  }
+const SHARE_ICON_ASSETS = {
+  whatsapp: "/images/share-icons/whatsapp.svg",
+  messenger: "/images/share-icons/messenger.svg",
+  facebook: "/images/share-icons/facebook.svg",
+  instagram: "/images/share-icons/instagram.svg",
+  x: "/images/share-icons/x.svg",
+} as const;
+
+function ShareIcon({
+  type,
+  className = "h-10 w-10",
+}: {
+  type: "whatsapp" | "messenger" | "facebook" | "instagram" | "x";
+  className?: string;
+}) {
   return (
-    <svg viewBox="0 0 24 24" aria-hidden="true" className="h-6 w-6" fill="currentColor">
-      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.745l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-    </svg>
+    <img
+      src={SHARE_ICON_ASSETS[type]}
+      alt=""
+      aria-hidden="true"
+      className={className}
+    />
   );
 }
 
@@ -413,11 +402,11 @@ function ShareCard({
           <div className="flex items-center justify-center gap-3 w-full">
             {(
               [
-                { type: "whatsapp", color: "text-[#25d366]" },
-                { type: "messenger", color: "text-[#0084ff]" },
-                { type: "facebook", color: "text-[#1877f2]" },
-                { type: "instagram", color: "text-[#f56040]" },
-                { type: "x", color: "text-white" },
+                { type: "whatsapp" },
+                { type: "messenger" },
+                { type: "facebook" },
+                { type: "instagram" },
+                { type: "x" },
               ] as const
             ).map((item) => (
               <button
@@ -427,9 +416,7 @@ function ShareCard({
                 className="flex-1 aspect-square rounded-xl bg-black-300 p-2.5 grid place-items-center hover:bg-black-200 transition"
                 aria-label={`Share via ${item.type}`}
               >
-                <span className={item.color}>
-                  <ShareIcon type={item.type} />
-                </span>
+                <ShareIcon type={item.type} />
               </button>
             ))}
           </div>
