@@ -5,7 +5,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import type { MouseEvent as ReactMouseEvent } from "react";
 
 import { toLandingAssetUrl } from "@/lib/landing-assets";
-import type { SampleProfile } from "@/profiles/profile-data";
+import { sampleProfiles, type SampleProfile } from "@/profiles/profile-data";
 import { MoreOptionsButton } from "@/components/ui/MoreOptionsButton";
 import { WaitlistPopup } from "@/components/ui/WaitlistPopup";
 
@@ -1044,6 +1044,40 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
       .slice(0, 4);
   }, [profile.aboutImages]);
 
+  const featuredProfiles = useMemo(() => {
+    const candidates = sampleProfiles.filter((item) => item.id !== profile.id);
+    if (candidates.length === 0) return [];
+
+    const normalizedInterests = new Set(
+      (profile.interests ?? [])
+        .map((interest) => interest.trim().toLowerCase())
+        .filter(Boolean)
+    );
+
+    const scored = candidates.map((candidate) => {
+      const score = (candidate.interests ?? []).reduce((acc, interest) => {
+        const normalized = interest.trim().toLowerCase();
+        return acc + (normalizedInterests.has(normalized) ? 1 : 0);
+      }, 0);
+      return { candidate, score };
+    });
+
+    const sorted = [...scored].sort((a, b) => {
+      if (b.score !== a.score) return b.score - a.score;
+      return a.candidate.name.localeCompare(b.candidate.name);
+    });
+
+    const preferred = normalizedInterests.size > 0
+      ? sorted.filter((item) => item.score > 0)
+      : sorted;
+
+    const list = (preferred.length > 0 ? preferred : sorted)
+      .slice(0, 3)
+      .map((item) => item.candidate);
+
+    return list;
+  }, [profile.id, profile.interests]);
+
   const socialRows = useMemo(() => {
     const { x, instagram, linkedin, youtube } = profile.socials;
     const rows: { key: string; label: string; url: string }[] = [];
@@ -1388,7 +1422,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                   </p>
                 </div>
               ) : (
-                <div className="columns-2 md:columns-3 xl:columns-4 gap-5">
+                <div className="columns-2 sm:columns-3 xl:columns-4 gap-5">
                   {allMediaItems.map((item, index) => {
                     const isMenuOpen = openContextMenuId === item.id;
                     const displayCountryCode = item.countryCode || profileFlagCode;
@@ -1418,13 +1452,10 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                                 className="w-full object-cover rounded-2xl"
                                 onMouseEnter={(e) => e.currentTarget.play().catch(() => {})}
                                 onMouseLeave={(e) => { e.currentTarget.pause(); e.currentTarget.currentTime = 0; }}
-                                onClick={(e) => {
-                                  const v = e.currentTarget;
-                                  if (v.paused) v.play().catch(() => {});
-                                  else {
-                                    v.pause();
-                                    v.currentTime = 0;
-                                  }
+                                onClick={(event) => {
+                                  event.preventDefault();
+                                  event.stopPropagation();
+                                  openCarouselAt(index);
                                 }}
                               />
                               <div className="absolute top-4 left-4 group-hover:opacity-0 transition-opacity pointer-events-none">
@@ -1454,6 +1485,17 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                               <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-200 pointer-events-none" />
                             </>
                           )}
+
+                          <MoreOptionsButton
+                            isOpen={isMenuOpen}
+                            label="Open media menu"
+                            size="sm"
+                            onClick={(event) => {
+                              event.preventDefault();
+                              event.stopPropagation();
+                              setOpenContextMenuId(isMenuOpen ? null : item.id);
+                            }}
+                          />
                         </div>
 
                         {/* Hover Flag */}
@@ -1477,17 +1519,6 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                           </div>
                         ) : null}
 
-
-                        <MoreOptionsButton
-                          isOpen={isMenuOpen}
-                          label="Open media menu"
-                          size="sm"
-                          onClick={(event) => {
-                            event.preventDefault();
-                            event.stopPropagation();
-                            setOpenContextMenuId(isMenuOpen ? null : item.id);
-                          }}
-                        />
 
                         {isMenuOpen ? (
                           <ContextMenu
@@ -1861,6 +1892,62 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                       </div>
                     ) : (
                       <p className="text-white-500 text-sm">No interests added yet.</p>
+                    )}
+                  </div>
+
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <h4 className="text-xl font-semibold tracking-[-0.5px]">Featured Profiles</h4>
+                      <Link
+                        href="/featured-profiles"
+                        className="text-xs text-white-500 hover:text-white transition"
+                      >
+                        View all
+                      </Link>
+                    </div>
+                    {featuredProfiles.length > 0 ? (
+                      <div className="grid gap-3 md:grid-cols-2">
+                        {featuredProfiles.map((featured) => {
+                          const featuredFlagSrc = toFlagAssetPath(featured.flagCode);
+                          return (
+                            <Link
+                              key={featured.id}
+                              href={`/profiles/${featured.id}`}
+                              className="group flex items-center justify-between gap-3 rounded-xl border border-[#1f1f1f] bg-black-900 px-4 py-3 hover:border-[#2f2f2f] transition"
+                            >
+                              <div className="flex min-w-0 items-center gap-3">
+                                <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-xl bg-[#151515]">
+                                  <img
+                                    src={toLandingAssetUrl(featured.images.avatar)}
+                                    alt={featured.name}
+                                    loading="lazy"
+                                    decoding="async"
+                                    className="h-full w-full object-cover"
+                                  />
+                                </div>
+                                <div className="min-w-0">
+                                  <div className="flex items-center gap-2">
+                                    {featuredFlagSrc ? (
+                                      <img
+                                        src={featuredFlagSrc}
+                                        alt=""
+                                        className="h-3 w-5 rounded-[2px] object-cover"
+                                        loading="lazy"
+                                        decoding="async"
+                                      />
+                                    ) : null}
+                                    <p className="text-sm font-semibold text-white truncate">{featured.name}</p>
+                                  </div>
+                                  <p className="text-xs text-white-500 truncate">{featured.handle}</p>
+                                </div>
+                              </div>
+                              <span className="text-xs text-white-500 group-hover:text-white transition">View</span>
+                            </Link>
+                          );
+                        })}
+                      </div>
+                    ) : (
+                      <p className="text-white-500 text-sm">No featured profiles yet.</p>
                     )}
                   </div>
                 </article>

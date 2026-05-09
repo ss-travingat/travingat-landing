@@ -428,12 +428,52 @@ function TagInput({
 }) {
   const [input, setInput] = useState("");
 
+  const appendUniqueTags = (nextTags: string[]) => {
+    if (nextTags.length === 0) return;
+    const existing = new Set(value);
+    const unique = nextTags.filter((tag) => !existing.has(tag));
+    if (unique.length === 0) return;
+    onChange([...value, ...unique]);
+  };
+
+  const parseTags = (raw: string) =>
+    raw
+      .split(",")
+      .map((part) => part.trim())
+      .filter(Boolean);
+
   const addTag = () => {
-    const trimmed = input.trim();
-    if (trimmed && !value.includes(trimmed)) {
-      onChange([...value, trimmed]);
-      setInput("");
+    const tags = parseTags(input);
+    appendUniqueTags(tags);
+    if (tags.length > 0) setInput("");
+  };
+
+  const handleInputChange = (nextValue: string) => {
+    if (!nextValue.includes(",")) {
+      setInput(nextValue);
+      return;
     }
+
+    const pieces = nextValue.split(",");
+    const completed = pieces.slice(0, -1);
+    const remaining = pieces[pieces.length - 1] ?? "";
+    appendUniqueTags(
+      completed
+        .map((tag) => tag.trim())
+        .filter(Boolean)
+    );
+    setInput(remaining.trimStart());
+  };
+
+  const handlePaste = (event: React.ClipboardEvent<HTMLInputElement>) => {
+    const pastedText = event.clipboardData.getData("text");
+    if (!pastedText) return;
+    if (!pastedText.includes(",")) return;
+
+    event.preventDefault();
+    const tags = parseTags(pastedText);
+    appendUniqueTags(tags);
+    setInput("");
   };
 
   return (
@@ -459,13 +499,14 @@ function TagInput({
         <input
           type="text"
           value={input}
-          onChange={(e) => setInput(e.target.value)}
+          onChange={(e) => handleInputChange(e.target.value)}
           onKeyDown={(e) => {
             if (e.key === "Enter") {
               e.preventDefault();
               addTag();
             }
           }}
+          onPaste={handlePaste}
           placeholder={placeholder}
           className="flex-1 px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-xs text-white placeholder:text-white/25 focus:outline-none focus:border-[#5A45F9] transition-colors"
         />
@@ -488,7 +529,7 @@ export default function AdminProfilesPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [toast, setToast] = useState<{ msg: string; error?: boolean } | null>(null);
-  const [uploading, setUploading] = useState<"cover" | "avatar" | "gallery" | "about" | "country" | "collection" | null>(null);
+  const [uploading, setUploading] = useState<{ field: "cover" | "avatar" | "gallery" | "about" | "country" | "collection"; idx?: number } | null>(null);
   const coverInputRef = useRef<HTMLInputElement>(null);
   const avatarInputRef = useRef<HTMLInputElement>(null);
   const galleryInputRef = useRef<HTMLInputElement>(null);
@@ -526,7 +567,8 @@ export default function AdminProfilesPage() {
 
   const handleVideoUpload = async (
     file: File,
-    type: "country" | "collection"
+    type: "country" | "collection" | "gallery" | "about",
+    idx?: number
   ) => {
     if (file.size > 50 * 1024 * 1024) {
       showToast("Video too large. Max 50MB.", true);
@@ -558,7 +600,7 @@ export default function AdminProfilesPage() {
       return null;
     }
 
-    setUploading(type);
+    setUploading({ field: type, idx });
     const formData = new FormData();
     formData.append("file", file);
     formData.append("type", type);
@@ -586,7 +628,8 @@ export default function AdminProfilesPage() {
 
   const handleImageUpload = async (
     file: File,
-    type: "avatar" | "cover" | "gallery" | "about" | "country" | "collection"
+    type: "avatar" | "cover" | "gallery" | "about" | "country" | "collection",
+    idx?: number
   ) => {
     if (file.size > 5 * 1024 * 1024) {
       showToast("File too large. Max 5MB.", true);
@@ -597,7 +640,7 @@ export default function AdminProfilesPage() {
       return null;
     }
 
-    setUploading(type);
+    setUploading({ field: type, idx });
     const formData = new FormData();
     formData.append("file", file);
     formData.append("type", type);
@@ -672,7 +715,7 @@ export default function AdminProfilesPage() {
     if (files.length === 0) return;
     e.target.value = "";
     for (const file of files) {
-      const url = await handleVideoUpload(file, "country");
+      const url = await handleVideoUpload(file, "gallery");
       if (url) {
         setForm((prev) => ({
           ...prev,
@@ -996,7 +1039,7 @@ export default function AdminProfilesPage() {
                         disabled={uploading !== null}
                         className="px-4 py-2 bg-white/10 hover:bg-white/15 rounded-lg text-sm font-medium transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                       >
-                        {uploading === "cover" ? "Uploading…" : "Upload Cover"}
+                        {uploading?.field === "cover" ? "Uploading…" : "Upload Cover"}
                       </button>
                       <input
                         ref={coverInputRef}
@@ -1038,7 +1081,7 @@ export default function AdminProfilesPage() {
                         disabled={uploading !== null}
                         className="px-4 py-2 bg-white/10 hover:bg-white/15 rounded-lg text-sm font-medium transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                       >
-                        {uploading === "avatar" ? "Uploading…" : "Upload Avatar"}
+                        {uploading?.field === "avatar" ? "Uploading…" : "Upload Avatar"}
                       </button>
                       <input
                         ref={avatarInputRef}
@@ -1086,22 +1129,59 @@ export default function AdminProfilesPage() {
                       </div>
                     ))}
                   </div>
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 items-center">
                     <button
                       onClick={() => aboutInputRef.current?.click()}
                       disabled={uploading !== null || form.aboutImages.length >= 4}
                       className="px-4 py-2 bg-white/10 hover:bg-white/15 rounded-lg text-sm font-medium transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      {uploading === "about" ? "Uploading…" : "+ Add About Photos"}
+                      {uploading?.field === "about" ? "Uploading…" : "+ Add Media"}
                     </button>
                     <input
                       ref={aboutInputRef}
                       type="file"
-                      accept="image/*"
+                      accept="image/*,video/*"
                       multiple
-                      onChange={handleAboutUpload}
+                      onChange={async (e) => {
+                        const files = Array.from(e.target.files ?? []);
+                        if (files.length === 0) return;
+                        e.target.value = "";
+
+                        const availableSlots = Math.max(0, 4 - form.aboutImages.length);
+                        if (availableSlots === 0) {
+                          showToast("About section supports up to 4 media items.", true);
+                          return;
+                        }
+
+                        const filesToUpload = files.slice(0, availableSlots);
+                        const uploadedUrls: string[] = [];
+
+                        for (const file of filesToUpload) {
+                          if (file.type.startsWith("video/")) {
+                            const url = await handleVideoUpload(file, "about");
+                            if (url) uploadedUrls.push(url);
+                          } else {
+                            const url = await handleImageUpload(file, "about");
+                            if (url) uploadedUrls.push(url);
+                          }
+                        }
+
+                        if (uploadedUrls.length > 0) {
+                          setForm((prev) => ({
+                            ...prev,
+                            aboutImages: [...prev.aboutImages, ...uploadedUrls].slice(0, 4),
+                          }));
+                        }
+
+                        if (files.length > filesToUpload.length) {
+                          showToast("Only the first 4 About media items are kept.");
+                        }
+                      }}
                       className="hidden"
                     />
+                    {uploading?.field === "about" && (
+                      <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+                    )}
                     {canPickFromMedia && (
                       <button
                         type="button"
@@ -1141,11 +1221,11 @@ export default function AdminProfilesPage() {
                               <span className="text-xs text-white/40 ml-1">({ci.images.filter(u => !u.match(/\.(mp4|mov|webm|m4v)$/i)).length} photos · {ci.images.filter(u => u.match(/\.(mp4|mov|webm|m4v)$/i)).length} videos)</span>
                             </div>
                             <div className="flex items-center gap-2 flex-wrap">
-                              <label className="px-2 py-1 bg-white/10 hover:bg-white/15 rounded-md text-xs font-medium transition-colors cursor-pointer whitespace-nowrap">
-                                + Add Photos
+                              <label className="px-2 py-1 bg-white/10 hover:bg-white/15 rounded-md text-xs font-medium transition-colors cursor-pointer whitespace-nowrap flex items-center gap-2">
+                                + Add Media
                                 <input
                                   type="file"
-                                  accept="image/*"
+                                  accept="image/*,video/*"
                                   multiple
                                   className="hidden"
                                   onChange={async (e) => {
@@ -1154,8 +1234,13 @@ export default function AdminProfilesPage() {
                                     e.target.value = "";
                                     const urls: string[] = [];
                                     for (const file of files) {
-                                      const url = await handleImageUpload(file, "country");
-                                      if (url) urls.push(url);
+                                      if (file.type.startsWith("video/")) {
+                                        const url = await handleVideoUpload(file, "country", idx);
+                                        if (url) urls.push(url);
+                                      } else {
+                                        const url = await handleImageUpload(file, "country", idx);
+                                        if (url) urls.push(url);
+                                      }
                                     }
                                     if (urls.length > 0) {
                                       setForm((prev) => ({
@@ -1167,33 +1252,9 @@ export default function AdminProfilesPage() {
                                     }
                                   }}
                                 />
-                              </label>
-                              <label className="px-2 py-1 bg-white/10 hover:bg-white/15 rounded-md text-xs font-medium transition-colors cursor-pointer whitespace-nowrap">
-                                + Add Videos
-                                <input
-                                  type="file"
-                                  accept="video/*"
-                                  multiple
-                                  className="hidden"
-                                  onChange={async (e) => {
-                                    const files = Array.from(e.target.files ?? []);
-                                    if (files.length === 0) return;
-                                    e.target.value = "";
-                                    const urls: string[] = [];
-                                    for (const file of files) {
-                                      const url = await handleVideoUpload(file, "country");
-                                      if (url) urls.push(url);
-                                    }
-                                    if (urls.length > 0) {
-                                      setForm((prev) => ({
-                                        ...prev,
-                                        countryImages: prev.countryImages.map((c, i) =>
-                                          i === idx ? { ...c, images: [...c.images, ...urls] } : c
-                                        ),
-                                      }));
-                                    }
-                                  }}
-                                />
+                                {uploading?.field === "country" && uploading?.idx === idx && (
+                                  <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+                                )}
                               </label>
                               {canPickFromMedia && (
                                 <button
@@ -1316,11 +1377,11 @@ export default function AdminProfilesPage() {
                             <span className="text-xs text-white/40 ml-1">({ci.images.filter(u => !u.match(/\.(mp4|mov|webm|m4v)$/i)).length} photos · {ci.images.filter(u => u.match(/\.(mp4|mov|webm|m4v)$/i)).length} videos)</span>
                           </div>
                           <div className="flex items-center gap-2 flex-wrap">
-                            <label className="px-2 py-1 bg-white/10 hover:bg-white/15 rounded-md text-xs font-medium transition-colors cursor-pointer whitespace-nowrap">
-                              + Add Photos
+                            <label className="px-2 py-1 bg-white/10 hover:bg-white/15 rounded-md text-xs font-medium transition-colors cursor-pointer whitespace-nowrap flex items-center gap-2">
+                              + Add Media
                               <input
                                 type="file"
-                                accept="image/*"
+                                accept="image/*,video/*"
                                 multiple
                                 className="hidden"
                                 onChange={async (e) => {
@@ -1329,8 +1390,13 @@ export default function AdminProfilesPage() {
                                   e.target.value = "";
                                   const urls: string[] = [];
                                   for (const file of files) {
-                                    const url = await handleImageUpload(file, "collection");
-                                    if (url) urls.push(url);
+                                    if (file.type.startsWith("video/")) {
+                                      const url = await handleVideoUpload(file, "collection", idx);
+                                      if (url) urls.push(url);
+                                    } else {
+                                      const url = await handleImageUpload(file, "collection", idx);
+                                      if (url) urls.push(url);
+                                    }
                                   }
                                   if (urls.length > 0) {
                                     setForm((prev) => ({
@@ -1342,33 +1408,9 @@ export default function AdminProfilesPage() {
                                   }
                                 }}
                               />
-                            </label>
-                            <label className="px-2 py-1 bg-white/10 hover:bg-white/15 rounded-md text-xs font-medium transition-colors cursor-pointer whitespace-nowrap">
-                              + Add Videos
-                              <input
-                                type="file"
-                                accept="video/*"
-                                multiple
-                                className="hidden"
-                                onChange={async (e) => {
-                                  const files = Array.from(e.target.files ?? []);
-                                  if (files.length === 0) return;
-                                  e.target.value = "";
-                                  const urls: string[] = [];
-                                  for (const file of files) {
-                                    const url = await handleVideoUpload(file, "collection");
-                                    if (url) urls.push(url);
-                                  }
-                                  if (urls.length > 0) {
-                                    setForm((prev) => ({
-                                      ...prev,
-                                      collectionImages: prev.collectionImages.map((c, i) =>
-                                        i === idx ? { ...c, images: [...c.images, ...urls] } : c
-                                      ),
-                                    }));
-                                  }
-                                }}
-                              />
+                              {uploading?.field === "collection" && uploading?.idx === idx && (
+                                <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+                              )}
                             </label>
                             {canPickFromMedia && (
                               <button
@@ -1730,7 +1772,7 @@ export default function AdminProfilesPage() {
                   onChange={(v) =>
                     setForm((prev) => ({ ...prev, interests: v }))
                   }
-                  placeholder="e.g. Photography"
+                  placeholder="e.g. Photography, Hiking"
                 />
                 <TagInput
                   label="Languages"
@@ -1738,7 +1780,7 @@ export default function AdminProfilesPage() {
                   onChange={(v) =>
                     setForm((prev) => ({ ...prev, languages: v }))
                   }
-                  placeholder="e.g. English"
+                  placeholder="e.g. English, Spanish"
                 />
               </div>
 
