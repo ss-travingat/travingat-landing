@@ -445,6 +445,7 @@ function PhotoCarouselModal({
   onClose,
   onNext,
   onPrev,
+  onSelectIndex,
   profileName,
   profileHandle,
   profileAvatar,
@@ -459,6 +460,7 @@ function PhotoCarouselModal({
   onClose: () => void;
   onNext: () => void;
   onPrev: () => void;
+  onSelectIndex: (index: number) => void;
   profileName: string;
   profileHandle: string;
   profileAvatar: string;
@@ -474,6 +476,7 @@ function PhotoCarouselModal({
   const avatarSrc = toLandingAssetUrl(profileAvatar);
   const profileFlagSrc = toFlagAssetPath(profileFlagCode);
   const countryFlagSrc = toFlagAssetPath(countryFlagCode);
+  const [showBrowser, setShowBrowser] = useState(false);
 
   return (
     <div
@@ -490,56 +493,138 @@ function PhotoCarouselModal({
           <span>{`${displayIndex} of ${totalCount}`}</span>
           <button
             type="button"
-            onClick={() => {
-              navigator.clipboard.writeText(window.location.href).catch(() => {});
-            }}
+            onClick={() => setShowBrowser((prev) => !prev)}
             className="flex h-8 w-8 items-center justify-center text-[#a8a8a8] transition hover:text-white"
-            aria-label="Copy link"
+            aria-label="Toggle photo browser"
           >
-            <span className="material-symbols-rounded text-[22px]">photo_library</span>
+            <span className="material-symbols-rounded text-[22px]">dashboard</span>
           </button>
         </div>
 
-        {/* Image + nav arrows */}
-        <div className="relative flex flex-1 min-h-0 pb-8">
-          {/* Main image */}
-          <div className="h-full w-full overflow-hidden bg-[#0a0a0a]">
-            {activeItem?.isVideo ? (
-              <video
-                src={toLandingAssetUrl(activeItem.fileUrl)}
-                controls
-                autoPlay
-                className="h-full w-full object-contain"
-              />
-            ) : (
-              <img
-                src={toLandingAssetUrl(activeItem?.fileUrl)}
-                alt="Carousel media"
-                className="h-full w-full object-contain"
-              />
-            )}
+        {showBrowser ? (
+          <div className="flex-1 min-h-0 overflow-y-auto px-10 pb-8">
+            <div className="columns-2 md:columns-3 xl:columns-4 gap-6 [column-fill:_balance]">
+              {items.map((item, idx) => (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => {
+                    onSelectIndex(idx);
+                    setShowBrowser(false);
+                  }}
+                  className="mb-6 w-full break-inside-avoid overflow-hidden rounded-[22px] bg-[#0a0a0a] text-left"
+                  aria-label={`Open photo ${idx + 1}`}
+                >
+                  <div className="relative">
+                    {item.isVideo ? (
+                      <>
+                        <video
+                          src={toLandingAssetUrl(item.fileUrl)}
+                          className="h-auto w-full"
+                        />
+                        <div className="absolute left-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-black/55">
+                          <span className="material-symbols-rounded text-[18px] text-white">play_arrow</span>
+                        </div>
+                      </>
+                    ) : (
+                      <img
+                        src={toLandingAssetUrl(item.fileUrl)}
+                        alt={`Gallery thumbnail ${idx + 1}`}
+                        className="h-auto w-full"
+                      />
+                    )}
+                  </div>
+                </button>
+              ))}
+            </div>
           </div>
+        ) : (
+          <>
+            {/* Image + nav arrows */}
+            <div className="relative flex flex-1 min-h-0 pb-8">
+              {/* Main image */}
+              <div className="h-full w-full overflow-hidden bg-[#0a0a0a]">
+                {activeItem?.isVideo ? (
+                  <video
+                    key={`video-${activeIndex}`}
+                    src={toLandingAssetUrl(activeItem.fileUrl)}
+                    controls
+                    autoPlay
+                    className="h-full w-full object-contain carousel-image"
+                  />
+                ) : (
+                  <img
+                    key={`img-${activeIndex}`}
+                    src={toLandingAssetUrl(activeItem?.fileUrl)}
+                    alt="Carousel media"
+                    className="h-full w-full object-contain carousel-image"
+                  />
+                )}
+              </div>
 
-          {/* Prev arrow */}
-          <button
-            type="button"
-            onClick={onPrev}
-            className="absolute left-3 top-1/2 -translate-y-1/2 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-white text-black shadow-md transition hover:bg-[#f0f0f0]"
-            aria-label="Previous photo"
-          >
-            <span className="material-symbols-rounded text-[28px]">chevron_left</span>
-          </button>
+              {/* Prev arrow */}
+              <button
+                type="button"
+                onClick={onPrev}
+                className="absolute left-3 top-1/2 -translate-y-1/2 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-white text-black shadow-md transition hover:bg-[#f0f0f0]"
+                aria-label="Previous photo"
+              >
+                <span className="material-symbols-rounded text-[28px]">chevron_left</span>
+              </button>
 
-          {/* Next arrow */}
-          <button
-            type="button"
-            onClick={onNext}
-            className="absolute right-3 top-1/2 -translate-y-1/2 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-white text-black shadow-md transition hover:bg-[#f0f0f0]"
-            aria-label="Next photo"
-          >
-            <span className="material-symbols-rounded text-[28px]">chevron_right</span>
-          </button>
-        </div>
+              {/* Next arrow */}
+              <button
+                type="button"
+                onClick={onNext}
+                className="absolute right-3 top-1/2 -translate-y-1/2 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-white text-black shadow-md transition hover:bg-[#f0f0f0]"
+                aria-label="Next photo"
+              >
+                <span className="material-symbols-rounded text-[28px]">chevron_right</span>
+              </button>
+            </div>
+
+            {/* Carousel preview strip */}
+            <div className="flex items-center gap-2 overflow-x-auto px-10 pb-4 relative">
+              {/* Sliding indicator bar */}
+              <div
+                className="absolute top-0 left-10 h-1 w-10 bg-white rounded-full transition-transform duration-300 ease-out"
+                style={{
+                  transform: `translateX(calc(12px + ${activeIndex} * 72px))`,
+                }}
+              />
+
+              {items.map((item, idx) => (
+                <div key={item.id} className="relative flex flex-col items-center gap-1 pt-2">
+                  <button
+                    onClick={() => onSelectIndex(idx)}
+                    className={`relative h-16 w-16 shrink-0 rounded overflow-hidden transition ${
+                      idx === activeIndex ? "opacity-100" : "opacity-60 hover:opacity-100"
+                    }`}
+                    aria-label={`View photo ${idx + 1}`}
+                  >
+                    {item.isVideo ? (
+                      <>
+                        <video
+                          src={toLandingAssetUrl(item.fileUrl)}
+                          className="h-full w-full object-cover"
+                        />
+                        <div className="absolute inset-0 flex items-center justify-center bg-black/40">
+                          <span className="material-symbols-rounded text-white text-[20px]">play_circle</span>
+                        </div>
+                      </>
+                    ) : (
+                      <img
+                        src={toLandingAssetUrl(item.fileUrl)}
+                        alt={`Carousel thumbnail ${idx + 1}`}
+                        className="h-full w-full object-cover"
+                      />
+                    )}
+                  </button>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
       </div>
 
       {/* Right sidebar */}
@@ -630,7 +715,6 @@ function PhotoCarouselModal({
 
 export default function ProfileComponent({ profile }: { profile: SampleProfile }) {
   const [activeTab, setActiveTab] = useState<TabKey>("all");
-  const [showNavMenu, setShowNavMenu] = useState(false);
   const [showFollowModal, setShowFollowModal] = useState(false);
   const [countryPhotoIndexByCode, setCountryPhotoIndexByCode] = useState<Record<string, number>>({});
   const [collectionPhotoIndexById, setCollectionPhotoIndexById] = useState<Record<string, number>>({});
@@ -638,27 +722,8 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
   const [shareCardData, setShareCardData] = useState<ShareCardData | null>(null);
   const [carouselIndex, setCarouselIndex] = useState<number | null>(null);
   const [carouselItems, setCarouselItems] = useState<MediaItem[]>([]);
-  const navMenuRef = useRef<HTMLDivElement | null>(null);
   const contextMenuRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    if (!showNavMenu) return;
-
-    const onPointerDown = (event: MouseEvent | TouchEvent) => {
-      const target = event.target as Node;
-      if (navMenuRef.current && !navMenuRef.current.contains(target)) {
-        setShowNavMenu(false);
-      }
-    };
-
-    document.addEventListener("mousedown", onPointerDown);
-    document.addEventListener("touchstart", onPointerDown);
-
-    return () => {
-      document.removeEventListener("mousedown", onPointerDown);
-      document.removeEventListener("touchstart", onPointerDown);
-    };
-  }, [showNavMenu]);
 
   useEffect(() => {
     if (!openContextMenuId) return;
@@ -1100,54 +1165,6 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
   return (
     <>
       <div className="min-h-screen bg-black text-white flex flex-col items-center px-4 md:px-10 xl:px-24">
-        <header className="relative w-full max-w-372 flex items-center justify-between py-6 md:py-8">
-          <Link href="/" className="ds-font-logo text-[28px] font-normal text-white tracking-[-0.41px] leading-normal">
-            travingat
-          </Link>
-
-          <div className="flex items-center gap-3 md:gap-5">
-            <button className="text-[#e3e3e3] hover:text-white transition" aria-label="Favorites">
-              <span className="material-symbols-rounded text-[22px]">favorite</span>
-            </button>
-            <button className="hidden md:inline-flex text-[#e3e3e3] hover:text-white transition" aria-label="Notifications">
-              <span className="material-symbols-rounded text-[22px]">notifications</span>
-            </button>
-
-            <div className="relative" ref={navMenuRef}>
-              <button
-                onClick={() => setShowNavMenu((prev) => !prev)}
-                className="flex items-center gap-2 rounded-xl border border-black-600 bg-[#0b0b0b] px-3 py-2"
-                aria-label="Open profile menu"
-              >
-                <span className="material-symbols-rounded text-[#e3e3e3] text-[21px]">dehaze</span>
-                <div className="hidden md:block h-7 w-7 overflow-hidden rounded-lg">
-                  <img src={toLandingAssetUrl(profile.images.avatar)} alt="Profile" className="h-full w-full object-cover" />
-                </div>
-              </button>
-
-              {showNavMenu ? (
-                <div className="absolute right-0 top-full z-30 mt-3 w-55 rounded-2xl border border-black-400 bg-[#101010] p-2 shadow-[0_12px_40px_rgba(0,0,0,0.45)]">
-                  <Link
-                    href="/#featured"
-                    onClick={() => setShowNavMenu(false)}
-                    className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-sm text-[#d8d8d8] hover:bg-[#1b1b1b]"
-                  >
-                    <span className="material-symbols-rounded text-[17px] text-[#9a9a9a]">arrow_back</span>
-                    Back
-                  </Link>
-                  <a
-                    href="/#join"
-                    onClick={() => setShowNavMenu(false)}
-                    className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-sm text-[#d8d8d8] hover:bg-[#1b1b1b]"
-                  >
-                    <span className="material-symbols-rounded text-[17px] text-[#9a9a9a]">login</span>
-                    Join now
-                  </a>
-                </div>
-              ) : null}
-            </div>
-          </div>
-        </header>
 
         <main className="w-full max-w-372 pb-28 md:pb-20 grid gap-10">
           <section className="lg:hidden space-y-5">
@@ -1859,8 +1876,8 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
 
           {activeTab === "about" ? (
             hasAboutContent ? (
-              <section className="grid md:grid-cols-[1fr_300px] xl:grid-cols-[1fr_360px] gap-6 items-start">
-                <article className="relative rounded-2xl border border-[#1f1f1f] p-5 md:p-6 bg-black-800 space-y-6">
+              <section className="w-full grid md:grid-cols-[minmax(0,1fr)_320px] lg:grid-cols-[minmax(0,1fr)_360px] gap-6 lg:gap-8 items-stretch">
+                <article className="relative min-h-[520px] rounded-2xl border border-[#1f1f1f] p-5 md:p-6 bg-black-800 space-y-6">
                   <div className="space-y-3">
                     <h3 className="text-2xl font-semibold tracking-[-0.5px]">About</h3>
                     <p className="text-[#b7b7b7] leading-7 text-sm md:text-base">{profile.bio || "No bio yet."}</p>
@@ -1895,64 +1912,9 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                     )}
                   </div>
 
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <h4 className="text-xl font-semibold tracking-[-0.5px]">Featured Profiles</h4>
-                      <Link
-                        href="/featured-profiles"
-                        className="text-xs text-white-500 hover:text-white transition"
-                      >
-                        View all
-                      </Link>
-                    </div>
-                    {featuredProfiles.length > 0 ? (
-                      <div className="grid gap-3 md:grid-cols-2">
-                        {featuredProfiles.map((featured) => {
-                          const featuredFlagSrc = toFlagAssetPath(featured.flagCode);
-                          return (
-                            <Link
-                              key={featured.id}
-                              href={`/profiles/${featured.id}`}
-                              className="group flex items-center justify-between gap-3 rounded-xl border border-[#1f1f1f] bg-black-900 px-4 py-3 hover:border-[#2f2f2f] transition"
-                            >
-                              <div className="flex min-w-0 items-center gap-3">
-                                <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-xl bg-[#151515]">
-                                  <img
-                                    src={toLandingAssetUrl(featured.images.avatar)}
-                                    alt={featured.name}
-                                    loading="lazy"
-                                    decoding="async"
-                                    className="h-full w-full object-cover"
-                                  />
-                                </div>
-                                <div className="min-w-0">
-                                  <div className="flex items-center gap-2">
-                                    {featuredFlagSrc ? (
-                                      <img
-                                        src={featuredFlagSrc}
-                                        alt=""
-                                        className="h-3 w-5 rounded-[2px] object-cover"
-                                        loading="lazy"
-                                        decoding="async"
-                                      />
-                                    ) : null}
-                                    <p className="text-sm font-semibold text-white truncate">{featured.name}</p>
-                                  </div>
-                                  <p className="text-xs text-white-500 truncate">{featured.handle}</p>
-                                </div>
-                              </div>
-                              <span className="text-xs text-white-500 group-hover:text-white transition">View</span>
-                            </Link>
-                          );
-                        })}
-                      </div>
-                    ) : (
-                      <p className="text-white-500 text-sm">No featured profiles yet.</p>
-                    )}
-                  </div>
                 </article>
 
-                <aside className="rounded-2xl border border-[#1f1f1f] p-5 md:p-6 bg-black-800">
+                <aside className="min-h-[520px] rounded-2xl border border-[#1f1f1f] p-5 md:p-6 bg-black-800">
                   <div className="space-y-1 pb-4 border-b border-black-300 mb-4">
                     <p className="text-white-500 text-xs">Username</p>
                     <p className="text-white text-lg font-medium">{handle}</p>
@@ -2042,16 +2004,6 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
             )
           ) : null}
 
-          <footer className="pt-2 pb-8">
-            <div className="flex flex-wrap items-center justify-center gap-8 text-[12px] text-white-500 tracking-[-0.408px] leading-normal">
-              <span>Help</span>
-              <span>About</span>
-              <span>Careers</span>
-              <span>Blog</span>
-              <span>Terms of Service</span>
-              <span>Privacy Policy</span>
-            </div>
-          </footer>
         </main>
       </div>
 
@@ -2136,6 +2088,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
           onClose={closeCarousel}
           onNext={goToNextCarouselItem}
           onPrev={goToPrevCarouselItem}
+          onSelectIndex={setCarouselIndex}
           profileName={shareOwnerName}
           profileHandle={shareOwnerHandle}
           profileAvatar={shareOwnerAvatar}

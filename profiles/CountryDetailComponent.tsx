@@ -55,6 +55,7 @@ function PhotoLightbox({
   onClose,
   onNext,
   onPrev,
+  onSelectIndex,
   profileName,
   profileHandle,
   profileAvatar,
@@ -69,6 +70,7 @@ function PhotoLightbox({
   onClose: () => void;
   onNext: () => void;
   onPrev: () => void;
+  onSelectIndex: (index: number) => void;
   profileName: string;
   profileHandle: string;
   profileAvatar: string;
@@ -84,6 +86,7 @@ function PhotoLightbox({
   const avatarSrc = toLandingAssetUrl(profileAvatar);
   const profileFlagSrc = toFlagAssetPath(profileFlagCode);
   const countryFlagSrc = toFlagAssetPath(countryCode);
+  const [showBrowser, setShowBrowser] = useState(false);
 
   return (
     <div
@@ -100,54 +103,141 @@ function PhotoLightbox({
           <span>{`${displayIndex} of ${totalCount}`}</span>
           <button
             type="button"
-            onClick={() => navigator.clipboard.writeText(window.location.href).catch(() => {})}
+            onClick={() => setShowBrowser((prev) => !prev)}
             className="flex h-8 w-8 items-center justify-center text-[#a8a8a8] transition hover:text-white"
-            aria-label="Copy link"
+            aria-label="Toggle photo browser"
           >
-            <span className="material-symbols-rounded text-[22px]">photo_library</span>
+            <span className="material-symbols-rounded text-[22px]">dashboard</span>
           </button>
         </div>
 
-        {/* Image + nav arrows */}
-        <div className="relative flex flex-1 min-h-0 pb-8">
-          {/* Main media */}
-          <div className="h-full w-full overflow-hidden bg-[#0a0a0a]">
-            {isVideoAsset(activeUrl) ? (
-              <video
-                src={toLandingAssetUrl(activeUrl)}
-                controls
-                autoPlay
-                className="h-full w-full object-contain"
-              />
-            ) : (
-              <img
-                src={toLandingAssetUrl(activeUrl)}
-                alt={`${countryName} photo ${displayIndex}`}
-                className="h-full w-full object-contain"
-              />
-            )}
+        {showBrowser ? (
+          <div className="flex-1 min-h-0 overflow-y-auto px-10 pb-8">
+            <div
+              className="columns-4 gap-6 [column-fill:_balance]"
+              style={{ columnCount: 4, columnGap: "24px" }}
+            >
+              {items.map((url, idx) => (
+                <button
+                  key={`browser-${idx}`}
+                  type="button"
+                  onClick={() => {
+                    onSelectIndex(idx);
+                    setShowBrowser(false);
+                  }}
+                  className="mb-6 w-full break-inside-avoid overflow-hidden rounded-[22px] bg-[#0a0a0a] text-left"
+                  aria-label={`Open photo ${idx + 1}`}
+                >
+                  <div className="relative">
+                    {isVideoAsset(url) ? (
+                      <>
+                        <video
+                          src={toLandingAssetUrl(url)}
+                          className="h-auto w-full"
+                        />
+                        <div className="absolute left-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-black/55">
+                          <span className="material-symbols-rounded text-[18px] text-white">play_arrow</span>
+                        </div>
+                      </>
+                    ) : (
+                      <img
+                        src={toLandingAssetUrl(url)}
+                        alt={`Gallery thumbnail ${idx + 1}`}
+                        className="h-auto w-full"
+                      />
+                    )}
+                  </div>
+                </button>
+              ))}
+            </div>
           </div>
+        ) : (
+          <>
+            {/* Image + nav arrows */}
+            <div className="relative flex flex-1 min-h-0 pb-8">
+              {/* Main media */}
+              <div className="h-full w-full overflow-hidden bg-[#0a0a0a]">
+                {isVideoAsset(activeUrl) ? (
+                  <video
+                    key={`video-${activeIndex}`}
+                    src={toLandingAssetUrl(activeUrl)}
+                    controls
+                    autoPlay
+                    className="h-full w-full object-contain carousel-image"
+                  />
+                ) : (
+                  <img
+                    key={`img-${activeIndex}`}
+                    src={toLandingAssetUrl(activeUrl)}
+                    alt={`${countryName} photo ${displayIndex}`}
+                    className="h-full w-full object-contain carousel-image"
+                  />
+                )}
+              </div>
 
-          {/* Prev arrow */}
-          <button
-            type="button"
-            onClick={onPrev}
-            className="absolute left-3 top-1/2 -translate-y-1/2 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-white text-black shadow-md transition hover:bg-[#f0f0f0]"
-            aria-label="Previous photo"
-          >
-            <span className="material-symbols-rounded text-[28px]">chevron_left</span>
-          </button>
+              {/* Prev arrow */}
+              <button
+                type="button"
+                onClick={onPrev}
+                className="absolute left-3 top-1/2 -translate-y-1/2 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-white text-black shadow-md transition hover:bg-[#f0f0f0]"
+                aria-label="Previous photo"
+              >
+                <span className="material-symbols-rounded text-[28px]">chevron_left</span>
+              </button>
 
-          {/* Next arrow */}
-          <button
-            type="button"
-            onClick={onNext}
-            className="absolute right-3 top-1/2 -translate-y-1/2 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-white text-black shadow-md transition hover:bg-[#f0f0f0]"
-            aria-label="Next photo"
-          >
-            <span className="material-symbols-rounded text-[28px]">chevron_right</span>
-          </button>
-        </div>
+              {/* Next arrow */}
+              <button
+                type="button"
+                onClick={onNext}
+                className="absolute right-3 top-1/2 -translate-y-1/2 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-white text-black shadow-md transition hover:bg-[#f0f0f0]"
+                aria-label="Next photo"
+              >
+                <span className="material-symbols-rounded text-[28px]">chevron_right</span>
+              </button>
+            </div>
+
+            {/* Carousel preview strip */}
+            <div className="flex items-center gap-2 overflow-x-auto px-10 pb-4 relative">
+              {/* Sliding indicator bar */}
+              <div
+                className="absolute top-0 left-10 h-1 w-10 bg-white rounded-full transition-transform duration-300 ease-out"
+                style={{
+                  transform: `translateX(calc(12px + ${activeIndex} * 72px))`,
+                }}
+              />
+
+              {items.map((url, idx) => (
+                <div key={`thumbnail-${idx}`} className="relative flex flex-col items-center gap-1 pt-2">
+                  <button
+                    onClick={() => onSelectIndex(idx)}
+                    className={`relative h-16 w-16 shrink-0 rounded overflow-hidden transition ${
+                      idx === activeIndex ? "opacity-100" : "opacity-60 hover:opacity-100"
+                    }`}
+                    aria-label={`View photo ${idx + 1}`}
+                  >
+                    {isVideoAsset(url) ? (
+                      <>
+                        <video
+                          src={toLandingAssetUrl(url)}
+                          className="h-full w-full object-cover"
+                        />
+                        <div className="absolute inset-0 flex items-center justify-center bg-black/40">
+                          <span className="material-symbols-rounded text-white text-[20px]">play_circle</span>
+                        </div>
+                      </>
+                    ) : (
+                      <img
+                        src={toLandingAssetUrl(url)}
+                        alt={`Carousel thumbnail ${idx + 1}`}
+                        className="h-full w-full object-cover"
+                      />
+                    )}
+                  </button>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
       </div>
 
       {/* Right sidebar */}
@@ -363,10 +453,10 @@ export default function CountryDetailComponent({
   const [openContextMenuId, setOpenContextMenuId] = useState<string | null>(null);
   const contextMenuRef = useRef<HTMLDivElement>(null);
 
-  // Distribute images across 3 columns for masonry layout
-  const columns: { url: string; globalIndex: number }[][] = [[], [], []];
+  // Distribute images across 4 columns for masonry layout
+  const columns: { url: string; globalIndex: number }[][] = [[], [], [], []];
   displayImages.forEach((img, i) => {
-    columns[i % 3].push({ url: img, globalIndex: i });
+    columns[i % 4].push({ url: img, globalIndex: i });
   });
 
   const tabs: { key: MediaTab; label: string }[] = [
@@ -387,6 +477,7 @@ export default function CountryDetailComponent({
           onClose={() => setLightboxIndex(null)}
           onNext={() => setLightboxIndex((prev) => prev === null ? null : (prev + 1) % displayImages.length)}
           onPrev={() => setLightboxIndex((prev) => prev === null ? null : (prev - 1 + displayImages.length) % displayImages.length)}
+          onSelectIndex={setLightboxIndex}
           profileName={profile.name}
           profileHandle={profileHandle}
           profileAvatar={profile.images.avatar}
@@ -396,32 +487,6 @@ export default function CountryDetailComponent({
           description={profile.bio}
         />
       )}
-
-      {/* Header */}
-      <header className="relative w-full max-w-372 flex items-center justify-between py-6 md:py-8">
-        <Link href="/" className="ds-font-logo text-[28px] font-normal text-white tracking-[-0.41px] leading-normal">
-          travingat
-        </Link>
-
-        <div className="flex items-center gap-3 md:gap-5">
-          <button className="text-[#e3e3e3] hover:text-white transition" aria-label="Favorites">
-            <span className="material-symbols-rounded text-[22px]">favorite</span>
-          </button>
-          <button className="hidden md:inline-flex text-[#e3e3e3] hover:text-white transition" aria-label="Notifications">
-            <span className="material-symbols-rounded text-[22px]">notifications</span>
-          </button>
-
-          <Link
-            href={`/profiles/${profile.id}`}
-            className="flex items-center gap-2 rounded-xl border border-black-600 bg-[#0b0b0b] px-3 py-2"
-          >
-            <span className="material-symbols-rounded text-[#e3e3e3] text-[21px]">dehaze</span>
-            <div className="hidden md:block h-7 w-7 overflow-hidden rounded-lg">
-              <img src={toLandingAssetUrl(profile.images.avatar)} alt="Profile" className="h-full w-full object-cover" />
-            </div>
-          </Link>
-        </div>
-      </header>
 
       {/* Country Info */}
       <main className="w-full max-w-372 flex flex-col items-center gap-12 pb-28 md:pb-20">

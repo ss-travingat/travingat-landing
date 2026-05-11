@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import LandingHeader from "@landing/components/LandingHeader";
 import LandingFooter from "@landing/components/LandingFooter";
-import { usePathname } from "next/navigation";
 
 // ── Plane-orbit loader overlay ────────────────────────────────────────────────
 function PageLoader({ visible }: { visible: boolean }) {
@@ -72,9 +71,6 @@ export default function LandingLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const pathname = usePathname();
-  const hideShell = pathname?.startsWith("/profiles/") ?? false;
-
   // Show loader on first mount, hide after hydration + minimum display time
   const [loading, setLoading] = useState(true);
 
@@ -86,12 +82,12 @@ export default function LandingLayout({
   return (
     <div className="min-h-screen w-full bg-black text-white overflow-x-hidden">
       <PageLoader visible={loading} />
-      {!hideShell ? <LandingHeader /> : null}
-      {!hideShell ? <div className="h-23 xl:h-33" aria-hidden="true" /> : null}
-      <div key={pathname} className="animate-page-in">
+      <LandingHeader />
+      <div className="h-23 xl:h-33" aria-hidden="true" />
+      <div className="animate-page-in">
         {children}
       </div>
-      {!hideShell ? <LandingFooter /> : null}
+      <LandingFooter />
     </div>
   );
 }

@@ -61,32 +61,6 @@ export default function CollectionDetailComponent({
 
   return (
     <div className="min-h-screen bg-black text-white flex flex-col items-center px-4 md:px-10 xl:px-24">
-      {/* Header */}
-      <header className="relative w-full max-w-372 flex items-center justify-between py-6 md:py-8">
-        <Link href="/" className="ds-font-logo text-[28px] font-normal text-white tracking-[-0.41px] leading-normal">
-          travingat
-        </Link>
-
-        <div className="flex items-center gap-3 md:gap-5">
-          <button className="text-[#e3e3e3] hover:text-white transition" aria-label="Favorites">
-            <span className="material-symbols-rounded text-[22px]">favorite</span>
-          </button>
-          <button className="hidden md:inline-flex text-[#e3e3e3] hover:text-white transition" aria-label="Notifications">
-            <span className="material-symbols-rounded text-[22px]">notifications</span>
-          </button>
-
-          <Link
-            href={`/profiles/${profile.id}`}
-            className="flex items-center gap-2 rounded-xl border border-black-600 bg-[#0b0b0b] px-3 py-2"
-          >
-            <span className="material-symbols-rounded text-[#e3e3e3] text-[21px]">dehaze</span>
-            <div className="hidden md:block h-7 w-7 overflow-hidden rounded-lg">
-              <img src={toLandingAssetUrl(profile.images.avatar)} alt="Profile" className="h-full w-full object-cover" />
-            </div>
-          </Link>
-        </div>
-      </header>
-
       {/* Collection Info */}
       <main className="w-full max-w-372 flex flex-col items-center gap-12 pb-28 md:pb-20">
         <div className="flex flex-col items-center gap-5 w-full max-w-150">
