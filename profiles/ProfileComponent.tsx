@@ -114,37 +114,39 @@ function toFlagAssetPath(flagCode?: string): string | undefined {
   return `/flags/${flagCode.toUpperCase()}.svg`;
 }
 
-function SocialIcon({ platform }: { platform: string }) {
-  const cls = "w-5 h-5";
-  if (platform === "x") {
-    return (
-      <svg className={cls} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.745l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-      </svg>
-    );
-  }
-  if (platform === "instagram") {
-    return (
-      <svg className={cls} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-        <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
-      </svg>
-    );
-  }
+function SocialIcon({ platform, variant = "filled", className = "w-5 h-5" }: { platform: string; variant?: "filled" | "outline"; className?: string }) {
+  const cls = className;
+  const simpleIconSlugByPlatform: Record<string, string> = {
+    x: "x",
+    instagram: "instagram",
+    linkedin: "linkedin",
+    youtube: "youtube",
+  };
+
+  const slug = simpleIconSlugByPlatform[platform];
+  if (!slug) return null;
+
   if (platform === "linkedin") {
     return (
-      <svg className={cls} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-        <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
-      </svg>
+      <img
+        src="https://www.svgrepo.com/show/157006/linkedin.svg"
+        alt="LinkedIn"
+        aria-hidden="true"
+        className={cls}
+        draggable={false}
+      />
     );
   }
-  if (platform === "youtube") {
-    return (
-      <svg className={cls} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-        <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
-      </svg>
-    );
-  }
-  return null;
+
+  return (
+    <img
+      src={`https://cdn.simpleicons.org/${slug}/ffffff`}
+      alt=""
+      aria-hidden="true"
+      className={cls}
+      draggable={false}
+    />
+  );
 }
 
 export function ContextMenu({
@@ -1877,21 +1879,21 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
           {activeTab === "about" ? (
             hasAboutContent ? (
               <section className="w-full grid md:grid-cols-[minmax(0,1fr)_320px] lg:grid-cols-[minmax(0,1fr)_360px] gap-6 lg:gap-8 items-stretch">
-                <article className="relative min-h-[520px] rounded-2xl border border-[#1f1f1f] p-5 md:p-6 bg-black-800 space-y-6">
+                <article className="relative min-h-[520px] rounded-4xl border border-[#1f1f1f] p-6 md:p-8 bg-black-800 space-y-6"> 
                   <div className="space-y-3">
-                    <h3 className="text-2xl font-semibold tracking-[-0.5px]">About</h3>
-                    <p className="text-[#b7b7b7] leading-7 text-sm md:text-base">{profile.bio || "No bio yet."}</p>
+                    <h3 className="text-3xl md:text-4xl font-semibold tracking-[-0.5px]">About</h3>
+                    <p className="text-[#b7b7b7] leading-8 text-base md:text-lg">{profile.bio || "No bio yet."}</p>
                   </div>
 
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-3">
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
                     {aboutPhotos.length > 0 ? (
                       aboutPhotos.map((src, idx) => (
-                        <div key={`${src}-${idx}`} className="rounded-xl overflow-hidden border border-[#2b2b2b] bg-[#111] aspect-[1.06]">
+                        <div key={`${src}-${idx}`} className="rounded-2xl overflow-hidden border border-[#2b2b2b] bg-[#111] aspect-[1.06] shadow-sm">
                           <img src={toLandingAssetUrl(src)} alt={`About photo ${idx + 1}`} loading="lazy" decoding="async" className="w-full h-full object-cover" />
                         </div>
                       ))
                     ) : (
-                      <div className="col-span-full rounded-xl border border-dashed border-[#2b2b2b] bg-[#111] p-6 text-sm text-white-500 text-center">
+                      <div className="col-span-full rounded-2xl border border-dashed border-[#2b2b2b] bg-[#111] p-6 text-sm text-white-500 text-center">
                         No photos added yet.
                       </div>
                     )}
@@ -1900,9 +1902,9 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                   <div className="space-y-4">
                     <h4 className="text-xl font-semibold tracking-[-0.5px]">My Interests</h4>
                     {profile.interests.length > 0 ? (
-                      <div className="flex flex-wrap gap-2.5">
+                      <div className="flex flex-wrap gap-3">
                         {profile.interests.map((interest) => (
-                          <span key={interest} className="px-3.5 py-1.5 rounded-full border border-white-800 bg-black-800 text-[#d0d0d0] text-sm">
+                          <span key={interest} className="px-4 py-2 rounded-full border border-white-800 bg-black-800 text-[#d0d0d0] text-xs md:text-sm">
                             {interest}
                           </span>
                         ))}
@@ -1917,7 +1919,12 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                 <aside className="min-h-[520px] rounded-2xl border border-[#1f1f1f] p-5 md:p-6 bg-black-800">
                   <div className="space-y-1 pb-4 border-b border-black-300 mb-4">
                     <p className="text-white-500 text-xs">Username</p>
-                    <p className="text-white text-lg font-medium">{handle}</p>
+                    <div className="flex items-center gap-2">
+                      <p className="text-white text-lg font-medium">{handle}</p>
+                      <button type="button" aria-label="Edit username" className="text-[#6b6b6b] hover:text-white transition">
+                        <span className="material-symbols-rounded text-[16px]">edit</span>
+                      </button>
+                    </div>
                     <p className="text-[#5f5f5f] text-xs truncate">travingat.com/{handle.replace(/^@/, "")}</p>
                   </div>
 
@@ -1978,7 +1985,18 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                       {socialRows.length > 0 ? (
                         <div className="flex flex-col gap-1.5 min-w-0">
                           {socialRows.map((item) => (
-                            <a key={item.key} href={item.url} target="_blank" rel="noopener noreferrer" className="block w-full min-w-0 truncate text-white-100 text-sm hover:text-white transition">{item.label}</a>
+                            <a
+                              key={item.key}
+                              href={item.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex items-center gap-3 text-white-100 text-sm hover:text-white transition"
+                            >
+                              <span className="flex h-8 w-8 items-center justify-center rounded-full border border-[#3a3a3a]">
+                                <SocialIcon platform={item.key} variant="outline" className="h-4 w-4" />
+                              </span>
+                              <span className="truncate">{item.label}</span>
+                            </a>
                           ))}
                         </div>
                       ) : (
