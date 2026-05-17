@@ -1878,7 +1878,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
 
           {activeTab === "about" ? (
             hasAboutContent ? (
-              <section className="w-full grid md:grid-cols-[minmax(0,1fr)_320px] lg:grid-cols-[minmax(0,1fr)_360px] gap-6 lg:gap-8 items-stretch">
+              <section className="w-full max-w-[1112px] mx-auto grid md:grid-cols-[minmax(0,1fr)_320px] lg:grid-cols-[minmax(0,1fr)_360px] gap-6 lg:gap-8 items-stretch">
                 <article className="relative min-h-[520px] rounded-4xl border border-[#1f1f1f] p-6 md:p-8 bg-black-800 space-y-6"> 
                   <div className="space-y-3">
                     <h3 className="text-3xl md:text-4xl font-semibold tracking-[-0.5px]">About</h3>

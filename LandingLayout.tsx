@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
 import LandingHeader from "@landing/components/LandingHeader";
 import LandingFooter from "@landing/components/LandingFooter";
 
@@ -71,6 +72,11 @@ export default function LandingLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const pathname = usePathname();
+  const hideNavbar = Boolean(
+    pathname?.startsWith("/profiles/") &&
+    (pathname?.includes("/country/") || pathname?.includes("/collection/"))
+  );
   // Show loader on first mount, hide after hydration + minimum display time
   const [loading, setLoading] = useState(true);
 
@@ -82,8 +88,8 @@ export default function LandingLayout({
   return (
     <div className="min-h-screen w-full bg-black text-white overflow-x-hidden">
       <PageLoader visible={loading} />
-      <LandingHeader />
-      <div className="h-23 xl:h-33" aria-hidden="true" />
+      {hideNavbar ? null : <LandingHeader />}
+      {hideNavbar ? null : <div className="h-23 xl:h-33" aria-hidden="true" />}
       <div className="animate-page-in">
         {children}
       </div>

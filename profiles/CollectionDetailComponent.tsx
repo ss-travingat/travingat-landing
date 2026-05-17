@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 
 import { toLandingAssetUrl } from "@/lib/landing-assets";
 import type { SampleProfile } from "@/profiles/profile-data";
@@ -16,6 +16,250 @@ function isVideoAsset(url: string) {
   return /\.(mp4|mov|webm|m4v|3gp|3g2)$/i.test(url);
 }
 
+function CollectionLightbox({
+  items,
+  activeIndex,
+  onClose,
+  onNext,
+  onPrev,
+  onSelectIndex,
+  profileName,
+  profileHandle,
+  profileAvatar,
+  collectionTitle,
+  description,
+}: {
+  items: string[];
+  activeIndex: number;
+  onClose: () => void;
+  onNext: () => void;
+  onPrev: () => void;
+  onSelectIndex: (index: number) => void;
+  profileName: string;
+  profileHandle: string;
+  profileAvatar: string;
+  collectionTitle: string;
+  description?: string;
+}) {
+  const activeUrl = items[activeIndex];
+  const totalCount = items.length;
+  const displayIndex = activeIndex + 1;
+  const avatarSrc = toLandingAssetUrl(profileAvatar);
+  const [showBrowser, setShowBrowser] = useState(false);
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex bg-black/95"
+      onClick={onClose}
+    >
+      <div
+        className="relative flex flex-1 flex-col min-w-0"
+        onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
+      >
+        <div className="flex items-center justify-between px-10 py-6 text-[15px] tracking-[-0.4px] text-[#a8a8a8]">
+          <span>{`${displayIndex} of ${totalCount}`}</span>
+          <button
+            type="button"
+            onClick={() => setShowBrowser((prev) => !prev)}
+            className="flex h-8 w-8 items-center justify-center text-[#a8a8a8] transition hover:text-white"
+            aria-label="Toggle photo browser"
+          >
+            <span className="material-symbols-rounded text-[22px]">dashboard</span>
+          </button>
+        </div>
+
+        {showBrowser ? (
+          <div className="flex-1 min-h-0 overflow-y-auto px-10 pb-8">
+            <div
+              className="columns-4 gap-6 [column-fill:_balance]"
+              style={{ columnCount: 4, columnGap: "24px" }}
+            >
+              {items.map((url, idx) => (
+                <button
+                  key={`browser-${idx}`}
+                  type="button"
+                  onClick={() => {
+                    onSelectIndex(idx);
+                    setShowBrowser(false);
+                  }}
+                  className="mb-6 w-full break-inside-avoid overflow-hidden rounded-[22px] bg-[#0a0a0a] text-left"
+                  aria-label={`Open photo ${idx + 1}`}
+                >
+                  <div className="relative">
+                    {isVideoAsset(url) ? (
+                      <>
+                        <video
+                          src={toLandingAssetUrl(url)}
+                          className="h-auto w-full"
+                        />
+                        <div className="absolute left-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-black/55">
+                          <span className="material-symbols-rounded text-[18px] text-white">play_arrow</span>
+                        </div>
+                      </>
+                    ) : (
+                      <img
+                        src={toLandingAssetUrl(url)}
+                        alt={`Gallery thumbnail ${idx + 1}`}
+                        className="h-auto w-full"
+                      />
+                    )}
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <>
+            <div className="relative flex flex-1 min-h-0 pb-8">
+              <div className="h-full w-full overflow-hidden bg-[#0a0a0a]">
+                {isVideoAsset(activeUrl) ? (
+                  <video
+                    key={`video-${activeIndex}`}
+                    src={toLandingAssetUrl(activeUrl)}
+                    controls
+                    autoPlay
+                    className="h-full w-full object-contain carousel-image"
+                  />
+                ) : (
+                  <img
+                    key={`img-${activeIndex}`}
+                    src={toLandingAssetUrl(activeUrl)}
+                    alt={`${collectionTitle} photo ${displayIndex}`}
+                    className="h-full w-full object-contain carousel-image"
+                  />
+                )}
+              </div>
+
+              <button
+                type="button"
+                onClick={onPrev}
+                className="absolute left-3 top-1/2 -translate-y-1/2 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-white text-black shadow-md transition hover:bg-[#f0f0f0]"
+                aria-label="Previous photo"
+              >
+                <span className="material-symbols-rounded text-[28px]">chevron_left</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={onNext}
+                className="absolute right-3 top-1/2 -translate-y-1/2 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-white text-black shadow-md transition hover:bg-[#f0f0f0]"
+                aria-label="Next photo"
+              >
+                <span className="material-symbols-rounded text-[28px]">chevron_right</span>
+              </button>
+            </div>
+
+            <div
+              className={`flex items-center overflow-x-auto px-10 pb-4 ${
+                items.length <= 10 ? "justify-center" : "justify-start"
+              }`}
+            >
+              <div className={`relative flex items-center gap-2 ${items.length <= 10 ? "mx-auto" : ""}`}>
+                <div
+                  className="absolute top-0 left-0 h-1 w-10 bg-white rounded-full transition-transform duration-300 ease-out"
+                  style={{
+                    transform: `translateX(calc(12px + ${activeIndex} * 72px))`,
+                  }}
+                />
+
+                {items.map((url, idx) => (
+                  <div key={`thumbnail-${idx}`} className="relative flex flex-col items-center gap-1 pt-2">
+                    <button
+                      onClick={() => onSelectIndex(idx)}
+                      className={`relative h-16 w-16 shrink-0 rounded overflow-hidden transition ${
+                        idx === activeIndex ? "opacity-100" : "opacity-60 hover:opacity-100"
+                      }`}
+                      aria-label={`View photo ${idx + 1}`}
+                    >
+                      {isVideoAsset(url) ? (
+                        <>
+                          <video
+                            src={toLandingAssetUrl(url)}
+                            className="h-full w-full object-cover"
+                          />
+                          <div className="absolute inset-0 flex items-center justify-center bg-black/40">
+                            <span className="material-symbols-rounded text-white text-[20px]">play_circle</span>
+                          </div>
+                        </>
+                      ) : (
+                        <img
+                          src={toLandingAssetUrl(url)}
+                          alt={`Carousel thumbnail ${idx + 1}`}
+                          className="h-full w-full object-cover"
+                        />
+                      )}
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </>
+        )}
+      </div>
+
+      <aside
+        className="flex w-[360px] shrink-0 flex-col gap-8 overflow-y-auto bg-[#111111] p-8 text-white"
+        onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
+      >
+        <div className="flex items-start justify-between">
+          <div className="h-[72px] w-[72px] overflow-hidden rounded-2xl">
+            <img src={avatarSrc} alt={profileName} className="h-full w-full object-cover" />
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="flex h-8 w-8 items-center justify-center text-[#666] transition hover:text-white"
+            aria-label="Close"
+          >
+            <span className="material-symbols-rounded text-[24px]">close</span>
+          </button>
+        </div>
+
+        <div className="flex flex-col gap-3">
+          <div className="flex items-center gap-2 text-[13px] text-[#888]">
+            <span>{profileName}</span>
+          </div>
+          <p className="text-[20px] font-semibold tracking-[-0.5px] text-white">{profileHandle}</p>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            className="h-[38px] flex-1 rounded-full bg-white text-[14px] font-medium text-black transition hover:bg-[#e8e8e8]"
+          >
+            Follow
+          </button>
+          <button
+            type="button"
+            className="h-[38px] flex-1 rounded-full border border-[#2e2e2e] bg-[#1a1a1a] text-[14px] font-medium text-white transition hover:bg-[#222]"
+          >
+            Connect
+          </button>
+          <button
+            type="button"
+            className="flex h-[38px] w-[38px] shrink-0 items-center justify-center rounded-full border border-[#2e2e2e] bg-[#1a1a1a] text-white transition hover:bg-[#222]"
+            aria-label="More options"
+          >
+            <span className="material-symbols-rounded text-[20px]">more_horiz</span>
+          </button>
+        </div>
+
+        <div className="flex flex-col gap-4">
+          <p className="text-[22px] font-semibold tracking-[-0.5px] text-[#ededed]">
+            {collectionTitle}
+          </p>
+          {description ? (
+            <p className="text-[15px] leading-[1.6] tracking-[-0.3px] text-[#a0a0a0] line-clamp-6">{description}</p>
+          ) : null}
+          <button type="button" className="self-start text-[14px] tracking-[-0.3px] text-[#555] transition hover:text-[#888]">
+            Read more
+          </button>
+        </div>
+      </aside>
+    </div>
+  );
+}
+
 export default function CollectionDetailComponent({
   profile,
   title,
@@ -28,6 +272,8 @@ export default function CollectionDetailComponent({
   const [activeTab, setActiveTab] = useState<MediaTab>("all");
   const [showMenu, setShowMenu] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+  const didReadFromUrl = useRef(false);
 
   const photos = images.filter((url) => !isVideoAsset(url));
   const videos = images.filter((url) => isVideoAsset(url));
@@ -47,10 +293,76 @@ export default function CollectionDetailComponent({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Distribute images across 3 columns for masonry layout
-  const columns: string[][] = [[], [], []];
+  const handleKeyDown = useCallback((e: KeyboardEvent) => {
+    if (lightboxIndex === null) return;
+    if (e.key === "Escape") {
+      setLightboxIndex(null);
+    } else if (e.key === "ArrowRight") {
+      setLightboxIndex((prev) => prev === null ? null : (prev + 1) % displayImages.length);
+    } else if (e.key === "ArrowLeft") {
+      setLightboxIndex((prev) => prev === null ? null : (prev - 1 + displayImages.length) % displayImages.length);
+    }
+  }, [lightboxIndex, displayImages.length]);
+
+  useEffect(() => {
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [handleKeyDown]);
+
+  useEffect(() => {
+    if (lightboxIndex !== null) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => { document.body.style.overflow = ""; };
+  }, [lightboxIndex]);
+
+  useEffect(() => {
+    setLightboxIndex(null);
+  }, [activeTab]);
+
+  useEffect(() => {
+    if (typeof window === "undefined" || didReadFromUrl.current) return;
+    didReadFromUrl.current = true;
+    const url = new URL(window.location.href);
+    const encodedImage = url.searchParams.get("image");
+    if (encodedImage && images.length > 0) {
+      try {
+        const imageUrl = decodeURIComponent(escape(atob(encodedImage)));
+        const indexInAll = images.indexOf(imageUrl);
+        if (indexInAll !== -1) {
+          setActiveTab("all");
+          setLightboxIndex(indexInAll);
+          return;
+        }
+        setLightboxIndex(0);
+      } catch (e) {}
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const url = new URL(window.location.href);
+    if (lightboxIndex !== null && displayImages.length > 0) {
+      const activeUrl = displayImages[lightboxIndex];
+      const encodedUrl = btoa(unescape(encodeURIComponent(activeUrl)));
+      if (url.searchParams.get("image") !== encodedUrl) {
+        url.searchParams.set("image", encodedUrl);
+        window.history.replaceState({}, "", url.toString());
+      }
+    } else if (didReadFromUrl.current && lightboxIndex === null) {
+      if (url.searchParams.has("image")) {
+        url.searchParams.delete("image");
+        window.history.replaceState({}, "", url.toString());
+      }
+    }
+  }, [lightboxIndex, displayImages]);
+
+  const columns: { url: string; globalIndex: number }[][] = [[], [], [], []];
   displayImages.forEach((img, i) => {
-    columns[i % 3].push(img);
+    columns[i % 4].push({ url: img, globalIndex: i });
   });
 
   const tabs: { key: MediaTab; label: string }[] = [
@@ -61,8 +373,23 @@ export default function CollectionDetailComponent({
 
   return (
     <div className="min-h-screen bg-black text-white flex flex-col items-center px-4 md:px-10 xl:px-24">
+      {lightboxIndex !== null && (
+        <CollectionLightbox
+          items={displayImages}
+          activeIndex={lightboxIndex}
+          onClose={() => setLightboxIndex(null)}
+          onNext={() => setLightboxIndex((prev) => prev === null ? null : (prev + 1) % displayImages.length)}
+          onPrev={() => setLightboxIndex((prev) => prev === null ? null : (prev - 1 + displayImages.length) % displayImages.length)}
+          onSelectIndex={setLightboxIndex}
+          profileName={profile.name}
+          profileHandle={profile.handle.startsWith("@") ? profile.handle : `@${profile.handle}`}
+          profileAvatar={profile.images.avatar}
+          collectionTitle={title}
+          description={profile.bio}
+        />
+      )}
       {/* Collection Info */}
-      <main className="w-full max-w-372 flex flex-col items-center gap-12 pb-28 md:pb-20">
+      <main className="w-full max-w-372 flex flex-col items-center gap-12 pb-28 md:pb-20 pt-8 md:pt-10">
         <div className="flex flex-col items-center gap-5 w-full max-w-150">
           <div className="flex flex-col items-center gap-4">
             <div className="flex items-center justify-center w-16 h-16 rounded-2xl bg-[#1d1d1d] border border-black-300">
@@ -148,39 +475,42 @@ export default function CollectionDetailComponent({
             <div className="flex gap-5 w-full pb-25">
               {columns.map((col, colIdx) => (
                 <div key={colIdx} className="flex-1 flex flex-col gap-5">
-                  {col.map((imgUrl, imgIdx) => {
+                  {col.map(({ url: imgUrl, globalIndex }) => {
                     const isVideo = isVideoAsset(imgUrl);
                     return (
                       <div
-                        key={imgIdx}
-                        className="group relative rounded-2xl overflow-hidden bg-[#151515]"
+                        key={globalIndex}
+                        className="group relative"
                       >
-                        {isVideo ? (
-                          <>
-                            <video
+                        <div
+                          className="relative rounded-2xl overflow-hidden bg-[#151515] cursor-pointer"
+                          onClick={() => setLightboxIndex(globalIndex)}
+                        >
+                          {isVideo ? (
+                            <>
+                              <video
+                                src={toLandingAssetUrl(imgUrl)}
+                                muted
+                                playsInline
+                                loop
+                                preload="metadata"
+                                className="w-full h-auto block pointer-events-none"
+                              />
+                              <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
+                                <span className="text-white text-3xl drop-shadow-lg">▶</span>
+                              </div>
+                            </>
+                          ) : (
+                            <img
                               src={toLandingAssetUrl(imgUrl)}
-                              muted
-                              playsInline
-                              loop
-                              preload="metadata"
+                              alt={`${title} photo ${globalIndex + 1}`}
+                              loading="lazy"
+                              decoding="async"
                               className="w-full h-auto block"
-                              onMouseEnter={(e) => e.currentTarget.play().catch(() => {})}
-                              onMouseLeave={(e) => { e.currentTarget.pause(); e.currentTarget.currentTime = 0; }}
-                              onClick={(e) => { const v = e.currentTarget; if (v.paused) v.play().catch(() => {}); else { v.pause(); v.currentTime = 0; } }}
                             />
-                            <div className="absolute inset-0 flex items-center justify-center pointer-events-none group-hover:opacity-0 transition-opacity">
-                              <span className="text-white text-3xl drop-shadow-lg">▶</span>
-                            </div>
-                          </>
-                        ) : (
-                          <img
-                            src={toLandingAssetUrl(imgUrl)}
-                            alt={`${title} photo ${colIdx * col.length + imgIdx + 1}`}
-                            loading="lazy"
-                            decoding="async"
-                            className="w-full h-auto block"
-                          />
-                        )}
+                          )}
+                          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-200 pointer-events-none" />
+                        </div>
                       </div>
                     );
                   })}

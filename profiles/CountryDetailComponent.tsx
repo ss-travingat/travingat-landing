@@ -197,44 +197,50 @@ function PhotoLightbox({
             </div>
 
             {/* Carousel preview strip */}
-            <div className="flex items-center gap-2 overflow-x-auto px-10 pb-4 relative">
-              {/* Sliding indicator bar */}
-              <div
-                className="absolute top-0 left-10 h-1 w-10 bg-white rounded-full transition-transform duration-300 ease-out"
-                style={{
-                  transform: `translateX(calc(12px + ${activeIndex} * 72px))`,
-                }}
-              />
+            <div
+              className={`flex items-center overflow-x-auto px-10 pb-4 ${
+                items.length <= 10 ? "justify-center" : "justify-start"
+              }`}
+            >
+              <div className={`relative flex items-center gap-2 ${items.length <= 10 ? "mx-auto" : ""}`}>
+                {/* Sliding indicator bar */}
+                <div
+                  className="absolute top-0 left-0 h-1 w-10 bg-white rounded-full transition-transform duration-300 ease-out"
+                  style={{
+                    transform: `translateX(calc(12px + ${activeIndex} * 72px))`,
+                  }}
+                />
 
-              {items.map((url, idx) => (
-                <div key={`thumbnail-${idx}`} className="relative flex flex-col items-center gap-1 pt-2">
-                  <button
-                    onClick={() => onSelectIndex(idx)}
-                    className={`relative h-16 w-16 shrink-0 rounded overflow-hidden transition ${
-                      idx === activeIndex ? "opacity-100" : "opacity-60 hover:opacity-100"
-                    }`}
-                    aria-label={`View photo ${idx + 1}`}
-                  >
-                    {isVideoAsset(url) ? (
-                      <>
-                        <video
+                {items.map((url, idx) => (
+                  <div key={`thumbnail-${idx}`} className="relative flex flex-col items-center gap-1 pt-2">
+                    <button
+                      onClick={() => onSelectIndex(idx)}
+                      className={`relative h-16 w-16 shrink-0 rounded overflow-hidden transition ${
+                        idx === activeIndex ? "opacity-100" : "opacity-60 hover:opacity-100"
+                      }`}
+                      aria-label={`View photo ${idx + 1}`}
+                    >
+                      {isVideoAsset(url) ? (
+                        <>
+                          <video
+                            src={toLandingAssetUrl(url)}
+                            className="h-full w-full object-cover"
+                          />
+                          <div className="absolute inset-0 flex items-center justify-center bg-black/40">
+                            <span className="material-symbols-rounded text-white text-[20px]">play_circle</span>
+                          </div>
+                        </>
+                      ) : (
+                        <img
                           src={toLandingAssetUrl(url)}
+                          alt={`Carousel thumbnail ${idx + 1}`}
                           className="h-full w-full object-cover"
                         />
-                        <div className="absolute inset-0 flex items-center justify-center bg-black/40">
-                          <span className="material-symbols-rounded text-white text-[20px]">play_circle</span>
-                        </div>
-                      </>
-                    ) : (
-                      <img
-                        src={toLandingAssetUrl(url)}
-                        alt={`Carousel thumbnail ${idx + 1}`}
-                        className="h-full w-full object-cover"
-                      />
-                    )}
-                  </button>
-                </div>
-              ))}
+                      )}
+                    </button>
+                  </div>
+                ))}
+              </div>
             </div>
           </>
         )}
@@ -489,7 +495,7 @@ export default function CountryDetailComponent({
       )}
 
       {/* Country Info */}
-      <main className="w-full max-w-372 flex flex-col items-center gap-12 pb-28 md:pb-20">
+      <main className="w-full max-w-372 flex flex-col items-center gap-12 pb-28 md:pb-20 pt-8 md:pt-10">
         <div className="flex flex-col items-center gap-5 w-full max-w-150">
           <div className="flex flex-col items-center gap-4">
             <div className="h-15.5 w-25 overflow-hidden">
