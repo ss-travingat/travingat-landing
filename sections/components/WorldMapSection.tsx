@@ -4,7 +4,7 @@ export default function WorldMapSection() {
   return (
     <section className="py-12 md:py-16 xl:px-0 xl:py-20">
       {/* Title */}
-      <h2 className="ds-font-display text-center text-[32px] leading-10 font-semibold text-white mb-8 tracking-[-0.5px] px-3 md:px-12 md:text-[52px] md:leading-15 md:tracking-[-1px] md:mb-10 xl:px-0 xl:text-[64px] xl:leading-18 xl:text-center xl:max-w-200 xl:mx-auto xl:mb-12 xl:tracking-[-1px]">
+      <h2 className="ds-font-display text-center text-[32px] leading-10 font-semibold text-white mb-8 tracking-[-0.5px] px-5 md:px-8 md:text-[52px] md:leading-15 md:tracking-[-1px] md:mb-10 xl:px-24 xl:text-[64px] xl:leading-18 xl:text-center xl:max-w-200 xl:mx-auto xl:mb-12 xl:tracking-[-1px]">
         One place for everywhere you&apos;ve explored
       </h2>
 

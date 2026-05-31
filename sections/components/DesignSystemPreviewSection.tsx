@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export default function DesignSystemPreviewSection() {
   return (
-    <section className="px-3 py-12 md:px-12 md:py-16 xl:px-24 xl:py-20">
+    <section className="px-5 py-12 md:px-8 md:py-16 xl:px-24 xl:py-20">
       <div className="rounded-3xl border border-[#20242d] bg-[#0d1017] p-5 md:p-8 xl:p-10">
         <div className="mb-8 flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
           <div>

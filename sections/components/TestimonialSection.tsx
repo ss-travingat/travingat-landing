@@ -85,7 +85,7 @@ export default function TestimonialSection() {
       onMouseLeave={() => setPaused(false)}
     >
       {/* Navigation arrows */}
-      <div className="absolute top-12 right-5 md:top-16 md:right-12 flex items-center gap-3 xl:top-10 xl:right-24 z-10">
+      <div className="absolute top-12 right-5 md:top-16 md:right-8 flex items-center gap-3 xl:top-10 xl:right-24 z-10">
         <button
           onClick={() => goTo("prev")}
           className="w-[36px] h-[36px] xl:w-12 xl:h-12 flex items-center justify-center rotate-180 opacity-70 hover:opacity-100 transition-opacity cursor-pointer"
@@ -114,7 +114,7 @@ export default function TestimonialSection() {
 
       {/* Slide content */}
       <div
-        className={`px-3 flex flex-col gap-8 xl:px-0 xl:flex-row xl:gap-16 xl:items-start xl:max-w-[1200px] transition-all duration-300 ease-in-out ${
+        className={`mx-auto px-5 flex flex-col gap-8 md:px-8 xl:px-0 xl:flex-row xl:gap-16 xl:items-start xl:max-w-[1200px] transition-all duration-300 ease-in-out ${
           isAnimating
             ? direction === "right"
               ? "opacity-0 translate-x-8"

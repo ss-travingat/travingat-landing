@@ -17,13 +17,13 @@ export default function TemplatesSection() {
   ];
 
   return (
-    <section id="templates" className="px-3 py-12 xl:px-12 xl:py-20">
+    <section id="templates" className="px-5 py-12 md:px-8 xl:px-24 xl:py-20">
       <div className="mx-auto w-full max-w-372 xl:max-w-480">
         <h2 className="ds-font-display mx-auto mb-8 max-w-84 text-center text-[32px] font-semibold leading-10 tracking-[-0.5px] text-white xl:max-w-200 xl:mb-16 xl:text-[64px] xl:leading-18 xl:tracking-[-1px]">
           Premium templates to elevate your profile
         </h2>
 
-        <div className="xl:hidden px-3">
+        <div className="xl:hidden px-0">
           <div className="overflow-hidden rounded-3xl">
             <Image
               src={encodeURI("/images/vertical card container.png")}

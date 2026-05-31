@@ -18,7 +18,7 @@ const inputVariants = cva(
   }
 );
 
-type InputProps = InputHTMLAttributes<HTMLInputElement> &
+type InputProps = Omit<InputHTMLAttributes<HTMLInputElement>, "size"> &
   VariantProps<typeof inputVariants>;
 
 const Input = forwardRef<HTMLInputElement, InputProps>(function Input(

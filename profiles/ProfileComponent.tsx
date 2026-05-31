@@ -674,16 +674,18 @@ function PhotoCarouselModal({
           >
             Connect
           </button>
-          <div className="relative">
-            <MoreOptionsButton
-              isOpen={false}
-              onClick={() => {}}
-              label="More options"
-              size="sm"
-              showOnHover={false}
-              positioned={false}
-            />
-          </div>
+          <button
+            type="button"
+            aria-label="More options"
+            className="grid h-[38px] w-[38px] place-items-center rounded-full border border-[#2e2e2e] bg-[#1a1a1a] text-white transition hover:bg-[#222]"
+          >
+            <span className="grid grid-cols-2 gap-1.5">
+              <span className="h-1 w-1 rounded-full bg-white" />
+              <span className="h-1 w-1 rounded-full bg-white" />
+              <span className="h-1 w-1 rounded-full bg-white" />
+              <span className="h-1 w-1 rounded-full bg-white" />
+            </span>
+          </button>
         </div>
 
         {/* Country + description */}
@@ -1335,7 +1337,12 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                 <button onClick={() => setShowFollowModal(true)} className="w-37 rounded-full bg-white text-black px-5 py-3 text-[16px] font-medium leading-6 tracking-[-0.096px] hover:bg-[#ececec] transition">Follow</button>
                 <button className="w-37 rounded-full border border-black-100 bg-black-700 text-white px-5 py-3 text-[16px] font-medium leading-6 tracking-[-0.096px] hover:bg-[#242424] transition">Connect</button>
                 <button className="h-12 w-12 grid place-items-center rounded-full border border-black-100 bg-black-700 text-white hover:bg-[#242424] transition" aria-label="More options">
-                  <span className="material-symbols-rounded text-[20px]">grid_view</span>
+                  <span className="grid grid-cols-2 gap-1.5">
+                    <span className="h-1 w-1 rounded-full bg-white" />
+                    <span className="h-1 w-1 rounded-full bg-white" />
+                    <span className="h-1 w-1 rounded-full bg-white" />
+                    <span className="h-1 w-1 rounded-full bg-white" />
+                  </span>
                 </button>
               </div>
             </div>
@@ -2029,7 +2036,12 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
         <div className="flex items-center gap-2">
           <button onClick={() => setShowFollowModal(true)} className="flex-1 rounded-full bg-white text-black px-5 py-2.5 text-[16px] font-medium tracking-[-0.41px]">Follow</button>
           <button className="h-10.75 w-10.75 rounded-full border border-[#363636] bg-[#181818] grid place-items-center text-white" aria-label="More options">
-            <span className="material-symbols-rounded text-[20px]">more_horiz</span>
+            <span className="grid grid-cols-2 gap-1.25">
+              <span className="h-1 w-1 rounded-full bg-white" />
+              <span className="h-1 w-1 rounded-full bg-white" />
+              <span className="h-1 w-1 rounded-full bg-white" />
+              <span className="h-1 w-1 rounded-full bg-white" />
+            </span>
           </button>
           <button className="flex-1 rounded-full border border-[#363636] bg-[#181818] text-white px-5 py-2.5 text-[16px] font-medium tracking-[-0.41px]">Connect</button>
         </div>

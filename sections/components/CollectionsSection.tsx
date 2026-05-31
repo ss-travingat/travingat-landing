@@ -3,7 +3,7 @@ import { toLandingAssetUrl } from "@/lib/landing-assets";
 
 export default function CollectionsSection() {
   return (
-    <section className="px-3 py-12 md:px-12 md:py-16 xl:hidden">
+    <section className="px-5 py-12 md:px-8 md:py-16 xl:hidden">
       <div>
         {/* Text */}
         <div>

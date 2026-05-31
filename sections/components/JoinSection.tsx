@@ -10,7 +10,7 @@ export default function JoinSection() {
   const isLoading = status === "loading";
 
   return (
-    <section id="join" className="relative overflow-hidden px-3 py-12 text-center md:px-12 md:py-16 xl:px-24 xl:py-20">
+    <section id="join" className="relative overflow-hidden px-5 py-12 text-center md:px-8 md:py-16 xl:px-24 xl:py-20">
       {/* Full-width map background from Figma Section 16 */}
       <div className="pointer-events-none absolute inset-x-0 top-3 mx-auto h-55 w-full max-w-367.75 md:h-75 xl:h-119.5">
         <Image

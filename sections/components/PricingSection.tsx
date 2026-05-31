@@ -121,7 +121,7 @@ export default function PricingSection() {
   );
 
   return (
-    <section id="pricing" className="px-4 py-14 md:px-12 md:py-16 xl:px-24 xl:py-20">
+    <section id="pricing" className="px-5 py-14 md:px-8 md:py-16 xl:px-24 xl:py-20">
       <div className="mx-auto w-full max-w-184.5 space-y-12 xl:max-w-300">
         <div className="flex flex-col items-center gap-8 text-center">
           <div className="space-y-4 text-white">

@@ -41,7 +41,7 @@ export default function OrganizeSection() {
       </section>
 
       {/* Mobile and iPad: Organize section */}
-      <section className="px-3 py-12 md:px-12 md:py-16 xl:hidden">
+      <section className="px-5 py-12 md:px-8 md:py-16 xl:hidden">
         {/* Text */}
         <div>
           <h2 className="ds-font-display text-[32px] leading-10 font-semibold text-white mb-4 text-center tracking-[-0.5px] md:text-[52px] md:leading-15 md:tracking-[-1px] md:mb-6 md:max-w-150 md:mx-auto">

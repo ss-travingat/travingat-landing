@@ -40,7 +40,7 @@ function TravellerCard({ profile }: { profile: DemoProfile }) {
       </div>
 
       <div className="flex w-full flex-col items-start gap-4 px-2 xl:gap-6 xl:px-3">
-        <div className="flex w-full flex-col items-center gap-[5.333px] xl:gap-3">
+        <div className="flex w-full flex-col items-center gap-0.5 xl:gap-2">
           <div className="flex w-full items-center justify-center gap-1">
             <img
               src={toFlagAssetPath(profile.flagCode)}
@@ -249,7 +249,7 @@ export default function FeaturedProfiles() {
 
   return (
     <section id="featured" className="py-12 md:py-16 xl:py-28 overflow-hidden">
-      <div className="mb-8 flex items-start justify-center px-3 md:mb-12 md:px-12 xl:mb-27">
+      <div className="mb-8 flex items-start justify-center px-5 md:mb-12 md:px-8 xl:px-24 xl:mb-27">
         <h2 className="ds-font-display max-w-200 text-center text-[32px] font-semibold leading-tight tracking-[-1px] text-white md:text-[52px] md:leading-15 xl:text-[64px] xl:leading-18">
           Featured travel profiles &mdash; a look at what&apos;s coming
         </h2>
@@ -270,7 +270,7 @@ export default function FeaturedProfiles() {
         onTouchEnd={handleTouchEnd}
         onClickCapture={handleClickCapture}
       >
-        <div className="flex w-max items-center gap-4 px-4 xl:gap-8">
+        <div className="flex w-max items-center gap-4 px-5 md:px-8 xl:px-24 xl:gap-8">
           {allCards.map((profile, index) => {
             const isCardUp = index % 2 === 0;
 
@@ -290,7 +290,7 @@ export default function FeaturedProfiles() {
         </div>
       </div>
 
-      <div className="mt-8 flex justify-center px-3 md:mt-10 xl:mt-12">
+      <div className="mt-8 flex justify-center px-5 md:mt-10 md:px-8 xl:mt-12 xl:px-24">
         <Link
           href="/newprofiles"
           className="inline-flex items-center justify-center rounded-full border border-black-100 bg-black-700 px-6 py-3 text-sm font-medium leading-5 tracking-[-0.084px] text-white hover:border-white-700 hover:bg-black-600 transition-colors"
