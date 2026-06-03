@@ -8,6 +8,7 @@ import { toLandingAssetUrl } from "@/lib/landing-assets";
 import { sampleProfiles, type SampleProfile } from "@/profiles/profile-data";
 import { MoreOptionsButton } from "@/components/ui/MoreOptionsButton";
 import { WaitlistPopup } from "@/components/ui/WaitlistPopup";
+import CardCarousel from "@/components/CardCarousel";
 
 /* eslint-disable @next/next/no-img-element */
 
@@ -188,7 +189,7 @@ export function ContextMenu({
     <div ref={menuRef}>
       <div
         role="menu"
-        className="absolute right-3 bottom-14 z-30 w-[220px] rounded-2xl border border-[#2a2a2a] bg-[#111] p-5 shadow-[0_8px_40px_rgba(0,0,0,0.7)]"
+        className="absolute right-3 bottom-14 z-30 w-[220px] rounded-2xl border border-[#2a2a2a] bg-[#111] py-5 pl-5 pr-8 shadow-[0_8px_40px_rgba(0,0,0,0.7)]"
         onClick={(event) => {
           event.preventDefault();
           event.stopPropagation();
@@ -205,14 +206,14 @@ export function ContextMenu({
               handleView();
             }}
             disabled={!viewHref}
-            className={`flex w-full items-center gap-3 text-[17px] font-medium tracking-[-0.3px] text-white transition ${
+            className={`flex w-full items-center gap-3 text-[14px] font-normal text-white transition ${
               viewHref ? "hover:text-[#d4d4d4]" : "opacity-50 cursor-not-allowed"
             }`}
           >
-            <span className="material-symbols-rounded text-[24px]">folder_open</span>
+            <span className="material-symbols-rounded text-[20px]">folder</span>
             <span>{viewLabel}</span>
             {flagSrc ? (
-              <div className="ml-auto flex items-center justify-center rounded-[5px] overflow-hidden shadow-sm w-[26px] h-[18px] flex-shrink-0">
+              <div className="ml-auto flex items-center justify-center rounded-[4px] overflow-hidden shadow-sm w-[24px] h-[15.6px] flex-shrink-0">
                 <img
                   src={flagSrc}
                   alt=""
@@ -231,9 +232,9 @@ export function ContextMenu({
             event.stopPropagation();
             handleShare();
           }}
-          className="flex w-full items-center gap-3 text-[17px] font-medium tracking-[-0.3px] text-white hover:text-[#d4d4d4] transition-colors"
+          className="flex w-full items-center gap-3 text-[14px] font-normal text-white hover:text-[#d4d4d4] transition-colors"
         >
-          <span className="material-symbols-rounded text-[24px]">ios_share</span>
+          <span className="material-symbols-rounded text-[20px]">ios_share</span>
           <span>{shareLabel}</span>
         </button>
 
@@ -245,9 +246,9 @@ export function ContextMenu({
             event.stopPropagation();
             setIsWaitlistOpen(true);
           }}
-          className="flex w-full items-center gap-3 text-[17px] font-medium tracking-[-0.3px] text-white hover:text-[#d4d4d4] transition-colors"
+          className="flex w-full items-center gap-3 text-[14px] font-normal text-white hover:text-[#d4d4d4] transition-colors"
         >
-          <span className="material-symbols-rounded text-[24px]">favorite_border</span>
+          <span className="material-symbols-rounded text-[20px]">favorite_border</span>
           <span>Add to favorites</span>
         </button>
 
@@ -259,9 +260,9 @@ export function ContextMenu({
             event.stopPropagation();
             onClose();
           }}
-          className="flex w-full items-center gap-3 text-[17px] font-medium tracking-[-0.3px] text-white hover:text-[#d4d4d4] transition-colors"
+          className="flex w-full items-center gap-3 text-[14px] font-normal text-white hover:text-[#d4d4d4] transition-colors"
         >
-          <span className="material-symbols-rounded text-[24px]">block</span>
+          <span className="material-symbols-rounded text-[20px]">block</span>
           <span>Report</span>
         </button>
         </div>
@@ -719,9 +720,7 @@ function PhotoCarouselModal({
 
 export default function ProfileComponent({ profile }: { profile: SampleProfile }) {
   const [activeTab, setActiveTab] = useState<TabKey>("all");
-  const [showFollowModal, setShowFollowModal] = useState(false);
-  const [countryPhotoIndexByCode, setCountryPhotoIndexByCode] = useState<Record<string, number>>({});
-  const [collectionPhotoIndexById, setCollectionPhotoIndexById] = useState<Record<string, number>>({});
+  const [showFollowModal, setShowFollowModal] = useState(false);  // Local states for photo carousels on the cards
   const [openContextMenuId, setOpenContextMenuId] = useState<string | null>(null);
   const [shareCardData, setShareCardData] = useState<ShareCardData | null>(null);
   const [carouselIndex, setCarouselIndex] = useState<number | null>(null);
@@ -908,11 +907,13 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
     });
   }, [allMediaItems, basedIn, profile.images.cover, profile.currentlyIn, profile.flagCode, profile.homelandFlagCode, profile.currentlyInFlagCode, profile.homeland, profile.id, profile.countryImages]);
 
-  useEffect(() => {
-    setCountryPhotoIndexByCode({});
-    setCollectionPhotoIndexById({});
+  const closeAllOverlays = () => {
     setOpenContextMenuId(null);
     setShareCardData(null);
+  };
+
+  useEffect(() => {
+    closeAllOverlays();
   }, [profile.id, activeTab]);
 
   // Sync carousel state to URL
@@ -1507,9 +1508,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                                   openCarouselAt(index);
                                 }}
                               />
-                              {/* Hover overlay */}
-                              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-200 pointer-events-none" />
-                            </>
+                              </>
                           )}
 
                           <MoreOptionsButton
@@ -1607,7 +1606,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                   </div>
                 </div>
               ) : (
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5">
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-x-5 gap-y-10">
                   {countryCards.map((country) => {
                     const contextMenuId = `country-${country.code}`;
                     const isMenuOpen = openContextMenuId === contextMenuId;
@@ -1616,56 +1615,10 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                       <Link key={country.code} href={countryHref} className="flex flex-col gap-4">
                         {/* Photo */}
                         <div className="relative group">
-                          <div className="relative w-full aspect-square overflow-hidden rounded-2xl bg-[#151515]">
-                            <img
-                              src={toLandingAssetUrl(
-                                country.previewImages[countryPhotoIndexByCode[country.code] ?? 0] || country.thumbnailUrl
-                              )}
-                              alt={country.name}
-                              loading="lazy"
-                              decoding="async"
-                              className="w-full h-full object-cover block transition-transform duration-300 group-hover:scale-[1.03]"
-                            />
-
-                            {country.previewImages.length > 1 ? (
-                              <>
-                                <button
-                                  type="button"
-                                  onClick={(event) => {
-                                    event.preventDefault();
-                                    event.stopPropagation();
-                                    setCountryPhotoIndexByCode((prev) => {
-                                      const current = prev[country.code] ?? 0;
-                                      const next =
-                                        (current - 1 + country.previewImages.length) % country.previewImages.length;
-                                      return { ...prev, [country.code]: next };
-                                    });
-                                  }}
-                                  className="hidden md:grid absolute left-3 top-1/2 -translate-y-1/2 h-8 w-8 place-items-center rounded-full bg-white/95 text-black shadow-md opacity-0 transition-all duration-200 group-hover:opacity-100 hover:bg-white hover:scale-105 focus-visible:opacity-100"
-                                  aria-label={`Previous photo for ${country.name}`}
-                                >
-                                  <span className="material-symbols-rounded text-[20px]">chevron_left</span>
-                                </button>
-
-                                <button
-                                  type="button"
-                                  onClick={(event) => {
-                                    event.preventDefault();
-                                    event.stopPropagation();
-                                    setCountryPhotoIndexByCode((prev) => {
-                                      const current = prev[country.code] ?? 0;
-                                      const next = (current + 1) % country.previewImages.length;
-                                      return { ...prev, [country.code]: next };
-                                    });
-                                  }}
-                                  className="hidden md:grid absolute right-3 top-1/2 -translate-y-1/2 h-8 w-8 place-items-center rounded-full bg-white/95 text-black shadow-md opacity-0 transition-all duration-200 group-hover:opacity-100 hover:bg-white hover:scale-105 focus-visible:opacity-100"
-                                  aria-label={`Next photo for ${country.name}`}
-                                >
-                                  <span className="material-symbols-rounded text-[20px]">chevron_right</span>
-                                </button>
-                              </>
-                            ) : null}
-                          </div>
+                          <CardCarousel
+                            images={country.previewImages.length > 0 ? country.previewImages : [country.thumbnailUrl]}
+                            alt={country.name}
+                          />
 
                           <MoreOptionsButton
                             isOpen={isMenuOpen}
@@ -1686,13 +1639,10 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                               flagCode={country.flagCode}
                               viewHref={countryHref}
                               onShare={() => {
-                                const previewIndex = countryPhotoIndexByCode[country.code] ?? 0;
-                                const previewImage =
-                                  country.previewImages[previewIndex] || country.thumbnailUrl;
                                 openShareCard({
                                   kind: "country",
                                   title: `Share ${country.name}`,
-                                  imageUrl: previewImage,
+                                  imageUrl: toLandingAssetUrl(country.previewImages[0] || country.thumbnailUrl),
                                   shareUrl: toShareUrl(countryHref),
                                   flagCode: country.flagCode,
                                   ownerName: shareOwnerName,
@@ -1707,7 +1657,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                         </div>
 
                         {/* Country info */}
-                        <div className="flex flex-col gap-2">
+                        <div className="flex flex-col gap-2 px-[6px]">
                           <div className="flex items-center gap-2">
                             <div className="h-[15.6px] w-6 overflow-hidden rounded-sm shadow-[1.62px_1.62px_1.62px_0px_rgba(0,0,0,0.18)] shrink-0">
                               <img
@@ -1721,9 +1671,9 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                             </p>
                           </div>
                           <div className="flex items-center gap-2">
-                            <span className="text-[#646464] text-[14px] leading-normal tracking-[-0.41px]">{country.photoCount} photos</span>
-                            <span className="text-[#646464] text-[8px] leading-none">&bull;</span>
-                            <span className="text-[#646464] text-[14px] leading-normal tracking-[-0.41px]">{country.videoCount} Videos</span>
+                            <span className="text-[#a1a1a1] text-[14px] leading-normal tracking-[-0.41px]">{country.photoCount} photos</span>
+                            <span className="text-[#a1a1a1] text-[8px] leading-none">&bull;</span>
+                            <span className="text-[#a1a1a1] text-[14px] leading-normal tracking-[-0.41px]">{country.videoCount} Videos</span>
                           </div>
                         </div>
                       </Link>
@@ -1768,56 +1718,10 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                         className="flex flex-col"
                       >
                         <div className="relative group">
-                          <div className="relative aspect-357/278 overflow-hidden rounded-2xl border border-[#262626] bg-[#151515]">
-                            <img
-                              src={toLandingAssetUrl(
-                                collection.previewImages[collectionPhotoIndexById[collection.id] ?? 0] || collection.thumbnailUrl
-                              )}
-                              alt={collection.title}
-                              loading="lazy"
-                              decoding="async"
-                              className="block h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
-                            />
-
-                            {collection.previewImages.length > 1 ? (
-                              <>
-                                <button
-                                  type="button"
-                                  onClick={(event) => {
-                                    event.preventDefault();
-                                    event.stopPropagation();
-                                    setCollectionPhotoIndexById((prev) => {
-                                      const current = prev[collection.id] ?? 0;
-                                      const next =
-                                        (current - 1 + collection.previewImages.length) % collection.previewImages.length;
-                                      return { ...prev, [collection.id]: next };
-                                    });
-                                  }}
-                                  className="hidden md:grid absolute left-3 top-1/2 -translate-y-1/2 h-8 w-8 place-items-center rounded-full bg-white/95 text-black shadow-md opacity-0 transition-all duration-200 group-hover:opacity-100 hover:bg-white hover:scale-105 focus-visible:opacity-100"
-                                  aria-label={`Previous photo for ${collection.title}`}
-                                >
-                                  <span className="material-symbols-rounded text-[20px]">chevron_left</span>
-                                </button>
-
-                                <button
-                                  type="button"
-                                  onClick={(event) => {
-                                    event.preventDefault();
-                                    event.stopPropagation();
-                                    setCollectionPhotoIndexById((prev) => {
-                                      const current = prev[collection.id] ?? 0;
-                                      const next = (current + 1) % collection.previewImages.length;
-                                      return { ...prev, [collection.id]: next };
-                                    });
-                                  }}
-                                  className="hidden md:grid absolute right-3 top-1/2 -translate-y-1/2 h-8 w-8 place-items-center rounded-full bg-white/95 text-black shadow-md opacity-0 transition-all duration-200 group-hover:opacity-100 hover:bg-white hover:scale-105 focus-visible:opacity-100"
-                                  aria-label={`Next photo for ${collection.title}`}
-                                >
-                                  <span className="material-symbols-rounded text-[20px]">chevron_right</span>
-                                </button>
-                              </>
-                            ) : null}
-                          </div>
+                          <CardCarousel
+                            images={collection.previewImages.length > 0 ? collection.previewImages : [collection.thumbnailUrl]}
+                            alt={collection.title}
+                          />
 
                           <MoreOptionsButton
                             isOpen={isMenuOpen}
@@ -1837,13 +1741,10 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                               shareLabel="Share collection"
                               viewHref={collectionHref}
                               onShare={() => {
-                                const previewIndex = collectionPhotoIndexById[collection.id] ?? 0;
-                                const previewImage =
-                                  collection.previewImages[previewIndex] || collection.thumbnailUrl;
                                 openShareCard({
                                   kind: "collection",
                                   title: `Share ${collection.title}`,
-                                  imageUrl: previewImage,
+                                  imageUrl: toLandingAssetUrl(collection.previewImages[0] || collection.thumbnailUrl),
                                   shareUrl: toShareUrl(collectionHref),
                                   ownerName: shareOwnerName,
                                   ownerHandle: shareOwnerHandle,
@@ -1857,7 +1758,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                         </div>
 
                         <div className="flex flex-col gap-2 px-1.5 pt-2.5">
-                          <p className="text-[#646464] text-[14px] leading-normal tracking-[-0.41px]">{collection.createdLabel}</p>
+                          <p className="text-[#a1a1a1] text-[14px] leading-normal tracking-[-0.41px]">{collection.createdLabel}</p>
                           <p className="text-white text-[16px] font-medium leading-6 tracking-[-0.096px] min-w-full w-min line-clamp-1">{collection.title}</p>
                           <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
                             {collection.countries.map((country) => (

@@ -74,7 +74,7 @@ function useWaitlistForm(apiUrl: string) {
   return { email, setEmail, status, message, submit };
 }
 
-export default function WaitlistBar({
+export default function DesktopWaitlist({
   apiUrl = "https://www.travingat.com/api/waitlist",
   inputPlaceholder = "Enter your email",
   submitLabel = "Get early access",

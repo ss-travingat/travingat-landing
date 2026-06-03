@@ -74,7 +74,7 @@ function useWaitlistForm(apiUrl: string) {
   return { email, setEmail, status, message, submit };
 }
 
-export default function WaitlistBar({
+export default function MobileWaitlist({
   apiUrl = "https://www.travingat.com/api/waitlist",
   inputPlaceholder = "Enter your email",
   submitLabel = "Get early access",
@@ -109,49 +109,55 @@ export default function WaitlistBar({
 
   const formStyle: React.CSSProperties = {
     display: "flex",
+    flexDirection: "column",
     alignItems: "center",
     width: "100%",
-    height: 60,
-    padding: "4px 4px 4px 20px",
-    borderRadius: 9999,
-    border: "1px solid #3d3d3d",
-    background: "#000000",
+    height: "auto",
+    padding: 0,
+    border: "none",
+    background: "transparent",
+    gap: 12,
     boxSizing: "border-box",
   };
 
   const inputStyle: React.CSSProperties = {
-    flex: "1 1 auto",
-    minWidth: 0,
     width: "100%",
-    background: "transparent",
-    border: "none",
+    height: 48,
+    padding: "12px 24px 12px calc(50% - 58px)",
+    background: "#000000",
+    border: "1px solid #3d3d3d",
+    borderRadius: 9999,
+    boxSizing: "border-box",
     outline: "none",
     appearance: "none",
-    fontSize: 20,
+    fontSize: 16,
     fontWeight: 500,
-    lineHeight: "28px",
-    letterSpacing: "-0.5px",
+    lineHeight: "24px",
+    letterSpacing: "-0.006em",
     color: "#ffffff",
     fontFamily: '"Inter Display", "Inter", sans-serif',
+    textAlign: "left",
     caretColor: "#ffffff",
   };
 
   const buttonStyle: React.CSSProperties = {
-    height: 52,
-    padding: "0 22px",
+    width: "100%",
+    height: 48,
+    padding: "12px 32px",
     borderRadius: 9999,
     border: "none",
     background: "#ffffff",
     color: "#000000",
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: 500,
     lineHeight: "24px",
-    letterSpacing: "-0.4px",
+    letterSpacing: "-0.006em",
     cursor: isLoading ? "default" : "pointer",
     opacity: isLoading ? 0.6 : 1,
     fontFamily: '"Inter", sans-serif',
     whiteSpace: "nowrap",
     flexShrink: 0,
+    boxSizing: "border-box",
   };
 
   const messageStyle: React.CSSProperties = {
@@ -167,11 +173,12 @@ export default function WaitlistBar({
       <style>{`
         .waitlistbar-input::placeholder {
           color: #464646;
-          font-size: 20px;
-          line-height: 28px;
-          letter-spacing: -0.5px;
+          font-size: 16px;
+          line-height: 24px;
+          letter-spacing: -0.006em;
           font-weight: 500;
           font-family: "Inter Display", "Inter", sans-serif;
+          text-align: left;
         }
       `}</style>
 

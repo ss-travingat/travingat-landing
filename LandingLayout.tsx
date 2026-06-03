@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import LandingHeader from "@landing/components/LandingHeader";
 import LandingFooter from "@landing/components/LandingFooter";
+import ProfileFooter from "@/components/ProfileFooter";
 
 // ── Plane-orbit loader overlay ────────────────────────────────────────────────
 function PageLoader({ visible }: { visible: boolean }) {
@@ -77,6 +78,7 @@ export default function LandingLayout({
     pathname?.startsWith("/profiles/") &&
     (pathname?.includes("/country/") || pathname?.includes("/collection/"))
   );
+  const isProfileRoute = Boolean(pathname?.startsWith("/profiles/"));
   // Show loader on first mount, hide after hydration + minimum display time
   const [loading, setLoading] = useState(true);
 
@@ -93,7 +95,7 @@ export default function LandingLayout({
       <div className="animate-page-in">
         {children}
       </div>
-      <LandingFooter />
+      {isProfileRoute ? <ProfileFooter /> : <LandingFooter />}
     </div>
   );
 }
