@@ -7,10 +7,12 @@ export default function CardCarousel({
   images,
   alt,
   maxImages = 10,
+  containerClassName = "aspect-square",
 }: {
   images: string[];
   alt: string;
   maxImages?: number;
+  containerClassName?: string;
 }) {
   const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -31,7 +33,7 @@ export default function CardCarousel({
   if (displayImages.length === 0) return null;
 
   return (
-    <div className="relative w-full aspect-square overflow-hidden rounded-2xl bg-[#151515] group">
+    <div className={`relative w-full overflow-hidden rounded-2xl bg-[#151515] group ${containerClassName}`}>
       <div
         className="flex h-full transition-transform duration-300 ease-out"
         style={{ transform: `translateX(-${currentIndex * 100}%)` }}

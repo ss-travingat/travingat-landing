@@ -115,36 +115,22 @@ function toFlagAssetPath(flagCode?: string): string | undefined {
   return `/flags/${flagCode.toUpperCase()}.svg`;
 }
 
-function SocialIcon({ platform, variant = "filled", className = "w-5 h-5" }: { platform: string; variant?: "filled" | "outline"; className?: string }) {
-  const cls = className;
-  const simpleIconSlugByPlatform: Record<string, string> = {
+function SocialIcon({ platform, className = "w-5 h-5" }: { platform: string; variant?: "filled" | "outline"; className?: string }) {
+  const slugByPlatform: Record<string, string> = {
     x: "x",
     instagram: "instagram",
     linkedin: "linkedin",
     youtube: "youtube",
+    facebook: "facebook",
   };
-
-  const slug = simpleIconSlugByPlatform[platform];
+  const slug = slugByPlatform[platform];
   if (!slug) return null;
-
-  if (platform === "linkedin") {
-    return (
-      <img
-        src="https://www.svgrepo.com/show/157006/linkedin.svg"
-        alt="LinkedIn"
-        aria-hidden="true"
-        className={cls}
-        draggable={false}
-      />
-    );
-  }
-
   return (
     <img
       src={`https://cdn.simpleicons.org/${slug}/ffffff`}
-      alt=""
+      alt={platform}
       aria-hidden="true"
-      className={cls}
+      className={className}
       draggable={false}
     />
   );
@@ -483,7 +469,7 @@ function PhotoCarouselModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex bg-black/90"
+      className="fixed inset-0 z-50 flex bg-black"
       onClick={onClose}
     >
       {/* Left image panel */}
@@ -491,13 +477,13 @@ function PhotoCarouselModal({
         className="relative flex flex-1 flex-col min-w-0"
         onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
       >
-        {/* Top bar: image counter + copy link */}
-        <div className="flex items-center justify-between px-10 py-6 text-[15px] tracking-[-0.4px] text-[#a8a8a8]">
-          <span>{`${displayIndex} of ${totalCount}`}</span>
+        {/* Top bar: image counter + grid toggle */}
+        <div className="flex items-center justify-between px-10 py-6">
+          <span className="text-[14px] font-normal tracking-[-0.084px] text-[#989898]">{`${displayIndex} of ${totalCount}`}</span>
           <button
             type="button"
             onClick={() => setShowBrowser((prev) => !prev)}
-            className="flex h-8 w-8 items-center justify-center text-[#a8a8a8] transition hover:text-white"
+            className="flex h-9 w-9 items-center justify-center text-[#989898] transition hover:text-white"
             aria-label="Toggle photo browser"
           >
             <span className="material-symbols-rounded text-[22px]">dashboard</span>
@@ -546,62 +532,93 @@ function PhotoCarouselModal({
             {/* Image + nav arrows */}
             <div className="relative flex flex-1 min-h-0 pb-8">
               {/* Main image */}
-              <div className="h-full w-full overflow-hidden bg-[#0a0a0a]">
-                {activeItem?.isVideo ? (
-                  <video
-                    key={`video-${activeIndex}`}
-                    src={toLandingAssetUrl(activeItem.fileUrl)}
-                    controls
-                    autoPlay
-                    className="h-full w-full object-contain carousel-image"
-                  />
-                ) : (
-                  <img
-                    key={`img-${activeIndex}`}
-                    src={toLandingAssetUrl(activeItem?.fileUrl)}
-                    alt="Carousel media"
-                    className="h-full w-full object-contain carousel-image"
-                  />
-                )}
+              <div className="flex h-full w-full items-center justify-center overflow-hidden rounded-[12px] bg-[#0a0a0a] mx-10">
+                <div className="relative group flex max-h-full max-w-full items-center justify-center">
+                  {/* Hover Buttons */}
+                  <div className="absolute top-4 right-4 z-20 flex items-center gap-2 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+                    <button
+                      type="button"
+                      className="flex h-9 w-9 items-center justify-center rounded-full bg-black/40 backdrop-blur-sm text-white transition hover:bg-black/60"
+                      aria-label="Like"
+                    >
+                      <span className="material-symbols-rounded text-[20px]">favorite_border</span>
+                    </button>
+                    <button
+                      type="button"
+                      className="flex h-9 w-9 items-center justify-center rounded-full bg-black/40 backdrop-blur-sm text-white transition hover:bg-black/60"
+                      aria-label="Share"
+                    >
+                      <span className="material-symbols-rounded text-[20px] -mt-[2px]">ios_share</span>
+                    </button>
+                    <button
+                      type="button"
+                      className="flex h-9 w-9 items-center justify-center rounded-full bg-black/40 backdrop-blur-sm text-white transition hover:bg-black/60"
+                      aria-label="More options"
+                    >
+                      <span className="flex items-center gap-1">
+                        <span className="block h-1 w-1 rounded-full bg-white" />
+                        <span className="block h-1 w-1 rounded-full bg-white" />
+                        <span className="block h-1 w-1 rounded-full bg-white" />
+                      </span>
+                    </button>
+                  </div>
+
+                  {activeItem?.isVideo ? (
+                    <video
+                      key={`video-${activeIndex}`}
+                      src={toLandingAssetUrl(activeItem.fileUrl)}
+                      controls
+                      autoPlay
+                      className="max-h-full max-w-full object-contain carousel-image"
+                    />
+                  ) : (
+                    <img
+                      key={`img-${activeIndex}`}
+                      src={toLandingAssetUrl(activeItem?.fileUrl)}
+                      alt="Carousel media"
+                      className="max-h-full max-w-full object-contain carousel-image"
+                    />
+                  )}
+                </div>
               </div>
 
-              {/* Prev arrow */}
+              {/* Prev arrow — left edge aligned with counter */}
               <button
                 type="button"
                 onClick={onPrev}
-                className="absolute left-3 top-1/2 -translate-y-1/2 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-white text-black shadow-md transition hover:bg-[#f0f0f0]"
+                className="absolute left-10 top-1/2 -translate-y-1/2 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-white text-black shadow-md transition hover:bg-[#f0f0f0]"
                 aria-label="Previous photo"
               >
-                <span className="material-symbols-rounded text-[28px]">chevron_left</span>
+                <span className="material-symbols-rounded text-[24px]">chevron_left</span>
               </button>
 
-              {/* Next arrow */}
+              {/* Next arrow — right edge aligned with grid icon */}
               <button
                 type="button"
                 onClick={onNext}
-                className="absolute right-3 top-1/2 -translate-y-1/2 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-white text-black shadow-md transition hover:bg-[#f0f0f0]"
+                className="absolute right-10 top-1/2 -translate-y-1/2 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-white text-black shadow-md transition hover:bg-[#f0f0f0]"
                 aria-label="Next photo"
               >
-                <span className="material-symbols-rounded text-[28px]">chevron_right</span>
+                <span className="material-symbols-rounded text-[24px]">chevron_right</span>
               </button>
             </div>
 
             {/* Carousel preview strip */}
-            <div className="flex items-center gap-2 overflow-x-auto px-10 pb-4 relative">
-              {/* Sliding indicator bar */}
+            <div className="relative px-10 pb-6">
+              {/* Floating sliding indicator bar — sits above scroll container, not clipped by it */}
               <div
-                className="absolute top-0 left-10 h-1 w-10 bg-white rounded-full transition-transform duration-300 ease-out"
+                className="absolute top-0 left-10 h-[3px] w-[60px] bg-white rounded-full transition-transform duration-300 ease-out z-10"
                 style={{
-                  transform: `translateX(calc(12px + ${activeIndex} * 72px))`,
+                  transform: `translateX(calc(${activeIndex} * 72px))`,
                 }}
               />
-
-              {items.map((item, idx) => (
-                <div key={item.id} className="relative flex flex-col items-center gap-1 pt-2">
+              <div className="flex items-center gap-3 overflow-x-auto pt-2">
+                {items.map((item, idx) => (
                   <button
+                    key={item.id}
                     onClick={() => onSelectIndex(idx)}
-                    className={`relative h-16 w-16 shrink-0 rounded overflow-hidden transition ${
-                      idx === activeIndex ? "opacity-100" : "opacity-60 hover:opacity-100"
+                    className={`relative h-[60px] w-[60px] shrink-0 rounded-[10px] overflow-hidden transition group ${
+                      idx === activeIndex ? "opacity-100" : "opacity-50 hover:opacity-100"
                     }`}
                     aria-label={`View photo ${idx + 1}`}
                   >
@@ -616,15 +633,18 @@ function PhotoCarouselModal({
                         </div>
                       </>
                     ) : (
-                      <img
-                        src={toLandingAssetUrl(item.fileUrl)}
-                        alt={`Carousel thumbnail ${idx + 1}`}
-                        className="h-full w-full object-cover"
-                      />
+                      <>
+                        <img
+                          src={toLandingAssetUrl(item.fileUrl)}
+                          alt={`Carousel thumbnail ${idx + 1}`}
+                          className="h-full w-full object-cover"
+                        />
+                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors duration-200" />
+                      </>
                     )}
                   </button>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           </>
         )}
@@ -651,14 +671,14 @@ function PhotoCarouselModal({
         </div>
 
         {/* Profile info */}
-        <div className="flex flex-col gap-3">
-          <div className="flex items-center gap-2 text-[13px] text-[#888]">
+        <div className="flex flex-col gap-1">
+          <div className="flex items-center gap-2">
             {profileFlagSrc ? (
-              <img src={profileFlagSrc} alt="" className="h-3 w-[18px] rounded-[2px] object-cover" />
+              <img src={profileFlagSrc} alt="" className="h-[15.6px] w-6 rounded-[2px] object-cover" />
             ) : null}
-            <span>{profileName}</span>
+            <span className="text-[14px] font-normal leading-5 tracking-[-0.084px] text-[#989898]">{profileName}</span>
           </div>
-          <p className="text-[20px] font-semibold tracking-[-0.5px] text-white">{profileHandle}</p>
+          <p className="text-[18px] font-medium leading-6 tracking-[-0.198px] text-white">{profileHandle}</p>
         </div>
 
         {/* Follow / Connect / More */}
@@ -690,27 +710,24 @@ function PhotoCarouselModal({
         </div>
 
         {/* Country + description */}
-        <div className="flex flex-col gap-4">
-          <div className="flex items-center gap-3">
+        <div className="flex flex-col gap-3">
+          <div className="flex items-center gap-2">
             {countryFlagSrc ? (
-              <img src={countryFlagSrc} alt="" className="h-[18px] w-[26px] rounded-[3px] object-cover shadow-sm" />
+              <img src={countryFlagSrc} alt="" className="h-[21.3px] w-8 rounded-[3.27px] object-cover" />
             ) : null}
-            <p className="text-[22px] font-semibold tracking-[-0.5px] text-[#ededed]">
+            <p className="text-[24px] font-semibold leading-[32px] tracking-[-0.5px] text-[#ededed] font-display">
               {countryName || ""}
             </p>
           </div>
           {description ? (
-            <p className="text-[15px] leading-[1.6] tracking-[-0.3px] text-[#a0a0a0] line-clamp-6">{description}</p>
+            <p className="text-[16px] font-normal leading-[24px] tracking-[-0.096px] text-[#dcdcdc] whitespace-pre-wrap">{description}</p>
           ) : null}
-          <button type="button" className="self-start text-[14px] tracking-[-0.3px] text-[#555] transition hover:text-[#888]">
-            Read more
-          </button>
         </div>
 
         {/* Divider + quote */}
         {quote ? (
           <div className="border-t border-[#222] pt-6">
-            <p className="text-[15px] leading-[1.6] tracking-[-0.3px] text-[#a0a0a0]">{quote}</p>
+            <p className="text-[16px] font-normal leading-[24px] tracking-[-0.096px] text-[#dcdcdc] whitespace-pre-wrap">{quote}</p>
           </div>
         ) : null}
       </aside>
@@ -1151,10 +1168,10 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
   const socialRows = useMemo(() => {
     const { x, instagram, linkedin, youtube } = profile.socials;
     const rows: { key: string; label: string; url: string }[] = [];
-    if (x) rows.push({ key: "x", label: `x.com/${x}`, url: `https://x.com/${x}` });
-    if (instagram) rows.push({ key: "instagram", label: `instagram.com/${instagram}`, url: `https://instagram.com/${instagram}` });
-    if (linkedin) rows.push({ key: "linkedin", label: `linkedin.com/in/${linkedin}`, url: `https://linkedin.com/in/${linkedin}` });
-    if (youtube) rows.push({ key: "youtube", label: `youtube.com/@${youtube}`, url: `https://youtube.com/@${youtube}` });
+    if (x) rows.push({ key: "x", label: `@${x}`, url: `https://x.com/${x}` });
+    if (instagram) rows.push({ key: "instagram", label: `@${instagram}`, url: `https://instagram.com/${instagram}` });
+    if (linkedin) rows.push({ key: "linkedin", label: linkedin, url: `https://linkedin.com/in/${linkedin}` });
+    if (youtube) rows.push({ key: "youtube", label: `@${youtube}`, url: `https://youtube.com/@${youtube}` });
     return rows;
   }, [profile.socials]);
 
@@ -1721,6 +1738,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                           <CardCarousel
                             images={collection.previewImages.length > 0 ? collection.previewImages : [collection.thumbnailUrl]}
                             alt={collection.title}
+                            containerClassName="aspect-[357/278] border border-[#262626]"
                           />
 
                           <MoreOptionsButton
@@ -1757,20 +1775,22 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                           ) : null}
                         </div>
 
-                        <div className="flex flex-col gap-2 px-1.5 pt-2.5">
-                          <p className="text-[#a1a1a1] text-[14px] leading-normal tracking-[-0.41px]">{collection.createdLabel}</p>
-                          <p className="text-white text-[16px] font-medium leading-6 tracking-[-0.096px] min-w-full w-min line-clamp-1">{collection.title}</p>
-                          <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
+                        <div className="flex flex-col px-[6px] pt-4">
+                          <div className="flex flex-col gap-1.5 mb-3">
+                            <p className="text-[#a1a1a1] text-[14px] leading-normal tracking-[-0.41px]">{collection.createdLabel}</p>
+                            <p className="text-white text-[18px] font-semibold leading-6.5 tracking-[-0.198px] min-w-full w-min line-clamp-1">{collection.title}</p>
+                          </div>
+                          <div className="flex flex-wrap items-center gap-1.5">
                             {collection.countries.map((country) => (
                               <span
                                 key={`${collection.id}-${country}`}
-                                className="backdrop-blur-[2px] bg-black-800 border border-[#262626] border-solid flex items-center justify-center pb-1.25 pt-0.75 px-2.5 rounded-full text-[#a8a8a8] text-[12px] leading-none tracking-[-0.408px]"
+                                className="backdrop-blur-[2px] bg-black-800 border border-[#262626] border-solid flex items-center justify-center py-1 px-2.5 rounded-[6px] text-[#a1a1a1] text-[12px] leading-none tracking-[-0.408px]"
                               >
                                 {country}
                               </span>
                             ))}
                             {collection.countryOverflowCount > 0 ? (
-                              <span className="backdrop-blur-[2px] bg-black-800 border border-[#262626] border-solid flex items-center justify-center pb-1.25 pt-0.75 px-2.5 rounded-full text-[#a8a8a8] text-[12px] leading-none tracking-[-0.408px]">
+                              <span className="backdrop-blur-[2px] bg-black-800 border border-[#262626] border-solid flex items-center justify-center py-1 px-2.5 rounded-[6px] text-[#a1a1a1] text-[12px] leading-none tracking-[-0.408px]">
                                 +{collection.countryOverflowCount}
                               </span>
                             ) : null}
@@ -1787,64 +1807,65 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
           {activeTab === "about" ? (
             hasAboutContent ? (
               <section className="w-full max-w-[1112px] mx-auto grid md:grid-cols-[minmax(0,1fr)_320px] lg:grid-cols-[minmax(0,1fr)_360px] gap-6 lg:gap-8 items-stretch">
-                <article className="relative min-h-[520px] rounded-4xl border border-[#1f1f1f] p-6 md:p-8 bg-black-800 space-y-6"> 
-                  <div className="space-y-3">
-                    <h3 className="text-3xl md:text-4xl font-semibold tracking-[-0.5px]">About</h3>
-                    <p className="text-[#b7b7b7] leading-8 text-base md:text-lg">{profile.bio || "No bio yet."}</p>
+                <article className="relative rounded-[20px] border border-[#1e1e1e] pt-8 pb-10 px-8 bg-[#111] flex flex-col gap-8"> 
+                  <div className="flex flex-col gap-4">
+                    <h3 className="ds-font-display text-white text-[24px] font-semibold tracking-[-0.5px] leading-8">About</h3>
+                    <p className="text-[#dcdcdc] text-[16px] leading-6 tracking-[-0.096px]">{profile.bio || "No bio yet."}</p>
                   </div>
 
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+                  <div className="flex gap-3">
                     {aboutPhotos.length > 0 ? (
                       aboutPhotos.map((src, idx) => (
-                        <div key={`${src}-${idx}`} className="rounded-2xl overflow-hidden border border-[#2b2b2b] bg-[#111] aspect-[1.06] shadow-sm">
+                        <div key={`${src}-${idx}`} className="flex-1 min-w-0 rounded-[12px] overflow-hidden bg-[#151515] aspect-square">
                           <img src={toLandingAssetUrl(src)} alt={`About photo ${idx + 1}`} loading="lazy" decoding="async" className="w-full h-full object-cover" />
                         </div>
                       ))
                     ) : (
-                      <div className="col-span-full rounded-2xl border border-dashed border-[#2b2b2b] bg-[#111] p-6 text-sm text-white-500 text-center">
+                      <div className="flex-1 rounded-[12px] border border-dashed border-[#1e1e1e] bg-[#111] p-6 text-sm text-[#989898] text-center">
                         No photos added yet.
                       </div>
                     )}
                   </div>
 
-                  <div className="space-y-4">
-                    <h4 className="text-xl font-semibold tracking-[-0.5px]">My Interests</h4>
+                  <hr className="border-t border-[#1e1e1e] w-full m-0" />
+
+                  <div className="flex flex-col gap-6">
+                    <h4 className="ds-font-display text-white text-[24px] font-semibold tracking-[-0.5px] leading-8">My Interests</h4>
                     {profile.interests.length > 0 ? (
-                      <div className="flex flex-wrap gap-3">
+                      <div className="flex flex-wrap gap-2">
                         {profile.interests.map((interest) => (
-                          <span key={interest} className="px-4 py-2 rounded-full border border-white-800 bg-black-800 text-[#d0d0d0] text-xs md:text-sm">
+                          <span key={interest} className="flex items-center gap-1.5 pl-3 pr-4 py-2 rounded-[68px] bg-[#1e1e1e] text-white text-[16px] leading-6 tracking-[-0.096px]">
                             {interest}
                           </span>
                         ))}
                       </div>
                     ) : (
-                      <p className="text-white-500 text-sm">No interests added yet.</p>
+                      <p className="text-[#989898] text-[14px]">No interests added yet.</p>
                     )}
                   </div>
-
                 </article>
 
-                <aside className="min-h-[520px] rounded-2xl border border-[#1f1f1f] p-5 md:p-6 bg-black-800">
-                  <div className="space-y-1 pb-4 border-b border-black-300 mb-4">
-                    <p className="text-white-500 text-xs">Username</p>
+                <aside className="rounded-[20px] border border-[#1e1e1e] pt-8 pb-10 px-8 bg-[#111] flex flex-col gap-8">
+                  <div className="flex flex-col gap-3 pb-8 border-b border-[#1e1e1e]">
+                    <p className="text-[#989898] text-[14px] font-normal leading-5 tracking-[-0.084px]">Username</p>
                     <div className="flex items-center gap-2">
-                      <p className="text-white text-lg font-medium">{handle}</p>
-                      <button type="button" aria-label="Edit username" className="text-[#6b6b6b] hover:text-white transition">
-                        <span className="material-symbols-rounded text-[16px]">edit</span>
+                      <p className="ds-font-display text-white text-[18px] font-medium leading-6.5 tracking-[-0.198px]">{handle}</p>
+                      <button type="button" aria-label="Edit username" className="text-[#989898] hover:text-white transition">
+                        <span className="material-symbols-rounded text-[18px]">edit</span>
                       </button>
                     </div>
-                    <p className="text-[#5f5f5f] text-xs truncate">travingat.com/{handle.replace(/^@/, "")}</p>
+                    <p className="text-[#656565] text-[14px] truncate tracking-[-0.41px]">travingat.com/{handle.replace(/^@/, "")}</p>
                   </div>
 
-                  <div className="grid grid-cols-2 md:grid-cols-1 gap-4 md:gap-5">
-                    <div className="space-y-1">
-                      <p className="text-white-500 text-xs">Home land</p>
-                      <div className="flex items-center gap-2 text-[#f0f0f0] text-sm">
+                  <div className="flex flex-col gap-10">
+                    <div className="flex flex-col gap-3">
+                      <p className="text-[#989898] text-[14px] font-normal leading-5 tracking-[-0.084px]">Home land</p>
+                      <div className="flex items-center gap-2 text-white text-[16px] font-medium tracking-[-0.096px]">
                         {homelandFlagSrc ? (
                           <img
                             src={homelandFlagSrc}
                             alt={`${toLocationCountry(profile.homeland)} flag`}
-                            className="h-4 w-6 shrink-0 rounded-xs object-cover"
+                            className="h-[15.6px] w-6 shrink-0 rounded-[2px] object-cover"
                             loading="lazy"
                             decoding="async"
                           />
@@ -1855,14 +1876,14 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                       </div>
                     </div>
 
-                    <div className="space-y-1">
-                      <p className="text-white-500 text-xs">Currently in</p>
-                      <div className="flex items-center gap-2 text-[#f0f0f0] text-sm">
+                    <div className="flex flex-col gap-3">
+                      <p className="text-[#989898] text-[14px] font-normal leading-5 tracking-[-0.084px]">Currently in</p>
+                      <div className="flex items-center gap-2 text-white text-[16px] font-medium tracking-[-0.096px]">
                         {currentlyInFlagSrc ? (
                           <img
                             src={currentlyInFlagSrc}
                             alt={`${toLocationCountry(profile.currentlyIn)} flag`}
-                            className="h-4 w-6 shrink-0 rounded-xs object-cover"
+                            className="h-[15.6px] w-6 shrink-0 rounded-[2px] object-cover"
                             loading="lazy"
                             decoding="async"
                           />
@@ -1873,42 +1894,40 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                       </div>
                     </div>
 
-                    <div className="space-y-2">
-                      <p className="text-white-500 text-xs">Speaks</p>
+                    <div className="flex flex-col gap-3">
+                      <p className="text-[#989898] text-[14px] font-normal leading-5 tracking-[-0.084px]">Speaks</p>
                       {profile.languages.length > 0 ? (
                         <div className="flex flex-wrap gap-2">
                           {profile.languages.map((language) => (
-                            <span key={language} className="px-3 py-1 rounded-full bg-[#1f1f1f] border border-[#3a3a3a] text-[#d8d8d8] text-xs">
+                            <span key={language} className="px-3.5 py-1.5 rounded-full bg-[#111] border border-[#1e1e1e] text-white text-[14px] leading-5 tracking-[-0.084px]">
                               {language}
                             </span>
                           ))}
                         </div>
                       ) : (
-                        <p className="text-[#8a8a8a] text-sm">—</p>
+                        <p className="text-[#989898] text-[14px]">—</p>
                       )}
                     </div>
 
-                    <div className="space-y-2">
-                      <p className="text-white-500 text-xs">Find me On</p>
+                    <div className="flex flex-col gap-3">
+                      <p className="text-[#989898] text-[14px] font-normal leading-5 tracking-[-0.084px]">Find me On</p>
                       {socialRows.length > 0 ? (
-                        <div className="flex flex-col gap-1.5 min-w-0">
+                        <div className="flex flex-col gap-4 min-w-0">
                           {socialRows.map((item) => (
                             <a
                               key={item.key}
                               href={item.url}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="flex items-center gap-3 text-white-100 text-sm hover:text-white transition"
+                              className="flex items-center gap-[6px] text-white text-[16px] font-medium leading-6 tracking-[-0.096px] hover:opacity-80 transition"
                             >
-                              <span className="flex h-8 w-8 items-center justify-center rounded-full border border-[#3a3a3a]">
-                                <SocialIcon platform={item.key} variant="outline" className="h-4 w-4" />
-                              </span>
+                              <SocialIcon platform={item.key} className="h-5 w-5 shrink-0" />
                               <span className="truncate">{item.label}</span>
                             </a>
                           ))}
                         </div>
                       ) : (
-                        <p className="text-[#8a8a8a] text-sm">—</p>
+                        <p className="text-[#989898] text-[14px]">—</p>
                       )}
                     </div>
                   </div>

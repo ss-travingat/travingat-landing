@@ -36,7 +36,7 @@ const COUNTRY_LIST_LOOKUP: Record<string, string> = {
   US: "United States", UY: "Uruguay", UZ: "Uzbekistan", VE: "Venezuela", VN: "Vietnam",
 };
 
-type MediaTab = "all" | "photos" | "videos";
+type MediaTab = "all" | "photos" | "videos" | "collections" | "about";
 
 function isVideoAsset(url: string) {
   return /\.(mp4|mov|webm|m4v|3gp|3g2)$/i.test(url);
@@ -465,10 +465,12 @@ export default function CountryDetailComponent({
     columns[i % 4].push({ url: img, globalIndex: i });
   });
 
-  const tabs: { key: MediaTab; label: string }[] = [
+  const tabs: { key: string; label: string }[] = [
     { key: "all", label: "All media" },
     { key: "photos", label: "Photos" },
     { key: "videos", label: "Videos" },
+    { key: "collections", label: "Collections" },
+    { key: "about", label: "About" },
   ];
 
   const profileHandle = profile.handle.startsWith("@") ? profile.handle : `@${profile.handle}`;
@@ -495,49 +497,53 @@ export default function CountryDetailComponent({
       )}
 
       {/* Country Info */}
-      <main className="w-full max-w-372 flex flex-col items-center gap-12 pb-28 md:pb-20 pt-8 md:pt-10">
-        <div className="flex flex-col items-center gap-5 w-full max-w-150">
-          <div className="flex flex-col items-center gap-4">
-            <div className="h-15.5 w-25 overflow-hidden">
+      <main className="w-full flex flex-col items-center gap-[48px] pb-28 md:pb-20 pt-8 md:pt-10">
+        <div className="flex flex-col items-center gap-[20px] w-full max-w-[600px]">
+          <div className="flex flex-col items-center gap-[24px]">
+            <div className="h-[80px] w-[120px] overflow-hidden rounded-[8px] shrink-0">
               <img
                 src={`/flags/${countryCode}.svg`}
                 alt={`${countryName} flag`}
                 className="w-full h-full object-cover"
               />
             </div>
-            <h1 className="ds-font-display text-[48px] leading-[1.2] tracking-[-0.41px] font-bold text-white text-center">
+            <h1 className="ds-font-display text-[52px] leading-[60px] tracking-[-1px] font-bold text-white text-center">
               {countryName}
             </h1>
           </div>
 
           {/* Meta info row */}
-          <div className="flex items-center gap-4 text-[16px] tracking-[-0.5px]">
-            <div className="flex items-center gap-2">
-              <span className="text-[#505050]">By</span>
-              <div className="h-5 w-5 overflow-hidden rounded-full">
+          <div className="flex items-center gap-[12px]">
+            <div className="flex items-center gap-[8px]">
+              <span className="text-[16px] text-white leading-[24px] tracking-[-0.096px] font-normal">By</span>
+              <div className="h-[20px] w-[20px] overflow-hidden rounded-[6px] shrink-0">
                 <img src={toLandingAssetUrl(profile.images.avatar)} alt={profile.name} className="w-full h-full object-cover" />
               </div>
-              <Link href={`/profiles/${profile.id}`} className="text-white hover:underline">
+              <Link href={`/profiles/${profile.id}`} className="text-[16px] text-white leading-[24px] tracking-[-0.096px] font-normal hover:underline">
                 {profile.handle}
               </Link>
             </div>
-            <span className="text-[#505050]">|</span>
-            <div className="flex items-center gap-2">
-              <span className="text-[#505050]">Last Updated</span>
-              <span className="text-[#a8a8a8]">
+            <div className="h-[3px] w-[3px] rounded-full bg-[#505050] shrink-0" />
+            <div className="flex items-center gap-[8px]">
+              <span className="text-[16px] text-[#989898] leading-[24px] tracking-[-0.096px] font-normal">Last Updated:</span>
+              <span className="text-[16px] text-[#989898] leading-[24px] tracking-[-0.096px] font-normal">
                 {new Date().toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })}
               </span>
             </div>
-            <span className="text-[#505050]">|</span>
-            <div className="relative" ref={menuRef}>
-              <MoreOptionsButton
-                isOpen={showMenu}
+            <div className="h-[3px] w-[3px] rounded-full bg-[#505050] shrink-0" />
+            <div className="relative flex items-center" ref={menuRef}>
+              <button
+                type="button"
                 onClick={() => setShowMenu((prev) => !prev)}
-                label="More options"
-                size="sm"
-                showOnHover={false}
-                positioned={false}
-              />
+                className="flex px-[12px] py-[9px] items-center justify-center rounded-[50px] border border-[#363636] bg-[#181818] hover:bg-[#222] transition shrink-0"
+                aria-label="More options"
+              >
+                <div className="flex items-center gap-[7px]">
+                  <div className="h-[2px] w-[2px] rounded-full bg-white" />
+                  <div className="h-[2px] w-[2px] rounded-full bg-white" />
+                  <div className="h-[2px] w-[2px] rounded-full bg-white" />
+                </div>
+              </button>
               {showMenu && (
                 <ContextMenu
                   kind="country"
@@ -558,26 +564,23 @@ export default function CountryDetailComponent({
         </div>
 
         {/* Tabs + content */}
-        <div className="w-full flex flex-col gap-10">
+        <div className="w-full flex flex-col gap-[48px] items-center max-w-[1488px]">
           {/* Tab pills */}
-          <div className="flex items-center justify-center gap-2 flex-wrap">
+          <div className="flex items-center justify-center gap-[8px] flex-wrap">
             {tabs.map((tab) => (
               <button
                 key={tab.label}
-                onClick={() => setActiveTab(tab.key)}
-                className={`rounded-full px-6 py-2.5 text-[16px] leading-normal tracking-[-0.408px] transition ${
+                onClick={() => setActiveTab(tab.key as MediaTab)}
+                className={`rounded-[999px] px-[24px] py-[8px] text-[16px] leading-[24px] tracking-[-0.096px] transition ${
                   activeTab === tab.key
-                    ? "bg-[#1d1d1d] border-[0.6px] border-white text-white font-medium"
-                    : "bg-black-800 border border-transparent text-[#a8a8a8] font-normal"
+                    ? "bg-[#1e1e1e] border border-white text-white font-medium"
+                    : "bg-[#161616] border border-transparent text-[#bdbdbd] font-normal"
                 }`}
               >
                 {tab.label}
               </button>
             ))}
           </div>
-
-          {/* Divider */}
-          <div className="w-full h-px bg-black-300" />
 
           {/* Masonry grid */}
           {displayImages.length === 0 ? (
