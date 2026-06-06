@@ -468,6 +468,27 @@ function PhotoCarouselModal({
   const profileFlagSrc = toFlagAssetPath(profileFlagCode);
   const countryFlagSrc = toFlagAssetPath(countryFlagCode);
   const [showBrowser, setShowBrowser] = useState(false);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (scrollContainerRef.current && !showBrowser) {
+      const container = scrollContainerRef.current;
+      setTimeout(() => {
+        const containerWidth = container.clientWidth;
+        if (containerWidth === 0) return;
+        const itemWidth = 60; // w-[60px]
+        const gap = 12; // gap-3
+        const paddingLeft = 40; // px-10
+        const targetCenter = paddingLeft + (activeIndex * (itemWidth + gap)) + (itemWidth / 2);
+        const targetScrollLeft = targetCenter - (containerWidth / 2);
+        
+        container.scrollTo({
+          left: targetScrollLeft,
+          behavior: 'smooth'
+        });
+      }, 50);
+    }
+  }, [activeIndex, showBrowser]);
 
   return (
     <div
@@ -608,11 +629,10 @@ function PhotoCarouselModal({
 
             {/* Carousel preview strip */}
             <div
-              className={`flex items-center overflow-x-auto px-10 pb-6 ${
-                items.length <= 10 ? "justify-center" : "justify-start"
-              }`}
+              ref={scrollContainerRef}
+              className="w-full overflow-x-auto px-10 pb-6 pt-2"
             >
-              <div className={`relative flex items-center gap-3 pt-2 ${items.length <= 10 ? "mx-auto" : ""}`}>
+              <div className={`relative flex items-center gap-3 pt-3 w-max ${items.length <= 10 ? "mx-auto" : ""}`}>
                 {/* Floating sliding indicator bar */}
                 <div
                   className="absolute top-0 left-0 h-[3px] w-[60px] bg-white rounded-full transition-transform duration-300 ease-out z-10"

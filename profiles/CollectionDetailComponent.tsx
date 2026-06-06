@@ -46,6 +46,27 @@ function CollectionLightbox({
   const displayIndex = activeIndex + 1;
   const avatarSrc = toLandingAssetUrl(profileAvatar);
   const [showBrowser, setShowBrowser] = useState(false);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (scrollContainerRef.current && !showBrowser) {
+      const container = scrollContainerRef.current;
+      setTimeout(() => {
+        const containerWidth = container.clientWidth;
+        if (containerWidth === 0) return;
+        const itemWidth = 64; // w-16
+        const gap = 8; // gap-2
+        const paddingLeft = 40; // px-10
+        const targetCenter = paddingLeft + (activeIndex * (itemWidth + gap)) + (itemWidth / 2);
+        const targetScrollLeft = targetCenter - (containerWidth / 2);
+        
+        container.scrollTo({
+          left: targetScrollLeft,
+          behavior: 'smooth'
+        });
+      }, 50);
+    }
+  }, [activeIndex, showBrowser]);
 
   return (
     <div
@@ -181,11 +202,10 @@ function CollectionLightbox({
             </div>
 
             <div
-              className={`flex items-center overflow-x-auto px-10 pb-4 ${
-                items.length <= 10 ? "justify-center" : "justify-start"
-              }`}
+              ref={scrollContainerRef}
+              className="w-full overflow-x-auto px-10 pb-4 pt-2"
             >
-              <div className={`relative flex items-center gap-2 ${items.length <= 10 ? "mx-auto" : ""}`}>
+              <div className={`relative flex items-center gap-2 pt-3 w-max ${items.length <= 10 ? "mx-auto" : ""}`}>
                 <div
                   className="absolute top-0 left-0 h-1 w-10 bg-white rounded-full transition-transform duration-300 ease-out"
                   style={{
