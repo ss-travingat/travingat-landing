@@ -75,7 +75,7 @@ export default function LandingLayout({
 }>) {
   const pathname = usePathname();
   const isProfileRoute = Boolean(pathname?.startsWith("/profiles/"));
-  const hideNavbar = isProfileRoute;
+  const hideNavbar = false;
   // Show loader on first mount, hide after hydration + minimum display time
   const [loading, setLoading] = useState(true);
 

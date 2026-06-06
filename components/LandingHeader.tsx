@@ -1,13 +1,17 @@
 "use client";
 
-import { type MouseEvent, useEffect, useRef, useState } from "react";
+import { type MouseEvent, useEffect, useRef, useState, Suspense } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 
-export default function LandingHeader() {
+function LandingHeaderContent() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [visible, setVisible] = useState(true);
   const lastScrollY = useRef(0);
   const onboardingUrl = "https://app.travingat.com/";
+  
+  const searchParams = useSearchParams();
+  const hasImage = searchParams?.has("image");
 
   useEffect(() => {
     const onScroll = () => {
@@ -37,6 +41,8 @@ export default function LandingHeader() {
     setMenuOpen(false);
     section.scrollIntoView({ behavior: "smooth", block: "start" });
   };
+
+  if (hasImage) return null;
 
   return (
     <header className={`fixed top-0 left-0 right-0 z-50 bg-black/90 backdrop-blur transition-transform duration-300 ${visible ? "translate-y-0" : "-translate-y-full"}`}>
@@ -146,5 +152,13 @@ export default function LandingHeader() {
         </div>
       </nav>
     </header>
+  );
+}
+
+export default function LandingHeader() {
+  return (
+    <Suspense fallback={null}>
+      <LandingHeaderContent />
+    </Suspense>
   );
 }

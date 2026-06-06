@@ -336,7 +336,7 @@ function ShareCard({
 
   return (
     <div
-      className="fixed inset-0 z-[100] flex items-start justify-center bg-black/90 px-4 py-10"
+      className="fixed inset-0 z-[110] flex items-start justify-center bg-black/90 px-4 py-10"
       onClick={onClose}
     >
       <div
@@ -435,6 +435,7 @@ function PhotoCarouselModal({
   onNext,
   onPrev,
   onSelectIndex,
+  onShareClick,
   profileName,
   profileHandle,
   profileAvatar,
@@ -450,6 +451,7 @@ function PhotoCarouselModal({
   onNext: () => void;
   onPrev: () => void;
   onSelectIndex: (index: number) => void;
+  onShareClick: () => void;
   profileName: string;
   profileHandle: string;
   profileAvatar: string;
@@ -545,6 +547,7 @@ function PhotoCarouselModal({
                     </button>
                     <button
                       type="button"
+                      onClick={onShareClick}
                       className="flex h-9 w-9 items-center justify-center rounded-full bg-black/40 backdrop-blur-sm text-white transition hover:bg-black/60"
                       aria-label="Share"
                     >
@@ -2050,6 +2053,18 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
           onNext={goToNextCarouselItem}
           onPrev={goToPrevCarouselItem}
           onSelectIndex={setCarouselIndex}
+          onShareClick={() => {
+            setShareCardData({
+              kind: "media",
+              title: "Photo",
+              imageUrl: activeCarouselItem.fileUrl,
+              shareUrl: window.location.href,
+              flagCode: displayCountryFlagCode,
+              ownerName: shareOwnerName,
+              ownerHandle: shareOwnerHandle,
+              ownerAvatar: shareOwnerAvatar,
+            });
+          }}
           profileName={shareOwnerName}
           profileHandle={shareOwnerHandle}
           profileAvatar={shareOwnerAvatar}

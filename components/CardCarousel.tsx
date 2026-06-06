@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toLandingAssetUrl } from "@/lib/landing-assets";
 
 export default function CardCarousel({
@@ -15,8 +15,19 @@ export default function CardCarousel({
   containerClassName?: string;
 }) {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [isHovered, setIsHovered] = useState(false);
 
   const displayImages = images.slice(0, maxImages);
+
+  useEffect(() => {
+    if (!isHovered || displayImages.length <= 1) return;
+
+    const timer = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % displayImages.length);
+    }, 3000);
+
+    return () => clearInterval(timer);
+  }, [isHovered, displayImages.length]);
 
   const handlePrev = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -33,7 +44,11 @@ export default function CardCarousel({
   if (displayImages.length === 0) return null;
 
   return (
-    <div className={`relative w-full overflow-hidden rounded-2xl bg-[#151515] group ${containerClassName}`}>
+    <div 
+      className={`relative w-full overflow-hidden rounded-2xl bg-[#151515] group ${containerClassName}`}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
       <div
         className="flex h-full transition-transform duration-300 ease-out"
         style={{ transform: `translateX(-${currentIndex * 100}%)` }}
