@@ -607,15 +607,19 @@ function PhotoCarouselModal({
             </div>
 
             {/* Carousel preview strip */}
-            <div className="relative px-10 pb-6">
-              {/* Floating sliding indicator bar — sits above scroll container, not clipped by it */}
-              <div
-                className="absolute top-0 left-10 h-[3px] w-[60px] bg-white rounded-full transition-transform duration-300 ease-out z-10"
-                style={{
-                  transform: `translateX(calc(${activeIndex} * 72px))`,
-                }}
-              />
-              <div className="flex items-center gap-3 overflow-x-auto pt-2">
+            <div
+              className={`flex items-center overflow-x-auto px-10 pb-6 ${
+                items.length <= 10 ? "justify-center" : "justify-start"
+              }`}
+            >
+              <div className={`relative flex items-center gap-3 pt-2 ${items.length <= 10 ? "mx-auto" : ""}`}>
+                {/* Floating sliding indicator bar */}
+                <div
+                  className="absolute top-0 left-0 h-[3px] w-[60px] bg-white rounded-full transition-transform duration-300 ease-out z-10"
+                  style={{
+                    transform: `translateX(calc(${activeIndex} * 72px))`,
+                  }}
+                />
                 {items.map((item, idx) => (
                   <button
                     key={item.id}
@@ -1272,115 +1276,118 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
             </div>
           </section>
 
-          <section className="hidden lg:grid lg:grid-cols-[600px_minmax(0,1fr)] gap-20 items-end">
-            <div className="space-y-10 pt-12 self-end">
-              <div className="space-y-8">
-                <div className="relative h-30 w-30 overflow-hidden rounded-2xl bg-[#151515]">
-                  <img src={toLandingAssetUrl(profile.images.avatar)} alt="Profile avatar" loading="lazy" decoding="async" className="h-full w-full object-cover rounded-2xl" />
-                </div>
-
-                <div className="flex flex-col gap-3">
-                  <div className="flex items-center gap-2 text-white-400 text-[18px] tracking-[-0.198px] leading-6.5">
-                    {profileFlagSrc ? (
-                      <img
-                        src={profileFlagSrc}
-                        alt={`${basedIn} flag`}
-                        className="h-4 w-6 rounded-sm object-cover"
-                        loading="lazy"
-                        decoding="async"
-                      />
-                    ) : (
-                      <span>{profileFlagCode}</span>
-                    )}
-                    <span>{basedIn}</span>
+          <section className="hidden lg:flex items-end gap-12">
+            <div className="w-full max-w-[42%] flex flex-col gap-8 lg:gap-12 xl:gap-16">
+              <div className="flex flex-col gap-6 lg:gap-8 xl:gap-10">
+                <div className="flex flex-col gap-4 lg:gap-6 xl:gap-8">
+                  <div className="relative h-20 w-20 lg:h-24 lg:w-24 xl:h-30 xl:w-30 shrink-0 overflow-hidden rounded-2xl bg-[#151515]">
+                    <img src={toLandingAssetUrl(profile.images.avatar)} alt="Profile avatar" loading="lazy" decoding="async" className="h-full w-full object-cover rounded-2xl" />
                   </div>
 
-                  <h1 className="ds-font-display text-[44px] leading-13 tracking-[-0.5px] font-semibold text-white">{displayName}</h1>
+                  <div className="flex flex-col gap-2 xl:gap-3">
+                    <div className="flex items-center gap-2 text-white-400 text-[14px] lg:text-[16px] xl:text-[18px] tracking-[-0.198px] leading-6.5">
+                      {profileFlagSrc ? (
+                        <img
+                          src={profileFlagSrc}
+                          alt={`${basedIn} flag`}
+                          className="h-3 w-4.5 xl:h-4 xl:w-6 rounded-sm object-cover"
+                          loading="lazy"
+                          decoding="async"
+                        />
+                      ) : (
+                        <span>{profileFlagCode}</span>
+                      )}
+                      <span>{basedIn}</span>
+                    </div>
 
-                  <p className="ds-font-display text-white-400 text-[24px] leading-8 tracking-[-0.5px] font-normal">{handle}</p>
+                    <h1 className="ds-font-display text-[32px] lg:text-[36px] xl:text-[44px] leading-tight xl:leading-13 tracking-[-0.5px] font-semibold text-white">{displayName}</h1>
+
+                    <p className="ds-font-display text-white-400 text-[18px] lg:text-[20px] xl:text-[24px] leading-normal xl:leading-8 tracking-[-0.5px] font-normal">{handle}</p>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-[repeat(12,max-content)] gap-1.5 xl:gap-2 w-max max-w-full">
+                  {headerFlagCodes.map((code, index) => (
+                    <img
+                      key={`${code}-${index}`}
+                      src={toFlagAssetPath(code) || ""}
+                      alt={`${code} flag`}
+                      className="h-4 w-6 xl:h-5 xl:w-7.5 rounded-xs object-cover shrink-0"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  ))}
+                  {flagOverflowCount > 0 && (
+                    <div className="flex h-4 w-6 xl:h-5 xl:w-7.5 shrink-0 items-center justify-center overflow-hidden rounded-xs bg-white">
+                      <span className="font-medium text-violet-600 text-[10px] xl:text-[11px] text-center tracking-[-0.408px] whitespace-nowrap">
+                        +{flagOverflowCount}
+                      </span>
+                    </div>
+                  )}
                 </div>
               </div>
 
-              <div className="grid grid-cols-[repeat(12,30px)] gap-2">
-                {headerFlagCodes.map((code, index) => (
-                  <img
-                    key={`${code}-${index}`}
-                    src={toFlagAssetPath(code) || ""}
-                    alt={`${code} flag`}
-                    className="h-5 w-7.5 rounded-xs object-cover"
-                    loading="lazy"
-                    decoding="async"
-                  />
-                ))}
-                {flagOverflowCount > 0 && (
-                  <div className="flex h-5 w-7.5 shrink-0 items-center justify-center overflow-hidden rounded-xs bg-white">
-                    <span className="font-medium text-violet-600 text-[11px] text-center tracking-[-0.408px] whitespace-nowrap">
-                      +{flagOverflowCount}
+              <div className="w-full rounded-2xl border-l border-black-100 bg-linear-to-r from-[#1c1c1c] to-[rgba(0,0,0,0.1)] px-3 py-3 xl:px-4 xl:py-5">
+                  <div className="flex items-center gap-4 lg:gap-6 xl:gap-10">
+                    <div className="flex items-center gap-2 xl:gap-4 rounded-xl">
+                      <div className="relative h-10 w-10 lg:h-12 lg:w-12 xl:h-15 xl:w-15 shrink-0">
+                        <img
+                          src="/images/Globe.png"
+                          alt="Globe icon"
+                          className="pointer-events-none absolute top-1/2 left-1/2 h-full w-full -translate-x-1/2 -translate-y-1/2 object-contain"
+                        />
+                      </div>
+                      <div className="flex flex-col gap-0.5 xl:gap-1">
+                        <p className="ds-font-display text-[20px] xl:text-[24px] leading-tight xl:leading-8 tracking-[-0.5px] text-white font-semibold">{profile.countries}</p>
+                        <p className="text-[12px] xl:text-[14px] leading-tight xl:leading-5 tracking-[-0.084px] text-white-400 font-normal">Countries</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 xl:gap-4 rounded-xl">
+                      <div className="relative h-10 w-10 lg:h-12 lg:w-12 xl:h-15 xl:w-15 shrink-0">
+                        <img
+                          src="/images/media.png"
+                          alt="Media icon"
+                          className="pointer-events-none absolute top-1/2 left-1/2 h-full w-full -translate-x-1/2 -translate-y-1/2 object-contain"
+                        />
+                      </div>
+                      <div className="flex flex-col gap-0.5 xl:gap-1">
+                        <p className="ds-font-display text-[20px] xl:text-[24px] leading-tight xl:leading-8 tracking-[-0.5px] text-white font-semibold">{profile.media}</p>
+                        <p className="text-[12px] xl:text-[14px] leading-tight xl:leading-5 tracking-[-0.084px] text-white-400 font-normal">All media</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 xl:gap-4 rounded-xl">
+                      <div className="relative h-10 w-10 lg:h-12 lg:w-12 xl:h-15 xl:w-15 shrink-0">
+                        <img
+                          src="/images/collections.png"
+                          alt="Collections icon"
+                          className="pointer-events-none absolute top-1/2 left-1/2 h-full w-full -translate-x-1/2 -translate-y-1/2 object-contain"
+                        />
+                      </div>
+                      <div className="flex flex-col gap-0.5 xl:gap-1">
+                        <p className="ds-font-display text-[20px] xl:text-[24px] leading-tight xl:leading-8 tracking-[-0.5px] text-white font-semibold">{profile.collections}</p>
+                        <p className="text-[12px] xl:text-[14px] leading-tight xl:leading-5 tracking-[-0.084px] text-white-400 font-normal">Collections</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2 xl:gap-3">
+                  <button onClick={() => setShowFollowModal(true)} className="flex-1 xl:flex-none w-auto xl:w-37 rounded-full bg-white text-black px-4 xl:px-5 py-2.5 xl:py-3 text-[14px] xl:text-[16px] font-medium leading-normal xl:leading-6 tracking-[-0.096px] hover:bg-[#ececec] transition">Follow</button>
+                  <button className="flex-1 xl:flex-none w-auto xl:w-37 rounded-full border border-black-100 bg-black-700 text-white px-4 xl:px-5 py-2.5 xl:py-3 text-[14px] xl:text-[16px] font-medium leading-normal xl:leading-6 tracking-[-0.096px] hover:bg-[#242424] transition">Connect</button>
+                  <button className="h-10 w-10 lg:h-11 lg:w-11 xl:h-12 xl:w-12 shrink-0 grid place-items-center rounded-full border border-black-100 bg-black-700 text-white hover:bg-[#242424] transition" aria-label="More options">
+                    <span className="grid grid-cols-2 gap-1.5">
+                      <span className="h-1 w-1 rounded-full bg-white" />
+                      <span className="h-1 w-1 rounded-full bg-white" />
+                      <span className="h-1 w-1 rounded-full bg-white" />
+                      <span className="h-1 w-1 rounded-full bg-white" />
                     </span>
-                  </div>
-                )}
-              </div>
-
-              <div className="w-full rounded-2xl border-l border-black-100 bg-linear-to-r from-[#1c1c1c] to-[rgba(0,0,0,0.1)] px-4 py-5">
-                <div className="flex items-center gap-10">
-                  <div className="flex items-center gap-4 rounded-xl">
-                    <div className="relative h-15 w-15 shrink-0">
-                      <img
-                        src="/images/Globe.png"
-                        alt="Globe icon"
-                        className="pointer-events-none absolute top-1/2 left-1/2 h-15 w-15 -translate-x-1/2 -translate-y-1/2 object-contain"
-                      />
-                    </div>
-                    <div className="flex flex-col gap-1">
-                      <p className="ds-font-display text-[24px] leading-8 tracking-[-0.5px] text-white font-semibold">{profile.countries}</p>
-                      <p className="text-[14px] leading-5 tracking-[-0.084px] text-white-400 font-normal">Countries</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-4 rounded-xl">
-                    <div className="relative h-15 w-15 shrink-0">
-                      <img
-                        src="/images/media.png"
-                        alt="Media icon"
-                        className="pointer-events-none absolute top-1/2 left-1/2 h-15 w-15 -translate-x-1/2 -translate-y-1/2 object-contain"
-                      />
-                    </div>
-                    <div className="flex flex-col gap-1">
-                      <p className="ds-font-display text-[24px] leading-8 tracking-[-0.5px] text-white font-semibold">{profile.media}</p>
-                      <p className="text-[14px] leading-5 tracking-[-0.084px] text-white-400 font-normal">All media</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-4 rounded-xl">
-                    <div className="relative h-15 w-15 shrink-0">
-                      <img
-                        src="/images/collections.png"
-                        alt="Collections icon"
-                        className="pointer-events-none absolute top-1/2 left-1/2 h-15 w-15 -translate-x-1/2 -translate-y-1/2 object-contain"
-                      />
-                    </div>
-                    <div className="flex flex-col gap-1">
-                      <p className="ds-font-display text-[24px] leading-8 tracking-[-0.5px] text-white font-semibold">{profile.collections}</p>
-                      <p className="text-[14px] leading-5 tracking-[-0.084px] text-white-400 font-normal">Collections</p>
-                    </div>
-                  </div>
+                  </button>
                 </div>
-              </div>
-
-              <div className="flex items-center gap-3">
-                <button onClick={() => setShowFollowModal(true)} className="w-37 rounded-full bg-white text-black px-5 py-3 text-[16px] font-medium leading-6 tracking-[-0.096px] hover:bg-[#ececec] transition">Follow</button>
-                <button className="w-37 rounded-full border border-black-100 bg-black-700 text-white px-5 py-3 text-[16px] font-medium leading-6 tracking-[-0.096px] hover:bg-[#242424] transition">Connect</button>
-                <button className="h-12 w-12 grid place-items-center rounded-full border border-black-100 bg-black-700 text-white hover:bg-[#242424] transition" aria-label="More options">
-                  <span className="grid grid-cols-2 gap-1.5">
-                    <span className="h-1 w-1 rounded-full bg-white" />
-                    <span className="h-1 w-1 rounded-full bg-white" />
-                    <span className="h-1 w-1 rounded-full bg-white" />
-                    <span className="h-1 w-1 rounded-full bg-white" />
-                  </span>
-                </button>
-              </div>
             </div>
 
-            <div className="flex flex-row items-end justify-end self-stretch">
-              <div className="relative aspect-640/662 h-full w-full max-w-160 overflow-hidden rounded-4xl bg-[#111]">
+            {/* Cover image — height dictates container height; aspect ratio 640:662 preserved */}
+            <div className="flex-1 min-w-0">
+              <div className="relative w-full overflow-hidden rounded-4xl bg-[#111]" style={{ aspectRatio: '640 / 662' }}>
                 <img src={toLandingAssetUrl(profile.images.cover)} alt="Profile cover" loading="lazy" decoding="async" className="w-full h-full object-cover rounded-4xl" />
               </div>
             </div>
@@ -1794,6 +1801,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                             <p className="text-[#a1a1a1] text-[14px] leading-normal tracking-[-0.41px]">{collection.createdLabel}</p>
                             <p className="text-white text-[18px] font-semibold leading-6.5 tracking-[-0.198px] min-w-full w-min line-clamp-1">{collection.title}</p>
                           </div>
+                          {/* Hidden countries for now as per design request until Admin CMS supports collection country multi-select */}
                           <div className="flex flex-wrap items-center gap-1.5">
                             {collection.countries.map((country) => (
                               <span

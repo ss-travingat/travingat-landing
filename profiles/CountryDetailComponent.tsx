@@ -156,23 +156,54 @@ function PhotoLightbox({
             {/* Image + nav arrows */}
             <div className="relative flex flex-1 min-h-0 pb-8">
               {/* Main media */}
-              <div className="h-full w-full overflow-hidden bg-[#0a0a0a]">
-                {isVideoAsset(activeUrl) ? (
-                  <video
-                    key={`video-${activeIndex}`}
-                    src={toLandingAssetUrl(activeUrl)}
-                    controls
-                    autoPlay
-                    className="h-full w-full object-contain carousel-image"
-                  />
-                ) : (
-                  <img
-                    key={`img-${activeIndex}`}
-                    src={toLandingAssetUrl(activeUrl)}
-                    alt={`${countryName} photo ${displayIndex}`}
-                    className="h-full w-full object-contain carousel-image"
-                  />
-                )}
+              <div className="flex h-full w-full items-center justify-center overflow-hidden bg-[#0a0a0a]">
+                <div className="relative group flex max-h-full max-w-full items-center justify-center">
+                  {/* Hover Buttons */}
+                  <div className="absolute top-4 right-4 z-20 flex items-center gap-2 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+                    <button
+                      type="button"
+                      className="flex h-9 w-9 items-center justify-center rounded-full bg-black/40 backdrop-blur-sm text-white transition hover:bg-black/60"
+                      aria-label="Like"
+                    >
+                      <span className="material-symbols-rounded text-[20px]">favorite_border</span>
+                    </button>
+                    <button
+                      type="button"
+                      className="flex h-9 w-9 items-center justify-center rounded-full bg-black/40 backdrop-blur-sm text-white transition hover:bg-black/60"
+                      aria-label="Share"
+                    >
+                      <span className="material-symbols-rounded text-[20px] -mt-[2px]">ios_share</span>
+                    </button>
+                    <button
+                      type="button"
+                      className="flex h-9 w-9 items-center justify-center rounded-full bg-black/40 backdrop-blur-sm text-white transition hover:bg-black/60"
+                      aria-label="More options"
+                    >
+                      <span className="flex items-center gap-1">
+                        <span className="block h-1 w-1 rounded-full bg-white" />
+                        <span className="block h-1 w-1 rounded-full bg-white" />
+                        <span className="block h-1 w-1 rounded-full bg-white" />
+                      </span>
+                    </button>
+                  </div>
+
+                  {isVideoAsset(activeUrl) ? (
+                    <video
+                      key={`video-${activeIndex}`}
+                      src={toLandingAssetUrl(activeUrl)}
+                      controls
+                      autoPlay
+                      className="max-h-full max-w-full object-contain carousel-image"
+                    />
+                  ) : (
+                    <img
+                      key={`img-${activeIndex}`}
+                      src={toLandingAssetUrl(activeUrl)}
+                      alt={`${countryName} photo ${displayIndex}`}
+                      className="max-h-full max-w-full object-contain carousel-image"
+                    />
+                  )}
+                </div>
               </div>
 
               {/* Prev arrow */}
@@ -313,9 +344,6 @@ function PhotoLightbox({
           {description ? (
             <p className="text-[15px] leading-[1.6] tracking-[-0.3px] text-[#a0a0a0] line-clamp-6">{description}</p>
           ) : null}
-          <button type="button" className="self-start text-[14px] tracking-[-0.3px] text-[#555] transition hover:text-[#888]">
-            Read more
-          </button>
         </div>
 
         {/* Divider + quote */}
@@ -507,7 +535,7 @@ export default function CountryDetailComponent({
                 className="w-full h-full object-cover"
               />
             </div>
-            <h1 className="ds-font-display text-[56px] leading-[64px] tracking-[-2px] font-bold text-white text-center">
+            <h1 className="ds-font-display text-[52px] leading-[60px] tracking-[-1px] font-bold text-white text-center">
               {countryName}
             </h1>
           </div>
