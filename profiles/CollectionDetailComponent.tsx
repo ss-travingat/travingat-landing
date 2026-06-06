@@ -49,7 +49,7 @@ function CollectionLightbox({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex bg-black/95"
+      className="fixed inset-0 z-[100] flex bg-black/95"
       onClick={onClose}
     >
       <div
@@ -393,10 +393,14 @@ export default function CollectionDetailComponent({
       <main className="w-full flex flex-col items-center gap-[48px] pb-28 md:pb-20 pt-8 md:pt-10">
         <div className="flex flex-col items-center gap-[20px] w-full max-w-[600px]">
           <div className="flex flex-col items-center gap-[24px]">
-            <div className="flex items-center justify-center w-[80px] h-[80px] rounded-[8px] bg-[#1d1d1d] border border-black-300 shrink-0">
-              <span className="material-symbols-rounded text-[32px] text-white">folder</span>
+            <div className="flex items-center gap-[8px] justify-center">
+              {profile.visitedCountryCodes?.slice(0, 4).map((code) => (
+                <div key={code} className="h-[24px] w-[34px] overflow-hidden rounded-[3px] shadow-sm">
+                   <img src={`/flags/${code.toUpperCase()}.svg`} className="w-full h-full object-cover" alt={code} />
+                </div>
+              ))}
             </div>
-            <h1 className="ds-font-display text-[52px] leading-[60px] tracking-[-1px] font-bold text-white text-center">
+            <h1 className="ds-font-display text-[56px] leading-[64px] tracking-[-2px] font-bold text-white text-center">
               {title}
             </h1>
           </div>

@@ -90,7 +90,7 @@ function PhotoLightbox({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex bg-black/95"
+      className="fixed inset-0 z-[100] flex bg-black/95"
       onClick={onClose}
     >
       {/* Left image panel */}
@@ -507,7 +507,7 @@ export default function CountryDetailComponent({
                 className="w-full h-full object-cover"
               />
             </div>
-            <h1 className="ds-font-display text-[52px] leading-[60px] tracking-[-1px] font-bold text-white text-center">
+            <h1 className="ds-font-display text-[56px] leading-[64px] tracking-[-2px] font-bold text-white text-center">
               {countryName}
             </h1>
           </div>

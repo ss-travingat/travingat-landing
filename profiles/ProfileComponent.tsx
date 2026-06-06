@@ -336,7 +336,7 @@ function ShareCard({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-start justify-center bg-black/90 px-4 py-10"
+      className="fixed inset-0 z-[100] flex items-start justify-center bg-black/90 px-4 py-10"
       onClick={onClose}
     >
       <div
@@ -469,7 +469,7 @@ function PhotoCarouselModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex bg-black"
+      className="fixed inset-0 z-[100] flex bg-black"
       onClick={onClose}
     >
       {/* Left image panel */}
@@ -1003,9 +1003,20 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
 
   const activeCarouselItem = carouselIndex !== null ? carouselItems[carouselIndex] : null;
   const carouselCountryCode = activeCarouselItem?.countryCode?.toUpperCase();
+  const isCollectionItem = activeCarouselItem?.collectionIndex !== undefined;
+
   const carouselCountryName = carouselCountryCode
     ? COUNTRY_LIST_LOOKUP[carouselCountryCode] || carouselCountryCode
-    : basedIn;
+    : isCollectionItem
+      ? profile.collectionImages?.[activeCarouselItem.collectionIndex!]?.title
+      : basedIn;
+
+  const displayCountryFlagCode = carouselCountryCode
+    ? carouselCountryCode
+    : isCollectionItem
+      ? undefined
+      : profile.flagCode;
+
   const carouselDescription = profile.bio;
   const carouselQuote = undefined;
 
@@ -1969,7 +1980,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
 
       {showFollowModal && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60"
+          className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60"
           onClick={() => setShowFollowModal(false)}
         >
           <div
@@ -2044,7 +2055,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
           profileAvatar={shareOwnerAvatar}
           profileFlagCode={profileFlagCode}
           countryName={carouselCountryName}
-          countryFlagCode={carouselCountryCode}
+          countryFlagCode={displayCountryFlagCode}
           description={carouselDescription}
           quote={carouselQuote}
         />

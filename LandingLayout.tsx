@@ -74,8 +74,8 @@ export default function LandingLayout({
   children: React.ReactNode;
 }>) {
   const pathname = usePathname();
-  const hideNavbar = false;
   const isProfileRoute = Boolean(pathname?.startsWith("/profiles/"));
+  const hideNavbar = isProfileRoute;
   // Show loader on first mount, hide after hydration + minimum display time
   const [loading, setLoading] = useState(true);
 
