@@ -1296,8 +1296,8 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
             </div>
           </section>
 
-          <section className="hidden lg:flex items-start justify-between gap-12 w-full">
-            <div className="w-full max-w-[480px] shrink flex flex-col gap-[40px] pt-[48px]">
+          <section className="hidden lg:flex items-stretch justify-between gap-12 w-full">
+            <div className="w-full max-w-[480px] shrink flex flex-col justify-between gap-[40px] pt-[48px]">
               <div className="flex flex-col gap-[40px]">
                 <div className="flex flex-col gap-4 lg:gap-6 xl:gap-8">
                   <div className="relative h-20 w-20 lg:h-24 lg:w-24 xl:h-30 xl:w-30 shrink-0 overflow-hidden rounded-2xl bg-[#151515]">
@@ -1405,9 +1405,9 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                 </div>
             </div>
 
-            {/* Cover image — height dictates container height; aspect ratio 640:662 preserved */}
+            {/* Cover image — stretches to match left column height, filling available width */}
             <div className="flex-1 min-w-0 max-w-[640px]">
-              <div className="relative w-full overflow-hidden rounded-[32px] bg-[#111]" style={{ aspectRatio: '640 / 662' }}>
+              <div className="relative w-full h-full overflow-hidden rounded-[32px] bg-[#111]" style={{ aspectRatio: '640 / 662' }}>
                 <img src={toLandingAssetUrl(profile.images.cover)} alt="Profile cover" loading="lazy" decoding="async" className="w-full h-full object-cover rounded-[32px]" />
               </div>
             </div>
