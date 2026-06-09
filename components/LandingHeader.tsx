@@ -47,65 +47,80 @@ function LandingHeaderContent() {
   return (
     <header className={`fixed top-0 left-0 right-0 z-50 bg-black/90 backdrop-blur transition-transform duration-300 ${visible ? "translate-y-0" : "-translate-y-full"}`}>
       <div className="mx-auto w-full max-w-432 px-5 md:px-8 xl:px-24">
-        <div className="h-23 xl:h-33 flex items-center justify-between">
-          <Link href="/" className="ds-font-logo text-white text-[28px] font-normal leading-none tracking-[0.2px]">
-            travingat
-          </Link>
+        <div className="h-23 xl:h-33 flex items-center justify-between relative">
+          <div className="flex-1 flex items-center justify-start">
+            <Link href="/" className="ds-font-logo text-white text-[28px] font-normal leading-none tracking-[0.2px]">
+              travingat
+            </Link>
+          </div>
 
-          <div className="hidden xl:flex items-center justify-end gap-6">
-            <nav className="flex items-center gap-3">
+          <div className="hidden xl:flex flex-none items-center justify-center">
+            <nav className="flex items-center rounded-[999px] border border-[rgba(161,161,161,0.1)] bg-gradient-to-b from-[rgba(46,46,46,0.8)] to-[#171717] p-1 backdrop-blur-[5px] shadow-[0px_6px_10px_0px_rgba(0,0,0,0.25)]">
+              <Link
+                href="/"
+                className="rounded-[999px] px-5 pt-2.5 pb-3 text-[16px] font-normal leading-[19.2px] text-white hover:bg-white/10 transition"
+              >
+                Home
+              </Link>
               <Link
                 href="/newprofiles"
-                className="rounded-full px-4.5 py-2.5 text-[16px] font-medium leading-6 tracking-[-0.096px] text-white hover:bg-white/5 transition"
+                className="rounded-[999px] px-5 pt-2.5 pb-3 text-[16px] font-normal leading-[19.2px] text-white hover:bg-white/10 transition"
               >
-                Featured Profiles
+                Featured
               </Link>
               <Link
                 href="/templates"
-                className="rounded-full px-4.5 py-2.5 text-[16px] font-medium leading-6 tracking-[-0.096px] text-white hover:bg-white/5 transition"
+                className="rounded-[999px] px-5 pt-2.5 pb-3 text-[16px] font-normal leading-[19.2px] text-white hover:bg-white/10 transition"
               >
                 Templates
               </Link>
               <Link
                 href="/pricing"
-                className="rounded-full px-4.5 py-2.5 text-[16px] font-medium leading-6 tracking-[-0.096px] text-white hover:bg-white/5 transition"
+                className="rounded-[999px] px-5 pt-2.5 pb-3 text-[16px] font-normal leading-[19.2px] text-white hover:bg-white/10 transition"
               >
                 Pricing
               </Link>
-              <Link href="/blog" className="rounded-full px-4.5 py-2.5 text-[16px] font-medium leading-6 tracking-[-0.096px] text-white hover:bg-white/5 transition">
+              <Link
+                href="/blog"
+                className="rounded-[999px] px-5 pt-2.5 pb-3 text-[16px] font-normal leading-[19.2px] text-white hover:bg-white/10 transition"
+              >
                 Blog
               </Link>
             </nav>
-
-            <a
-              href="#join"
-              onClick={(event) => scrollToSection(event, "join")}
-              className="inline-flex items-center justify-center rounded-full bg-white px-4 py-2 text-[14px] font-medium leading-5 tracking-[-0.084px] text-black hover:bg-[#ececec] transition"
-            >
-              Join now
-            </a>
           </div>
 
-          <div className="flex xl:hidden items-center gap-2">
-            <button
-              onClick={() => setMenuOpen((prev) => !prev)}
-              className="relative flex h-9 w-9 items-center justify-center rounded-xl border border-black-600 bg-[#0b0b0b]"
-              aria-label="Toggle navigation menu"
-              aria-expanded={menuOpen}
-            >
-              <span
-                className={`absolute h-0.5 w-5 rounded-full bg-[#e3e3e3] transition-all duration-300 ${menuOpen ? "translate-y-0 rotate-45" : "-translate-y-1.5"
-                  }`}
-              />
-              <span
-                className={`absolute h-0.5 w-5 rounded-full bg-[#e3e3e3] transition-all duration-300 ${menuOpen ? "opacity-0" : "opacity-100"
-                  }`}
-              />
-              <span
-                className={`absolute h-0.5 w-5 rounded-full bg-[#e3e3e3] transition-all duration-300 ${menuOpen ? "translate-y-0 -rotate-45" : "translate-y-1.5"
-                  }`}
-              />
-            </button>
+          <div className="flex-1 flex items-center justify-end gap-2">
+            <div className="hidden xl:flex items-center">
+              <a
+                href="#join"
+                onClick={(event) => scrollToSection(event, "join")}
+                className="inline-flex items-center justify-center rounded-[999px] bg-white px-8 py-3 text-[16px] font-medium leading-[19.2px] tracking-[-0.16px] text-black hover:bg-[#ececec] transition"
+              >
+                Join now
+              </a>
+            </div>
+
+            <div className="flex xl:hidden items-center gap-2">
+              <button
+                onClick={() => setMenuOpen((prev) => !prev)}
+                className="relative flex h-9 w-9 items-center justify-center rounded-xl border border-black-600 bg-[#0b0b0b]"
+                aria-label="Toggle navigation menu"
+                aria-expanded={menuOpen}
+              >
+                <span
+                  className={`absolute h-0.5 w-5 rounded-full bg-[#e3e3e3] transition-all duration-300 ${menuOpen ? "translate-y-0 rotate-45" : "-translate-y-1.5"
+                    }`}
+                />
+                <span
+                  className={`absolute h-0.5 w-5 rounded-full bg-[#e3e3e3] transition-all duration-300 ${menuOpen ? "opacity-0" : "opacity-100"
+                    }`}
+                />
+                <span
+                  className={`absolute h-0.5 w-5 rounded-full bg-[#e3e3e3] transition-all duration-300 ${menuOpen ? "translate-y-0 -rotate-45" : "translate-y-1.5"
+                    }`}
+                />
+              </button>
+            </div>
           </div>
         </div>
       </div>

@@ -1227,7 +1227,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
       <div className="min-h-screen bg-black text-white flex flex-col items-center px-[12px] min-[810px]:px-[32px] min-[1200px]:px-[48px] min-[1440px]:px-[64px]">
 
         <main className="w-full max-w-[1728px] pb-28 md:pb-20 grid gap-10">
-          <section className="lg:hidden space-y-5">
+          <section className="min-[810px]:hidden space-y-5">
             <div className="flex flex-col items-center gap-5 rounded-3xl w-full">
               <div className="w-full">
                 <div className="h-50 -mb-9 rounded-xl overflow-hidden bg-[#151515]">
@@ -1296,7 +1296,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
             </div>
           </section>
 
-          <section className="hidden lg:flex items-stretch justify-between gap-12 w-full">
+          <section className="hidden min-[810px]:flex items-stretch justify-between gap-6 min-[1200px]:gap-12 w-full">
             <div className="w-full max-w-[480px] shrink flex flex-col justify-between gap-[40px] pt-[48px]">
               <div className="flex flex-col gap-[40px]">
                 <div className="flex flex-col gap-4 lg:gap-6 xl:gap-8">
@@ -1414,7 +1414,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
           </section>
 
           {/* Desktop: pill tabs with text */}
-          <div className="hidden lg:flex items-center justify-center gap-2 flex-wrap">
+          <div className="hidden min-[810px]:flex items-center justify-center gap-2 flex-wrap">
             <button
               onClick={() => setActiveTab("all")}
               className={`rounded-full px-6 py-2 text-[16px] leading-6 tracking-[-0.096px] transition ${
@@ -1467,7 +1467,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
             ];
             const activeIndex = mobileTabs.findIndex((t) => t.key === activeTab);
             return (
-              <div className="flex lg:hidden flex-col w-full border-b border-black-400 relative">
+              <div className="flex min-[810px]:hidden flex-col w-full border-b border-black-400 relative">
                 <div className="flex items-center w-full">
                   {mobileTabs.map((tab) => (
                     <button
