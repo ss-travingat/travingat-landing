@@ -1227,10 +1227,10 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
       <div className="min-h-screen bg-black text-white flex flex-col items-center px-[12px] min-[810px]:px-[32px] min-[1200px]:px-[48px] min-[1440px]:px-[64px]">
 
         <main className="w-full max-w-[1728px] pb-28 md:pb-20 grid gap-10">
-          <section className="min-[810px]:hidden space-y-5">
-            <div className="flex flex-col items-center gap-5 rounded-3xl w-full">
-              <div className="w-full">
-                <div className="h-50 -mb-9 rounded-xl overflow-hidden bg-[#151515]">
+          <section className="min-[811px]:hidden space-y-[12px] flex flex-col items-center w-full">
+            <div className="flex flex-col items-center gap-[20px] rounded-[24px] w-full max-w-[400px]">
+              <div className="w-full flex flex-col items-center">
+                <div className="w-full aspect-[377/248] -mb-[36px] rounded-2xl overflow-hidden bg-[#151515]">
                   <img src={toLandingAssetUrl(profile.images.cover)} alt="Profile cover" className="w-full h-full object-cover" />
                 </div>
                 <div className="relative z-10 mx-auto h-20 w-20 rounded-2xl border-4 border-black overflow-hidden bg-[#151515]">
@@ -1238,13 +1238,13 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                 </div>
               </div>
 
-              <div className="pt-1 text-center">
-                <div className="flex items-center justify-center gap-1.5 text-[#696969] text-sm">
+              <div className="flex flex-col items-center gap-[8px] w-full">
+                <div className="flex items-center justify-center gap-1.5 text-[#696969] text-[14px] leading-[20px] tracking-[-0.5px]">
                   {profileFlagSrc ? (
                     <img
                       src={profileFlagSrc}
                       alt={`${basedIn} flag`}
-                      className="h-4 w-6 rounded-xs object-cover"
+                      className="h-[10px] w-[15px] rounded-[2px] object-cover"
                       loading="lazy"
                       decoding="async"
                     />
@@ -1253,53 +1253,36 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                   )}
                   <span>{basedIn}</span>
                 </div>
-                <h1 className="text-white text-[28px] leading-tight tracking-[-0.5px] font-semibold mt-2">{displayName}</h1>
-                <p className="text-[#a8a8a8] text-[16px] mt-1">{handle}</p>
+                <h1 className="text-white text-[20px] leading-normal tracking-[-0.41px] font-semibold text-center w-full">{displayName}</h1>
+                <p className="text-[#a8a8a8] text-[14px] leading-normal tracking-[-0.5px] text-center w-full">{handle}</p>
               </div>
-            </div>
 
-            <div className="grid grid-cols-[repeat(10,24px)] justify-center gap-1">
-              {headerFlagCodes.map((code, index) => (
-                <img
-                  key={`${code}-${index}`}
-                  src={toFlagAssetPath(code) || ""}
-                  alt={`${code} flag`}
-                  className="h-4 w-6 rounded-xs object-cover"
-                  loading="lazy"
-                  decoding="async"
-                />
-              ))}
-              {flagOverflowCount > 0 && (
-                <div className="flex h-4 w-6 shrink-0 items-center justify-center overflow-hidden rounded-xs bg-white">
-                  <span className="font-medium text-violet-600 text-[10px] text-center tracking-[-0.408px] whitespace-nowrap">
-                    +{flagOverflowCount}
-                  </span>
-                </div>
-              )}
-            </div>
-
-            <div className="w-full rounded-2xl border border-[#202020] bg-[#111] px-5 py-5">
-              <div className="grid grid-cols-3 gap-2 text-center">
-                <div>
-                  <p className="text-white text-[28px] leading-none tracking-[-0.4px] font-semibold">{profile.countries}</p>
-                  <p className="text-white-400 text-[12px] mt-1">Countries</p>
-                </div>
-                <div>
-                  <p className="text-white text-[28px] leading-none tracking-[-0.4px] font-semibold">{profile.media}</p>
-                  <p className="text-white-400 text-[12px] mt-1">All media</p>
-                </div>
-                <div>
-                  <p className="text-white text-[28px] leading-none tracking-[-0.4px] font-semibold">{profile.collections}</p>
-                  <p className="text-white-400 text-[12px] mt-1">Collections</p>
-                </div>
+              <div className="flex flex-wrap items-start justify-center gap-[4px] px-[6px] w-full">
+                {headerFlagCodes.map((code, index) => (
+                  <img
+                    key={`${code}-${index}`}
+                    src={toFlagAssetPath(code) || ""}
+                    alt={`${code} flag`}
+                    className="h-[17px] w-[26px] rounded-[2px] object-cover shrink-0"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                ))}
+                {flagOverflowCount > 0 && (
+                  <div className="flex h-[17px] w-[26px] shrink-0 items-center justify-center overflow-hidden rounded-[2px] bg-white">
+                    <span className="font-medium text-violet-600 text-[10px] text-center tracking-[-0.408px] whitespace-nowrap">
+                      +{flagOverflowCount}
+                    </span>
+                  </div>
+                )}
               </div>
             </div>
           </section>
 
-          <section className="hidden min-[810px]:flex items-stretch justify-between gap-6 min-[1200px]:gap-12 w-full">
-            <div className="w-full max-w-[480px] shrink flex flex-col justify-between gap-[40px] pt-[48px]">
-              <div className="flex flex-col gap-[40px]">
-                <div className="flex flex-col gap-4 lg:gap-6 xl:gap-8">
+          <section className="hidden min-[811px]:flex items-stretch justify-between gap-6 w-full">
+            <div className="w-full max-w-[48%] min-[1200px]:max-w-[500px] min-[1440px]:max-w-[600px] min-[1720px]:max-w-[537px] shrink flex flex-col justify-between pt-[40px] min-[1440px]:pt-[48px]">
+              <div className="flex flex-col gap-[24px] min-[1440px]:gap-[32px]">
+                <div className="flex flex-col gap-[16px] min-[1200px]:gap-[24px] min-[1440px]:gap-[32px]">
                   <div className="relative h-20 w-20 lg:h-24 lg:w-24 xl:h-30 xl:w-30 shrink-0 overflow-hidden rounded-2xl bg-[#151515]">
                     <img src={toLandingAssetUrl(profile.images.avatar)} alt="Profile avatar" loading="lazy" decoding="async" className="h-full w-full object-cover rounded-2xl" />
                   </div>
@@ -1345,7 +1328,6 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                     </div>
                   )}
                 </div>
-              </div>
 
               <div className="w-full rounded-2xl border-l border-black-100 bg-linear-to-r from-[#1c1c1c] to-[rgba(0,0,0,0.1)] px-3 py-3 xl:px-4 xl:py-5">
                   <div className="flex items-center gap-4 lg:gap-6 xl:gap-10">
@@ -1390,8 +1372,9 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                     </div>
                   </div>
                 </div>
+              </div>
 
-                <div className="flex items-center gap-2 xl:gap-3">
+              <div className="flex items-center gap-2 xl:gap-3">
                   <button onClick={() => setShowFollowModal(true)} className="flex-1 xl:flex-none w-auto xl:w-37 rounded-full bg-white text-black px-4 xl:px-5 py-2.5 xl:py-3 text-[14px] xl:text-[16px] font-medium leading-normal xl:leading-6 tracking-[-0.096px] hover:bg-[#ececec] transition">Follow</button>
                   <button className="flex-1 xl:flex-none w-auto xl:w-37 rounded-full border border-black-100 bg-black-700 text-white px-4 xl:px-5 py-2.5 xl:py-3 text-[14px] xl:text-[16px] font-medium leading-normal xl:leading-6 tracking-[-0.096px] hover:bg-[#242424] transition">Connect</button>
                   <button className="h-10 w-10 lg:h-11 lg:w-11 xl:h-12 xl:w-12 shrink-0 grid place-items-center rounded-full border border-black-100 bg-black-700 text-white hover:bg-[#242424] transition" aria-label="More options">
@@ -1405,16 +1388,16 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                 </div>
             </div>
 
-            {/* Cover image — stretches to match left column height, filling available width */}
-            <div className="flex-1 min-w-0 max-w-[640px]">
-              <div className="relative w-full h-full overflow-hidden rounded-[32px] bg-[#111]" style={{ aspectRatio: '640 / 662' }}>
-                <img src={toLandingAssetUrl(profile.images.cover)} alt="Profile cover" loading="lazy" decoding="async" className="w-full h-full object-cover rounded-[32px]" />
+            {/* Cover image — maintains exact aspect ratio, scales width up to 640px */}
+            <div className="w-full max-w-[48%] min-[1200px]:max-w-[520px] min-[1440px]:max-w-[640px]">
+              <div className="relative w-full overflow-hidden rounded-[32px] bg-[#111]" style={{ aspectRatio: '640 / 662' }}>
+                <img src={toLandingAssetUrl(profile.images.cover)} alt="Profile cover" loading="lazy" decoding="async" className="absolute inset-0 w-full h-full object-cover rounded-[32px]" />
               </div>
             </div>
           </section>
 
           {/* Desktop: pill tabs with text */}
-          <div className="hidden min-[810px]:flex items-center justify-center gap-2 flex-wrap">
+          <div className="hidden min-[811px]:flex items-center justify-center gap-2 flex-wrap">
             <button
               onClick={() => setActiveTab("all")}
               className={`rounded-full px-6 py-2 text-[16px] leading-6 tracking-[-0.096px] transition ${
@@ -1467,7 +1450,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
             ];
             const activeIndex = mobileTabs.findIndex((t) => t.key === activeTab);
             return (
-              <div className="flex min-[810px]:hidden flex-col w-full border-b border-black-400 relative">
+              <div className="flex min-[811px]:hidden flex-col w-full border-b border-black-400 relative">
                 <div className="flex items-center w-full">
                   {mobileTabs.map((tab) => (
                     <button
@@ -1994,18 +1977,18 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
         </main>
       </div>
 
-      <div className="md:hidden fixed inset-x-0 bottom-0 z-40 border-t border-black-800 bg-black px-3 pt-3 pb-5">
-        <div className="flex items-center gap-2">
-          <button onClick={() => setShowFollowModal(true)} className="flex-1 rounded-full bg-white text-black px-5 py-2.5 text-[16px] font-medium tracking-[-0.41px]">Follow</button>
-          <button className="h-10.75 w-10.75 rounded-full border border-[#363636] bg-[#181818] grid place-items-center text-white" aria-label="More options">
-            <span className="grid grid-cols-2 gap-1.25">
-              <span className="h-1 w-1 rounded-full bg-white" />
-              <span className="h-1 w-1 rounded-full bg-white" />
-              <span className="h-1 w-1 rounded-full bg-white" />
-              <span className="h-1 w-1 rounded-full bg-white" />
+      <div className="md:hidden fixed inset-x-2 bottom-6 z-40 rounded-full backdrop-blur-[6px] bg-[rgba(255,255,255,0.12)] border border-[rgba(255,255,255,0.1)] p-[8px] shadow-[0px_12px_12px_0px_rgba(0,0,0,0.12)] flex items-center overflow-clip">
+        <div className="flex gap-[8px] items-center w-full">
+          <button onClick={() => setShowFollowModal(true)} className="flex-1 rounded-full bg-white text-black px-[18px] py-[10px] text-[16px] font-medium leading-[24px] tracking-[-0.096px]">Follow</button>
+          <button className="h-[44px] w-[43px] shrink-0 rounded-full border border-[#353535] bg-[#1a1a1a] grid place-items-center text-white" aria-label="More options">
+            <span className="grid grid-cols-2 gap-1">
+              <span className="h-[3px] w-[3px] rounded-full bg-white" />
+              <span className="h-[3px] w-[3px] rounded-full bg-white" />
+              <span className="h-[3px] w-[3px] rounded-full bg-white" />
+              <span className="h-[3px] w-[3px] rounded-full bg-white" />
             </span>
           </button>
-          <button className="flex-1 rounded-full border border-[#363636] bg-[#181818] text-white px-5 py-2.5 text-[16px] font-medium tracking-[-0.41px]">Connect</button>
+          <button className="flex-1 rounded-full border border-[#353535] bg-[#1a1a1a] text-white px-[18px] py-[10px] text-[16px] font-medium leading-[24px] tracking-[-0.096px]">Connect</button>
         </div>
       </div>
 

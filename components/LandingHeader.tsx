@@ -54,7 +54,7 @@ function LandingHeaderContent() {
             </Link>
           </div>
 
-          <div className="hidden xl:flex flex-none items-center justify-center">
+          <div className="hidden min-[811px]:flex flex-none items-center justify-center">
             <nav className="flex items-center rounded-[999px] border border-[rgba(161,161,161,0.1)] bg-gradient-to-b from-[rgba(46,46,46,0.8)] to-[#171717] p-1 backdrop-blur-[5px] shadow-[0px_6px_10px_0px_rgba(0,0,0,0.25)]">
               <Link
                 href="/"
@@ -90,7 +90,7 @@ function LandingHeaderContent() {
           </div>
 
           <div className="flex-1 flex items-center justify-end gap-2">
-            <div className="hidden xl:flex items-center">
+            <div className="hidden min-[811px]:flex items-center">
               <a
                 href="#join"
                 onClick={(event) => scrollToSection(event, "join")}
@@ -100,7 +100,7 @@ function LandingHeaderContent() {
               </a>
             </div>
 
-            <div className="flex xl:hidden items-center gap-2">
+            <div className="flex min-[811px]:hidden items-center gap-2">
               <button
                 onClick={() => setMenuOpen((prev) => !prev)}
                 className="relative flex h-9 w-9 items-center justify-center rounded-xl border border-black-600 bg-[#0b0b0b]"
@@ -126,7 +126,7 @@ function LandingHeaderContent() {
       </div>
 
       <nav
-        className={`mx-auto w-full max-w-432 overflow-hidden px-5 md:px-8 xl:hidden transition-all duration-300 ${menuOpen ? "max-h-105 pb-5 opacity-100" : "max-h-0 pb-0 opacity-0"
+        className={`mx-auto w-full max-w-432 overflow-hidden px-5 md:px-8 min-[811px]:hidden transition-all duration-300 ${menuOpen ? "max-h-105 pb-5 opacity-100" : "max-h-0 pb-0 opacity-0"
           }`}
       >
         <div
