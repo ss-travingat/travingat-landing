@@ -524,7 +524,7 @@ export default function CountryDetailComponent({
   const profileHandle = profile.handle.startsWith("@") ? profile.handle : `@${profile.handle}`;
 
   return (
-    <div className="min-h-screen bg-black text-white flex flex-col items-center px-4 md:px-10 xl:px-24">
+    <div className="min-h-screen bg-black text-white flex flex-col items-center px-[12px] min-[810px]:px-[32px] min-[1200px]:px-[48px] min-[1440px]:px-[64px]">
       {/* Lightbox */}
       {lightboxIndex !== null && (
         <PhotoLightbox
@@ -545,7 +545,7 @@ export default function CountryDetailComponent({
       )}
 
       {/* Country Info */}
-      <main className="w-full flex flex-col items-center gap-[48px] pb-28 md:pb-20 pt-8 md:pt-10">
+      <main className="w-full max-w-[1728px] flex flex-col items-center gap-[48px] pb-28 md:pb-20 pt-8 md:pt-10">
         <div className="flex flex-col items-center gap-[20px] w-full max-w-[600px]">
           <div className="flex flex-col items-center gap-[24px]">
             <div className="h-[80px] w-[120px] overflow-hidden rounded-[8px] shrink-0">
@@ -612,7 +612,7 @@ export default function CountryDetailComponent({
         </div>
 
         {/* Tabs + content */}
-        <div className="w-full flex flex-col gap-[48px] items-center max-w-[1488px]">
+        <div className="w-full flex flex-col gap-[48px] items-center">
           {/* Tab pills */}
           <div className="flex items-center justify-center gap-[8px] flex-wrap">
             {tabs.map((tab) => (
@@ -744,7 +744,7 @@ export default function CountryDetailComponent({
       </main>
 
       {/* Footer */}
-      <footer className="w-full max-w-372 py-8 flex items-center justify-center gap-8 text-[12px] text-white-500 tracking-[-0.408px]">
+      <footer className="w-full max-w-[1728px] py-8 flex items-center justify-center gap-8 text-[12px] text-white-500 tracking-[-0.408px]">
         <a href="#" className="hover:text-white transition">Help</a>
         <a href="#" className="hover:text-white transition">About</a>
         <a href="#" className="hover:text-white transition">Careers</a>

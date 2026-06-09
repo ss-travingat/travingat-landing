@@ -1224,9 +1224,9 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
 
   return (
     <>
-      <div className="min-h-screen bg-black text-white flex flex-col items-center px-4 md:px-10 xl:px-24">
+      <div className="min-h-screen bg-black text-white flex flex-col items-center px-[12px] min-[810px]:px-[32px] min-[1200px]:px-[48px] min-[1440px]:px-[64px]">
 
-        <main className="w-full max-w-372 pb-28 md:pb-20 grid gap-10">
+        <main className="w-full max-w-[1728px] pb-28 md:pb-20 grid gap-10">
           <section className="lg:hidden space-y-5">
             <div className="flex flex-col items-center gap-5 rounded-3xl w-full">
               <div className="w-full">
@@ -1296,9 +1296,9 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
             </div>
           </section>
 
-          <section className="hidden lg:flex items-end gap-12">
-            <div className="w-full max-w-[42%] flex flex-col gap-8 lg:gap-12 xl:gap-16">
-              <div className="flex flex-col gap-6 lg:gap-8 xl:gap-10">
+          <section className="hidden lg:flex items-start justify-between gap-12 w-full">
+            <div className="w-full max-w-[480px] shrink flex flex-col gap-[40px] pt-[48px]">
+              <div className="flex flex-col gap-[40px]">
                 <div className="flex flex-col gap-4 lg:gap-6 xl:gap-8">
                   <div className="relative h-20 w-20 lg:h-24 lg:w-24 xl:h-30 xl:w-30 shrink-0 overflow-hidden rounded-2xl bg-[#151515]">
                     <img src={toLandingAssetUrl(profile.images.avatar)} alt="Profile avatar" loading="lazy" decoding="async" className="h-full w-full object-cover rounded-2xl" />
@@ -1406,9 +1406,9 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
             </div>
 
             {/* Cover image — height dictates container height; aspect ratio 640:662 preserved */}
-            <div className="flex-1 min-w-0">
-              <div className="relative w-full overflow-hidden rounded-4xl bg-[#111]" style={{ aspectRatio: '640 / 662' }}>
-                <img src={toLandingAssetUrl(profile.images.cover)} alt="Profile cover" loading="lazy" decoding="async" className="w-full h-full object-cover rounded-4xl" />
+            <div className="flex-1 min-w-0 max-w-[640px]">
+              <div className="relative w-full overflow-hidden rounded-[32px] bg-[#111]" style={{ aspectRatio: '640 / 662' }}>
+                <img src={toLandingAssetUrl(profile.images.cover)} alt="Profile cover" loading="lazy" decoding="async" className="w-full h-full object-cover rounded-[32px]" />
               </div>
             </div>
           </section>
