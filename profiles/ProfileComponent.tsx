@@ -1276,25 +1276,53 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                   </div>
                 )}
               </div>
+
+              {/* Mobile Stats Container */}
+              <div className="bg-[#111] border-0 border-[#1e1e1e] flex items-center justify-center gap-[20px] rounded-[12px] w-full pt-[18px] pb-[20px] px-[20px]">
+                <div className="flex flex-1 flex-col items-center justify-center gap-[2px]">
+                  <p className="ds-font-display text-[24px] font-semibold leading-[32px] tracking-[-0.5px] text-white">
+                    {profile.countries}
+                  </p>
+                  <p className="text-[14px] font-normal leading-[20px] tracking-[-0.084px] text-[#989898]">
+                    Countries
+                  </p>
+                </div>
+                <div className="flex flex-1 flex-col items-center justify-center gap-[2px]">
+                  <p className="ds-font-display text-[24px] font-semibold leading-[32px] tracking-[-0.5px] text-white">
+                    {profile.media}
+                  </p>
+                  <p className="text-[14px] font-normal leading-[20px] tracking-[-0.084px] text-[#989898]">
+                    All media
+                  </p>
+                </div>
+                <div className="flex flex-1 flex-col items-center justify-center gap-[2px]">
+                  <p className="ds-font-display text-[24px] font-semibold leading-[32px] tracking-[-0.5px] text-white">
+                    {profile.collections}
+                  </p>
+                  <p className="text-[14px] font-normal leading-[20px] tracking-[-0.084px] text-[#989898]">
+                    Collections
+                  </p>
+                </div>
+              </div>
             </div>
           </section>
 
           <section className="hidden min-[811px]:flex items-start justify-between gap-6 w-full">
-            <div className="w-full max-w-[48%] lg:max-w-[500px] min-[1440px]:max-w-[600px] min-[1720px]:max-w-[537px] shrink flex flex-col items-start justify-start gap-[24px] lg:gap-[32px] min-[1440px]:gap-[40px] pt-[24px] lg:pt-[40px] min-[1440px]:pt-[48px]">
-              <div className="flex flex-col items-start gap-[16px] lg:gap-[24px] min-[1440px]:gap-[32px] w-full">
-                <div className="flex flex-col items-start gap-[12px] lg:gap-[16px] min-[1440px]:gap-[32px] w-full">
-                  <div className="relative size-[64px] lg:size-[100px] min-[1440px]:size-[120px] shrink-0 overflow-hidden rounded-[20px] bg-[#151515]">
+            <div className="w-full max-w-[48%] lg:max-w-[500px] xl:max-w-[537px] shrink flex flex-col items-start justify-start gap-[24px] lg:gap-[32px] xl:gap-[40px] pt-[24px] lg:pt-[40px] xl:pt-[48px]">
+              <div className="flex flex-col items-start gap-[16px] lg:gap-[24px] xl:gap-[32px] w-full">
+                <div className="flex flex-col items-start gap-[12px] lg:gap-[16px] xl:gap-[32px] w-full">
+                  <div className="relative size-[64px] lg:size-[100px] xl:size-[120px] shrink-0 overflow-hidden rounded-[20px] bg-[#151515]">
                     <img src={toLandingAssetUrl(profile.images.avatar)} alt="Profile avatar" loading="lazy" decoding="async" className="h-full w-full object-cover rounded-[20px]" />
                   </div>
 
-                  <div className="flex flex-col items-center min-[1440px]:w-[600px] w-full shrink-0">
+                  <div className="flex flex-col items-center w-full shrink-0">
                     <div className="flex flex-col items-start w-full gap-[12px]">
-                      <div className="flex items-center gap-2 text-white-400 text-[12px] lg:text-[16px] min-[1440px]:text-[18px] tracking-[-0.198px] leading-[26px] w-full">
+                      <div className="flex items-center gap-2 text-white-400 text-[12px] lg:text-[16px] xl:text-[18px] tracking-[-0.198px] leading-[26px] w-full">
                         {profileFlagSrc ? (
                           <img
                             src={profileFlagSrc}
                             alt={`${basedIn} flag`}
-                            className="h-3 w-4.5 lg:h-4 lg:w-6 min-[1440px]:h-[16px] min-[1440px]:w-[24px] rounded-[4px] object-cover"
+                            className="h-3 w-4.5 lg:h-4 lg:w-6 xl:h-[16px] xl:w-[24px] rounded-[4px] object-cover"
                             loading="lazy"
                             decoding="async"
                           />
@@ -1304,82 +1332,82 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                         <span>{basedIn}</span>
                       </div>
 
-                      <h1 className="ds-font-display text-[24px] lg:text-[36px] min-[1440px]:text-[44px] leading-tight min-[1440px]:leading-[52px] tracking-[-0.5px] font-semibold text-white w-full">{displayName}</h1>
+                      <h1 className="ds-font-display text-[24px] lg:text-[36px] xl:text-[44px] leading-tight xl:leading-[52px] tracking-[-0.5px] font-semibold text-white w-full">{displayName}</h1>
 
                       <div className="flex items-center gap-[8px] w-full">
-                        <p className="ds-font-display text-white-400 text-[16px] lg:text-[20px] min-[1440px]:text-[24px] leading-normal min-[1440px]:leading-[32px] tracking-[-0.5px] font-normal">{handle}</p>
+                        <p className="ds-font-display text-white-400 text-[16px] lg:text-[20px] xl:text-[24px] leading-normal xl:leading-[32px] tracking-[-0.5px] font-normal">{handle}</p>
                       </div>
                     </div>
                   </div>
                 </div>
 
-                <div className="flex flex-wrap items-start gap-1.5 lg:gap-2 min-[1440px]:gap-[8px] w-full min-[1440px]:w-[480px]">
+                <div className="flex flex-wrap items-start gap-1.5 lg:gap-2 xl:gap-[8px] w-full xl:w-[480px]">
                   {headerFlagCodes.map((code, index) => (
                     <img
                       key={`${code}-${index}`}
                       src={toFlagAssetPath(code) || ""}
                       alt={`${code} flag`}
-                      className="h-3 w-[18px] lg:h-4 lg:w-6 min-[1440px]:h-5 min-[1440px]:w-[30px] rounded-xs object-cover shrink-0"
+                      className="h-3 w-[18px] lg:h-4 lg:w-6 xl:h-5 xl:w-[30px] rounded-xs object-cover shrink-0"
                       loading="lazy"
                       decoding="async"
                     />
                   ))}
                   {flagOverflowCount > 0 && (
-                    <div className="flex h-3 w-[18px] lg:h-4 lg:w-6 min-[1440px]:h-5 min-[1440px]:w-[30px] shrink-0 items-center justify-center overflow-hidden rounded-xs bg-white">
-                      <span className="font-medium text-violet-600 text-[8px] lg:text-[10px] min-[1440px]:text-[12px] text-center tracking-[-0.408px] whitespace-nowrap">
+                    <div className="flex h-3 w-[18px] lg:h-4 lg:w-6 xl:h-5 xl:w-[30px] shrink-0 items-center justify-center overflow-hidden rounded-xs bg-white">
+                      <span className="font-medium text-violet-600 text-[8px] lg:text-[10px] xl:text-[12px] text-center tracking-[-0.408px] whitespace-nowrap">
                         +{flagOverflowCount}
                       </span>
                     </div>
                   )}
                 </div>
 
-                <div className="flex items-center justify-between w-full rounded-[16px] border-l border-black-100 bg-linear-to-r from-[#1c1c1c] to-[rgba(0,0,0,0.1)] px-2 py-2 lg:px-3 lg:py-3 min-[1440px]:pl-[16px] min-[1440px]:pr-[24px] min-[1440px]:py-[24px]">
-                    <div className="flex items-center gap-1.5 lg:gap-2 min-[1440px]:gap-[16px] rounded-xl">
-                      <div className="relative size-8 lg:size-[48px] min-[1440px]:size-[60px] shrink-0">
+                <div className="flex items-center justify-between xl:justify-start xl:gap-[40px] w-full rounded-[16px] border-l border-black-100 bg-linear-to-r from-[#1c1c1c] to-[rgba(0,0,0,0.1)] px-2 py-2 lg:px-3 lg:py-3 xl:px-[16px] xl:py-[20px]">
+                    <div className="flex items-center gap-1.5 lg:gap-2 xl:gap-[16px] rounded-xl">
+                      <div className="relative size-8 lg:size-[48px] xl:size-[60px] shrink-0">
                         <img
                           src="/images/Globe.png"
                           alt="Globe icon"
                           className="pointer-events-none absolute top-1/2 left-1/2 h-full w-full -translate-x-1/2 -translate-y-1/2 object-contain"
                         />
                       </div>
-                      <div className="flex flex-col gap-0.5 min-[1440px]:gap-1">
-                        <p className="ds-font-display text-[16px] lg:text-[20px] min-[1440px]:text-[24px] leading-tight min-[1440px]:leading-[32px] tracking-[-0.5px] text-white font-semibold">{profile.countries}</p>
-                        <p className="text-[10px] lg:text-[12px] min-[1440px]:text-[14px] leading-tight min-[1440px]:leading-[20px] tracking-[-0.084px] text-white-400 font-normal">Countries</p>
+                      <div className="flex flex-col gap-0.5 xl:gap-1">
+                        <p className="ds-font-display text-[16px] lg:text-[20px] xl:text-[24px] leading-tight xl:leading-[32px] tracking-[-0.5px] text-white font-semibold">{profile.countries}</p>
+                        <p className="text-[10px] lg:text-[12px] xl:text-[14px] leading-tight xl:leading-[20px] tracking-[-0.084px] text-white-400 font-normal">Countries</p>
                       </div>
                     </div>
-                    <div className="flex items-center gap-1.5 lg:gap-2 min-[1440px]:gap-[16px] rounded-xl">
-                      <div className="relative size-8 lg:size-[48px] min-[1440px]:size-[60px] shrink-0">
+                    <div className="flex items-center gap-1.5 lg:gap-2 xl:gap-[16px] rounded-xl">
+                      <div className="relative size-8 lg:size-[48px] xl:size-[60px] shrink-0">
                         <img
                           src="/images/media.png"
                           alt="Media icon"
                           className="pointer-events-none absolute top-1/2 left-1/2 h-full w-full -translate-x-1/2 -translate-y-1/2 object-contain"
                         />
                       </div>
-                      <div className="flex flex-col gap-0.5 min-[1440px]:gap-1">
-                        <p className="ds-font-display text-[16px] lg:text-[20px] min-[1440px]:text-[24px] leading-tight min-[1440px]:leading-[32px] tracking-[-0.5px] text-white font-semibold">{profile.media}</p>
-                        <p className="text-[10px] lg:text-[12px] min-[1440px]:text-[14px] leading-tight min-[1440px]:leading-[20px] tracking-[-0.084px] text-white-400 font-normal">All media</p>
+                      <div className="flex flex-col gap-0.5 xl:gap-1">
+                        <p className="ds-font-display text-[16px] lg:text-[20px] xl:text-[24px] leading-tight xl:leading-[32px] tracking-[-0.5px] text-white font-semibold">{profile.media}</p>
+                        <p className="text-[10px] lg:text-[12px] xl:text-[14px] leading-tight xl:leading-[20px] tracking-[-0.084px] text-white-400 font-normal">All media</p>
                       </div>
                     </div>
-                    <div className="flex items-center gap-1.5 lg:gap-2 min-[1440px]:gap-[16px] rounded-xl">
-                      <div className="relative size-8 lg:size-[48px] min-[1440px]:size-[60px] shrink-0">
+                    <div className="flex items-center gap-1.5 lg:gap-2 xl:gap-[16px] rounded-xl">
+                      <div className="relative size-8 lg:size-[48px] xl:size-[60px] shrink-0">
                         <img
                           src="/images/collections.png"
                           alt="Collections icon"
                           className="pointer-events-none absolute top-1/2 left-1/2 h-full w-full -translate-x-1/2 -translate-y-1/2 object-contain"
                         />
                       </div>
-                      <div className="flex flex-col gap-0.5 min-[1440px]:gap-1">
-                        <p className="ds-font-display text-[16px] lg:text-[20px] min-[1440px]:text-[24px] leading-tight min-[1440px]:leading-[32px] tracking-[-0.5px] text-white font-semibold">{profile.collections}</p>
-                        <p className="text-[10px] lg:text-[12px] min-[1440px]:text-[14px] leading-tight min-[1440px]:leading-[20px] tracking-[-0.084px] text-white-400 font-normal">Collections</p>
+                      <div className="flex flex-col gap-0.5 xl:gap-1">
+                        <p className="ds-font-display text-[16px] lg:text-[20px] xl:text-[24px] leading-tight xl:leading-[32px] tracking-[-0.5px] text-white font-semibold">{profile.collections}</p>
+                        <p className="text-[10px] lg:text-[12px] xl:text-[14px] leading-tight xl:leading-[20px] tracking-[-0.084px] text-white-400 font-normal">Collections</p>
                       </div>
                     </div>
                 </div>
               </div>
 
-              <div className="flex items-start gap-[12px] w-full">
-                  <button onClick={() => setShowFollowModal(true)} className="flex-1 lg:flex-none w-auto min-[1440px]:w-[148px] rounded-full bg-white text-black px-3 py-1.5 text-[12px] lg:px-4 lg:py-2.5 lg:text-[14px] min-[1440px]:px-[20px] min-[1440px]:py-[12px] min-[1440px]:text-[16px] font-medium leading-normal min-[1440px]:leading-[24px] tracking-[-0.096px] hover:bg-[#ececec] transition">Follow</button>
-                  <button className="flex-1 lg:flex-none w-auto min-[1440px]:w-[148px] rounded-full border border-[#353535] bg-[#1a1a1a] text-white px-3 py-1.5 text-[12px] lg:px-4 lg:py-2.5 lg:text-[14px] min-[1440px]:px-[20px] min-[1440px]:py-[12px] min-[1440px]:text-[16px] font-medium leading-normal min-[1440px]:leading-[24px] tracking-[-0.096px] hover:bg-[#242424] transition">Connect</button>
-                  <button className="size-8 lg:size-10 min-[1440px]:size-[48px] shrink-0 grid place-items-center rounded-full border border-[#353535] bg-[#1a1a1a] text-white hover:bg-[#242424] transition" aria-label="More options">
+              <div className="flex items-center gap-[12px] w-full">
+                  <button onClick={() => setShowFollowModal(true)} className="flex items-center justify-center flex-1 lg:flex-none w-auto lg:w-[148px] lg:h-[48px] rounded-full bg-white text-black px-3 py-1.5 text-[12px] lg:text-[16px] font-medium tracking-[-0.096px] hover:bg-[#ececec] transition">Follow</button>
+                  <button className="flex items-center justify-center flex-1 lg:flex-none w-auto lg:w-[148px] lg:h-[48px] rounded-full border border-[#353535] bg-[#1a1a1a] text-white px-3 py-1.5 text-[12px] lg:text-[16px] font-medium tracking-[-0.096px] hover:bg-[#242424] transition">Connect</button>
+                  <button className="size-8 lg:size-[48px] shrink-0 grid place-items-center rounded-full border border-[#353535] bg-[#1a1a1a] text-white hover:bg-[#242424] transition" aria-label="More options">
                     <span className="grid grid-cols-2 gap-1 lg:gap-1.5">
                       <span className="h-1 w-1 rounded-full bg-white" />
                       <span className="h-1 w-1 rounded-full bg-white" />
@@ -1391,8 +1419,8 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
             </div>
 
             {/* Cover image — maintains exact aspect ratio */}
-            <div className="w-full max-w-[48%] min-[1200px]:max-w-[520px] min-[1440px]:max-w-[640px] shrink-0">
-              <div className="relative w-full max-w-[640px] shrink-0 overflow-hidden rounded-3xl lg:rounded-[32px] min-[1440px]:rounded-[32px] aspect-[640/662]">
+            <div className="w-full max-w-[48%] lg:max-w-[520px] xl:max-w-[640px] shrink-0">
+              <div className="relative w-full max-w-[640px] shrink-0 overflow-hidden rounded-3xl lg:rounded-[32px] xl:rounded-[32px] aspect-[640/662]">
                 <img src={toLandingAssetUrl(profile.images.cover)} alt="Profile cover" loading="lazy" decoding="async" className="absolute inset-0 w-full h-full object-cover rounded-[32px]" />
               </div>
             </div>
