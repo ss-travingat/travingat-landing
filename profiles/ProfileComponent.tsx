@@ -1307,7 +1307,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
             </div>
           </section>
 
-          <section className="hidden min-[811px]:flex items-start justify-between gap-6 w-full">
+          <section className="hidden min-[811px]:flex items-end justify-between gap-6 w-full">
             <div className="w-full max-w-[48%] lg:max-w-[500px] xl:max-w-[537px] shrink flex flex-col items-start justify-start gap-[24px] lg:gap-[32px] xl:gap-[40px] pt-[24px] lg:pt-[40px] xl:pt-[48px]">
               <div className="flex flex-col items-start gap-[16px] lg:gap-[24px] xl:gap-[32px] w-full">
                 <div className="flex flex-col items-start gap-[12px] lg:gap-[16px] xl:gap-[32px] w-full">
