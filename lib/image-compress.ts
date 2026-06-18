@@ -44,7 +44,9 @@ export async function compressImage(
     return { buffer: fileBuffer, contentType: mimeType, ext };
   }
 
-  const pipeline = sharp(fileBuffer)
+  const isAvif = mimeType === "image/avif";
+
+  let pipeline = sharp(fileBuffer)
     // Auto-rotate based on EXIF orientation, then strip all metadata
     .rotate()
     .resize({
@@ -52,14 +54,19 @@ export async function compressImage(
       height: maxDimension,
       fit: "inside",
       withoutEnlargement: true, // never upscale
-    })
-    .webp({ lossless: true });
+    });
+
+  if (isAvif) {
+    pipeline = pipeline.avif({ lossless: true });
+  } else {
+    pipeline = pipeline.webp({ lossless: true });
+  }
 
   const outputBuffer = await pipeline.toBuffer();
 
   return {
     buffer: Buffer.from(outputBuffer),
-    contentType: "image/webp",
-    ext: ".webp",
+    contentType: isAvif ? "image/avif" : "image/webp",
+    ext: isAvif ? ".avif" : ".webp",
   };
 }
