@@ -64,9 +64,9 @@ export default function AdminTestimonialsPage() {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Validate file size (max 5MB)
-    if (file.size > 5 * 1024 * 1024) {
-      showToast("File too large. Max 5MB.");
+    // Validate file size (max 20MB)
+    if (file.size > 20 * 1024 * 1024) {
+      showToast("File too large. Max 20MB.");
       return;
     }
 
@@ -234,7 +234,7 @@ export default function AdminTestimonialsPage() {
                     onChange={handlePhotoUpload}
                     className="hidden"
                   />
-                  <p className="text-xs text-white/30 mt-1">PNG, JPG up to 5MB</p>
+                  <p className="text-xs text-white/30 mt-1">PNG, JPG up to 20MB</p>
                 </div>
               </div>
             </div>

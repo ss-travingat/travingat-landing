@@ -534,7 +534,7 @@ export default function AdminProfilesPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [toast, setToast] = useState<{ msg: string; error?: boolean } | null>(null);
-  const [uploading, setUploading] = useState<{ field: "cover" | "avatar" | "gallery" | "about" | "country" | "collection"; idx?: number } | null>(null);
+  const [uploading, setUploading] = useState<{ field: "cover" | "avatar" | "gallery" | "about" | "country" | "collection"; stage: "processing" | "uploading" | "done"; idx?: number; current?: number; total?: number } | null>(null);
   const coverInputRef = useRef<HTMLInputElement>(null);
   const avatarInputRef = useRef<HTMLInputElement>(null);
   const galleryInputRef = useRef<HTMLInputElement>(null);
@@ -542,6 +542,18 @@ export default function AdminProfilesPage() {
   const [pendingCountryCode, setPendingCountryCode] = useState<string>("");
   const [pendingCollectionTitle, setPendingCollectionTitle] = useState<string>("");
   const [mediaPickerTarget, setMediaPickerTarget] = useState<{ type: "country" | "collection" | "about"; idx?: number } | null>(null);
+
+  // Orphan cleanup state
+  const [orphanScanning, setOrphanScanning] = useState(false);
+  const [orphanResult, setOrphanResult] = useState<{
+    orphans: { key: string; url: string; size: number; lastModified: string }[];
+    totalR2: number;
+    totalReferenced: number;
+    totalOrphaned: number;
+    totalOrphanedBytes: number;
+  } | null>(null);
+  const [orphanDeleting, setOrphanDeleting] = useState(false);
+  const [orphanPanelOpen, setOrphanPanelOpen] = useState(false);
 
   const showToast = (msg: string, error = false) => {
     setToast({ msg, error });
@@ -570,10 +582,58 @@ export default function AdminProfilesPage() {
     fetchProfiles();
   }, []);
 
+  const scanOrphans = async () => {
+    setOrphanScanning(true);
+    setOrphanPanelOpen(true);
+    try {
+      const res = await fetch("/api/profiles/orphans");
+      const data = await res.json();
+      if (!res.ok) {
+        showToast(data.error || "Scan failed", true);
+        return;
+      }
+      setOrphanResult(data);
+      if (data.totalOrphaned === 0) {
+        showToast("No orphaned files found! ✨");
+      } else {
+        showToast(`Found ${data.totalOrphaned} orphaned file${data.totalOrphaned !== 1 ? "s" : ""}`);
+      }
+    } catch {
+      showToast("Failed to scan orphans", true);
+    } finally {
+      setOrphanScanning(false);
+    }
+  };
+
+  const deleteOrphans = async (keys: string[]) => {
+    if (keys.length === 0) return;
+    setOrphanDeleting(true);
+    try {
+      const res = await fetch("/api/profiles/orphans", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ keys }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        showToast(data.error || "Delete failed", true);
+        return;
+      }
+      showToast(`Deleted ${data.deleted} orphaned file${data.deleted !== 1 ? "s" : ""}`);
+      // Re-scan to update the list
+      await scanOrphans();
+    } catch {
+      showToast("Failed to delete orphans", true);
+    } finally {
+      setOrphanDeleting(false);
+    }
+  };
+
   const handleVideoUpload = async (
     file: File,
     type: "country" | "collection" | "gallery" | "about",
-    idx?: number
+    idx?: number,
+    batch?: { current: number; total: number }
   ) => {
     if (file.size > 50 * 1024 * 1024) {
       showToast("Video too large. Max 50MB.", true);
@@ -605,7 +665,7 @@ export default function AdminProfilesPage() {
       return null;
     }
 
-    setUploading({ field: type, idx });
+    setUploading({ field: type, stage: "uploading", idx, current: batch?.current, total: batch?.total });
     const formData = new FormData();
     formData.append("file", file);
     formData.append("type", type);
@@ -619,6 +679,11 @@ export default function AdminProfilesPage() {
       if (!res.ok) {
         showToast(data.error || "Upload failed", true);
         return null;
+      }
+      const isLastInBatch = !batch || batch.current === batch.total;
+      if (isLastInBatch) {
+        setUploading((prev) => prev ? { ...prev, stage: "done" } : null);
+        await new Promise((r) => setTimeout(r, 800));
       }
       showToast("Video uploaded");
       return data.url as string;
@@ -634,10 +699,11 @@ export default function AdminProfilesPage() {
   const handleImageUpload = async (
     file: File,
     type: "avatar" | "cover" | "gallery" | "about" | "country" | "collection",
-    idx?: number
+    idx?: number,
+    batch?: { current: number; total: number }
   ) => {
-    if (file.size > 5 * 1024 * 1024) {
-      showToast("File too large. Max 5MB.", true);
+    if (file.size > 20 * 1024 * 1024) {
+      showToast("File too large. Max 20MB.", true);
       return null;
     }
     if (!file.type.startsWith("image/")) {
@@ -645,12 +711,13 @@ export default function AdminProfilesPage() {
       return null;
     }
 
-    setUploading({ field: type, idx });
+    setUploading({ field: type, stage: "processing", idx, current: batch?.current, total: batch?.total });
     const formData = new FormData();
     formData.append("file", file);
     formData.append("type", type);
 
     try {
+      setUploading((prev) => prev ? { ...prev, stage: "uploading" } : null);
       const res = await fetch("/api/profiles/upload", {
         method: "POST",
         body: formData,
@@ -659,6 +726,11 @@ export default function AdminProfilesPage() {
       if (!res.ok) {
         showToast(data.error || "Upload failed", true);
         return null;
+      }
+      const isLastInBatch = !batch || batch.current === batch.total;
+      if (isLastInBatch) {
+        setUploading((prev) => prev ? { ...prev, stage: "done" } : null);
+        await new Promise((r) => setTimeout(r, 800));
       }
       showToast(`${type.charAt(0).toUpperCase() + type.slice(1)} image uploaded`);
       return data.url as string;
@@ -702,8 +774,10 @@ export default function AdminProfilesPage() {
     if (files.length === 0) return;
     // Reset input so the same files can be re-selected if needed
     e.target.value = "";
-    for (const file of files) {
-      const url = await handleImageUpload(file, "gallery");
+    for (let fi = 0; fi < files.length; fi++) {
+      const file = files[fi];
+      const batch = { current: fi + 1, total: files.length };
+      const url = await handleImageUpload(file, "gallery", undefined, batch);
       if (url) {
         setForm((prev) => ({
           ...prev,
@@ -719,8 +793,10 @@ export default function AdminProfilesPage() {
     const files = Array.from(e.target.files ?? []);
     if (files.length === 0) return;
     e.target.value = "";
-    for (const file of files) {
-      const url = await handleVideoUpload(file, "gallery");
+    for (let fi = 0; fi < files.length; fi++) {
+      const file = files[fi];
+      const batch = { current: fi + 1, total: files.length };
+      const url = await handleVideoUpload(file, "gallery", undefined, batch);
       if (url) {
         setForm((prev) => ({
           ...prev,
@@ -1004,6 +1080,20 @@ export default function AdminProfilesPage() {
             </div>
           </div>
           <div className="flex items-center gap-3 shrink-0">
+            <Button
+              type="button"
+              onClick={scanOrphans}
+              disabled={orphanScanning}
+              variant="ghost"
+              className="px-3 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full text-xs text-white/55 hover:text-white transition-colors disabled:opacity-50"
+            >
+              {orphanScanning ? (
+                <span className="inline-flex items-center gap-1.5">
+                  <span className="w-3 h-3 border-2 border-white/20 border-t-white rounded-full animate-spin inline-block" />
+                  Scanning…
+                </span>
+              ) : "🧹 Scan Orphans"}
+            </Button>
             <span className="inline-flex items-center rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-white/55">
               {profiles.length} profile{profiles.length !== 1 ? "s" : ""}
             </span>
@@ -1044,6 +1134,117 @@ export default function AdminProfilesPage() {
           </div>
         </div>
       </div>
+
+      {/* Orphan Cleanup Panel */}
+      {orphanPanelOpen && (
+        <div className="max-w-6xl mx-auto px-6 py-4">
+          <div className="rounded-2xl border border-white/10 bg-white/4 p-5 backdrop-blur-sm">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <span className="text-lg">🧹</span>
+                <div>
+                  <h3 className="text-sm font-semibold">Orphaned Files Cleanup</h3>
+                  <p className="text-xs text-white/40">Images uploaded but never saved to a profile</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <Button
+                  type="button"
+                  onClick={scanOrphans}
+                  disabled={orphanScanning}
+                  variant="ghost"
+                  className="px-3 py-1.5 bg-white/10 hover:bg-white/15 rounded-lg text-xs font-medium disabled:opacity-50"
+                >
+                  {orphanScanning ? (
+                    <span className="inline-flex items-center gap-1.5">
+                      <span className="w-3 h-3 border-2 border-white/20 border-t-white rounded-full animate-spin inline-block" />
+                      Scanning…
+                    </span>
+                  ) : "Re-scan"}
+                </Button>
+                <button
+                  onClick={() => { setOrphanPanelOpen(false); setOrphanResult(null); }}
+                  className="text-white/30 hover:text-white/60 text-sm cursor-pointer p-1"
+                >
+                  ✕
+                </button>
+              </div>
+            </div>
+
+            {orphanResult && orphanResult.totalOrphaned === 0 && (
+              <div className="text-center py-6">
+                <span className="text-3xl">✨</span>
+                <p className="text-sm text-white/50 mt-2">No orphaned files found. Everything is clean!</p>
+                <p className="text-xs text-white/30 mt-1">{orphanResult.totalR2} files in R2 · {orphanResult.totalReferenced} referenced by profiles</p>
+              </div>
+            )}
+
+            {orphanResult && orphanResult.totalOrphaned > 0 && (
+              <>
+                <div className="flex items-center justify-between mb-3 px-1">
+                  <p className="text-xs text-white/50">
+                    {orphanResult.totalOrphaned} orphaned file{orphanResult.totalOrphaned !== 1 ? "s" : ""} · {(orphanResult.totalOrphanedBytes / 1024 / 1024).toFixed(1)}MB wasted
+                    <span className="text-white/30 ml-2">({orphanResult.totalR2} total in R2 · {orphanResult.totalReferenced} referenced)</span>
+                  </p>
+                  <Button
+                    type="button"
+                    onClick={() => {
+                      if (confirm(`Delete ${orphanResult.totalOrphaned} orphaned file${orphanResult.totalOrphaned !== 1 ? "s" : ""}? This cannot be undone.`)) {
+                        deleteOrphans(orphanResult.orphans.map((o) => o.key));
+                      }
+                    }}
+                    disabled={orphanDeleting}
+                    variant="ghost"
+                    className="px-3 py-1.5 bg-red-500/20 hover:bg-red-500/30 text-red-400 rounded-lg text-xs font-medium disabled:opacity-50"
+                  >
+                    {orphanDeleting ? (
+                      <span className="inline-flex items-center gap-1.5">
+                        <span className="w-3 h-3 border-2 border-red-400/30 border-t-red-400 rounded-full animate-spin inline-block" />
+                        Deleting…
+                      </span>
+                    ) : `Delete All (${orphanResult.totalOrphaned})`}
+                  </Button>
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2 max-h-64 overflow-y-auto">
+                  {orphanResult.orphans.map((orphan) => {
+                    const isVid = /\.(mp4|mov|webm|m4v)$/i.test(orphan.url);
+                    return (
+                      <div key={orphan.key} className="group relative rounded-lg overflow-hidden bg-white/5 aspect-square">
+                        {isVid ? (
+                          <div className="w-full h-full flex items-center justify-center text-white/20">
+                            <span className="text-2xl">▶</span>
+                          </div>
+                        ) : (
+                          <img
+                            src={orphan.url}
+                            alt="Orphaned"
+                            className="w-full h-full object-cover"
+                            loading="lazy"
+                          />
+                        )}
+                        <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent p-1.5">
+                          <p className="text-[10px] text-white/50 truncate">{orphan.key.split("/").pop()}</p>
+                          <p className="text-[9px] text-white/30">{(orphan.size / 1024).toFixed(0)}KB</p>
+                        </div>
+                        <button
+                          onClick={() => {
+                            if (confirm("Delete this file?")) {
+                              deleteOrphans([orphan.key]);
+                            }
+                          }}
+                          className="absolute top-1 right-1 w-5 h-5 bg-black/70 rounded-full text-[10px] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500 cursor-pointer text-white/70 hover:text-white"
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    );
+                  })}
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
 
       <div className="max-w-7xl mx-auto px-6 py-8 grid grid-cols-1 xl:grid-cols-[minmax(0,460px)_minmax(0,1fr)] gap-6 xl:gap-8">
         {/* Form Panel */}
@@ -1096,7 +1297,16 @@ export default function AdminProfilesPage() {
                         variant="ghost"
                         className="px-4 py-2 bg-white/10 hover:bg-white/15 rounded-lg text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                       >
-                        {uploading?.field === "cover" ? "Uploading…" : "Upload Cover"}
+                        {uploading?.field === "cover" ? (
+                          <span className="inline-flex items-center gap-2">
+                            {uploading.stage === "done" ? (
+                              <span className="text-emerald-400">✓</span>
+                            ) : (
+                              <span className="w-3.5 h-3.5 border-2 border-white/20 border-t-white rounded-full animate-spin inline-block" />
+                            )}
+                            {uploading.stage === "processing" ? "Processing…" : uploading.stage === "uploading" ? "Uploading…" : "Uploaded!"}
+                          </span>
+                        ) : "Upload Cover"}
                       </Button>
                       <input
                         ref={coverInputRef}
@@ -1106,7 +1316,7 @@ export default function AdminProfilesPage() {
                         className="hidden"
                       />
                       <p className="text-xs text-white/30 mt-1">
-                        PNG, JPG up to 5MB
+                        PNG, JPG up to 20MB
                       </p>
                     </div>
                   </div>
@@ -1140,7 +1350,16 @@ export default function AdminProfilesPage() {
                         variant="ghost"
                         className="px-4 py-2 bg-white/10 hover:bg-white/15 rounded-lg text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                       >
-                        {uploading?.field === "avatar" ? "Uploading…" : "Upload Avatar"}
+                        {uploading?.field === "avatar" ? (
+                          <span className="inline-flex items-center gap-2">
+                            {uploading.stage === "done" ? (
+                              <span className="text-emerald-400">✓</span>
+                            ) : (
+                              <span className="w-3.5 h-3.5 border-2 border-white/20 border-t-white rounded-full animate-spin inline-block" />
+                            )}
+                            {uploading.stage === "processing" ? "Processing…" : uploading.stage === "uploading" ? "Uploading…" : "Uploaded!"}
+                          </span>
+                        ) : "Upload Avatar"}
                       </Button>
                       <input
                         ref={avatarInputRef}
@@ -1196,7 +1415,20 @@ export default function AdminProfilesPage() {
                       variant="ghost"
                       className="px-4 py-2 bg-white/10 hover:bg-white/15 rounded-lg text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      {uploading?.field === "about" ? "Uploading…" : "+ Add Media"}
+                      {uploading?.field === "about" ? (
+                        <span className="inline-flex items-center gap-2">
+                          {uploading.stage === "done" ? (
+                            <span className="text-emerald-400">✓</span>
+                          ) : (
+                            <span className="w-3.5 h-3.5 border-2 border-white/20 border-t-white rounded-full animate-spin inline-block" />
+                          )}
+                          {uploading.stage === "processing"
+                            ? `Processing${uploading.total && uploading.total > 1 ? ` ${uploading.current}/${uploading.total}` : ""}…`
+                            : uploading.stage === "uploading"
+                            ? `Uploading${uploading.total && uploading.total > 1 ? ` ${uploading.current}/${uploading.total}` : ""}…`
+                            : `Uploaded${uploading.total && uploading.total > 1 ? ` ${uploading.total}/${uploading.total}` : ""}!`}
+                        </span>
+                      ) : "+ Add Media"}
                     </Button>
                     <input
                       ref={aboutInputRef}
@@ -1217,12 +1449,14 @@ export default function AdminProfilesPage() {
                         const filesToUpload = files.slice(0, availableSlots);
                         const uploadedUrls: string[] = [];
 
-                        for (const file of filesToUpload) {
+                        for (let fi = 0; fi < filesToUpload.length; fi++) {
+                          const file = filesToUpload[fi];
+                          const batch = { current: fi + 1, total: filesToUpload.length };
                           if (file.type.startsWith("video/")) {
-                            const url = await handleVideoUpload(file, "about");
+                            const url = await handleVideoUpload(file, "about", undefined, batch);
                             if (url) uploadedUrls.push(url);
                           } else {
-                            const url = await handleImageUpload(file, "about");
+                            const url = await handleImageUpload(file, "about", undefined, batch);
                             if (url) uploadedUrls.push(url);
                           }
                         }
@@ -1240,9 +1474,7 @@ export default function AdminProfilesPage() {
                       }}
                       className="hidden"
                     />
-                    {uploading?.field === "about" && (
-                      <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
-                    )}
+
                     {canPickFromMedia && (
                       <Button
                         type="button"
@@ -1284,7 +1516,20 @@ export default function AdminProfilesPage() {
                             </div>
                             <div className="flex items-center gap-2 flex-wrap">
                               <label className="px-2 py-1 bg-white/10 hover:bg-white/15 rounded-md text-xs font-medium transition-colors cursor-pointer whitespace-nowrap flex items-center gap-2">
-                                + Add Media
+                                {uploading?.field === "country" && uploading?.idx === idx ? (
+                                  <span className="inline-flex items-center gap-1.5">
+                                    {uploading.stage === "done" ? (
+                                      <span className="text-emerald-400">✓</span>
+                                    ) : (
+                                      <span className="w-3 h-3 border-2 border-white/20 border-t-white rounded-full animate-spin inline-block" />
+                                    )}
+                                    {uploading.stage === "processing"
+                                      ? `Processing${uploading.total && uploading.total > 1 ? ` ${uploading.current}/${uploading.total}` : ""}…`
+                                      : uploading.stage === "uploading"
+                                      ? `Uploading${uploading.total && uploading.total > 1 ? ` ${uploading.current}/${uploading.total}` : ""}…`
+                                      : `Uploaded${uploading.total && uploading.total > 1 ? ` ${uploading.total}/${uploading.total}` : ""}!`}
+                                  </span>
+                                ) : "+ Add Media"}
                                 <input
                                   type="file"
                                   accept="image/*,video/*"
@@ -1295,12 +1540,14 @@ export default function AdminProfilesPage() {
                                     if (files.length === 0) return;
                                     e.target.value = "";
                                     const urls: string[] = [];
-                                    for (const file of files) {
+                                    for (let fi = 0; fi < files.length; fi++) {
+                                      const file = files[fi];
+                                      const batch = { current: fi + 1, total: files.length };
                                       if (file.type.startsWith("video/")) {
-                                        const url = await handleVideoUpload(file, "country", idx);
+                                        const url = await handleVideoUpload(file, "country", idx, batch);
                                         if (url) urls.push(url);
                                       } else {
-                                        const url = await handleImageUpload(file, "country", idx);
+                                        const url = await handleImageUpload(file, "country", idx, batch);
                                         if (url) urls.push(url);
                                       }
                                     }
@@ -1314,9 +1561,7 @@ export default function AdminProfilesPage() {
                                     }
                                   }}
                                 />
-                                {uploading?.field === "country" && uploading?.idx === idx && (
-                                  <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
-                                )}
+
                               </label>
                               {canPickFromMedia && (
                                 <Button
@@ -1443,7 +1688,20 @@ export default function AdminProfilesPage() {
                           </div>
                           <div className="flex items-center gap-2 flex-wrap">
                             <label className="px-2 py-1 bg-white/10 hover:bg-white/15 rounded-md text-xs font-medium transition-colors cursor-pointer whitespace-nowrap flex items-center gap-2">
-                              + Add Media
+                              {uploading?.field === "collection" && uploading?.idx === idx ? (
+                                <span className="inline-flex items-center gap-1.5">
+                                  {uploading.stage === "done" ? (
+                                    <span className="text-emerald-400">✓</span>
+                                  ) : (
+                                    <span className="w-3 h-3 border-2 border-white/20 border-t-white rounded-full animate-spin inline-block" />
+                                  )}
+                                  {uploading.stage === "processing"
+                                    ? `Processing${uploading.total && uploading.total > 1 ? ` ${uploading.current}/${uploading.total}` : ""}…`
+                                    : uploading.stage === "uploading"
+                                    ? `Uploading${uploading.total && uploading.total > 1 ? ` ${uploading.current}/${uploading.total}` : ""}…`
+                                    : `Uploaded${uploading.total && uploading.total > 1 ? ` ${uploading.total}/${uploading.total}` : ""}!`}
+                                </span>
+                              ) : "+ Add Media"}
                               <input
                                 type="file"
                                 accept="image/*,video/*"
@@ -1454,12 +1712,14 @@ export default function AdminProfilesPage() {
                                   if (files.length === 0) return;
                                   e.target.value = "";
                                   const urls: string[] = [];
-                                  for (const file of files) {
+                                  for (let fi = 0; fi < files.length; fi++) {
+                                    const file = files[fi];
+                                    const batch = { current: fi + 1, total: files.length };
                                     if (file.type.startsWith("video/")) {
-                                      const url = await handleVideoUpload(file, "collection", idx);
+                                      const url = await handleVideoUpload(file, "collection", idx, batch);
                                       if (url) urls.push(url);
                                     } else {
-                                      const url = await handleImageUpload(file, "collection", idx);
+                                      const url = await handleImageUpload(file, "collection", idx, batch);
                                       if (url) urls.push(url);
                                     }
                                   }
@@ -1473,9 +1733,7 @@ export default function AdminProfilesPage() {
                                   }
                                 }}
                               />
-                              {uploading?.field === "collection" && uploading?.idx === idx && (
-                                <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
-                              )}
+
                             </label>
                             {canPickFromMedia && (
                               <Button

@@ -3,6 +3,8 @@ import "server-only";
 import {
   PutObjectCommand,
   GetObjectCommand,
+  ListObjectsV2Command,
+  DeleteObjectCommand,
   S3Client,
 } from "@aws-sdk/client-s3";
 import { getLandingAssetsCdnBase } from "@/lib/landing-assets";
@@ -135,4 +137,55 @@ export async function writeJsonToR2(
       CacheControl: "no-cache",
     })
   );
+}
+
+/**
+ * List all object keys under a given prefix in R2.
+ */
+export async function listR2Objects(prefix: string): Promise<{ key: string; size: number; lastModified: Date }[]> {
+  const { client, bucketName } = getR2Client();
+  const results: { key: string; size: number; lastModified: Date }[] = [];
+  let continuationToken: string | undefined;
+
+  do {
+    const res = await client.send(
+      new ListObjectsV2Command({
+        Bucket: bucketName,
+        Prefix: prefix,
+        ContinuationToken: continuationToken,
+        MaxKeys: 1000,
+      })
+    );
+
+    for (const obj of res.Contents ?? []) {
+      if (obj.Key) {
+        results.push({
+          key: obj.Key,
+          size: obj.Size ?? 0,
+          lastModified: obj.LastModified ?? new Date(),
+        });
+      }
+    }
+
+    continuationToken = res.IsTruncated ? res.NextContinuationToken : undefined;
+  } while (continuationToken);
+
+  return results;
+}
+
+/**
+ * Delete objects from R2 by key.
+ */
+export async function deleteR2Objects(keys: string[]): Promise<number> {
+  const { client, bucketName } = getR2Client();
+  let deleted = 0;
+
+  for (const key of keys) {
+    await client.send(
+      new DeleteObjectCommand({ Bucket: bucketName, Key: key })
+    );
+    deleted++;
+  }
+
+  return deleted;
 }

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import path from "path";
 import { uploadProfileAsset } from "@/lib/r2-upload";
+import { compressImage } from "@/lib/image-compress";
 
 export const dynamic = "force-dynamic";
 
@@ -38,23 +38,44 @@ export async function POST(request: Request) {
     }
 
     const isVideo = file instanceof File && file.type.startsWith("video/");
-    const maxBytes = isVideo ? 50 * 1024 * 1024 : 5 * 1024 * 1024;
+    const isImage = file instanceof File && file.type.startsWith("image/");
+    const maxBytes = isVideo ? 50 * 1024 * 1024 : 20 * 1024 * 1024;
     if (buffer.length > maxBytes) {
       return NextResponse.json(
-        { error: isVideo ? "Video too large. Max 50MB." : "Image too large. Max 5MB." },
+        { error: isVideo ? "Video too large. Max 50MB." : "Image too large. Max 20MB." },
         { status: 400 }
       );
     }
 
-    const originalName = file instanceof File ? file.name : "upload.png";
-    const ext = path.extname(originalName) || ".png";
     const prefix = imageType || "profile";
-    const filename = `${prefix}-${Date.now()}${ext}`;
+    let uploadBuffer: Buffer = buffer;
+    let uploadContentType: string | undefined =
+      file instanceof File ? file.type : undefined;
+    let uploadFilename: string;
+
+    if (isImage) {
+      // ── Compress images before uploading ──
+      const mimeType = (file instanceof File ? file.type : "image/png");
+      const compressed = await compressImage(uploadBuffer, mimeType);
+      uploadBuffer = compressed.buffer;
+      uploadContentType = compressed.contentType;
+      uploadFilename = `${prefix}-${Date.now()}${compressed.ext}`;
+
+      console.log(
+        `[image-compress] ${prefix}: ${(buffer.length / 1024).toFixed(0)}KB → ${(uploadBuffer.length / 1024).toFixed(0)}KB (${((1 - uploadBuffer.length / buffer.length) * 100).toFixed(0)}% smaller)`
+      );
+    } else {
+      // Videos and other files pass through uncompressed
+      const originalName = file instanceof File ? file.name : "upload.bin";
+      const dotIdx = originalName.lastIndexOf(".");
+      const ext = dotIdx >= 0 ? originalName.slice(dotIdx) : ".bin";
+      uploadFilename = `${prefix}-${Date.now()}${ext}`;
+    }
 
     const uploaded = await uploadProfileAsset({
-      fileBuffer: buffer,
-      fileName: filename,
-      contentType: file instanceof File ? file.type : undefined,
+      fileBuffer: uploadBuffer,
+      fileName: uploadFilename,
+      contentType: uploadContentType,
     });
 
     return NextResponse.json({ url: uploaded.url }, { status: 201 });
