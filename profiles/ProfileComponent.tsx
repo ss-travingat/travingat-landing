@@ -2007,7 +2007,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
         </main>
       </div>
 
-      <div className="md:hidden fixed inset-x-2 bottom-6 z-40 rounded-full backdrop-blur-[6px] bg-[rgba(255,255,255,0.12)] border border-[rgba(255,255,255,0.1)] p-[8px] shadow-[0px_12px_12px_0px_rgba(0,0,0,0.12)] flex items-center overflow-clip">
+      <div className="md:hidden fixed inset-x-2 bottom-2 z-40 rounded-full backdrop-blur-[6px] bg-[rgba(255,255,255,0.12)] border border-[rgba(255,255,255,0.1)] p-[8px] shadow-[0px_12px_12px_0px_rgba(0,0,0,0.12)] flex items-center overflow-clip">
         <div className="flex gap-[8px] items-center w-full">
           <button onClick={() => setShowFollowModal(true)} className="flex-1 rounded-full bg-white text-black px-[18px] py-[10px] text-[16px] font-medium leading-[24px] tracking-[-0.096px]">Follow</button>
           <button className="h-[44px] w-[43px] shrink-0 rounded-full border border-[#353535] bg-[#1a1a1a] grid place-items-center text-white" aria-label="More options">
