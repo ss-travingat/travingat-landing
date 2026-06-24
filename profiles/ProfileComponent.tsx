@@ -1520,7 +1520,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                   </p>
                 </div>
               ) : (
-                <div className="columns-2 sm:columns-3 xl:columns-4 gap-5">
+                <div className="columns-2 sm:columns-3 xl:columns-4 gap-3 md:gap-5">
                   {allMediaItems.map((item, index) => {
                     const isMenuOpen = openContextMenuId === item.id;
                     const displayCountryCode = item.countryCode || profileFlagCode;
@@ -1536,9 +1536,9 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                     return (
                       <div
                         key={item.id}
-                        className="group mb-5 inline-block w-full break-inside-avoid relative [-webkit-column-break-inside:avoid]"
+                        className="group mb-3 md:mb-5 inline-block w-full break-inside-avoid relative [-webkit-column-break-inside:avoid]"
                       >
-                        <div className="relative overflow-hidden rounded-2xl bg-[#111]">
+                        <div className="relative overflow-hidden rounded-[12px] md:rounded-2xl bg-[#111]">
                           {item.isVideo ? (
                             <>
                               <video
@@ -1547,7 +1547,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                                 playsInline
                                 loop
                                 preload="metadata"
-                                className="w-full object-cover rounded-2xl"
+                                className="w-full object-cover rounded-[12px] md:rounded-2xl"
                                 onMouseEnter={(e) => e.currentTarget.play().catch(() => {})}
                                 onMouseLeave={(e) => { e.currentTarget.pause(); e.currentTarget.currentTime = 0; }}
                                 onClick={(event) => {
@@ -1572,7 +1572,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                                 alt="Uploaded media"
                                 loading="lazy"
                                 decoding="async"
-                                className="w-full object-cover rounded-2xl cursor-pointer"
+                                className="w-full object-cover rounded-[12px] md:rounded-2xl cursor-pointer"
                                 onClick={(event) => {
                                   event.preventDefault();
                                   event.stopPropagation();
