@@ -75,6 +75,7 @@ export default function LandingLayout({
 }>) {
   const pathname = usePathname();
   const isProfileRoute = Boolean(pathname?.startsWith("/profiles/"));
+  const isAdminLoginRoute = pathname === "/admin/login";
   const hideNavbar = false;
   // Show loader on first mount, hide after hydration + minimum display time
   const [loading, setLoading] = useState(true);
@@ -92,7 +93,7 @@ export default function LandingLayout({
       <div className="animate-page-in">
         {children}
       </div>
-      {isProfileRoute ? <ProfileFooter /> : <LandingFooter />}
+      {!isAdminLoginRoute && (isProfileRoute ? <ProfileFooter /> : <LandingFooter />)}
     </div>
   );
 }

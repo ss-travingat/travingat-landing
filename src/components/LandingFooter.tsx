@@ -8,9 +8,6 @@ export default function LandingFooter() {
           <div className="mb-10 xl:mb-8">
             <h2 className="ds-font-logo text-[32px] font-bold text-white mb-6">travingat</h2>
             <div className="space-y-2">
-              <a href="mailto:connect@travingat.com" className="block text-[14px] text-gray-400 hover:text-white transition-colors">
-                connect@travingat.com
-              </a>
               <a href="tel:+1826725005" className="block text-[14px] text-gray-400 hover:text-white transition-colors">
                 +1 826 725 005
               </a>
