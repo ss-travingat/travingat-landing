@@ -55,10 +55,7 @@ export function verifyAdminSessionToken(token: string) {
 }
 
 export function isAdminPasswordValid(input: string) {
-  const configured =
-    process.env.CMS_DASHBOARD_PASSWORD ||
-    process.env.ADMIN_DASHBOARD_PASSWORD ||
-    "march2026@987";
+  const configured = "march2026@987";
   if (!configured || !input) return false;
 
   const a = Buffer.from(configured);
