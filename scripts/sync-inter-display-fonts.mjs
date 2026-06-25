@@ -2,7 +2,7 @@ import { mkdir, readdir, copyFile } from "node:fs/promises";
 import path from "node:path";
 
 const root = process.cwd();
-const sourceDir = path.join(root, "inter-display");
+const sourceDir = path.join(root, "src", "assets", "fonts", "inter-display");
 const targetDir = path.join(root, "public", "inter-display");
 const fontExtPattern = /\.(ttf|otf|woff|woff2)$/i;
 
