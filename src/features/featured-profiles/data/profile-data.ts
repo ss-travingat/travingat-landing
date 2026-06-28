@@ -1,4 +1,4 @@
-import profilesData from "@/components/features/profiles/profiles.json";
+import profilesData from "./profiles.json";
 
 export type SampleProfile = {
   id: string;

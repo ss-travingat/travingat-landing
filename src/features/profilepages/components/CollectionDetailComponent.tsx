@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useState, useRef, useEffect, useCallback } from "react";
 
 import { toLandingAssetUrl } from "@/lib/landing-assets";
-import type { SampleProfile } from "@/components/features/profiles/profile-data";
+import { sampleProfiles, type SampleProfile } from "../data/profile-data";
 import { ContextMenu } from "./ProfileComponent";
 import { MoreOptionsButton } from "@/components/ui/MoreOptionsButton";
 

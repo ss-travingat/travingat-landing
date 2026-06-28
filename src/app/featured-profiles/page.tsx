@@ -1,5 +1,6 @@
 import LandingHeader from "@/components/LandingHeader";
-import { FeaturedProfiles, JoinSection } from "@/components/sections";
+import { JoinSection } from "@/components/sections";
+import { FeaturedProfiles } from "@/features/featured-profiles";
 
 export default function FeaturedProfilesPage() {
   return (

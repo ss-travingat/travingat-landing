@@ -3,7 +3,6 @@ export { default as OrganizeSection } from '@/components/sections/components/Org
 export { default as CollectionsSection } from '@/components/sections/components/CollectionsSection';
 export { default as WorldMapSection } from '@/components/sections/components/WorldMapSection';
 export { default as TestimonialSection } from '@/components/sections/components/TestimonialSection';
-export { default as FeaturedProfiles } from '@/components/sections/components/FeaturedProfiles';
 export { default as TemplatesSection } from '@/components/sections/components/TemplatesSection';
 export { default as PricingSection } from '@/components/sections/components/PricingSection';
 export { default as JoinSection } from '@/components/sections/components/JoinSection';

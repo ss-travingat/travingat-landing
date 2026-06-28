@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import LandingHeader from "@/components/LandingHeader";
 import LandingFooter from "@/components/LandingFooter";
-import ProfileFooter from "@/components/ProfileFooter";
+import { ProfileFooter } from "@/features/profilepages";
 
 // ── Plane-orbit loader overlay ────────────────────────────────────────────────
 function PageLoader({ visible }: { visible: boolean }) {

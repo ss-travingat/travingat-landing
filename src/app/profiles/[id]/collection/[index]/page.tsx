@@ -1,8 +1,8 @@
 import { notFound } from "next/navigation";
 
-import CollectionDetailComponent from "@/components/features/profiles/CollectionDetailComponent";
+import { CollectionDetailComponent } from "@/features/profilepages";
 import { readJsonFromR2 } from "@/lib/r2-upload";
-import type { SampleProfile } from "@/components/features/profiles/profile-data";
+import type { SampleProfile } from "@/features/profilepages";
 
 const R2_KEY = "landingpage-assets/data/profiles.json";
 

@@ -4,8 +4,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
-import { demoProfiles } from "@/data/demo-profiles";
-import { toLandingAssetUrl } from "@/lib/landing-assets";
+import { demoProfiles } from "./data/demo-profiles";
+import { toLandingAssetUrl } from "./lib/assets";
 
 type DemoProfile = (typeof demoProfiles)[0];
 

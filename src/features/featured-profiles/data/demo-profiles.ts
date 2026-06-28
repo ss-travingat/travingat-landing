@@ -1,4 +1,4 @@
-import { sampleProfiles } from "@/features/profilepages";
+import { sampleProfiles } from "./profile-data";
 
 export type DemoProfile = {
   id: string;

@@ -5,10 +5,10 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import type { MouseEvent as ReactMouseEvent } from "react";
 
 import { toLandingAssetUrl } from "@/lib/landing-assets";
-import { sampleProfiles, type SampleProfile } from "@/components/features/profiles/profile-data";
+import { sampleProfiles, type SampleProfile } from "../data/profile-data";
 import { MoreOptionsButton } from "@/components/ui/MoreOptionsButton";
 import { WaitlistPopup } from "@/components/ui/WaitlistPopup";
-import CardCarousel from "@/components/CardCarousel";
+import CardCarousel from "./CardCarousel";
 
 /* eslint-disable @next/next/no-img-element */
 
