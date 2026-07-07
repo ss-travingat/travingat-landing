@@ -73,7 +73,12 @@ export async function POST(request: Request) {
       );
     }
 
-    const profiles = await readProfiles();
+    let profiles: Profile[] = [];
+    try {
+      profiles = await readProfiles();
+    } catch (readErr) {
+      // Start with an empty array if profiles.json doesn't exist yet
+    }
     const newId = String(
       Math.max(0, ...profiles.map((p) => Number(p.id))) + 1
     ).padStart(3, "0");

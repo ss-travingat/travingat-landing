@@ -76,7 +76,12 @@ export async function PUT(
   try {
     const { id } = await params;
     const body = await request.json();
-    const profiles = await readProfiles();
+    let profiles: Profile[] = [];
+    try {
+      profiles = await readProfiles();
+    } catch {
+      // Profiles might not exist yet
+    }
     const index = profiles.findIndex((p) => p.id === id);
 
     if (index === -1) {
@@ -133,7 +138,12 @@ export async function DELETE(
 ) {
   try {
     const { id } = await params;
-    const profiles = await readProfiles();
+    let profiles: Profile[] = [];
+    try {
+      profiles = await readProfiles();
+    } catch {
+      // Profiles might not exist yet
+    }
     const filtered = profiles.filter((p) => p.id !== id);
 
     if (filtered.length === profiles.length) {
