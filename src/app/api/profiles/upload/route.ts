@@ -17,10 +17,10 @@ export async function POST(request: Request) {
       );
     }
 
-    const file = formData.get("file");
+    const file = formData.get("file") as File | null;
     const imageType = formData.get("type") as string | null; // "avatar", "cover", or "gallery"
 
-    if (!file || !(file instanceof Blob)) {
+    if (!file || typeof file !== "object" || typeof file.arrayBuffer !== "function") {
       return NextResponse.json(
         { error: "No valid file found in upload" },
         { status: 400 }
@@ -37,8 +37,8 @@ export async function POST(request: Request) {
       );
     }
 
-    const isVideo = file instanceof File && file.type.startsWith("video/");
-    const isImage = file instanceof File && file.type.startsWith("image/");
+    const isVideo = typeof file.type === "string" && file.type.startsWith("video/");
+    const isImage = typeof file.type === "string" && file.type.startsWith("image/");
     const maxBytes = isVideo ? 50 * 1024 * 1024 : 20 * 1024 * 1024;
     if (buffer.length > maxBytes) {
       return NextResponse.json(
@@ -49,13 +49,12 @@ export async function POST(request: Request) {
 
     const prefix = imageType || "profile";
     let uploadBuffer: Buffer = buffer;
-    let uploadContentType: string | undefined =
-      file instanceof File ? file.type : undefined;
+    let uploadContentType: string | undefined = file.type || undefined;
     let uploadFilename: string;
 
     if (isImage) {
       // ── Compress images before uploading ──
-      const mimeType = (file instanceof File ? file.type : "image/png");
+      const mimeType = file.type || "image/png";
       const compressed = await compressImage(uploadBuffer, mimeType);
       uploadBuffer = compressed.buffer;
       uploadContentType = compressed.contentType;
@@ -66,7 +65,7 @@ export async function POST(request: Request) {
       );
     } else {
       // Videos and other files pass through uncompressed
-      const originalName = file instanceof File ? file.name : "upload.bin";
+      const originalName = file.name || "upload.bin";
       const dotIdx = originalName.lastIndexOf(".");
       const ext = dotIdx >= 0 ? originalName.slice(dotIdx) : ".bin";
       uploadFilename = `${prefix}-${Date.now()}${ext}`;

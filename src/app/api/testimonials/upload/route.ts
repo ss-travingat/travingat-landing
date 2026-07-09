@@ -16,9 +16,9 @@ export async function POST(request: Request) {
     }
 
     const formData = await request.formData();
-    const file = formData.get("file");
+    const file = formData.get("file") as File | null;
 
-    if (!file || !(file instanceof Blob)) {
+    if (!file || typeof file !== "object" || typeof file.arrayBuffer !== "function") {
       return NextResponse.json(
         { error: "No valid file found in upload" },
         { status: 400 }
@@ -36,13 +36,13 @@ export async function POST(request: Request) {
     }
 
     // Generate unique filename
-    const originalName = file instanceof File ? file.name : "upload.png";
+    const originalName = file.name || "upload.png";
     const ext = path.extname(originalName) || ".png";
     const filename = `testimonial-${Date.now()}${ext}`;
     const uploaded = await uploadLandingAsset({
       fileBuffer: buffer,
       keySuffix: filename,
-      contentType: file instanceof File ? file.type : undefined,
+      contentType: file.type || undefined,
     });
 
     // Keep both keys for backward compatibility with existing admin UI.

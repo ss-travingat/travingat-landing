@@ -16,9 +16,9 @@ export async function POST(request: Request) {
     }
 
     const formData = await request.formData();
-    const file = formData.get("file");
+    const file = formData.get("file") as File | null;
 
-    if (!file || !(file instanceof Blob)) {
+    if (!file || typeof file !== "object" || typeof file.arrayBuffer !== "function") {
       return NextResponse.json(
         { error: "No valid file found in upload" },
         { status: 400 }
@@ -35,13 +35,13 @@ export async function POST(request: Request) {
       );
     }
 
-    const originalName = file instanceof File ? file.name : "upload.png";
+    const originalName = file.name || "upload.png";
     const ext = path.extname(originalName) || ".png";
     const filename = `blog-${Date.now()}${ext}`;
     const uploaded = await uploadBlogAsset({
       fileBuffer: buffer,
       fileName: filename,
-      contentType: file instanceof File ? file.type : undefined,
+      contentType: file.type || undefined,
     });
 
     return NextResponse.json({ url: uploaded.url }, { status: 201 });
