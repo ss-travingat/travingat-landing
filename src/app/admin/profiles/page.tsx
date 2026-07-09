@@ -7,6 +7,7 @@ import { toLandingAssetUrl } from "@/lib/landing-assets";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
+import imageCompression from "browser-image-compression";
 
 interface CountryImage {
   countryCode: string;
@@ -671,22 +672,42 @@ export default function AdminProfilesPage() {
     formData.append("type", type);
 
     try {
-      const res = await fetch("/api/profiles/upload", {
+      // 1. Request presigned URL
+      const presignRes = await fetch("/api/upload/presign", {
         method: "POST",
-        body: formData,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          fileName: file.name,
+          fileType: file.type,
+          prefix: "profiles",
+        }),
       });
-      const data = await res.json();
-      if (!res.ok) {
-        showToast(data.error || "Upload failed", true);
+      const presignData = await presignRes.json();
+      if (!presignRes.ok) {
+        showToast(presignData.error || "Failed to get upload URL", true);
         return null;
       }
+      
+      const { uploadUrl, publicUrl } = presignData;
+
+      // 2. Upload file directly to R2
+      const uploadRes = await fetch(uploadUrl, {
+        method: "PUT",
+        headers: { "Content-Type": file.type },
+        body: file,
+      });
+      if (!uploadRes.ok) {
+        showToast("Direct upload to R2 failed", true);
+        return null;
+      }
+
       const isLastInBatch = !batch || batch.current === batch.total;
       if (isLastInBatch) {
         setUploading((prev) => prev ? { ...prev, stage: "done" } : null);
         await new Promise((r) => setTimeout(r, 800));
       }
       showToast("Video uploaded");
-      return data.url as string;
+      return publicUrl;
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Network error";
       showToast(`Upload failed: ${msg}`, true);
@@ -718,22 +739,50 @@ export default function AdminProfilesPage() {
 
     try {
       setUploading((prev) => prev ? { ...prev, stage: "uploading" } : null);
-      const res = await fetch("/api/profiles/upload", {
-        method: "POST",
-        body: formData,
+
+      // 1. Compress image client-side
+      const compressedFile = await imageCompression(file, {
+        maxSizeMB: 5,
+        maxWidthOrHeight: 2048,
+        useWebWorker: true,
       });
-      const data = await res.json();
-      if (!res.ok) {
-        showToast(data.error || "Upload failed", true);
+
+      // 2. Request presigned URL
+      const presignRes = await fetch("/api/upload/presign", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          fileName: compressedFile.name,
+          fileType: compressedFile.type,
+          prefix: "profiles",
+        }),
+      });
+      const presignData = await presignRes.json();
+      if (!presignRes.ok) {
+        showToast(presignData.error || "Failed to get upload URL", true);
         return null;
       }
+      
+      const { uploadUrl, publicUrl } = presignData;
+
+      // 3. Upload file directly to R2
+      const uploadRes = await fetch(uploadUrl, {
+        method: "PUT",
+        headers: { "Content-Type": compressedFile.type },
+        body: compressedFile,
+      });
+      if (!uploadRes.ok) {
+        showToast("Direct upload to R2 failed", true);
+        return null;
+      }
+
       const isLastInBatch = !batch || batch.current === batch.total;
       if (isLastInBatch) {
         setUploading((prev) => prev ? { ...prev, stage: "done" } : null);
         await new Promise((r) => setTimeout(r, 800));
       }
       showToast(`${type.charAt(0).toUpperCase() + type.slice(1)} image uploaded`);
-      return data.url as string;
+      return publicUrl;
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Network error";
       showToast(`Upload failed: ${msg}`, true);

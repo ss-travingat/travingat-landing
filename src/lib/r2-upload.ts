@@ -7,6 +7,7 @@ import {
   DeleteObjectCommand,
   S3Client,
 } from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { getLandingAssetsCdnBase } from "@/lib/landing-assets";
 
 function requireEnv(name: string): string {
@@ -71,6 +72,37 @@ export async function uploadLandingAsset(params: {
   return {
     key: objectKey,
     url: `${cdnBase}/${cleanSuffix}`,
+  };
+}
+
+/**
+ * Generate a presigned URL for direct upload to R2 from the browser.
+ */
+export async function generatePresignedUrl(params: {
+  keySuffix: string;
+  contentType: string;
+}): Promise<{ uploadUrl: string; publicUrl: string }> {
+  const { keySuffix, contentType } = params;
+  const { client, bucketName } = getR2Client();
+
+  const cleanSuffix = keySuffix.replace(/^\/+/, "");
+  const objectKey = `landingpage-assets/${cleanSuffix}`;
+
+  const command = new PutObjectCommand({
+    Bucket: bucketName,
+    Key: objectKey,
+    ContentType: contentType,
+    CacheControl: "public, max-age=31536000, immutable",
+  });
+
+  // URL expires in 15 minutes
+  // @ts-expect-error aws-sdk version mismatch workaround
+  const uploadUrl = await getSignedUrl(client, command, { expiresIn: 900 });
+  const cdnBase = getLandingAssetsCdnBase();
+
+  return {
+    uploadUrl,
+    publicUrl: `${cdnBase}/${cleanSuffix}`,
   };
 }
 

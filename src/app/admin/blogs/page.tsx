@@ -7,6 +7,7 @@ import ImageCropModal from "@/components/ImageCropModal";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
+import imageCompression from "browser-image-compression";
 
 interface BlogPost {
   id: string;
@@ -97,13 +98,42 @@ export default function AdminBlogsPage() {
 
   // Upload a blob to the blog upload endpoint
   const uploadBlob = async (blob: Blob, prefix: string): Promise<string | null> => {
-    const fd = new FormData();
-    fd.append("file", blob, `${prefix}-${Date.now()}.jpg`);
     try {
-      const res = await fetch("/api/blogs/upload", { method: "POST", body: fd });
-      const data = await res.json();
-      if (data.url) return data.url;
-      showToast(data.error || "Upload failed");
+      showToast("Compressing image...");
+      const file = new File([blob], `${prefix}-${Date.now()}.jpg`, { type: "image/jpeg" });
+      const compressedFile = await imageCompression(file, {
+        maxSizeMB: 5,
+        maxWidthOrHeight: 2048,
+        useWebWorker: true,
+      });
+
+      const presignRes = await fetch("/api/upload/presign", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          fileName: compressedFile.name,
+          fileType: compressedFile.type,
+          prefix: "blogs",
+        }),
+      });
+      const presignData = await presignRes.json();
+      if (!presignRes.ok) {
+        showToast(presignData.error || "Failed to get upload URL");
+        return null;
+      }
+      
+      const { uploadUrl, publicUrl } = presignData;
+
+      const uploadRes = await fetch(uploadUrl, {
+        method: "PUT",
+        headers: { "Content-Type": compressedFile.type },
+        body: compressedFile,
+      });
+      if (!uploadRes.ok) {
+        showToast("Direct upload to R2 failed");
+        return null;
+      }
+      return publicUrl;
     } catch {
       showToast("Upload failed");
     }

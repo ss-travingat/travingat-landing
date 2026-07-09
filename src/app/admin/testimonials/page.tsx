@@ -6,6 +6,7 @@ import { toLandingAssetUrl } from "@/lib/landing-assets";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
+import imageCompression from "browser-image-compression";
 
 interface Testimonial {
   id: string;
@@ -76,23 +77,43 @@ export default function AdminTestimonialsPage() {
       return;
     }
 
-    const formData = new FormData();
-    formData.append("file", file);
-
     try {
-      const res = await fetch("/api/testimonials/upload", {
-        method: "POST",
-        body: formData,
+      showToast("Compressing image...");
+      const compressedFile = await imageCompression(file, {
+        maxSizeMB: 5,
+        maxWidthOrHeight: 2048,
+        useWebWorker: true,
       });
-      const data = await res.json();
-      if (!res.ok) {
-        showToast(data.error || "Upload failed");
+
+      const presignRes = await fetch("/api/upload/presign", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          fileName: compressedFile.name,
+          fileType: compressedFile.type,
+          prefix: "testimonials",
+        }),
+      });
+      const presignData = await presignRes.json();
+      if (!presignRes.ok) {
+        showToast(presignData.error || "Failed to get upload URL");
         return;
       }
-      if (data.path) {
-        setForm((prev) => ({ ...prev, photo: toLandingAssetUrl(data.path) }));
-        showToast("Photo uploaded");
+      
+      const { uploadUrl, publicUrl } = presignData;
+
+      const uploadRes = await fetch(uploadUrl, {
+        method: "PUT",
+        headers: { "Content-Type": compressedFile.type },
+        body: compressedFile,
+      });
+      if (!uploadRes.ok) {
+        showToast("Direct upload to R2 failed");
+        return;
       }
+      
+      setForm((prev) => ({ ...prev, photo: toLandingAssetUrl(publicUrl) }));
+      showToast("Photo uploaded");
     } catch (err) {
       console.error("Upload error:", err);
       showToast("Failed to upload photo — check console for details");
