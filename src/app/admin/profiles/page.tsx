@@ -1324,14 +1324,23 @@ export default function AdminProfilesPage() {
                     Cover Image
                   </label>
                   <div className="flex items-center gap-4">
-                    <div className="w-32 h-20 rounded-lg overflow-hidden bg-white/5 shrink-0 relative">
+                    <div className="w-32 h-20 rounded-lg overflow-hidden bg-white/5 shrink-0 relative group">
                       {form.images.cover ? (
-                        <Image
-                          src={toLandingAssetUrl(form.images.cover)}
-                          alt="Cover"
-                          fill
-                          className="object-cover"
-                        />
+                        <>
+                          <Image
+                            src={toLandingAssetUrl(form.images.cover)}
+                            alt="Cover"
+                            fill
+                            className="object-cover"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setForm(prev => ({ ...prev, images: { ...prev.images, cover: "" } }))}
+                            className="absolute top-0.5 right-0.5 w-5 h-5 bg-black/70 rounded-full text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500 cursor-pointer text-white"
+                          >
+                            ×
+                          </button>
+                        </>
                       ) : (
                         <div className="w-full h-full flex items-center justify-center text-white/20 text-xs">
                           No cover
@@ -1377,14 +1386,23 @@ export default function AdminProfilesPage() {
                     Avatar
                   </label>
                   <div className="flex items-center gap-4">
-                    <div className="w-16 h-16 rounded-xl overflow-hidden bg-white/5 shrink-0 relative">
+                    <div className="w-16 h-16 rounded-xl overflow-hidden bg-white/5 shrink-0 relative group">
                       {form.images.avatar ? (
-                        <Image
-                          src={toLandingAssetUrl(form.images.avatar)}
-                          alt="Avatar"
-                          fill
-                          className="object-cover"
-                        />
+                        <>
+                          <Image
+                            src={toLandingAssetUrl(form.images.avatar)}
+                            alt="Avatar"
+                            fill
+                            className="object-cover"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setForm(prev => ({ ...prev, images: { ...prev.images, avatar: "" } }))}
+                            className="absolute top-0.5 right-0.5 w-5 h-5 bg-black/70 rounded-full text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500 cursor-pointer text-white"
+                          >
+                            ×
+                          </button>
+                        </>
                       ) : (
                         <div className="w-full h-full flex items-center justify-center text-white/20 text-xs">
                           No avatar
