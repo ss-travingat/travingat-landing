@@ -23,6 +23,7 @@ function TravellerCard({ profile }: { profile: DemoProfile }) {
               src={toLandingAssetUrl(profile.images.cover)}
               alt={`${profile.name} cover`}
               fill
+              quality={60}
               className="object-cover"
               sizes="(min-width: 1280px) 360px, 240px"
             />
@@ -32,6 +33,7 @@ function TravellerCard({ profile }: { profile: DemoProfile }) {
               src={toLandingAssetUrl(profile.images.avatar)}
               alt={profile.name}
               fill
+              quality={60}
               className="object-cover"
               sizes="(min-width: 1280px) 80px, 53px"
             />
