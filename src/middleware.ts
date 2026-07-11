@@ -45,6 +45,14 @@ async function verifyAdminSessionTokenEdge(token: string) {
 export async function middleware(req: NextRequest) {
   const url = req.nextUrl;
   
+  const isAdminRoute = url.pathname.startsWith('/admin');
+  const isAdminApiRoute = url.pathname.startsWith('/api/admin');
+  
+  // Allow access to public routes
+  if (!isAdminRoute && !isAdminApiRoute) {
+    return NextResponse.next();
+  }
+
   // Allow access to the login page and admin API routes
   if (
     url.pathname === '/admin/login' || 
