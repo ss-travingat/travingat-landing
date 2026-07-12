@@ -2,7 +2,7 @@
 
 import { type MouseEvent, useEffect, useRef, useState, Suspense } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 
 function LandingHeaderContent() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -11,7 +11,17 @@ function LandingHeaderContent() {
   const onboardingUrl = "https://app.travingat.com/";
   
   const searchParams = useSearchParams();
+  const pathname = usePathname();
   const hasImage = searchParams?.has("image");
+  const isProfileRoute = Boolean(pathname?.startsWith("/profiles/"));
+
+  const containerClasses = isProfileRoute
+    ? "mx-auto w-full max-w-[1728px] px-[12px] min-[810px]:px-[32px] min-[1200px]:px-[48px] min-[1440px]:px-[64px]"
+    : "mx-auto w-full max-w-432 px-5 md:px-8 xl:px-24";
+
+  const mobileNavContainerClasses = isProfileRoute
+    ? "mx-auto w-full max-w-[1728px] px-[12px] min-[810px]:px-[32px]"
+    : "mx-auto w-full max-w-432 px-5 md:px-8";
 
   useEffect(() => {
     const onScroll = () => {
@@ -46,7 +56,7 @@ function LandingHeaderContent() {
 
   return (
     <header className={`fixed top-0 left-0 right-0 z-50 bg-black/90 backdrop-blur transition-transform duration-300 ${visible ? "translate-y-0" : "-translate-y-full"}`}>
-      <div className="mx-auto w-full max-w-432 px-5 md:px-8 xl:px-24">
+      <div className={containerClasses}>
         <div className="h-23 xl:h-33 flex items-center justify-between relative">
           <div className="flex-1 flex items-center justify-start">
             <Link href="/" className="ds-font-logo text-white text-[28px] font-normal leading-none tracking-[0.2px]">
@@ -126,7 +136,7 @@ function LandingHeaderContent() {
       </div>
 
       <nav
-        className={`mx-auto w-full max-w-432 overflow-hidden px-5 md:px-8 min-[811px]:hidden transition-all duration-300 ${menuOpen ? "max-h-105 pb-5 opacity-100" : "max-h-0 pb-0 opacity-0"
+        className={`${mobileNavContainerClasses} overflow-hidden min-[811px]:hidden transition-all duration-300 ${menuOpen ? "max-h-105 pb-5 opacity-100" : "max-h-0 pb-0 opacity-0"
           }`}
       >
         <div
