@@ -13,8 +13,8 @@ interface CompressResult {
  * Compress an image buffer before uploading to R2.
  *
  * Strategy:
- * - Converts all raster images (JPEG, PNG, AVIF, TIFF, etc.) to WebP for best
- *   size-to-quality ratio.
+ * - Converts all raster images (JPEG, PNG, WEBP, TIFF, etc.) to AVIF with
+ *   optimized lossy compression for best size-to-quality ratio.
  * - SVG and GIF files are returned as-is (SVGs are already tiny; GIFs may be
  *   animated and sharp would flatten them).
  * - Resizes images that exceed `maxDimension` on either axis while preserving
@@ -44,8 +44,6 @@ export async function compressImage(
     return { buffer: fileBuffer, contentType: mimeType, ext };
   }
 
-  const isAvif = mimeType === "image/avif";
-
   let pipeline = sharp(fileBuffer)
     // Auto-rotate based on EXIF orientation, then strip all metadata
     .rotate()
@@ -54,19 +52,15 @@ export async function compressImage(
       height: maxDimension,
       fit: "inside",
       withoutEnlargement: true, // never upscale
-    });
-
-  if (isAvif) {
-    pipeline = pipeline.avif({ lossless: true });
-  } else {
-    pipeline = pipeline.webp({ lossless: true });
-  }
+    })
+    // Convert to AVIF with optimized lossy compression
+    .avif({ quality: 65, effort: 4 });
 
   const outputBuffer = await pipeline.toBuffer();
 
   return {
     buffer: Buffer.from(outputBuffer),
-    contentType: isAvif ? "image/avif" : "image/webp",
-    ext: isAvif ? ".avif" : ".webp",
+    contentType: "image/avif",
+    ext: ".avif",
   };
 }

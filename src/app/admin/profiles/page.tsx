@@ -740,39 +740,13 @@ export default function AdminProfilesPage() {
     try {
       setUploading((prev) => prev ? { ...prev, stage: "uploading" } : null);
 
-      // 1. Compress image client-side
-      const compressedFile = await imageCompression(file, {
-        maxSizeMB: 5,
-        maxWidthOrHeight: 2048,
-        useWebWorker: true,
-      });
-
-      // 2. Request presigned URL
-      const presignRes = await fetch("/api/upload/presign", {
+      const uploadRes = await fetch("/api/profiles/upload", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          fileName: compressedFile.name,
-          fileType: compressedFile.type,
-          prefix: "profiles",
-        }),
+        body: formData,
       });
-      const presignData = await presignRes.json();
-      if (!presignRes.ok) {
-        showToast(presignData.error || "Failed to get upload URL", true);
-        return null;
-      }
-      
-      const { uploadUrl, publicUrl } = presignData;
-
-      // 3. Upload file directly to R2
-      const uploadRes = await fetch(uploadUrl, {
-        method: "PUT",
-        headers: { "Content-Type": compressedFile.type },
-        body: compressedFile,
-      });
+      const data = await uploadRes.json();
       if (!uploadRes.ok) {
-        showToast("Direct upload to R2 failed", true);
+        showToast(data.error || "Upload failed", true);
         return null;
       }
 
@@ -782,7 +756,7 @@ export default function AdminProfilesPage() {
         await new Promise((r) => setTimeout(r, 800));
       }
       showToast(`${type.charAt(0).toUpperCase() + type.slice(1)} image uploaded`);
-      return publicUrl;
+      return data.url;
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Network error";
       showToast(`Upload failed: ${msg}`, true);
