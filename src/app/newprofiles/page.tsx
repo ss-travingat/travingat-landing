@@ -2,10 +2,13 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { demoProfiles } from "@/data/demo-profiles";
+import type { DemoProfile } from "@/data/demo-profiles";
 import { toLandingAssetUrl } from "@/lib/landing-assets";
+import { readJsonFromR2 } from "@/lib/r2-upload";
 import JoinSection from "@/components/sections/components/JoinSection";
 
-type DemoProfile = (typeof demoProfiles)[0];
+export const dynamic = "force-dynamic";
+const R2_KEY = "landingpage-assets/data/profiles.json";
 
 function toFlagAssetPath(flagCode: string) {
   return `/flags/${flagCode.toUpperCase()}.svg`;
@@ -97,11 +100,24 @@ function TravellerCard({ profile }: { profile: DemoProfile }) {
   );
 }
 
-const profilesForGrid = Array.from({ length: 12 }, (_, index) => {
-  return demoProfiles[index % demoProfiles.length];
-});
+export default async function NewProfilesPage() {
+  let fetchedProfiles: DemoProfile[] = [];
+  try {
+    fetchedProfiles = await readJsonFromR2<DemoProfile[]>(R2_KEY);
+    // Reverse to show newest first
+    fetchedProfiles = fetchedProfiles.reverse();
+  } catch (e) {
+    console.error("Failed to fetch profiles from R2:", e);
+  }
 
-export default function NewProfilesPage() {
+  // Combine fetched profiles with demo profiles as fallback
+  const allProfiles = fetchedProfiles.length > 0 ? fetchedProfiles : demoProfiles;
+  
+  // Create a grid, repeating if necessary to fill space
+  const profilesForGrid = Array.from({ length: Math.max(12, allProfiles.length) }, (_, index) => {
+    return allProfiles[index % allProfiles.length];
+  });
+
   return (
     <main>
       <section id="featured" className="px-3 pb-16 pt-16 md:px-12 md:pb-20 md:pt-20 xl:px-24 xl:pb-24 xl:pt-16">
