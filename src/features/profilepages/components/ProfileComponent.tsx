@@ -1420,8 +1420,8 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
 
             {/* Cover image — maintains exact aspect ratio */}
             <div className="w-full max-w-[48%] lg:max-w-[520px] xl:max-w-[640px] shrink-0">
-              <div className="relative w-full max-w-[640px] shrink-0 overflow-hidden rounded-3xl lg:rounded-[32px] xl:rounded-[32px] aspect-[640/662]">
-                <img src={toLandingAssetUrl(profile.images.cover)} alt="Profile cover" loading="lazy" decoding="async" className="absolute inset-0 w-full h-full object-cover rounded-[32px]" />
+              <div className="relative w-full max-w-[640px] shrink-0 overflow-hidden rounded-3xl lg:rounded-[24px] xl:rounded-[32px] aspect-[640/662]">
+                <img src={toLandingAssetUrl(profile.images.cover)} alt="Profile cover" loading="lazy" decoding="async" className="absolute inset-0 w-full h-full object-cover rounded-3xl lg:rounded-[24px] xl:rounded-[32px]" />
               </div>
             </div>
           </section>
