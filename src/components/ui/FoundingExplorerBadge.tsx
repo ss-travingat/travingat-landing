@@ -76,8 +76,8 @@ function colorWithOpacity(color: string, opacity: number) {
 
 export default function FoundingExplorer(props: FoundingExplorerProps) {
     const {
-        outerRotationDuration = 18,
-        innerRotationDuration = 10,
+        outerRotationDuration = 30,
+        innerRotationDuration = 20,
         outerRotationEnabled = true,
         innerRotationEnabled = true,
         startOnHoverOnly = false,
