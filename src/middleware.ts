@@ -50,6 +50,7 @@ export async function middleware(req: NextRequest) {
     url.pathname === '/admin/login' || 
     url.pathname.startsWith('/api/admin/login') ||
     url.pathname.startsWith('/api/cms/login') ||
+    url.pathname.startsWith('/designsystem') ||
     url.pathname.startsWith('/_next')
   ) {
     return NextResponse.next();

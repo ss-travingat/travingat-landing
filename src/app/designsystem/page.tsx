@@ -7,6 +7,8 @@ import ColorPaletteShowcase from "@/components/designsystem/ColorPaletteShowcase
 import ButtonShowcase from "@/components/designsystem/ButtonShowcase";
 import TabsShowcase from "@/components/designsystem/TabsShowcase";
 import TooltipShowcase from "@/components/designsystem/TooltipShowcase";
+
+import BadgeShowcase from "@/components/designsystem/BadgeShowcase";
 import MoreOptionsButtonShowcase from "@/components/designsystem/MoreOptionsButtonShowcase";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
@@ -14,6 +16,7 @@ import { Text } from "@/components/ui/Text";
 import { Textarea } from "@/components/ui/Textarea";
 import { WaitlistPopup } from "@/components/ui/WaitlistPopup";
 import { WaitlistBar } from "@/components/ui/waitlistbar";
+import { Badge } from "@/components/ui/Badge";
 
 export default function DesignSystemPage() {
   const [isWaitlistOpen, setIsWaitlistOpen] = useState(false);
@@ -42,6 +45,7 @@ export default function DesignSystemPage() {
       <MoreOptionsButtonShowcase />
       <TabsShowcase />
       <TooltipShowcase />
+      <BadgeShowcase />
 
       <section className="px-3 py-10 md:px-10 md:py-14 xl:px-24 xl:py-16">
         <div className="ds-shell overflow-hidden bg-[#0f1116] p-5 md:p-8 xl:p-10">
@@ -126,6 +130,23 @@ export default function DesignSystemPage() {
                   placeholder="Textarea (lg)"
                   className="border border-white-900 bg-black"
                 />
+              </div>
+            </div>
+
+            <div className="rounded-2xl border border-[#1c212c] bg-[#0b0d13] p-6">
+              <h3 className="ds-font-display mb-4 text-[26px] font-semibold text-white">Badges</h3>
+              <div className="flex flex-col gap-6">
+                <div>
+                  <p className="ds-font-body mb-3 text-[13px] font-semibold uppercase tracking-[0.12em] text-[#7e889c]">UI Badges</p>
+                  <div className="flex flex-wrap gap-3">
+                    <Badge variant="default">Default</Badge>
+                    <Badge variant="secondary">Secondary</Badge>
+                    <Badge variant="destructive">Destructive</Badge>
+                    <Badge variant="outline">Outline</Badge>
+                    <Badge variant="violet">Violet</Badge>
+                    <Badge variant="cyan">Cyan</Badge>
+                  </div>
+                </div>
               </div>
             </div>
 
