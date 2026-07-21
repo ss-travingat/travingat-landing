@@ -1905,9 +1905,6 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                     <p className="text-[#989898] text-[14px] font-normal leading-5 tracking-[-0.084px]">Username</p>
                     <div className="flex items-center gap-2">
                       <p className="ds-font-display text-white text-[18px] font-medium leading-6.5 tracking-[-0.198px]">{handle}</p>
-                      <button type="button" aria-label="Edit username" className="text-[#989898] hover:text-white transition">
-                        <span className="material-symbols-rounded text-[18px]">edit</span>
-                      </button>
                     </div>
                     <p className="text-[#656565] text-[14px] truncate tracking-[-0.41px]">travingat.com/{handle.replace(/^@/, "")}</p>
                   </div>
