@@ -9,6 +9,7 @@ import TabsShowcase from "@/components/designsystem/TabsShowcase";
 import TooltipShowcase from "@/components/designsystem/TooltipShowcase";
 
 import BadgeShowcase from "@/components/designsystem/BadgeShowcase";
+import FoundingExplorer from "@/components/ui/FoundingExplorerBadge";
 import MoreOptionsButtonShowcase from "@/components/designsystem/MoreOptionsButtonShowcase";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
@@ -145,6 +146,13 @@ export default function DesignSystemPage() {
                     <Badge variant="outline">Outline</Badge>
                     <Badge variant="violet">Violet</Badge>
                     <Badge variant="cyan">Cyan</Badge>
+                  </div>
+                </div>
+
+                <div>
+                  <p className="ds-font-body mb-3 text-[13px] font-semibold uppercase tracking-[0.12em] text-[#7e889c]">Animated Badges</p>
+                  <div className="w-[152px] h-[152px]">
+                    <FoundingExplorer />
                   </div>
                 </div>
               </div>
