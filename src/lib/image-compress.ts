@@ -24,6 +24,14 @@ interface CompressResult {
  * @param mimeType    Original MIME type (e.g. "image/png")
  * @param opts        Optional overrides
  */
+let sharp: any;
+try {
+  // @ts-ignore
+  sharp = require("sharp");
+} catch (e) {
+  console.error("Failed to load sharp at module level:", e);
+}
+
 export async function compressImage(
   fileBuffer: Buffer,
   mimeType: string,
@@ -31,7 +39,9 @@ export async function compressImage(
     maxDimension?: number;
   }
 ): Promise<CompressResult> {
-  const sharp = (await import("sharp")).default;
+  if (!sharp) {
+    throw new Error("sharp is not available. Please ensure native dependencies are installed on Vercel.");
+  }
   const maxDimension = opts?.maxDimension ?? 2048;
 
   // Skip compression for non-raster or animated formats
