@@ -1,6 +1,5 @@
 import "server-only";
 
-import sharp from "sharp";
 
 interface CompressResult {
   buffer: Buffer;
@@ -29,10 +28,10 @@ export async function compressImage(
   fileBuffer: Buffer,
   mimeType: string,
   opts?: {
-    /** Max width or height — images larger than this are down-scaled. Default 2048. */
     maxDimension?: number;
   }
 ): Promise<CompressResult> {
+  const sharp = (await import("sharp")).default;
   const maxDimension = opts?.maxDimension ?? 2048;
 
   // Skip compression for non-raster or animated formats

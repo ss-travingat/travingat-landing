@@ -733,8 +733,21 @@ export default function AdminProfilesPage() {
     }
 
     setUploading({ field: type, stage: "processing", idx, current: batch?.current, total: batch?.total });
+    
+    let compressedFile = file;
+    try {
+      compressedFile = await imageCompression(file, {
+        maxSizeMB: 2, // Keep well under Vercel's 4.5MB limit
+        maxWidthOrHeight: 2048,
+        useWebWorker: true,
+        fileType: "image/webp",
+      });
+    } catch (compressErr) {
+      console.error("Compression failed, using original", compressErr);
+    }
+
     const formData = new FormData();
-    formData.append("file", file);
+    formData.append("file", compressedFile);
     formData.append("type", type);
 
     try {
@@ -1497,7 +1510,18 @@ export default function AdminProfilesPage() {
                             const url = await handleVideoUpload(file, "about", undefined, batch);
                             if (url) uploadedUrls.push(url);
                           } else {
-                            const url = await handleImageUpload(file, "about", undefined, batch);
+                            let compressedFile = file;
+                            try {
+                              compressedFile = await imageCompression(file, {
+                                maxSizeMB: 2,
+                                maxWidthOrHeight: 2048,
+                                useWebWorker: true,
+                                fileType: "image/webp",
+                              });
+                            } catch (compressErr) {
+                              console.error("Compression failed, using original", compressErr);
+                            }
+                            const url = await handleImageUpload(compressedFile as File, "about", undefined, batch);
                             if (url) uploadedUrls.push(url);
                           }
                         }
