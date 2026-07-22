@@ -16,7 +16,7 @@ export async function generateStaticParams() {
     for (const profile of profiles) {
       if (profile.countryImages) {
         for (const ci of profile.countryImages) {
-          params.push({ id: profile.id, code: ci.countryCode.toUpperCase() });
+          params.push({ id: profile.handle.replace(/^@/, ""), code: ci.countryCode.toUpperCase() });
         }
       }
     }
@@ -40,7 +40,8 @@ export default async function CountryDetailPage({
     notFound();
   }
 
-  const profile = profiles.find((p) => p.id === id);
+  const decodedId = decodeURIComponent(id);
+  const profile = profiles.find((p) => p.handle.replace(/^@/, "") === decodedId);
 
   if (!profile) {
     notFound();

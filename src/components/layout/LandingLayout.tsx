@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import LandingHeader from "@/components/LandingHeader";
 import LandingFooter from "@/components/LandingFooter";
-import { ProfileFooter } from "@/features/profilepages";
 
 // ── Plane-orbit loader overlay ────────────────────────────────────────────────
 function PageLoader({ visible }: { visible: boolean }) {
@@ -93,7 +92,7 @@ export default function LandingLayout({
       <div className="animate-page-in">
         {children}
       </div>
-      {!isAdminLoginRoute && (isProfileRoute ? <ProfileFooter /> : <LandingFooter />)}
+      {!isAdminLoginRoute && !isProfileRoute && <LandingFooter />}
     </div>
   );
 }

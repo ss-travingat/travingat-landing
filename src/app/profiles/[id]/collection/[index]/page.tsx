@@ -16,7 +16,7 @@ export async function generateStaticParams() {
     for (const profile of profiles) {
       if (profile.collectionImages) {
         profile.collectionImages.forEach((_, i) => {
-          params.push({ id: profile.id, index: String(i) });
+          params.push({ id: profile.handle.replace(/^@/, ""), index: String(i) });
         });
       }
     }
@@ -40,7 +40,8 @@ export default async function CollectionDetailPage({
     notFound();
   }
 
-  const profile = profiles.find((p) => p.id === id);
+  const decodedId = decodeURIComponent(id);
+  const profile = profiles.find((p) => p.handle.replace(/^@/, "") === decodedId);
 
   if (!profile) {
     notFound();

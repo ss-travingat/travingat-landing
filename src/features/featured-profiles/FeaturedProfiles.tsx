@@ -279,7 +279,7 @@ export default function FeaturedProfiles() {
             return (
               <Link
                 key={`${profile.id}-${index}`}
-                href={`/profiles/${profile.id}`}
+                href={`/profiles/${profile.handle.replace(/^@/, "")}`}
                 aria-label={`Open ${profile.name} profile`}
                 className={`flex h-97.5 shrink-0 flex-col items-center xl:h-150 ${
                   isCardUp ? "justify-start" : "justify-end"

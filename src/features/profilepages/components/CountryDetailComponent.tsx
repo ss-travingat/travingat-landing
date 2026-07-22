@@ -567,7 +567,7 @@ export default function CountryDetailComponent({
               <div className="h-[20px] w-[20px] overflow-hidden rounded-[6px] shrink-0">
                 <img src={toLandingAssetUrl(profile.images.avatar)} alt={profile.name} className="w-full h-full object-cover" />
               </div>
-              <Link href={`/profiles/${profile.id}`} className="text-[16px] text-white leading-[24px] tracking-[-0.096px] font-normal hover:underline">
+              <Link href={`/profiles/${profile.handle.replace(/^@/, "")}`} className="text-[16px] text-white leading-[24px] tracking-[-0.096px] font-normal hover:underline">
                 {profile.handle}
               </Link>
             </div>
@@ -597,7 +597,7 @@ export default function CountryDetailComponent({
                   kind="country"
                   viewLabel="View country"
                   shareLabel="Share country"
-                  viewHref={`/profiles/${profile.id}`}
+                  viewHref={`/profiles/${profile.handle.replace(/^@/, "")}`}
                   showViewAction={false}
                   onShare={() => {
                     navigator.clipboard.writeText(window.location.href).catch(() => {});

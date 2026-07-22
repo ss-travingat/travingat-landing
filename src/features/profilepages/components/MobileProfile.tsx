@@ -139,7 +139,7 @@ export function MobileHero({
   flagOverflowCount,
 }: MobileHeroProps) {
   return (
-    <section className="min-[811px]:hidden space-y-[12px] flex flex-col items-center w-full">
+    <section id="profile-mobile-hero" className="min-[811px]:hidden space-y-[12px] flex flex-col items-center w-full">
       <div className="flex flex-col items-center gap-[20px] rounded-[24px] w-full relative">
         <MobileProfileNavbar profile={profile} />
         <div className="w-full flex flex-col items-center">
@@ -240,7 +240,7 @@ export function MobileTabs({ activeTab, setActiveTab }: MobileTabsProps) {
   const activeIndex = mobileTabs.findIndex((t) => t.key === activeTab);
 
   return (
-    <div className="flex min-[811px]:hidden flex-col w-full border-b border-black-400 sticky top-[72px] z-40 bg-black">
+    <div id="profile-mobile-tabs" className="flex min-[811px]:hidden flex-col w-full border-b border-black-400 sticky top-[72px] z-40 bg-black">
       <div className="flex items-center w-full">
         {mobileTabs.map((tab) => (
           <button

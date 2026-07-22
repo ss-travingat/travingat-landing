@@ -12,7 +12,7 @@ export const revalidate = 60;
 export async function generateStaticParams() {
   try {
     const profiles = await readJsonFromR2<SampleProfile[]>(R2_KEY);
-    return profiles.map((profile) => ({ id: profile.id }));
+    return profiles.map((profile) => ({ id: profile.handle.replace(/^@/, "") }));
   } catch {
     return [];
   }
@@ -32,7 +32,8 @@ export default async function ProfilePage({
     notFound();
   }
 
-  const profile = profiles.find((p) => p.id === id);
+  const decodedId = decodeURIComponent(id);
+  const profile = profiles.find((p) => p.handle.replace(/^@/, "") === decodedId);
 
   if (!profile) {
     notFound();

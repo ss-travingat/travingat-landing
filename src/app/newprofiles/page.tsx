@@ -134,7 +134,7 @@ export default async function NewProfilesPage() {
           {profilesForGrid.map((profile, index) => (
             <Link
               key={`${profile.id}-${index}`}
-              href={`/profiles/${profile.id}`}
+              href={`/profiles/${profile.handle.replace(/^@/, "")}`}
               aria-label={`Open ${profile.name} profile`}
               className="block w-full"
             >
