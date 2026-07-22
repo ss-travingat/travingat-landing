@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter, Righteous } from "next/font/google";
 import localFont from "next/font/local";
 import Script from "next/script";
@@ -60,6 +60,10 @@ const openSauceTwo = localFont({
 export const metadata: Metadata = {
   title: "Travingat - Travel Portfolio for Explorers",
   description: "Build your travel portfolio and organize every journey in one place.",
+};
+
+export const viewport: Viewport = {
+  themeColor: "#000000",
 };
 
 export default function RootLayout({

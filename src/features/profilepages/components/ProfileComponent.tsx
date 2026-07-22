@@ -8,6 +8,7 @@ import { toLandingAssetUrl } from "@/lib/landing-assets";
 import { sampleProfiles, type SampleProfile } from "../data/profile-data";
 import { MoreOptionsButton } from "@/components/ui/MoreOptionsButton";
 import { WaitlistPopup } from "@/components/ui/WaitlistPopup";
+import { MobileHero, MobileTabs, MobileActionBar } from "./MobileProfile";
 import CardCarousel from "./CardCarousel";
 
 /* eslint-disable @next/next/no-img-element */
@@ -1224,88 +1225,20 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
 
   return (
     <>
-      <div className="min-h-screen bg-black text-white flex flex-col items-center px-[12px] min-[810px]:px-[32px] min-[1200px]:px-[48px] min-[1440px]:px-[64px]">
+      <div className="min-h-screen bg-black text-white flex flex-col items-center px-[10px] pt-[10px] min-[810px]:pt-0 min-[810px]:px-[32px] min-[1200px]:px-[48px] min-[1440px]:px-[64px]">
 
         <main className="w-full max-w-[1728px] pb-28 md:pb-20 grid gap-10">
-          <section className="min-[811px]:hidden space-y-[12px] flex flex-col items-center w-full">
-            <div className="flex flex-col items-center gap-[20px] rounded-[24px] w-full max-w-[400px]">
-              <div className="w-full flex flex-col items-center">
-                <div className="w-full aspect-[377/248] -mb-[36px] rounded-2xl overflow-hidden bg-[#151515]">
-                  <img src={toLandingAssetUrl(profile.images.cover)} alt="Profile cover" className="w-full h-full object-cover" />
-                </div>
-                <div className="relative z-10 mx-auto h-20 w-20 rounded-2xl border-4 border-black overflow-hidden bg-[#151515]">
-                  <img src={toLandingAssetUrl(profile.images.avatar)} alt="Profile avatar" className="w-full h-full object-cover" />
-                </div>
-              </div>
+          <MobileHero
+            profile={profile}
+            displayName={displayName}
+            handle={handle}
+            basedIn={basedIn}
+            profileFlagCode={profileFlagCode}
+            profileFlagSrc={profileFlagSrc}
+            headerFlagCodes={headerFlagCodes}
+            flagOverflowCount={flagOverflowCount}
+          />
 
-              <div className="flex flex-col items-center gap-[8px] w-full">
-                <div className="flex items-center justify-center gap-1.5 text-[#696969] text-[14px] leading-[20px] tracking-[-0.5px]">
-                  {profileFlagSrc ? (
-                    <img
-                      src={profileFlagSrc}
-                      alt={`${basedIn} flag`}
-                      className="h-[10px] w-[15px] rounded-[2px] object-cover"
-                      loading="lazy"
-                      decoding="async"
-                    />
-                  ) : (
-                    <span>{profileFlagCode}</span>
-                  )}
-                  <span>{basedIn}</span>
-                </div>
-                <h1 className="text-white text-[20px] leading-normal tracking-[-0.41px] font-semibold text-center w-full">{displayName}</h1>
-                <p className="text-[#a8a8a8] text-[14px] leading-normal tracking-[-0.5px] text-center w-full">{handle}</p>
-              </div>
-
-              <div className="flex flex-wrap items-start justify-center gap-[4px] px-[6px] w-full">
-                {headerFlagCodes.map((code, index) => (
-                  <img
-                    key={`${code}-${index}`}
-                    src={toFlagAssetPath(code) || ""}
-                    alt={`${code} flag`}
-                    className="h-[17px] w-[26px] rounded-[2px] object-cover shrink-0"
-                    loading="lazy"
-                    decoding="async"
-                  />
-                ))}
-                {flagOverflowCount > 0 && (
-                  <div className="flex h-[17px] w-[26px] shrink-0 items-center justify-center overflow-hidden rounded-[2px] bg-white">
-                    <span className="font-medium text-violet-600 text-[10px] text-center tracking-[-0.408px] whitespace-nowrap">
-                      +{flagOverflowCount}
-                    </span>
-                  </div>
-                )}
-              </div>
-
-              {/* Mobile Stats Container */}
-              <div className="bg-[#111] border-0 border-[#1e1e1e] flex items-center justify-center gap-[20px] rounded-[12px] w-full pt-[18px] pb-[20px] px-[20px]">
-                <div className="flex flex-1 flex-col items-center justify-center gap-[2px]">
-                  <p className="ds-font-display text-[24px] font-semibold leading-[32px] tracking-[-0.5px] text-white">
-                    {profile.countries}
-                  </p>
-                  <p className="text-[14px] font-normal leading-[20px] tracking-[-0.084px] text-[#989898]">
-                    Countries
-                  </p>
-                </div>
-                <div className="flex flex-1 flex-col items-center justify-center gap-[2px]">
-                  <p className="ds-font-display text-[24px] font-semibold leading-[32px] tracking-[-0.5px] text-white">
-                    {profile.media}
-                  </p>
-                  <p className="text-[14px] font-normal leading-[20px] tracking-[-0.084px] text-[#989898]">
-                    All media
-                  </p>
-                </div>
-                <div className="flex flex-1 flex-col items-center justify-center gap-[2px]">
-                  <p className="ds-font-display text-[24px] font-semibold leading-[32px] tracking-[-0.5px] text-white">
-                    {profile.collections}
-                  </p>
-                  <p className="text-[14px] font-normal leading-[20px] tracking-[-0.084px] text-[#989898]">
-                    Collections
-                  </p>
-                </div>
-              </div>
-            </div>
-          </section>
 
           <section className="hidden min-[811px]:flex items-end justify-between gap-6 w-full">
             <div className="w-full max-w-[48%] lg:max-w-[500px] xl:max-w-[537px] shrink flex flex-col items-start justify-start gap-[24px] lg:gap-[32px] xl:gap-[40px] pt-[24px] lg:pt-[40px] xl:pt-[48px]">
@@ -1471,44 +1404,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
           </div>
 
           {/* Mobile/iPad: icon-only tabs with sliding underline indicator */}
-          {(() => {
-            const mobileTabs: { key: TabKey; icon: string }[] = [
-              { key: "all", icon: "photo_library" },
-              { key: "countries", icon: "public" },
-              { key: "collections", icon: "folder" },
-              { key: "about", icon: "person" },
-            ];
-            const activeIndex = mobileTabs.findIndex((t) => t.key === activeTab);
-            return (
-              <div className="flex min-[811px]:hidden flex-col w-full border-b border-black-400 relative">
-                <div className="flex items-center w-full">
-                  {mobileTabs.map((tab) => (
-                    <button
-                      key={tab.key}
-                      onClick={() => {
-                        navigator.vibrate?.(8);
-                        setActiveTab(tab.key);
-                      }}
-                      className={`flex-1 flex items-center justify-center px-6 py-4 transition-colors duration-200 ${
-                        activeTab === tab.key ? "text-white" : "text-[#666]"
-                      }`}
-                    >
-                      <span className="material-symbols-rounded text-[24px]">{tab.icon}</span>
-                    </button>
-                  ))}
-                </div>
-                {/* Sliding underline */}
-                <div
-                  className="absolute bottom-0 h-0.5 bg-white rounded-full"
-                  style={{
-                    width: `${100 / mobileTabs.length}%`,
-                    transform: `translateX(${activeIndex * 100}%)`,
-                    transition: "transform 300ms cubic-bezier(0.4, 0, 0.2, 1)",
-                  }}
-                />
-              </div>
-            );
-          })()}
+          <MobileTabs activeTab={activeTab} setActiveTab={setActiveTab} />
 
           {activeTab === "all" ? (
             <section className="pb-25 min-h-62.5">
@@ -2004,20 +1900,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
         </main>
       </div>
 
-      <div className="md:hidden fixed inset-x-2 bottom-2 z-40 rounded-full backdrop-blur-[6px] bg-[rgba(255,255,255,0.12)] border border-[rgba(255,255,255,0.1)] p-[8px] shadow-[0px_12px_12px_0px_rgba(0,0,0,0.12)] flex items-center overflow-clip">
-        <div className="flex gap-[8px] items-center w-full">
-          <button onClick={() => setShowFollowModal(true)} className="flex-1 rounded-full bg-white text-black px-[18px] py-[10px] text-[16px] font-medium leading-[24px] tracking-[-0.096px]">Follow</button>
-          <button className="h-[44px] w-[43px] shrink-0 rounded-full border border-[#353535] bg-[#1a1a1a] grid place-items-center text-white" aria-label="More options">
-            <span className="grid grid-cols-2 gap-1">
-              <span className="h-[3px] w-[3px] rounded-full bg-white" />
-              <span className="h-[3px] w-[3px] rounded-full bg-white" />
-              <span className="h-[3px] w-[3px] rounded-full bg-white" />
-              <span className="h-[3px] w-[3px] rounded-full bg-white" />
-            </span>
-          </button>
-          <button className="flex-1 rounded-full border border-[#353535] bg-[#1a1a1a] text-white px-[18px] py-[10px] text-[16px] font-medium leading-[24px] tracking-[-0.096px]">Connect</button>
-        </div>
-      </div>
+      <MobileActionBar onFollowClick={() => setShowFollowModal(true)} />
 
       {showFollowModal && (
         <div

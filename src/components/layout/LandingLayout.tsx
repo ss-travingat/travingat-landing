@@ -89,7 +89,7 @@ export default function LandingLayout({
     <div className="min-h-screen w-full bg-black text-white overflow-x-hidden">
       <PageLoader visible={loading} />
       {hideNavbar ? null : <LandingHeader />}
-      {hideNavbar ? null : <div className="h-23 xl:h-33" aria-hidden="true" />}
+      {hideNavbar ? null : <div className={`h-23 xl:h-33 ${isProfileRoute ? "max-[810px]:hidden" : ""}`} aria-hidden="true" />}
       <div className="animate-page-in">
         {children}
       </div>
