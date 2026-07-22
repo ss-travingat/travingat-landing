@@ -45,13 +45,11 @@ async function verifyAdminSessionTokenEdge(token: string) {
 export async function middleware(req: NextRequest) {
   const url = req.nextUrl;
 
-  // Allow access to the login page and admin API routes
+  // Allow access to login pages
   if (
     url.pathname === '/admin/login' || 
     url.pathname.startsWith('/api/admin/login') ||
-    url.pathname.startsWith('/api/cms/login') ||
-    url.pathname.startsWith('/designsystem') ||
-    url.pathname.startsWith('/_next')
+    url.pathname.startsWith('/api/cms/login')
   ) {
     return NextResponse.next();
   }
@@ -64,19 +62,23 @@ export async function middleware(req: NextRequest) {
     return NextResponse.next();
   }
 
-  // Redirect to admin login if not authenticated
+  // Return 401 for API routes, redirect for admin pages
+  if (url.pathname.startsWith('/api/')) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
   const loginUrl = new URL('/admin/login', req.url);
   return NextResponse.redirect(loginUrl);
 }
 
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico, sitemap.xml, robots.txt (metadata files)
-     */
-    '/((?!_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt).*)',
+    '/admin/:path*',
+    '/api/admin/:path*',
+    '/api/cms/:path*',
+    '/api/profiles/upload',
+    '/api/blogs/upload',
+    '/api/testimonials/upload',
+    '/api/upload/presign',
   ],
 };

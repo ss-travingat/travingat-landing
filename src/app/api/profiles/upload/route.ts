@@ -11,8 +11,8 @@ export async function POST(request: Request) {
     try {
       formData = await request.formData();
     } catch {
-      return NextResponse.json(
-        { error: "Request must be multipart/form-data" },
+      return NextResponse.json({
+        error: "Request must be multipart/form-data" },
         { status: 400 }
       );
     }
@@ -21,8 +21,8 @@ export async function POST(request: Request) {
     const imageType = formData.get("type") as string | null; // "avatar", "cover", or "gallery"
 
     if (!file || typeof file !== "object" || typeof file.arrayBuffer !== "function") {
-      return NextResponse.json(
-        { error: "No valid file found in upload" },
+      return NextResponse.json({
+        error: "No valid file found in upload" },
         { status: 400 }
       );
     }
