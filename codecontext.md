@@ -41,5 +41,6 @@ Contains core backend integrations and pure utility functions.
 ## Key Architectural Patterns
 
 1. **Pixel-Perfect Figma Fidelity**: We strive to match Figma designs exactly. If a specific gap or padding is requested (e.g., `pt-[48px]`), we use precise Tailwind arbitrary values.
-2. **Responsive Component Isolation**: Instead of cluttering a single component with dozens of `lg:`, `md:`, and `max-md:` prefixes, we often render entirely different components based on the viewport (e.g. rendering `<MobileHero />` on small screens and hiding it on desktop).
-3. **Data Flow**: We default to Server Components for data fetching. Interactive islands (like image carousels or dropdown menus) are marked with `"use client"` and kept as small as possible.
+2. **Design Tokens & Assets**: We map Figma colors directly to Tailwind global CSS tokens (e.g., `Shades/Black/900` maps to `--color-black-900` which generates `bg-black-900`). For icons, we prioritize extracting exact SVGs from Figma and storing them in `public/icons/` rather than approximating with third-party icon libraries.
+3. **Responsive Component Isolation**: Instead of cluttering a single component with dozens of `lg:`, `md:`, and `max-md:` prefixes, we often render entirely different components based on the viewport (e.g. rendering `MobileProfile.tsx` on small screens and hiding it on desktop). This ensures desktop components remain locked to their rigid pixel-perfect dimensions.
+4. **Data Flow**: We default to Server Components for data fetching. Interactive islands (like image carousels or dropdown menus) are marked with `"use client"` and kept as small as possible.

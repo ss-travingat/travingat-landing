@@ -1359,6 +1359,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
             </div>
           </section>
 
+          <div className="flex flex-col w-full gap-10">
           {/* Desktop: pill tabs with text */}
           <div className="hidden min-[811px]:flex items-center justify-center gap-2 flex-wrap">
             <button
@@ -1492,7 +1493,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
 
                         {/* Hover Flag */}
                         {displayCountryCode ? (
-                          <div className="absolute top-3 right-3 z-20 transition-opacity duration-200 opacity-0 group-hover:opacity-100 pointer-events-auto group/flag">
+                          <div className="absolute top-3 right-3 z-20 transition-opacity duration-200 opacity-100 min-[811px]:opacity-0 min-[811px]:group-hover:opacity-100 pointer-events-auto group/flag">
                             <div className="flex items-center drop-shadow-md cursor-pointer">
                               <img
                                 src={toFlagAssetPath(displayCountryCode)}
@@ -1896,7 +1897,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
               </section>
             )
           ) : null}
-
+        </div>
         </main>
       </div>
 

@@ -15,7 +15,7 @@ function toFlagAssetPath(flagCode?: string): string | undefined {
 // ==========================================
 // MOBILE NAVBAR COMPONENT
 // ==========================================
-export function MobileProfileNavbar() {
+export function MobileProfileNavbar({ profile }: { profile?: any }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
 
@@ -40,28 +40,32 @@ export function MobileProfileNavbar() {
 
   return (
     <div className="fixed top-0 left-0 w-full z-50 flex flex-col pointer-events-none">
-      <div className={`flex items-center justify-between px-[28px] py-[16px] pointer-events-auto transition-colors duration-300 ${isScrolled ? "bg-black" : "bg-gradient-to-b from-black/60 to-transparent"}`}>
-        <Link href="/" className="font-['Righteous'] text-[23.14px] text-white tracking-[-0.41px] leading-normal">
-          travingat
-        </Link>
+      <div className={`flex items-center justify-between px-[28px] pt-[20px] pb-[16px] pointer-events-auto transition-colors duration-300 ${isScrolled ? "bg-black" : "bg-gradient-to-b from-black/50 to-transparent"}`}>
+        {isScrolled && profile ? (
+          <div className="flex items-center gap-2">
+            <img src={toLandingAssetUrl(profile.images.avatar)} alt="Avatar" className="w-8 h-8 rounded-full object-cover" />
+            <span className="font-semibold text-[16px] text-white tracking-tight">{profile.handle}</span>
+          </div>
+        ) : (
+          <Link href="/" className="font-['Righteous'] text-[23.14px] text-white tracking-[-0.41px] leading-normal">
+            travingat
+          </Link>
+        )}
         <button
           onClick={() => setMenuOpen((prev) => !prev)}
           className="relative flex h-9 w-9 items-center justify-center rounded-xl"
           aria-label="Toggle navigation menu"
           aria-expanded={menuOpen}
         >
-          <span
-            className={`absolute h-0.5 w-5 rounded-full bg-[#e3e3e3] transition-all duration-300 ${menuOpen ? "translate-y-0 rotate-45" : "-translate-y-1.5"
-              }`}
-          />
-          <span
-            className={`absolute h-0.5 w-5 rounded-full bg-[#e3e3e3] transition-all duration-300 ${menuOpen ? "opacity-0" : "opacity-100"
-              }`}
-          />
-          <span
-            className={`absolute h-0.5 w-5 rounded-full bg-[#e3e3e3] transition-all duration-300 ${menuOpen ? "translate-y-0 -rotate-45" : "translate-y-1.5"
-              }`}
-          />
+          {menuOpen ? (
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12L19 6.41Z" fill="white"/>
+            </svg>
+          ) : (
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M3 7V5H21V7H3ZM3 19V17H21V19H3ZM3 13V11H21V13H3Z" fill="white"/>
+            </svg>
+          )}
         </button>
       </div>
 
@@ -137,7 +141,7 @@ export function MobileHero({
   return (
     <section className="min-[811px]:hidden space-y-[12px] flex flex-col items-center w-full">
       <div className="flex flex-col items-center gap-[20px] rounded-[24px] w-full relative">
-        <MobileProfileNavbar />
+        <MobileProfileNavbar profile={profile} />
         <div className="w-full flex flex-col items-center">
           <div className="w-full aspect-[377/248] -mb-[36px] rounded-2xl overflow-hidden bg-[#151515]">
             <img src={toLandingAssetUrl(profile.images.cover)} alt="Profile cover" className="w-full h-full object-cover" />
@@ -187,28 +191,28 @@ export function MobileHero({
         </div>
 
         {/* Mobile Stats Container */}
-        <div className="bg-[#111] border-0 border-[#1e1e1e] flex items-center justify-center gap-[20px] rounded-[12px] w-full pt-[18px] pb-[20px] px-[20px]">
+        <div className="bg-black-900 flex items-center justify-center gap-[20px] rounded-[12px] w-full pt-[18px] pb-[20px] px-[20px]">
           <div className="flex flex-1 flex-col items-center justify-center gap-[2px]">
-            <p className="ds-font-display text-[24px] font-semibold leading-[32px] tracking-[-0.5px] text-white">
+            <p className="ds-font-display text-[32px] font-semibold leading-[40px] tracking-[-0.5px] text-white">
               {profile.countries}
             </p>
-            <p className="text-[14px] font-normal leading-[20px] tracking-[-0.084px] text-[#989898]">
+            <p className="text-[14px] font-normal leading-[20px] tracking-[-0.084px] text-[#999]">
               Countries
             </p>
           </div>
           <div className="flex flex-1 flex-col items-center justify-center gap-[2px]">
-            <p className="ds-font-display text-[24px] font-semibold leading-[32px] tracking-[-0.5px] text-white">
+            <p className="ds-font-display text-[32px] font-semibold leading-[40px] tracking-[-0.5px] text-white">
               {profile.media}
             </p>
-            <p className="text-[14px] font-normal leading-[20px] tracking-[-0.084px] text-[#989898]">
+            <p className="text-[14px] font-normal leading-[20px] tracking-[-0.084px] text-[#999]">
               All media
             </p>
           </div>
           <div className="flex flex-1 flex-col items-center justify-center gap-[2px]">
-            <p className="ds-font-display text-[24px] font-semibold leading-[32px] tracking-[-0.5px] text-white">
+            <p className="ds-font-display text-[32px] font-semibold leading-[40px] tracking-[-0.5px] text-white">
               {profile.collections}
             </p>
-            <p className="text-[14px] font-normal leading-[20px] tracking-[-0.084px] text-[#989898]">
+            <p className="text-[14px] font-normal leading-[20px] tracking-[-0.084px] text-[#999]">
               Collections
             </p>
           </div>
@@ -227,16 +231,16 @@ export interface MobileTabsProps {
 }
 
 export function MobileTabs({ activeTab, setActiveTab }: MobileTabsProps) {
-  const mobileTabs: { key: TabKey; icon: string }[] = [
-    { key: "all", icon: "photo_library" },
-    { key: "countries", icon: "public" },
-    { key: "collections", icon: "folder" },
-    { key: "about", icon: "person" },
+  const mobileTabs: { key: TabKey }[] = [
+    { key: "all" },
+    { key: "countries" },
+    { key: "collections" },
+    { key: "about" },
   ];
   const activeIndex = mobileTabs.findIndex((t) => t.key === activeTab);
 
   return (
-    <div className="flex min-[811px]:hidden flex-col w-full border-b border-black-400 relative">
+    <div className="flex min-[811px]:hidden flex-col w-full border-b border-black-400 sticky top-[72px] z-40 bg-black">
       <div className="flex items-center w-full">
         {mobileTabs.map((tab) => (
           <button
@@ -245,10 +249,10 @@ export function MobileTabs({ activeTab, setActiveTab }: MobileTabsProps) {
               navigator.vibrate?.(8);
               setActiveTab(tab.key);
             }}
-            className={`flex-1 flex items-center justify-center px-6 py-4 transition-colors duration-200 ${activeTab === tab.key ? "text-white" : "text-[#666]"
+            className={`flex-1 flex items-center justify-center px-6 py-4 transition-all duration-200 ${activeTab === tab.key ? "opacity-100" : "opacity-40"
               }`}
           >
-            <span className="material-symbols-rounded text-[24px]">{tab.icon}</span>
+            <img src={`/icons/tab-${tab.key}.svg`} alt={`${tab.key} tab`} className="w-[24px] h-[24px]" />
           </button>
         ))}
       </div>
