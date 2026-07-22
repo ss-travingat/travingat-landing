@@ -733,33 +733,59 @@ export default function AdminProfilesPage() {
     }
 
     setUploading({ field: type, stage: "processing", idx, current: batch?.current, total: batch?.total });
-    
-    let compressedFile = file;
-    try {
-      compressedFile = await imageCompression(file, {
-        maxSizeMB: 2, // Keep well under Vercel's 4.5MB limit
-        maxWidthOrHeight: 2048,
-        useWebWorker: true,
-        fileType: "image/webp",
-      });
-    } catch (compressErr) {
-      console.error("Compression failed, using original", compressErr);
-    }
-
-    const formData = new FormData();
-    formData.append("file", compressedFile);
-    formData.append("type", type);
 
     try {
+      // Step 1: Compress image on the client side → WebP
+      let processedFile: File | Blob = file;
+      let uploadContentType = file.type;
+
+      if (file.type !== "image/gif" && file.type !== "image/svg+xml") {
+        try {
+          processedFile = await imageCompression(file, {
+            maxSizeMB: 2,
+            maxWidthOrHeight: 2048,
+            useWebWorker: true,
+            fileType: "image/webp",
+          });
+          uploadContentType = "image/webp";
+        } catch (compressErr) {
+          console.warn("Client-side compression failed, uploading original:", compressErr);
+        }
+      }
+
       setUploading((prev) => prev ? { ...prev, stage: "uploading" } : null);
 
-      const uploadRes = await fetch("/api/profiles/upload", {
+      // Step 2: Get a presigned URL from the API (lightweight, no file transfer)
+      const presignRes = await fetch("/api/profiles/upload", {
         method: "POST",
-        body: formData,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          fileType: uploadContentType,
+          prefix: type,
+        }),
       });
-      const data = await uploadRes.json();
-      if (!uploadRes.ok) {
-        showToast(data.error || "Upload failed", true);
+
+      if (!presignRes.ok) {
+        let errorMsg = "Failed to get upload URL";
+        try {
+          const errData = await presignRes.json();
+          errorMsg = errData.error || errorMsg;
+        } catch { /* ignore parse error */ }
+        showToast(errorMsg, true);
+        return null;
+      }
+
+      const { uploadUrl, publicUrl } = await presignRes.json();
+
+      // Step 3: Upload directly to R2 via presigned URL (bypasses Vercel entirely)
+      const r2Res = await fetch(uploadUrl, {
+        method: "PUT",
+        headers: { "Content-Type": uploadContentType },
+        body: processedFile,
+      });
+
+      if (!r2Res.ok) {
+        showToast("Failed to upload file to storage", true);
         return null;
       }
 
@@ -769,7 +795,7 @@ export default function AdminProfilesPage() {
         await new Promise((r) => setTimeout(r, 800));
       }
       showToast(`${type.charAt(0).toUpperCase() + type.slice(1)} image uploaded`);
-      return data.url;
+      return publicUrl;
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Network error";
       showToast(`Upload failed: ${msg}`, true);
@@ -1510,18 +1536,7 @@ export default function AdminProfilesPage() {
                             const url = await handleVideoUpload(file, "about", undefined, batch);
                             if (url) uploadedUrls.push(url);
                           } else {
-                            let compressedFile = file;
-                            try {
-                              compressedFile = await imageCompression(file, {
-                                maxSizeMB: 2,
-                                maxWidthOrHeight: 2048,
-                                useWebWorker: true,
-                                fileType: "image/webp",
-                              });
-                            } catch (compressErr) {
-                              console.error("Compression failed, using original", compressErr);
-                            }
-                            const url = await handleImageUpload(compressedFile as File, "about", undefined, batch);
+                            const url = await handleImageUpload(file, "about", undefined, batch);
                             if (url) uploadedUrls.push(url);
                           }
                         }

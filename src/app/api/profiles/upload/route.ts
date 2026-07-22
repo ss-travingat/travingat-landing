@@ -1,88 +1,58 @@
 import { NextResponse } from "next/server";
-import { uploadProfileAsset } from "@/lib/r2-upload";
-import { compressImage } from "@/lib/image-compress";
+import { generatePresignedUrl } from "@/lib/r2-upload";
 
 export const dynamic = "force-dynamic";
 
-// POST — upload a profile image (avatar, cover, or gallery)
+/**
+ * POST — Generate a presigned URL for direct browser → R2 upload.
+ * 
+ * The browser compresses and converts the image (WebP) before uploading
+ * directly to R2 via the presigned URL. This bypasses Vercel's serverless
+ * function entirely for the actual file transfer, avoiding:
+ * - Vercel's 4.5MB payload limit
+ * - sharp native binary issues on Vercel
+ * - Serverless function timeout issues with large files
+ */
 export async function POST(request: Request) {
   try {
-    let formData: FormData;
-    try {
-      formData = await request.formData();
-    } catch {
-      return NextResponse.json({
-        error: "Request must be multipart/form-data" },
-        { status: 400 }
-      );
-    }
+    const body = await request.json();
+    const { fileType, prefix } = body;
 
-    const file = formData.get("file") as File | null;
-    const imageType = formData.get("type") as string | null; // "avatar", "cover", or "gallery"
-
-    if (!file || typeof file !== "object" || typeof file.arrayBuffer !== "function") {
-      return NextResponse.json({
-        error: "No valid file found in upload" },
-        { status: 400 }
-      );
-    }
-
-    const arrayBuffer = await file.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
-
-    if (buffer.length === 0) {
+    if (!fileType || !prefix) {
       return NextResponse.json(
-        { error: "Uploaded file is empty" },
+        { error: "Missing required fields: fileType, prefix" },
         { status: 400 }
       );
     }
 
-    const isVideo = typeof file.type === "string" && file.type.startsWith("video/");
-    const isImage = typeof file.type === "string" && file.type.startsWith("image/");
-    const maxBytes = isVideo ? 50 * 1024 * 1024 : 20 * 1024 * 1024;
-    if (buffer.length > maxBytes) {
-      return NextResponse.json(
-        { error: isVideo ? "Video too large. Max 50MB." : "Image too large. Max 20MB." },
-        { status: 400 }
-      );
-    }
+    // Determine extension from content type
+    const extMap: Record<string, string> = {
+      "image/webp": ".webp",
+      "image/avif": ".avif",
+      "image/jpeg": ".jpeg",
+      "image/png": ".png",
+      "image/gif": ".gif",
+      "image/svg+xml": ".svg",
+      "video/mp4": ".mp4",
+      "video/webm": ".webm",
+      "video/quicktime": ".mov",
+    };
+    const ext = extMap[fileType] || ".bin";
+    const cleanPrefix = prefix.replace(/^\/+|\/+$/g, "");
+    const uniqueName = `${cleanPrefix}-${Date.now()}${ext}`;
+    const keySuffix = `profiles/${uniqueName}`;
 
-    const prefix = imageType || "profile";
-    let uploadBuffer: Buffer = buffer;
-    let uploadContentType: string | undefined = file.type || undefined;
-    let uploadFilename: string;
-
-    if (isImage) {
-      // ── Compress images before uploading ──
-      const mimeType = file.type || "image/png";
-      const compressed = await compressImage(uploadBuffer, mimeType);
-      uploadBuffer = compressed.buffer;
-      uploadContentType = compressed.contentType;
-      uploadFilename = `${prefix}-${Date.now()}${compressed.ext}`;
-
-      console.log(
-        `[image-compress] ${prefix}: ${(buffer.length / 1024).toFixed(0)}KB → ${(uploadBuffer.length / 1024).toFixed(0)}KB (${((1 - uploadBuffer.length / buffer.length) * 100).toFixed(0)}% smaller)`
-      );
-    } else {
-      // Videos and other files pass through uncompressed
-      const originalName = file.name || "upload.bin";
-      const dotIdx = originalName.lastIndexOf(".");
-      const ext = dotIdx >= 0 ? originalName.slice(dotIdx) : ".bin";
-      uploadFilename = `${prefix}-${Date.now()}${ext}`;
-    }
-
-    const uploaded = await uploadProfileAsset({
-      fileBuffer: uploadBuffer,
-      fileName: uploadFilename,
-      contentType: uploadContentType,
+    const { uploadUrl, publicUrl } = await generatePresignedUrl({
+      keySuffix,
+      contentType: fileType,
     });
 
-    return NextResponse.json({ url: uploaded.url }, { status: 201 });
+    return NextResponse.json({ uploadUrl, publicUrl }, { status: 200 });
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : "Unknown error";
-    console.error("Profile image upload error:", message);
+    console.error("Profile upload presign error:", message);
     return NextResponse.json(
-      { error: `Failed to upload file: ${message}` },
+      { error: `Failed to generate upload URL: ${message}` },
       { status: 500 }
     );
   }

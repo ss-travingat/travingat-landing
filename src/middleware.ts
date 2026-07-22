@@ -73,12 +73,10 @@ export async function middleware(req: NextRequest) {
 
 export const config = {
   matcher: [
-    '/admin/:path*',
-    '/api/admin/:path*',
-    '/api/cms/:path*',
-    '/api/profiles/upload',
-    '/api/blogs/upload',
-    '/api/testimonials/upload',
-    '/api/upload/presign',
+    /*
+     * Match ALL routes except Next.js internals and static files.
+     * The login page bypass is handled inside the middleware function above.
+     */
+    '/((?!_next/static|_next/image|favicon\\.ico|inter-display/).*)',
   ],
 };
