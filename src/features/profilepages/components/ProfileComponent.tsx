@@ -621,14 +621,14 @@ function PhotoCarouselModal({
                       src={toLandingAssetUrl(activeItem.fileUrl)}
                       controls
                       autoPlay
-                      className="block h-full w-auto max-w-full object-contain carousel-image rounded-[16px] mx-auto"
+                      className="block h-full w-auto max-w-full object-contain carousel-image rounded-[12px] mx-auto"
                     />
                   ) : (
                     <img
                       key={`img-${activeIndex}`}
                       src={toLandingAssetUrl(activeItem?.fileUrl)}
                       alt="Carousel media"
-                      className="block h-full w-auto max-w-full object-contain carousel-image rounded-[16px] mx-auto"
+                      className="block h-full w-auto max-w-full object-contain carousel-image rounded-[12px] mx-auto"
                     />
                   )}
                 </div>

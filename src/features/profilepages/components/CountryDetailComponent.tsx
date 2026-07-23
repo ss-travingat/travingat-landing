@@ -214,14 +214,14 @@ function PhotoLightbox({
                       src={toLandingAssetUrl(activeUrl)}
                       controls
                       autoPlay
-                      className="block h-full w-auto max-w-full object-contain carousel-image rounded-[16px] mx-auto"
+                      className="block h-full w-auto max-w-full object-contain carousel-image rounded-[12px] mx-auto"
                     />
                   ) : (
                     <img
                       key={`img-${activeIndex}`}
                       src={toLandingAssetUrl(activeUrl)}
                       alt={`${countryName} photo ${displayIndex}`}
-                      className="block h-full w-auto max-w-full object-contain carousel-image rounded-[16px] mx-auto"
+                      className="block h-full w-auto max-w-full object-contain carousel-image rounded-[12px] mx-auto"
                     />
                   )}
                 </div>
