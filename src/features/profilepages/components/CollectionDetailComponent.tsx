@@ -6,6 +6,7 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { toLandingAssetUrl } from "@/lib/landing-assets";
 import { sampleProfiles, type SampleProfile } from "../data/profile-data";
 import { ContextMenu } from "./ProfileComponent";
+import { MediaLightbox } from "./MediaLightbox";
 import { MoreOptionsButton } from "@/components/ui/MoreOptionsButton";
 
 /* eslint-disable @next/next/no-img-element */
@@ -41,215 +42,24 @@ function CollectionLightbox({
   collectionTitle: string;
   description?: string;
 }) {
-  const activeUrl = items[activeIndex];
   const totalCount = items.length;
   const displayIndex = activeIndex + 1;
   const avatarSrc = toLandingAssetUrl(profileAvatar);
-  const [showBrowser, setShowBrowser] = useState(false);
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (scrollContainerRef.current && !showBrowser) {
-      const container = scrollContainerRef.current;
-      setTimeout(() => {
-        const containerWidth = container.clientWidth;
-        if (containerWidth === 0) return;
-        const itemWidth = 64; // w-16
-        const gap = 8; // gap-2
-        const paddingLeft = 40; // px-10
-        const targetCenter = paddingLeft + (activeIndex * (itemWidth + gap)) + (itemWidth / 2);
-        const targetScrollLeft = targetCenter - (containerWidth / 2);
-        
-        container.scrollTo({
-          left: targetScrollLeft,
-          behavior: 'smooth'
-        });
-      }, 50);
-    }
-  }, [activeIndex, showBrowser]);
 
   return (
-    <div
-      className="fixed inset-0 z-[100] flex bg-black/95"
-      onClick={onClose}
-    >
-      <div
-        className="relative flex flex-1 flex-col min-w-0"
-        onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
-      >
-        <div className="flex items-center justify-between px-10 py-6 text-[15px] tracking-[-0.4px] text-[#a8a8a8]">
-          <span>{`${displayIndex} of ${totalCount}`}</span>
-          <button
-            type="button"
-            onClick={() => setShowBrowser((prev) => !prev)}
-            className="flex h-8 w-8 items-center justify-center text-[#a8a8a8] transition hover:text-white"
-            aria-label="Toggle photo browser"
-          >
-            <span className="material-symbols-rounded text-[22px]">dashboard</span>
-          </button>
-        </div>
-
-        {showBrowser ? (
-          <div className="flex-1 min-h-0 overflow-y-auto px-10 pb-8">
-            <div
-              className="columns-4 gap-6 [column-fill:_balance]"
-              style={{ columnCount: 4, columnGap: "24px" }}
-            >
-              {items.map((url, idx) => (
-                <button
-                  key={`browser-${idx}`}
-                  type="button"
-                  onClick={() => {
-                    onSelectIndex(idx);
-                    setShowBrowser(false);
-                  }}
-                  className="mb-6 w-full break-inside-avoid overflow-hidden rounded-[22px] bg-[#0a0a0a] text-left"
-                  aria-label={`Open photo ${idx + 1}`}
-                >
-                  <div className="relative">
-                    {isVideoAsset(url) ? (
-                      <>
-                        <video
-                          src={toLandingAssetUrl(url)}
-                          className="h-auto w-full"
-                        />
-                        <div className="absolute left-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-black/55">
-                          <span className="material-symbols-rounded text-[18px] text-white">play_arrow</span>
-                        </div>
-                      </>
-                    ) : (
-                      <img
-                        src={toLandingAssetUrl(url)}
-                        alt={`Gallery thumbnail ${idx + 1}`}
-                        className="h-auto w-full"
-                      />
-                    )}
-                  </div>
-                </button>
-              ))}
-            </div>
-          </div>
-        ) : (
-          <>
-            <div className="relative flex flex-1 min-h-0 pb-8">
-              <div className="relative flex flex-1 items-center justify-center p-8 min-h-0">
-                <div className="relative group inline-block h-full max-w-full text-center">
-                  {/* Hover Buttons */}
-                  <div className="absolute top-4 right-4 z-20 flex items-center gap-2 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
-                    <button
-                      type="button"
-                      className="flex h-9 w-9 items-center justify-center rounded-full bg-black/40 backdrop-blur-sm text-white transition hover:bg-black/60"
-                      aria-label="Like"
-                    >
-                      <span className="material-symbols-rounded text-[20px]">favorite_border</span>
-                    </button>
-                    <button
-                      type="button"
-                      className="flex h-9 w-9 items-center justify-center rounded-full bg-black/40 backdrop-blur-sm text-white transition hover:bg-black/60"
-                      aria-label="Share"
-                    >
-                      <span className="material-symbols-rounded text-[20px] -mt-[2px]">ios_share</span>
-                    </button>
-                    <button
-                      type="button"
-                      className="flex h-9 w-9 items-center justify-center rounded-full bg-black/40 backdrop-blur-sm text-white transition hover:bg-black/60"
-                      aria-label="More options"
-                    >
-                      <span className="flex items-center gap-1">
-                        <span className="block h-1 w-1 rounded-full bg-white" />
-                        <span className="block h-1 w-1 rounded-full bg-white" />
-                        <span className="block h-1 w-1 rounded-full bg-white" />
-                      </span>
-                    </button>
-                  </div>
-
-                  {isVideoAsset(activeUrl) ? (
-                    <video
-                      key={`video-${activeIndex}`}
-                      src={toLandingAssetUrl(activeUrl)}
-                      controls
-                      autoPlay
-                      className="block h-full w-auto max-w-full object-contain carousel-image rounded-[12px] mx-auto"
-                    />
-                  ) : (
-                    <img
-                      key={`img-${activeIndex}`}
-                      src={toLandingAssetUrl(activeUrl)}
-                      alt={`${collectionTitle} photo ${displayIndex}`}
-                      className="block h-full w-auto max-w-full object-contain carousel-image rounded-[12px] mx-auto"
-                    />
-                  )}
-                </div>
-              </div>
-
-              <button
-                type="button"
-                onClick={onPrev}
-                className="absolute left-3 top-1/2 -translate-y-1/2 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-white text-black shadow-md transition hover:bg-[#f0f0f0]"
-                aria-label="Previous photo"
-              >
-                <span className="material-symbols-rounded text-[28px]">chevron_left</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={onNext}
-                className="absolute right-3 top-1/2 -translate-y-1/2 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-white text-black shadow-md transition hover:bg-[#f0f0f0]"
-                aria-label="Next photo"
-              >
-                <span className="material-symbols-rounded text-[28px]">chevron_right</span>
-              </button>
-            </div>
-
-            <div
-              ref={scrollContainerRef}
-              className="w-full overflow-x-auto px-10 pb-4 pt-2"
-            >
-              <div className={`relative flex items-center gap-2 pt-3 w-max ${items.length <= 10 ? "mx-auto" : ""}`}>
-                <div
-                  className="absolute top-0 left-0 h-1 w-10 bg-white rounded-full transition-transform duration-300 ease-out"
-                  style={{
-                    transform: `translateX(calc(12px + ${activeIndex} * 72px))`,
-                  }}
-                />
-
-                {items.map((url, idx) => (
-                  <div key={`thumbnail-${idx}`} className="relative flex flex-col items-center gap-1 pt-2">
-                    <button
-                      onClick={() => onSelectIndex(idx)}
-                      className={`relative h-16 w-16 shrink-0 rounded overflow-hidden transition ${
-                        idx === activeIndex ? "opacity-100" : "opacity-60 hover:opacity-100"
-                      }`}
-                      aria-label={`View photo ${idx + 1}`}
-                    >
-                      {isVideoAsset(url) ? (
-                        <>
-                          <video
-                            src={toLandingAssetUrl(url)}
-                            className="h-full w-full object-cover"
-                          />
-                          <div className="absolute inset-0 flex items-center justify-center bg-black/40">
-                            <span className="material-symbols-rounded text-white text-[20px]">play_circle</span>
-                          </div>
-                        </>
-                      ) : (
-                        <img
-                          src={toLandingAssetUrl(url)}
-                          alt={`Carousel thumbnail ${idx + 1}`}
-                          className="h-full w-full object-cover"
-                        />
-                      )}
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </>
-        )}
-      </div>
-
-      <aside
-        className="flex w-[360px] shrink-0 flex-col gap-8 overflow-y-auto bg-[#111111] p-8 text-white"
+    <MediaLightbox
+      items={items.map((url) => ({
+        url,
+        isVideo: isVideoAsset(url),
+      }))}
+      activeIndex={activeIndex}
+      onClose={onClose}
+      onNext={onNext}
+      onPrev={onPrev}
+      onSelectIndex={onSelectIndex}
+      sidebarContent={
+        <aside
+          className="flex w-[360px] shrink-0 flex-col gap-8 overflow-y-auto bg-[#111111] p-8 text-white"
         onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
       >
         <div className="flex items-start justify-between">
@@ -304,7 +114,8 @@ function CollectionLightbox({
           ) : null}
         </div>
       </aside>
-    </div>
+      }
+    />
   );
 }
 
@@ -325,6 +136,8 @@ export default function CollectionDetailComponent({
 
   const photos = images.filter((url) => !isVideoAsset(url));
   const videos = images.filter((url) => isVideoAsset(url));
+  const collectionObj = profile.collectionImages?.find(c => c.title === title);
+  const aboutText = collectionObj?.about;
 
   const displayImages =
     activeTab === "photos" ? photos :
@@ -520,8 +333,15 @@ export default function CollectionDetailComponent({
             ))}
           </div>
 
-          {/* Masonry grid */}
-          {displayImages.length === 0 ? (
+          {/* Masonry grid or About */}
+          {activeTab === "about" ? (
+            <div className="flex flex-col items-start gap-4 w-full max-w-[800px] text-left mt-8 mb-20 px-4 md:px-0">
+              <h2 className="text-[24px] font-semibold text-white">About {title}</h2>
+              <p className="text-[16px] text-[#a8a8a8] leading-relaxed whitespace-pre-wrap">
+                {aboutText || "No information provided yet."}
+              </p>
+            </div>
+          ) : displayImages.length === 0 ? (
             <div className="flex flex-col items-center gap-4 py-16 text-center">
               <p className="text-[#a8a8a8] text-[16px]">No media in this category yet.</p>
             </div>

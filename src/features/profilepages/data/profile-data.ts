@@ -31,8 +31,8 @@ export type SampleProfile = {
   };
   aboutImages?: string[];
   visitedCountryCodes: string[];
-  countryImages?: { countryCode: string; images: string[] }[];
-  collectionImages?: { title: string; images: string[] }[];
+  countryImages?: { countryCode: string; images: string[]; about?: string }[];
+  collectionImages?: { title: string; images: string[]; about?: string }[];
 };
 
 export const sampleProfiles = profilesData as unknown as SampleProfile[];

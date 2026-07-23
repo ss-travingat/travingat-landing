@@ -12,11 +12,13 @@ import imageCompression from "browser-image-compression";
 interface CountryImage {
   countryCode: string;
   images: string[];
+  about?: string;
 }
 
 interface CollectionImage {
   title: string;
   images: string[];
+  about?: string;
 }
 
 interface Profile {
@@ -1715,6 +1717,19 @@ export default function AdminProfilesPage() {
                               );
                             })}
                           </div>
+                          <Textarea
+                            placeholder={`About ${country?.name || ci.countryCode}...`}
+                            value={ci.about || ""}
+                            onChange={(e) =>
+                              setForm((prev) => ({
+                                ...prev,
+                                countryImages: prev.countryImages.map((c, i) =>
+                                  i === idx ? { ...c, about: e.target.value } : c
+                                ),
+                              }))
+                            }
+                            className="bg-white/5 border-white/10 text-white min-h-[80px]"
+                          />
                         </div>
                       );
                     })}
@@ -1887,6 +1902,19 @@ export default function AdminProfilesPage() {
                             );
                           })}
                         </div>
+                        <Textarea
+                          placeholder={`About ${ci.title}...`}
+                          value={ci.about || ""}
+                          onChange={(e) =>
+                            setForm((prev) => ({
+                              ...prev,
+                              collectionImages: prev.collectionImages.map((c, i) =>
+                                i === idx ? { ...c, about: e.target.value } : c
+                              ),
+                            }))
+                          }
+                          className="bg-white/5 border-white/10 text-white min-h-[80px]"
+                        />
                       </div>
                     ))}
                   </div>
@@ -2111,61 +2139,7 @@ export default function AdminProfilesPage() {
                 />
               </div>
 
-              {/* Stats */}
-              <div className="space-y-4 rounded-2xl border border-white/10 bg-black/20 p-4">
-                <h3 className="text-sm font-medium text-white/80 pb-2 border-b border-white/10">
-                  Stats
-                </h3>
-                <div className="grid grid-cols-3 gap-3">
-                  <div>
-                    <label className="text-sm text-white/60 block mb-1.5">
-                      Countries
-                    </label>
-                    <Input
-                      type="number"
-                      value={form.countries}
-                      onChange={(e) =>
-                        setForm((prev) => ({
-                          ...prev,
-                          countries: Number(e.target.value) || 0,
-                        }))
-                      }
-                      className="bg-white/5 border border-white/10 focus:border-[#5A45F9]"
-                    />
-                  </div>
-                  <div>
-                    <label className="text-sm text-white/60 block mb-1.5">
-                      Media
-                    </label>
-                    <Input
-                      type="number"
-                      readOnly
-                      value={
-                        form.images.gallery.length +
-                        form.countryImages.reduce((sum, c) => sum + c.images.length, 0) +
-                        form.collectionImages.reduce((sum, c) => sum + c.images.length, 0)
-                      }
-                      className="bg-white/5 border border-white/10 text-white/50"
-                    />
-                  </div>
-                  <div>
-                    <label className="text-sm text-white/60 block mb-1.5">
-                      Collections
-                    </label>
-                    <Input
-                      type="number"
-                      value={form.collections}
-                      onChange={(e) =>
-                        setForm((prev) => ({
-                          ...prev,
-                          collections: Number(e.target.value) || 0,
-                        }))
-                      }
-                      className="bg-white/5 border border-white/10 focus:border-[#5A45F9]"
-                    />
-                  </div>
-                </div>
-              </div>
+
 
               {/* Tags */}
               <div className="space-y-4 rounded-2xl border border-white/10 bg-black/20 p-4">

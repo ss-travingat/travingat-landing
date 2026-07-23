@@ -113,11 +113,6 @@ export default async function NewProfilesPage() {
   // Combine fetched profiles with demo profiles as fallback
   const allProfiles = fetchedProfiles.length > 0 ? fetchedProfiles : demoProfiles;
   
-  // Create a grid, repeating if necessary to fill space
-  const profilesForGrid = Array.from({ length: Math.max(12, allProfiles.length) }, (_, index) => {
-    return allProfiles[index % allProfiles.length];
-  });
-
   return (
     <main>
       <section id="featured" className="px-3 pb-16 pt-16 md:px-12 md:pb-20 md:pt-20 xl:px-24 xl:pb-24 xl:pt-16">
@@ -131,7 +126,7 @@ export default async function NewProfilesPage() {
         </div>
 
         <div className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2 xl:mt-16 xl:grid-cols-4 xl:gap-8">
-          {profilesForGrid.map((profile, index) => (
+          {allProfiles.map((profile, index) => (
             <Link
               key={`${profile.id}-${index}`}
               href={`/profiles/${profile.handle.replace(/^@/, "")}`}

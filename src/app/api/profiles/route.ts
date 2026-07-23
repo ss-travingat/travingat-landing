@@ -26,8 +26,8 @@ interface Profile {
   socials: { x?: string; instagram?: string; linkedin?: string; youtube?: string };
   aboutImages?: string[];
   visitedCountryCodes: string[];
-  countryImages?: { countryCode: string; images: string[] }[];
-  collectionImages?: { title: string; images: string[] }[];
+  countryImages?: { countryCode: string; images: string[]; about?: string }[];
+  collectionImages?: { title: string; images: string[]; about?: string }[];
 }
 
 async function readProfiles(): Promise<Profile[]> {
@@ -39,8 +39,18 @@ async function writeProfiles(profiles: Profile[]): Promise<void> {
 }
 
 function normalizeProfile(profile: Profile): Profile {
+  const calculatedCountries = profile.visitedCountryCodes?.length || 0;
+  const calculatedCollections = profile.collectionImages?.length || 0;
+  const galleryCount = profile.images?.gallery?.length || 0;
+  const countryMediaCount = (profile.countryImages || []).reduce((sum, c) => sum + (c.images?.length || 0), 0);
+  const collectionMediaCount = (profile.collectionImages || []).reduce((sum, c) => sum + (c.images?.length || 0), 0);
+  const calculatedMedia = galleryCount + countryMediaCount + collectionMediaCount;
+
   return {
     ...profile,
+    countries: calculatedCountries,
+    collections: calculatedCollections,
+    media: calculatedMedia,
     images: {
       cover: toLandingAssetUrl(profile.images.cover),
       avatar: toLandingAssetUrl(profile.images.avatar),
@@ -92,9 +102,12 @@ export async function POST(request: Request) {
       flagCode: body.flagCode || "",
       homelandFlagCode: body.homelandFlagCode || "",
       currentlyInFlagCode: body.currentlyInFlagCode || "",
-      countries: Number(body.countries) || 0,
-      media: Number(body.media) || 0,
-      collections: Number(body.collections) || 0,
+      countries: (body.visitedCountryCodes || []).length,
+      media: 
+        (body.images?.gallery || []).length +
+        (Array.isArray(body.countryImages) ? body.countryImages.reduce((sum: number, c: any) => sum + (c.images?.length || 0), 0) : 0) +
+        (Array.isArray(body.collectionImages) ? body.collectionImages.reduce((sum: number, c: any) => sum + (c.images?.length || 0), 0) : 0),
+      collections: (body.collectionImages || []).length,
       images: {
         cover: body.images?.cover || "",
         avatar: body.images?.avatar || "",
@@ -114,8 +127,20 @@ export async function POST(request: Request) {
       },
       aboutImages: body.aboutImages || [],
       visitedCountryCodes: body.visitedCountryCodes || [],
-      countryImages: body.countryImages || [],
-      collectionImages: body.collectionImages || [],
+      countryImages: Array.isArray(body.countryImages)
+        ? body.countryImages.map((ci: any) => ({
+            countryCode: ci.countryCode || "",
+            images: Array.isArray(ci.images) ? ci.images : [],
+            about: ci.about || "",
+          }))
+        : [],
+      collectionImages: Array.isArray(body.collectionImages)
+        ? body.collectionImages.map((ci: any) => ({
+            title: ci.title || "",
+            images: Array.isArray(ci.images) ? ci.images : [],
+            about: ci.about || "",
+          }))
+        : [],
     };
 
     profiles.push(newProfile);
