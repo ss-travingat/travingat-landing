@@ -583,8 +583,8 @@ function PhotoCarouselModal({
             {/* Image + nav arrows */}
             <div className="relative flex flex-1 min-h-0 pb-8">
               {/* Main image */}
-              <div className="flex h-full w-full items-center justify-center overflow-hidden rounded-[12px] bg-[#0a0a0a] mx-10">
-                <div className="relative group flex max-h-full max-w-full items-center justify-center">
+              <div className="relative flex flex-1 items-center justify-center px-10 min-h-0">
+                <div className="relative group inline-block h-full max-w-full text-center">
                   {/* Hover Buttons */}
                   <div className="absolute top-4 right-4 z-20 flex items-center gap-2 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
                     <button
@@ -621,14 +621,14 @@ function PhotoCarouselModal({
                       src={toLandingAssetUrl(activeItem.fileUrl)}
                       controls
                       autoPlay
-                      className="max-h-full max-w-full object-contain carousel-image"
+                      className="block h-full w-auto max-w-full object-contain carousel-image rounded-[16px] mx-auto"
                     />
                   ) : (
                     <img
                       key={`img-${activeIndex}`}
                       src={toLandingAssetUrl(activeItem?.fileUrl)}
                       alt="Carousel media"
-                      className="max-h-full max-w-full object-contain carousel-image"
+                      className="block h-full w-auto max-w-full object-contain carousel-image rounded-[16px] mx-auto"
                     />
                   )}
                 </div>
