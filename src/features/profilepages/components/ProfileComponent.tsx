@@ -1381,7 +1381,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                             index >= mobileAllMediaLimit ? "hidden min-[811px]:inline-block" : "inline-block"
                           }`}
                         >
-                          <div className="relative overflow-hidden rounded-[12px] md:rounded-2xl bg-[#111]">
+                          <div className="relative overflow-hidden rounded-[8px] md:rounded-2xl bg-[#111]">
                             {item.isVideo ? (
                               <>
                                 <video
@@ -1390,7 +1390,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                                   playsInline
                                   loop
                                   preload="metadata"
-                                  className="w-full object-cover rounded-[12px] md:rounded-2xl"
+                                  className="w-full object-cover rounded-[8px] md:rounded-2xl"
                                   onMouseEnter={(e) => e.currentTarget.play().catch(() => {})}
                                   onMouseLeave={(e) => { e.currentTarget.pause(); e.currentTarget.currentTime = 0; }}
                                   onClick={(event) => {
@@ -1415,7 +1415,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                                   alt="Uploaded media"
                                   loading="lazy"
                                   decoding="async"
-                                  className="w-full object-cover rounded-[12px] md:rounded-2xl cursor-pointer"
+                                  className="w-full object-cover rounded-[8px] md:rounded-2xl cursor-pointer"
                                   onClick={(event) => {
                                     event.preventDefault();
                                     event.stopPropagation();
