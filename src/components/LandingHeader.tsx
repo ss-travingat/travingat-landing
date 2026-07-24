@@ -8,6 +8,21 @@ function LandingHeaderContent() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [visible, setVisible] = useState(true);
   const lastScrollY = useRef(0);
+  const headerRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: globalThis.MouseEvent | globalThis.TouchEvent) {
+      if (menuOpen && headerRef.current && !headerRef.current.contains(event.target as Node)) {
+        setMenuOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("touchstart", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("touchstart", handleClickOutside);
+    };
+  }, [menuOpen]);
   const onboardingUrl = "https://app.travingat.com/";
   
   const searchParams = useSearchParams();
@@ -55,7 +70,7 @@ function LandingHeaderContent() {
   if (hasImage) return null;
 
   return (
-    <header className={`fixed top-0 left-0 right-0 z-50 bg-black/90 backdrop-blur transition-transform duration-300 ${visible ? "translate-y-0" : "-translate-y-full"} ${isProfileRoute ? "max-[810px]:hidden" : ""}`}>
+    <header ref={headerRef} className={`fixed top-0 left-0 right-0 z-50 bg-black/90 backdrop-blur transition-transform duration-300 ${visible ? "translate-y-0" : "-translate-y-full"} ${isProfileRoute ? "max-[810px]:hidden" : ""}`}>
       <div className={containerClasses}>
         <div className="h-23 xl:h-33 flex items-center justify-between relative">
           <div className="flex-1 flex items-center justify-start">
