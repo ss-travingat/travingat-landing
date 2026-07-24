@@ -1722,9 +1722,9 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
               {
               hasAboutContent ? (
                 <section className="w-full max-w-[1112px] mx-auto grid md:grid-cols-[minmax(0,1fr)_320px] lg:grid-cols-[minmax(0,1fr)_360px] gap-8 items-stretch">
-                  <article className="relative min-w-0 md:rounded-[20px] md:border md:border-[#1e1e1e] md:pt-8 md:pb-10 md:px-8 md:bg-[#111] flex flex-col gap-8">
-                    <div className="flex flex-col gap-6 px-1 py-2 md:px-0 md:py-0">
-                      <div className="flex flex-col gap-2">
+                  <article className="relative min-w-0 px-[12px] md:rounded-[20px] md:border md:border-[#1e1e1e] md:pt-8 md:pb-10 md:px-8 md:bg-[#111] flex flex-col gap-8">
+                    <div className="flex flex-col gap-[24px] md:px-0 md:py-0">
+                      <div className="flex flex-col gap-[8px]">
                         <h3 className="ds-font-display text-white text-[20px] md:text-[24px] font-medium md:font-semibold tracking-[-0.5px] leading-7 md:leading-8">About</h3>
                         <p className="text-white md:text-[#dcdcdc] text-[16px] leading-6 tracking-[-0.096px]">{profile.bio || "No bio yet."}</p>
                       </div>
