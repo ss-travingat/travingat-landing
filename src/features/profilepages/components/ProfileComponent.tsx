@@ -594,6 +594,7 @@ function PhotoCarouselModal({
 export default function ProfileComponent({ profile }: { profile: SampleProfile }) {
   const [activeTab, setActiveTab] = useState<TabKey>("all");
   const [mobileAllMediaLimit, setMobileAllMediaLimit] = useState(15);
+  const [swipeOffset, setSwipeOffset] = useState(0);
 
   // Read initial tab from URL on mount
   useEffect(() => {
@@ -653,7 +654,62 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
     }, 10);
   };
 
+  const touchStartX = useRef<number | null>(null);
+  const touchStartY = useRef<number | null>(null);
+  const touchEndX = useRef<number | null>(null);
+  const touchEndY = useRef<number | null>(null);
 
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+    touchStartY.current = e.touches[0].clientY;
+    setSwipeOffset(0);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    touchEndX.current = e.touches[0].clientX;
+    touchEndY.current = e.touches[0].clientY;
+
+    if (touchStartX.current !== null && touchStartY.current !== null) {
+      const distanceX = touchStartX.current - touchEndX.current;
+      const distanceY = touchStartY.current - touchEndY.current;
+      
+      // Only track if it's mostly a horizontal swipe
+      if (Math.abs(distanceX) > Math.abs(distanceY)) {
+        setSwipeOffset(distanceX);
+      }
+    }
+  };
+
+  const handleTouchEnd = () => {
+    if (touchStartX.current !== null && touchEndX.current !== null && touchStartY.current !== null && touchEndY.current !== null) {
+      const distanceX = touchStartX.current - touchEndX.current;
+      const distanceY = touchStartY.current - touchEndY.current;
+      const swipeThreshold = 50;
+      
+      // Ensure it's mostly a horizontal swipe, not a vertical scroll
+      if (Math.abs(distanceX) > Math.abs(distanceY) && Math.abs(distanceX) > swipeThreshold) {
+        const tabs: TabKey[] = ["all", "countries", "collections", "about"];
+        const currentIndex = tabs.indexOf(activeTab);
+
+        if (distanceX > 0) {
+          // Swipe left (next tab)
+          if (currentIndex < tabs.length - 1) {
+            handleTabChange(tabs[currentIndex + 1]);
+          }
+        } else {
+          // Swipe right (previous tab)
+          if (currentIndex > 0) {
+            handleTabChange(tabs[currentIndex - 1]);
+          }
+        }
+      }
+    }
+    touchStartX.current = null;
+    touchStartY.current = null;
+    touchEndX.current = null;
+    touchEndY.current = null;
+    setSwipeOffset(0);
+  };
 
   useEffect(() => {
     if (!openContextMenuId) return;
@@ -1107,7 +1163,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
 
   return (
     <>
-      <div className="bg-black text-white flex flex-col items-center px-[10px] pt-[10px] min-[810px]:pt-0 min-[810px]:px-[32px] min-[1200px]:px-[48px] min-[1440px]:px-[64px]">
+      <div className="bg-black text-white flex flex-col items-center px-[8px] pt-[8px] min-[810px]:pt-0 min-[810px]:px-[32px] min-[1200px]:px-[48px] min-[1440px]:px-[64px]">
 
         <main className="w-full max-w-[1728px] pb-28 md:pb-20 flex flex-col gap-10">
           <MobileHero
@@ -1286,10 +1342,15 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
           </div>
 
           {/* Mobile/iPad: icon-only tabs with sliding underline indicator */}
-          <MobileTabs activeTab={activeTab} setActiveTab={handleTabChange} />
+          <MobileTabs activeTab={activeTab} setActiveTab={handleTabChange} swipeOffset={swipeOffset} />
 
-          <div className="flex flex-col flex-1 min-[811px]:min-h-0 min-h-[calc(100vh-72px)]">
-            <div className={activeTab === "all" ? "block" : "hidden"}>
+          <div
+            className="flex flex-col flex-1 min-[811px]:min-h-0 min-h-[calc(100vh-72px)]"
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+          >
+            <div className={activeTab === "all" ? "block animate-tab-dissolve" : "hidden"}>
               {
               <section className="pb-25">
                 {allMediaItems.length === 0 ? (
@@ -1300,7 +1361,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                     </p>
                   </div>
                 ) : (
-                  <div className="columns-2 sm:columns-3 xl:columns-4 gap-3 md:gap-5">
+                  <div className="columns-2 sm:columns-3 xl:columns-4 gap-[6px] md:gap-[20px]">
                     {allMediaItems.map((item, index) => {
                       const isMenuOpen = openContextMenuId === item.id;
                       const displayCountryCode = item.countryCode || profileFlagCode;
@@ -1316,7 +1377,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                       return (
                         <div
                           key={item.id}
-                          className={`group mb-3 md:mb-5 w-full break-inside-avoid relative [-webkit-column-break-inside:avoid] ${
+                          className={`group mb-[8px] md:mb-[20px] w-full break-inside-avoid relative [-webkit-column-break-inside:avoid] ${
                             index >= mobileAllMediaLimit ? "hidden min-[811px]:inline-block" : "inline-block"
                           }`}
                         >
@@ -1449,7 +1510,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
             }
             </div>
 
-            <div className={activeTab === "countries" ? "block" : "hidden"}>
+            <div className={activeTab === "countries" ? "block animate-tab-dissolve" : "hidden"}>
               {
               <section className="pb-16">
                 {countryCards.length === 0 ? (
@@ -1471,7 +1532,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                     </div>
                   </div>
                 ) : (
-                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-x-5 gap-y-10">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-x-[8px] gap-y-[16px] md:gap-x-5 md:gap-y-10">
                     {countryCards.map((country) => {
                       const contextMenuId = `country-${country.code}`;
                       const isMenuOpen = openContextMenuId === contextMenuId;
@@ -1550,7 +1611,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
             }
             </div>
 
-            <div className={activeTab === "collections" ? "block" : "hidden"}>
+            <div className={activeTab === "collections" ? "block animate-tab-dissolve" : "hidden"}>
               {
               <section className="w-full pb-8 md:pb-12 space-y-6">
                 {collectionCards.length === 0 ? (
@@ -1573,7 +1634,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                     </div>
                   </div>
                 ) : (
-                  <div className="grid grid-cols-1 gap-x-5 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                  <div className="grid grid-cols-1 gap-x-5 gap-y-[32px] sm:gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                     {collectionCards.map((collection, idx) => {
                       const collectionHref = `/profiles/${profile.handle.replace(/^@/, "")}/collection/${idx}`;
                       const contextMenuId = `collection-${collection.id}`;
@@ -1582,7 +1643,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                         <Link
                           key={collection.id}
                           href={collectionHref}
-                          className="flex flex-col"
+                          className="flex flex-col gap-[16px]"
                         >
                           <div className="relative group">
                             <CardCarousel
@@ -1625,8 +1686,8 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                             ) : null}
                           </div>
   
-                          <div className="flex flex-col px-[6px] pt-4">
-                            <div className="flex flex-col gap-1.5 mb-3">
+                          <div className="flex flex-col px-[6px] gap-[12px]">
+                            <div className="flex flex-col gap-[8px]">
                               <p className="text-[#a1a1a1] text-[14px] leading-normal tracking-[-0.41px]">{collection.createdLabel}</p>
                               <p className="text-white text-[18px] font-semibold leading-6.5 tracking-[-0.198px] min-w-full w-min line-clamp-1">{collection.title}</p>
                             </div>
@@ -1656,17 +1717,23 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
             }
             </div>
 
-            <div className={activeTab === "about" ? "block" : "hidden"}>
+            <div className={activeTab === "about" ? "block animate-tab-dissolve" : "hidden"}>
               {
               hasAboutContent ? (
-                <section className="w-full max-w-[1112px] mx-auto grid md:grid-cols-[minmax(0,1fr)_320px] lg:grid-cols-[minmax(0,1fr)_360px] gap-6 lg:gap-8 items-stretch">
-                  <article className="relative min-w-0 md:rounded-[20px] md:border md:border-[#1e1e1e] md:pt-8 md:pb-10 md:px-8 md:bg-[#111] flex flex-col gap-6 md:gap-8">
-                    <div className="flex flex-col gap-4">
-                      <h3 className="ds-font-display text-white text-[20px] md:text-[24px] font-medium md:font-semibold tracking-[-0.5px] leading-7 md:leading-8">About</h3>
-                      <p className="text-[#dcdcdc] text-[16px] leading-6 tracking-[-0.096px]">{profile.bio || "No bio yet."}</p>
-                    </div>
+                <section className="w-full max-w-[1112px] mx-auto grid md:grid-cols-[minmax(0,1fr)_320px] lg:grid-cols-[minmax(0,1fr)_360px] gap-8 items-stretch">
+                  <article className="relative min-w-0 md:rounded-[20px] md:border md:border-[#1e1e1e] md:pt-8 md:pb-10 md:px-8 md:bg-[#111] flex flex-col gap-8">
+                    <div className="flex flex-col gap-6 px-1 py-2 md:px-0 md:py-0">
+                      <div className="flex flex-col gap-2">
+                        <h3 className="ds-font-display text-white text-[20px] md:text-[24px] font-medium md:font-semibold tracking-[-0.5px] leading-7 md:leading-8">About</h3>
+                        <p className="text-white md:text-[#dcdcdc] text-[16px] leading-6 tracking-[-0.096px]">{profile.bio || "No bio yet."}</p>
+                      </div>
   
-                    <div className="flex flex-nowrap gap-2 md:gap-3 overflow-x-auto no-scrollbar snap-x w-full">
+                    <div 
+                      className="flex flex-nowrap gap-2 md:gap-3 overflow-x-auto no-scrollbar snap-x w-full"
+                      onTouchStart={(e) => e.stopPropagation()}
+                      onTouchMove={(e) => e.stopPropagation()}
+                      onTouchEnd={(e) => e.stopPropagation()}
+                    >
                       {aboutPhotos.length > 0 ? (
                         aboutPhotos.map((src, idx) => (
                           <div key={`${src}-${idx}`} className="w-[160px] md:w-auto md:flex-1 shrink-0 min-w-0 rounded-[8px] md:rounded-[12px] overflow-hidden bg-[#151515] aspect-square snap-start">
@@ -1679,10 +1746,11 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                         </div>
                       )}
                     </div>
+                  </div>
   
                     <hr className="border-t border-[#1e1e1e] w-full m-0" />
   
-                    <div className="flex flex-col gap-6">
+                    <div className="flex flex-col gap-3 md:gap-6">
                       <h4 className="ds-font-display text-white text-[20px] md:text-[24px] font-medium md:font-semibold tracking-[-0.5px] leading-7 md:leading-8">My Interests</h4>
                       {profile.interests.length > 0 ? (
                         <div className="flex flex-wrap gap-2">
@@ -1698,7 +1766,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                     </div>
                   </article>
   
-                  <aside className="rounded-[16px] border border-[#1e1e1e] p-6 bg-[#111] flex flex-col gap-5 mt-4 md:mt-0">
+                  <aside className="rounded-[16px] border border-[#1e1e1e] p-6 bg-[#111] flex flex-col gap-5">
                     <div className="flex flex-col gap-2 pb-6 border-b border-[#1e1e1e]">
                       <p className="text-[#989898] text-[14px] font-normal leading-5 tracking-[-0.084px]">Username</p>
                       <div className="flex flex-col gap-1">
@@ -1710,10 +1778,10 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                       </div>
                     </div>
   
-                    <div className="flex flex-col gap-5">
-                      <div className="flex flex-col gap-3">
+                    <div className="flex flex-col gap-6 md:gap-5">
+                      <div className="flex flex-col gap-2 md:gap-3">
                         <p className="text-[#989898] text-[14px] font-normal leading-5 tracking-[-0.084px]">Home land</p>
-                        <div className="flex items-center gap-2 text-white text-[16px] font-medium tracking-[-0.096px]">
+                        <div className="flex items-center gap-1.5 md:gap-2 text-white text-[16px] font-medium tracking-[-0.096px]">
                           {homelandFlagSrc ? (
                             <img
                               src={homelandFlagSrc}
@@ -1729,9 +1797,9 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                         </div>
                       </div>
   
-                      <div className="flex flex-col gap-3">
+                      <div className="flex flex-col gap-2 md:gap-3">
                         <p className="text-[#989898] text-[14px] font-normal leading-5 tracking-[-0.084px]">Currently in</p>
-                        <div className="flex items-center gap-2 text-white text-[16px] font-medium tracking-[-0.096px]">
+                        <div className="flex items-center gap-1.5 md:gap-2 text-white text-[16px] font-medium tracking-[-0.096px]">
                           {currentlyInFlagSrc ? (
                             <img
                               src={currentlyInFlagSrc}
@@ -1747,10 +1815,10 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                         </div>
                       </div>
   
-                      <div className="flex flex-col gap-3">
+                      <div className="flex flex-col gap-2 md:gap-3">
                         <p className="text-[#989898] text-[14px] font-normal leading-5 tracking-[-0.084px]">Speaks</p>
                         {profile.languages.length > 0 ? (
-                          <div className="flex flex-wrap gap-2">
+                          <div className="flex flex-wrap gap-1.5 md:gap-2">
                             {profile.languages.map((language) => (
                               <span key={language} className="px-3.5 py-1.5 rounded-full bg-[#111] border border-[#1e1e1e] text-white text-[14px] leading-5 tracking-[-0.084px]">
                                 {language}

@@ -501,6 +501,16 @@ body {
   animation: page-in 280ms ease-out forwards;
 }
 
+/* ── Tab transition ── */
+@keyframes tab-dissolve {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.animate-tab-dissolve {
+  animation: tab-dissolve 200ms ease-in-out forwards;
+}
+
 /* ── Travingat loader ── */
 @keyframes plane-orbit {
   from { transform: rotate(0deg); }

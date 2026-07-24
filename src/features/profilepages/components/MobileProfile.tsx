@@ -228,9 +228,10 @@ export function MobileHero({
 export interface MobileTabsProps {
   activeTab: TabKey;
   setActiveTab: (tab: TabKey) => void;
+  swipeOffset?: number;
 }
 
-export function MobileTabs({ activeTab, setActiveTab }: MobileTabsProps) {
+export function MobileTabs({ activeTab, setActiveTab, swipeOffset = 0 }: MobileTabsProps) {
   const mobileTabs: { key: TabKey }[] = [
     { key: "all" },
     { key: "countries" },
@@ -238,6 +239,20 @@ export function MobileTabs({ activeTab, setActiveTab }: MobileTabsProps) {
     { key: "about" },
   ];
   const activeIndex = mobileTabs.findIndex((t) => t.key === activeTab);
+
+  let offsetPercent = 0;
+  if (swipeOffset !== 0 && typeof window !== "undefined") {
+    // We divide by (window.innerWidth / mobileTabs.length) so it tracks the finger 1:1
+    const fraction = swipeOffset / (window.innerWidth / mobileTabs.length);
+    offsetPercent = Math.max(-1, Math.min(1, fraction)) * 100;
+    
+    // Prevent dragging highlight past the edges
+    if (activeIndex === 0 && offsetPercent < 0) offsetPercent = 0;
+    if (activeIndex === mobileTabs.length - 1 && offsetPercent > 0) offsetPercent = 0;
+  }
+  
+  const finalTranslate = activeIndex * 100 + offsetPercent;
+  const isDragging = swipeOffset !== 0;
 
   return (
     <div id="profile-mobile-tabs" className="flex min-[811px]:hidden flex-col w-full border-b border-black-400 sticky top-[72px] z-40 bg-black">
@@ -261,8 +276,8 @@ export function MobileTabs({ activeTab, setActiveTab }: MobileTabsProps) {
         className="absolute bottom-0 h-0.5 bg-white rounded-full"
         style={{
           width: `${100 / mobileTabs.length}%`,
-          transform: `translateX(${activeIndex * 100}%)`,
-          transition: "transform 300ms cubic-bezier(0.4, 0, 0.2, 1)",
+          transform: `translateX(${finalTranslate}%)`,
+          transition: isDragging ? "none" : "transform 300ms cubic-bezier(0.4, 0, 0.2, 1)",
         }}
       />
     </div>
