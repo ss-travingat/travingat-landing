@@ -166,7 +166,7 @@ export function MobileHero({
           </div>
         </div>
 
-        <div className="flex flex-col items-center gap-[8px] w-full">
+        <div className="flex flex-col items-center gap-[4px] w-full">
           <div className="flex items-center justify-center gap-1.5 text-[#696969] text-[14px] leading-[20px] tracking-[-0.5px]">
             {profileFlagSrc ? (
               <img
@@ -181,8 +181,8 @@ export function MobileHero({
             )}
             <span>{basedIn}</span>
           </div>
-          <h1 className="text-white text-[20px] leading-normal tracking-[-0.41px] font-semibold text-center w-full">{displayName}</h1>
-          <p className="text-[#a8a8a8] text-[14px] leading-normal tracking-[-0.5px] text-center w-full">{handle}</p>
+          <h1 className="text-white text-[20px] leading-[24px] tracking-[-0.41px] font-semibold text-center w-full">{displayName}</h1>
+          <p className="text-[#a8a8a8] text-[14px] leading-[20px] tracking-[-0.5px] text-center w-full">{handle}</p>
         </div>
 
         <div className="flex flex-wrap items-start justify-center gap-[4px] px-[6px] w-full">
@@ -206,28 +206,28 @@ export function MobileHero({
         </div>
 
         {/* Mobile Stats Container */}
-        <div className="bg-black-900 flex items-center justify-center gap-[20px] rounded-[12px] w-full pt-[18px] pb-[20px] px-[20px]">
-          <div className="flex flex-1 flex-col items-center justify-center gap-[2px]">
-            <p className="ds-font-display text-[32px] font-semibold leading-[40px] tracking-[-0.5px] text-white">
+        <div className="bg-[#111] flex items-center justify-center gap-[20px] rounded-[12px] w-full pt-[18px] pb-[20px] px-[20px]">
+          <div className="flex flex-1 flex-col items-center justify-center gap-[4px]">
+            <p className="ds-font-display text-[24px] font-semibold leading-[32px] tracking-[-0.5px] text-white">
               {profile.countries}
             </p>
-            <p className="text-[14px] font-normal leading-[20px] tracking-[-0.084px] text-[#999]">
+            <p className="text-[14px] font-normal leading-[20px] tracking-[-0.084px] text-[#989898]">
               Countries
             </p>
           </div>
-          <div className="flex flex-1 flex-col items-center justify-center gap-[2px]">
-            <p className="ds-font-display text-[32px] font-semibold leading-[40px] tracking-[-0.5px] text-white">
+          <div className="flex flex-1 flex-col items-center justify-center gap-[4px]">
+            <p className="ds-font-display text-[24px] font-semibold leading-[32px] tracking-[-0.5px] text-white">
               {profile.media}
             </p>
-            <p className="text-[14px] font-normal leading-[20px] tracking-[-0.084px] text-[#999]">
+            <p className="text-[14px] font-normal leading-[20px] tracking-[-0.084px] text-[#989898]">
               All media
             </p>
           </div>
-          <div className="flex flex-1 flex-col items-center justify-center gap-[2px]">
-            <p className="ds-font-display text-[32px] font-semibold leading-[40px] tracking-[-0.5px] text-white">
+          <div className="flex flex-1 flex-col items-center justify-center gap-[4px]">
+            <p className="ds-font-display text-[24px] font-semibold leading-[32px] tracking-[-0.5px] text-white">
               {profile.collections}
             </p>
-            <p className="text-[14px] font-normal leading-[20px] tracking-[-0.084px] text-[#999]">
+            <p className="text-[14px] font-normal leading-[20px] tracking-[-0.084px] text-[#989898]">
               Collections
             </p>
           </div>
@@ -270,7 +270,7 @@ export function MobileTabs({ activeTab, setActiveTab, swipeOffset = 0 }: MobileT
   const isDragging = swipeOffset !== 0;
 
   return (
-    <div id="profile-mobile-tabs" className="flex min-[811px]:hidden flex-col w-full border-b border-black-400 sticky top-[72px] z-40 bg-black">
+    <div id="profile-mobile-tabs" className="flex min-[811px]:hidden flex-col w-full border-b border-[#252525] sticky top-[72px] z-40 bg-black">
       <div className="flex items-center w-full">
         {mobileTabs.map((tab) => (
           <button
@@ -308,7 +308,7 @@ export interface MobileActionBarProps {
 
 export function MobileActionBar({ onFollowClick }: MobileActionBarProps) {
   return (
-    <div className="md:hidden fixed left-1/2 -translate-x-1/2 bottom-[25px] z-40 rounded-full backdrop-blur-[6px] bg-[rgba(255,255,255,0.12)] border border-[rgba(255,255,255,0.1)] px-[9px] py-[8px] shadow-[0px_12px_12px_0px_rgba(0,0,0,0.12)] flex items-center overflow-clip w-[calc(100%-20px)] max-w-[600px]">
+    <div className="md:hidden fixed left-1/2 -translate-x-1/2 bottom-[12px] z-40 rounded-full backdrop-blur-[6px] bg-[rgba(255,255,255,0.12)] border border-[rgba(255,255,255,0.1)] px-[9px] py-[8px] shadow-[0px_12px_12px_0px_rgba(0,0,0,0.12)] flex items-center overflow-clip w-[calc(100%-20px)] max-w-[600px]">
       <div className="flex gap-[8px] items-center w-full">
         <button
           onClick={onFollowClick}

@@ -1165,7 +1165,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
     <>
       <div className="bg-black text-white flex flex-col items-center px-[8px] pt-[8px] min-[810px]:pt-0 min-[810px]:px-[32px] min-[1200px]:px-[48px] min-[1440px]:px-[64px]">
 
-        <main className="w-full max-w-[1728px] pb-28 md:pb-20 flex flex-col gap-10">
+        <main className="w-full max-w-[1728px] pb-[80px] md:pb-20 flex flex-col gap-[12px] min-[811px]:gap-10">
           <MobileHero
             profile={profile}
             displayName={displayName}
@@ -1341,6 +1341,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
             </button>
           </div>
 
+        <div className="flex flex-col gap-[12px] md:gap-0 w-full">
           {/* Mobile/iPad: icon-only tabs with sliding underline indicator */}
           <MobileTabs activeTab={activeTab} setActiveTab={handleTabChange} swipeOffset={swipeOffset} />
 
@@ -1872,7 +1873,8 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
             </div>
             <ProfileFooter className="mt-auto min-[811px]:hidden" />
           </div>
-          <ProfileFooter className="max-[810px]:hidden mt-10" />
+        </div>
+        <ProfileFooter className="max-[810px]:hidden mt-10" />
         </main>
       </div>
 
