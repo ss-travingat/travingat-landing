@@ -86,7 +86,7 @@ export default function CardCarousel({
             <span className="material-symbols-rounded text-[20px]">chevron_right</span>
           </button>
 
-          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center justify-center gap-1.5 z-10">
+          <div className="hidden md:flex absolute bottom-3 left-1/2 -translate-x-1/2 items-center justify-center gap-1.5 z-10">
             {displayImages.map((_, i) => (
               <div
                 key={i}

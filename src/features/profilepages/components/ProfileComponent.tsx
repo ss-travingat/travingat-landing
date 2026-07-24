@@ -1145,10 +1145,10 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
   const socialRows = useMemo(() => {
     const { x, instagram, linkedin, youtube } = profile.socials;
     const rows: { key: string; label: string; url: string }[] = [];
-    if (x) rows.push({ key: "x", label: `@${x}`, url: `https://x.com/${x}` });
-    if (instagram) rows.push({ key: "instagram", label: `@${instagram}`, url: `https://instagram.com/${instagram}` });
+    if (x) rows.push({ key: "x", label: x, url: `https://x.com/${x}` });
+    if (instagram) rows.push({ key: "instagram", label: instagram, url: `https://instagram.com/${instagram}` });
     if (linkedin) rows.push({ key: "linkedin", label: linkedin, url: `https://linkedin.com/in/${linkedin}` });
-    if (youtube) rows.push({ key: "youtube", label: `@${youtube}`, url: `https://youtube.com/@${youtube}` });
+    if (youtube) rows.push({ key: "youtube", label: youtube, url: `https://youtube.com/@${youtube}` });
     return rows;
   }, [profile.socials]);
 
@@ -1687,23 +1687,23 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                             ) : null}
                           </div>
   
-                          <div className="flex flex-col px-[6px] gap-[12px]">
-                            <div className="flex flex-col gap-[8px]">
-                              <p className="text-[#a1a1a1] text-[14px] leading-normal tracking-[-0.41px]">{collection.createdLabel}</p>
-                              <p className="text-white text-[18px] font-semibold leading-6.5 tracking-[-0.198px] min-w-full w-min line-clamp-1">{collection.title}</p>
+                          <div className="flex flex-col px-[4px] gap-[12px]">
+                            <div className="flex flex-col gap-[4px]">
+                              <p className="text-[#646464] text-[12px] leading-[16px] tracking-normal">{collection.createdLabel}</p>
+                              <p className="text-white text-[14px] font-medium leading-[20px] tracking-[-0.084px] min-w-full w-min line-clamp-1">{collection.title}</p>
                             </div>
                             {/* Hidden countries for now as per design request until Admin CMS supports collection country multi-select */}
                             <div className="flex flex-wrap items-center gap-1.5">
                               {collection.countries.map((country) => (
                                 <span
                                   key={`${collection.id}-${country}`}
-                                  className="backdrop-blur-[2px] bg-black-800 border border-[#262626] border-solid flex items-center justify-center py-1 px-2.5 rounded-[6px] text-[#a1a1a1] text-[12px] leading-none tracking-[-0.408px]"
+                                  className="backdrop-blur-[2px] bg-[#161616] border border-[#252525] border-solid flex items-center justify-center py-[4px] px-[8px] rounded-full text-[#989898] text-[12px] leading-[16px] font-normal tracking-normal"
                                 >
                                   {country}
                                 </span>
                               ))}
                               {collection.countryOverflowCount > 0 ? (
-                                <span className="backdrop-blur-[2px] bg-black-800 border border-[#262626] border-solid flex items-center justify-center py-1 px-2.5 rounded-[6px] text-[#a1a1a1] text-[12px] leading-none tracking-[-0.408px]">
+                                <span className="backdrop-blur-[2px] bg-[#161616] border border-[#252525] border-solid flex items-center justify-center py-[4px] px-[8px] rounded-full text-[#989898] text-[12px] leading-[16px] font-normal tracking-normal">
                                   +{collection.countryOverflowCount}
                                 </span>
                               ) : null}
