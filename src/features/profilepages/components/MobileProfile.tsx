@@ -279,8 +279,7 @@ export function MobileTabs({ activeTab, setActiveTab, swipeOffset = 0 }: MobileT
               navigator.vibrate?.(8);
               setActiveTab(tab.key);
             }}
-            className={`flex-1 flex items-center justify-center px-6 py-4 transition-all duration-200 ${activeTab === tab.key ? "opacity-100" : "opacity-40"
-              }`}
+            className="flex-1 flex items-center justify-center px-6 py-4 transition-all duration-200 opacity-100"
           >
             <img src={`/icons/tab-${tab.key}.svg`} alt={`${tab.key} tab`} className="w-[24px] h-[24px]" />
           </button>
