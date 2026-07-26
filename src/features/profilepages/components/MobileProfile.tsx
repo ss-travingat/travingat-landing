@@ -15,47 +15,48 @@ function toFlagAssetPath(flagCode?: string): string | undefined {
 // ==========================================
 // CUSTOM HOOK: NAVBAR VISIBILITY
 // ==========================================
-export function useNavbarVisibility(forceShow = false) {
-  const [isHidden, setIsHidden] = useState(false);
+export function useNavbarVisibility(menuOpen = false) {
   const lastScrollY = useRef(0);
-  const upScrollY = useRef(0);
-  const lockAnchorScrollY = useRef<number | null>(null);
+  const offsetRef = useRef(0);
 
   useEffect(() => {
+    const updateDOM = () => {
+      const navbarEl = document.getElementById("profile-mobile-navbar");
+      const tabsEl = document.getElementById("profile-mobile-tabs");
+      if (navbarEl) navbarEl.style.transform = `translateY(-${offsetRef.current}px)`;
+      if (tabsEl) tabsEl.style.top = `${72 - offsetRef.current}px`;
+    };
+
     const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-      
-      if (currentScrollY <= 24) {
-        setIsHidden(false);
-        lockAnchorScrollY.current = null;
-      } else if (currentScrollY > lastScrollY.current) {
-        const tabsEl = document.getElementById("profile-mobile-tabs");
-        const isTabsLocked = tabsEl ? tabsEl.getBoundingClientRect().top <= 73 : false;
-        
-        if (isTabsLocked) {
-          if (lockAnchorScrollY.current === null) {
-            lockAnchorScrollY.current = currentScrollY;
-          }
-          if (currentScrollY - lockAnchorScrollY.current > 120) {
-            setIsHidden(true);
-          }
-        } else {
-          lockAnchorScrollY.current = null;
-        }
-        upScrollY.current = currentScrollY;
-      } else if (currentScrollY < lastScrollY.current) {
-        if (upScrollY.current - currentScrollY > 60) {
-          setIsHidden(false);
-        }
-        lockAnchorScrollY.current = null;
+      if (menuOpen) {
+        offsetRef.current = 0;
+        updateDOM();
+        return;
       }
+      
+      const currentScrollY = window.scrollY;
+      const delta = currentScrollY - lastScrollY.current;
+      
+      const tabsEl = document.getElementById("profile-mobile-tabs");
+      const isTabsLocked = tabsEl ? tabsEl.getBoundingClientRect().top <= (72 - offsetRef.current + 2) : false;
+
+      if (currentScrollY <= 24) {
+        offsetRef.current = 0;
+      } else {
+        if (delta > 0 && isTabsLocked) {
+          offsetRef.current = Math.min(72, offsetRef.current + delta);
+        } else if (delta < 0) {
+          offsetRef.current = Math.max(0, offsetRef.current + delta);
+        }
+      }
+      
+      updateDOM();
       lastScrollY.current = currentScrollY;
     };
+
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  return forceShow ? false : isHidden;
+  }, [menuOpen]);
 }
 
 // ==========================================
@@ -65,7 +66,7 @@ export function MobileProfileNavbar({ profile }: { profile?: any }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
-  const isHidden = useNavbarVisibility(menuOpen);
+  useNavbarVisibility(menuOpen);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent | TouchEvent) {
@@ -101,7 +102,7 @@ export function MobileProfileNavbar({ profile }: { profile?: any }) {
   };
 
   return (
-    <div ref={menuRef} className={`fixed top-0 left-0 w-full z-50 flex flex-col pointer-events-none transition-transform duration-300 ${isHidden ? "-translate-y-full" : "translate-y-0"}`}>
+    <div id="profile-mobile-navbar" ref={menuRef} className="fixed top-0 left-0 w-full z-50 flex flex-col pointer-events-none">
       <div className={`flex items-center justify-between px-[28px] pt-[20px] pb-[16px] pointer-events-auto transition-colors duration-300 ${isScrolled ? "bg-black" : "bg-gradient-to-b from-black/50 to-transparent"}`}>
         {isScrolled && profile ? (
           <div className="flex items-center gap-2">
@@ -319,7 +320,6 @@ export interface MobileTabsProps {
 }
 
 export function MobileTabs({ activeTab, setActiveTab, swipeOffset = 0 }: MobileTabsProps) {
-  const isNavbarHidden = useNavbarVisibility();
   const mobileTabs: { key: TabKey }[] = [
     { key: "all" },
     { key: "countries" },
@@ -343,7 +343,7 @@ export function MobileTabs({ activeTab, setActiveTab, swipeOffset = 0 }: MobileT
   const isDragging = swipeOffset !== 0;
 
   return (
-    <div id="profile-mobile-tabs" className={`flex min-[811px]:hidden flex-col w-full border-b border-[#252525] sticky z-40 bg-black transition-all duration-300 ${isNavbarHidden ? "top-0" : "top-[72px]"}`}>
+    <div id="profile-mobile-tabs" className="flex min-[811px]:hidden flex-col w-[calc(100%+16px)] -mx-[8px] border-b border-[#252525] sticky top-[72px] z-40 bg-black">
       <div className="flex items-center w-full">
         {mobileTabs.map((tab) => (
           <button

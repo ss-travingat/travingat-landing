@@ -147,7 +147,7 @@ function SocialIcon({ platform, className = "w-5 h-5" }: { platform: string; var
   if (platform === "linkedin") {
     return (
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden="true">
-        <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+        <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
       </svg>
     );
   }
@@ -211,75 +211,74 @@ export function ContextMenu({
         }}
       >
         <div className="flex flex-col gap-5">
-        {showViewAction && (kind === "media" || kind === "country" || kind === "collection") && (
+          {showViewAction && (kind === "media" || kind === "country" || kind === "collection") && (
+            <button
+              type="button"
+              role="menuitem"
+              onClick={(event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                handleView();
+              }}
+              disabled={!viewHref}
+              className={`flex w-full items-center gap-3 text-[14px] font-normal text-white transition ${viewHref ? "hover:text-[#d4d4d4]" : "opacity-50 cursor-not-allowed"
+                }`}
+            >
+              <span className="material-symbols-rounded text-[20px]">folder</span>
+              <span>{viewLabel}</span>
+              {flagSrc ? (
+                <div className="ml-auto flex items-center justify-center rounded-[4px] overflow-hidden shadow-sm w-[24px] h-[15.6px] flex-shrink-0">
+                  <img
+                    src={flagSrc}
+                    alt=""
+                    className="h-full w-full object-cover"
+                  />
+                </div>
+              ) : null}
+            </button>
+          )}
+
           <button
             type="button"
             role="menuitem"
             onClick={(event) => {
               event.preventDefault();
               event.stopPropagation();
-              handleView();
+              handleShare();
             }}
-            disabled={!viewHref}
-            className={`flex w-full items-center gap-3 text-[14px] font-normal text-white transition ${
-              viewHref ? "hover:text-[#d4d4d4]" : "opacity-50 cursor-not-allowed"
-            }`}
+            className="flex w-full items-center gap-3 text-[14px] font-normal text-white hover:text-[#d4d4d4] transition-colors"
           >
-            <span className="material-symbols-rounded text-[20px]">folder</span>
-            <span>{viewLabel}</span>
-            {flagSrc ? (
-              <div className="ml-auto flex items-center justify-center rounded-[4px] overflow-hidden shadow-sm w-[24px] h-[15.6px] flex-shrink-0">
-                <img
-                  src={flagSrc}
-                  alt=""
-                  className="h-full w-full object-cover"
-                />
-              </div>
-            ) : null}
+            <span className="material-symbols-rounded text-[20px]">ios_share</span>
+            <span>{shareLabel}</span>
           </button>
-        )}
 
-        <button
-          type="button"
-          role="menuitem"
-          onClick={(event) => {
-            event.preventDefault();
-            event.stopPropagation();
-            handleShare();
-          }}
-          className="flex w-full items-center gap-3 text-[14px] font-normal text-white hover:text-[#d4d4d4] transition-colors"
-        >
-          <span className="material-symbols-rounded text-[20px]">ios_share</span>
-          <span>{shareLabel}</span>
-        </button>
+          <button
+            type="button"
+            role="menuitem"
+            onClick={(event) => {
+              event.preventDefault();
+              event.stopPropagation();
+              setIsWaitlistOpen(true);
+            }}
+            className="flex w-full items-center gap-3 text-[14px] font-normal text-white hover:text-[#d4d4d4] transition-colors"
+          >
+            <span className="material-symbols-rounded text-[20px]">favorite_border</span>
+            <span>Add to favorites</span>
+          </button>
 
-        <button
-          type="button"
-          role="menuitem"
-          onClick={(event) => {
-            event.preventDefault();
-            event.stopPropagation();
-            setIsWaitlistOpen(true);
-          }}
-          className="flex w-full items-center gap-3 text-[14px] font-normal text-white hover:text-[#d4d4d4] transition-colors"
-        >
-          <span className="material-symbols-rounded text-[20px]">favorite_border</span>
-          <span>Add to favorites</span>
-        </button>
-
-        <button
-          type="button"
-          role="menuitem"
-          onClick={(event) => {
-            event.preventDefault();
-            event.stopPropagation();
-            onClose();
-          }}
-          className="flex w-full items-center gap-3 text-[14px] font-normal text-white hover:text-[#d4d4d4] transition-colors"
-        >
-          <span className="material-symbols-rounded text-[20px]">block</span>
-          <span>Report</span>
-        </button>
+          <button
+            type="button"
+            role="menuitem"
+            onClick={(event) => {
+              event.preventDefault();
+              event.stopPropagation();
+              onClose();
+            }}
+            className="flex w-full items-center gap-3 text-[14px] font-normal text-white hover:text-[#d4d4d4] transition-colors"
+          >
+            <span className="material-symbols-rounded text-[20px]">block</span>
+            <span>Report</span>
+          </button>
         </div>
       </div>
 
@@ -358,7 +357,7 @@ function ShareCard({
   };
 
   const handleCopyLink = () => {
-    navigator.clipboard.writeText(data.shareUrl).catch(() => {});
+    navigator.clipboard.writeText(data.shareUrl).catch(() => { });
     setIsLinkCopied(true);
     window.setTimeout(() => setIsLinkCopied(false), 1800);
   };
@@ -442,9 +441,8 @@ function ShareCard({
           <button
             type="button"
             onClick={handleCopyLink}
-            className={`w-full flex items-center justify-center rounded-full px-4 py-3 text-[14px] font-medium tracking-[-0.084px] transition-all duration-200 ${
-              isLinkCopied ? "bg-black text-white" : "bg-white text-black hover:bg-[#ececec]"
-            }`}
+            className={`w-full flex items-center justify-center rounded-full px-4 py-3 text-[14px] font-medium tracking-[-0.084px] transition-all duration-200 ${isLinkCopied ? "bg-black text-white" : "bg-white text-black hover:bg-[#ececec]"
+              }`}
           >
             <span className={isLinkCopied ? "inline-flex items-center gap-2 animate-pulse" : "inline-flex items-center gap-2"}>
               <span className="material-symbols-rounded text-[18px]">{isLinkCopied ? "link" : "content_copy"}</span>
@@ -511,81 +509,81 @@ function PhotoCarouselModal({
           className="flex w-[360px] shrink-0 flex-col gap-8 overflow-y-auto bg-[#111111] p-8 text-white"
           onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
         >
-        {/* Avatar + close */}
-        <div className="flex items-start justify-between">
-          <div className="h-[72px] w-[72px] overflow-hidden rounded-2xl">
-            <img src={avatarSrc} alt={profileName} className="h-full w-full object-cover" />
+          {/* Avatar + close */}
+          <div className="flex items-start justify-between">
+            <div className="h-[72px] w-[72px] overflow-hidden rounded-2xl">
+              <img src={avatarSrc} alt={profileName} className="h-full w-full object-cover" />
+            </div>
+            <button
+              type="button"
+              onClick={onClose}
+              className="flex h-8 w-8 items-center justify-center text-[#666] transition hover:text-white"
+              aria-label="Close"
+            >
+              <span className="material-symbols-rounded text-[24px]">close</span>
+            </button>
           </div>
-          <button
-            type="button"
-            onClick={onClose}
-            className="flex h-8 w-8 items-center justify-center text-[#666] transition hover:text-white"
-            aria-label="Close"
-          >
-            <span className="material-symbols-rounded text-[24px]">close</span>
-          </button>
-        </div>
 
-        {/* Profile info */}
-        <div className="flex flex-col gap-1">
+          {/* Profile info */}
+          <div className="flex flex-col gap-1">
+            <div className="flex items-center gap-2">
+              {profileFlagSrc ? (
+                <img src={profileFlagSrc} alt="" className="h-[15.6px] w-6 rounded-[2px] object-cover" />
+              ) : null}
+              <span className="text-[14px] font-normal leading-5 tracking-[-0.084px] text-[#989898]">{profileName}</span>
+            </div>
+            <p className="text-[18px] font-medium leading-6 tracking-[-0.198px] text-white">{profileHandle}</p>
+          </div>
+
+          {/* Follow / Connect / More */}
           <div className="flex items-center gap-2">
-            {profileFlagSrc ? (
-              <img src={profileFlagSrc} alt="" className="h-[15.6px] w-6 rounded-[2px] object-cover" />
-            ) : null}
-            <span className="text-[14px] font-normal leading-5 tracking-[-0.084px] text-[#989898]">{profileName}</span>
+            <button
+              type="button"
+              className="h-[38px] flex-1 rounded-full bg-white text-[14px] font-medium text-black transition hover:bg-[#e8e8e8]"
+            >
+              Follow
+            </button>
+            <button
+              type="button"
+              className="h-[38px] flex-1 rounded-full border border-[#2e2e2e] bg-[#1a1a1a] text-[14px] font-medium text-white transition hover:bg-[#222]"
+            >
+              Connect
+            </button>
+            <button
+              type="button"
+              aria-label="More options"
+              className="grid h-[38px] w-[38px] place-items-center rounded-full border border-[#2e2e2e] bg-[#1a1a1a] text-white transition hover:bg-[#222]"
+            >
+              <span className="grid grid-cols-2 gap-1.5">
+                <span className="h-1 w-1 rounded-full bg-white" />
+                <span className="h-1 w-1 rounded-full bg-white" />
+                <span className="h-1 w-1 rounded-full bg-white" />
+                <span className="h-1 w-1 rounded-full bg-white" />
+              </span>
+            </button>
           </div>
-          <p className="text-[18px] font-medium leading-6 tracking-[-0.198px] text-white">{profileHandle}</p>
-        </div>
 
-        {/* Follow / Connect / More */}
-        <div className="flex items-center gap-2">
-          <button
-            type="button"
-            className="h-[38px] flex-1 rounded-full bg-white text-[14px] font-medium text-black transition hover:bg-[#e8e8e8]"
-          >
-            Follow
-          </button>
-          <button
-            type="button"
-            className="h-[38px] flex-1 rounded-full border border-[#2e2e2e] bg-[#1a1a1a] text-[14px] font-medium text-white transition hover:bg-[#222]"
-          >
-            Connect
-          </button>
-          <button
-            type="button"
-            aria-label="More options"
-            className="grid h-[38px] w-[38px] place-items-center rounded-full border border-[#2e2e2e] bg-[#1a1a1a] text-white transition hover:bg-[#222]"
-          >
-            <span className="grid grid-cols-2 gap-1.5">
-              <span className="h-1 w-1 rounded-full bg-white" />
-              <span className="h-1 w-1 rounded-full bg-white" />
-              <span className="h-1 w-1 rounded-full bg-white" />
-              <span className="h-1 w-1 rounded-full bg-white" />
-            </span>
-          </button>
-        </div>
-
-        {/* Country + description */}
-        <div className="flex flex-col gap-3">
-          <div className="flex items-center gap-2">
-            {countryFlagSrc ? (
-              <img src={countryFlagSrc} alt="" className="h-[21.3px] w-8 rounded-[3.27px] object-cover" />
+          {/* Country + description */}
+          <div className="flex flex-col gap-3">
+            <div className="flex items-center gap-2">
+              {countryFlagSrc ? (
+                <img src={countryFlagSrc} alt="" className="h-[21.3px] w-8 rounded-[3.27px] object-cover" />
+              ) : null}
+              <p className="text-[24px] font-semibold leading-[32px] tracking-[-0.5px] text-[#ededed] font-display">
+                {countryName || ""}
+              </p>
+            </div>
+            {description ? (
+              <p className="text-[16px] font-normal leading-[24px] tracking-[-0.096px] text-[#dcdcdc] whitespace-pre-wrap">{description}</p>
             ) : null}
-            <p className="text-[24px] font-semibold leading-[32px] tracking-[-0.5px] text-[#ededed] font-display">
-              {countryName || ""}
-            </p>
           </div>
-          {description ? (
-            <p className="text-[16px] font-normal leading-[24px] tracking-[-0.096px] text-[#dcdcdc] whitespace-pre-wrap">{description}</p>
+
+          {quote ? (
+            <div className="border-t border-[#222] pt-6">
+              <p className="text-[16px] font-normal leading-[24px] tracking-[-0.096px] text-[#dcdcdc] whitespace-pre-wrap">{quote}</p>
+            </div>
           ) : null}
-        </div>
-
-        {quote ? (
-          <div className="border-t border-[#222] pt-6">
-            <p className="text-[16px] font-normal leading-[24px] tracking-[-0.096px] text-[#dcdcdc] whitespace-pre-wrap">{quote}</p>
-          </div>
-        ) : null}
-      </aside>
+        </aside>
       }
     />
   );
@@ -687,7 +685,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
     if (touchStartX.current !== null && touchStartY.current !== null) {
       const distanceX = touchStartX.current - touchEndX.current;
       const distanceY = touchStartY.current - touchEndY.current;
-      
+
       // Only track if it's mostly a horizontal swipe
       if (Math.abs(distanceX) > Math.abs(distanceY)) {
         setSwipeOffset(distanceX);
@@ -700,7 +698,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
       const distanceX = touchStartX.current - touchEndX.current;
       const distanceY = touchStartY.current - touchEndY.current;
       const swipeThreshold = 50;
-      
+
       // Ensure it's mostly a horizontal swipe, not a vertical scroll
       if (Math.abs(distanceX) > Math.abs(distanceY) && Math.abs(distanceX) > swipeThreshold) {
         const tabs: TabKey[] = ["all", "countries", "collections", "about"];
@@ -890,8 +888,8 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
       const fallback = defaultFallbacks[index % Math.max(defaultFallbacks.length, 1)] || profile.images.cover;
       const previewImages = defaultFallbacks.length > 0
         ? Array.from({ length: Math.min(5, defaultFallbacks.length) }, (_, imageIndex) => {
-            return defaultFallbacks[(index + imageIndex) % defaultFallbacks.length];
-          })
+          return defaultFallbacks[(index + imageIndex) % defaultFallbacks.length];
+        })
         : [profile.images.cover];
       return {
         code: `${profile.id}-${index}`,
@@ -974,7 +972,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
           }
           // Don't change tab, allow it to just open over whatever tab is active
         }
-      } catch (e) {}
+      } catch (e) { }
     }
   }, [allMediaItems, carouselIndex, profile.id, profile.flagCode]);
 
@@ -1096,8 +1094,8 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
         : allMediaItems.map((item) => item.fileUrl);
       const previewImages = defaultFallbacks.length > 0
         ? Array.from({ length: Math.min(5, defaultFallbacks.length) }, (_, imageIndex) => {
-            return defaultFallbacks[(index + imageIndex) % defaultFallbacks.length];
-          })
+          return defaultFallbacks[(index + imageIndex) % defaultFallbacks.length];
+        })
         : [profile.images.cover];
 
       return {
@@ -1180,7 +1178,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
     <>
       <div className="bg-black text-white flex flex-col items-center px-[8px] pt-[8px] min-[810px]:pt-0 min-[810px]:px-[32px] min-[1200px]:px-[48px] min-[1440px]:px-[64px]">
 
-        <main className="w-full max-w-[1728px] pb-[80px] md:pb-20 flex flex-col gap-[12px] min-[811px]:gap-10">
+        <main className="w-full max-w-[1728px] pb-[4px] md:pb-20 flex flex-col gap-[12px] min-[811px]:gap-10">
           <MobileHero
             profile={profile}
             displayName={displayName}
@@ -1248,60 +1246,60 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                 </div>
 
                 <div className="flex items-center justify-between xl:justify-start xl:gap-[40px] w-full rounded-[16px] border-l border-black-100 bg-linear-to-r from-[#1c1c1c] to-[rgba(0,0,0,0.1)] px-2 py-2 lg:px-3 lg:py-3 xl:px-[16px] xl:py-[20px]">
-                    <div className="flex items-center gap-1.5 lg:gap-2 xl:gap-[16px] rounded-xl">
-                      <div className="relative size-8 lg:size-[48px] xl:size-[60px] shrink-0">
-                        <img
-                          src="/images/Globe.png"
-                          alt="Globe icon"
-                          className="pointer-events-none absolute top-1/2 left-1/2 h-full w-full -translate-x-1/2 -translate-y-1/2 object-contain"
-                        />
-                      </div>
-                      <div className="flex flex-col gap-0.5 xl:gap-1">
-                        <p className="ds-font-display text-[16px] lg:text-[20px] xl:text-[24px] leading-tight xl:leading-[32px] tracking-[-0.5px] text-white font-semibold">{profile.countries}</p>
-                        <p className="text-[10px] lg:text-[12px] xl:text-[14px] leading-tight xl:leading-[20px] tracking-[-0.084px] text-white-400 font-normal">Countries</p>
-                      </div>
+                  <div className="flex items-center gap-1.5 lg:gap-2 xl:gap-[16px] rounded-xl">
+                    <div className="relative size-8 lg:size-[48px] xl:size-[60px] shrink-0">
+                      <img
+                        src="/images/Globe.png"
+                        alt="Globe icon"
+                        className="pointer-events-none absolute top-1/2 left-1/2 h-full w-full -translate-x-1/2 -translate-y-1/2 object-contain"
+                      />
                     </div>
-                    <div className="flex items-center gap-1.5 lg:gap-2 xl:gap-[16px] rounded-xl">
-                      <div className="relative size-8 lg:size-[48px] xl:size-[60px] shrink-0">
-                        <img
-                          src="/images/media.png"
-                          alt="Media icon"
-                          className="pointer-events-none absolute top-1/2 left-1/2 h-full w-full -translate-x-1/2 -translate-y-1/2 object-contain"
-                        />
-                      </div>
-                      <div className="flex flex-col gap-0.5 xl:gap-1">
-                        <p className="ds-font-display text-[16px] lg:text-[20px] xl:text-[24px] leading-tight xl:leading-[32px] tracking-[-0.5px] text-white font-semibold">{profile.media}</p>
-                        <p className="text-[10px] lg:text-[12px] xl:text-[14px] leading-tight xl:leading-[20px] tracking-[-0.084px] text-white-400 font-normal">All media</p>
-                      </div>
+                    <div className="flex flex-col gap-0.5 xl:gap-1">
+                      <p className="ds-font-display text-[16px] lg:text-[20px] xl:text-[24px] leading-tight xl:leading-[32px] tracking-[-0.5px] text-white font-semibold">{profile.countries}</p>
+                      <p className="text-[10px] lg:text-[12px] xl:text-[14px] leading-tight xl:leading-[20px] tracking-[-0.084px] text-white-400 font-normal">Countries</p>
                     </div>
-                    <div className="flex items-center gap-1.5 lg:gap-2 xl:gap-[16px] rounded-xl">
-                      <div className="relative size-8 lg:size-[48px] xl:size-[60px] shrink-0">
-                        <img
-                          src="/images/collections.png"
-                          alt="Collections icon"
-                          className="pointer-events-none absolute top-1/2 left-1/2 h-full w-full -translate-x-1/2 -translate-y-1/2 object-contain"
-                        />
-                      </div>
-                      <div className="flex flex-col gap-0.5 xl:gap-1">
-                        <p className="ds-font-display text-[16px] lg:text-[20px] xl:text-[24px] leading-tight xl:leading-[32px] tracking-[-0.5px] text-white font-semibold">{profile.collections}</p>
-                        <p className="text-[10px] lg:text-[12px] xl:text-[14px] leading-tight xl:leading-[20px] tracking-[-0.084px] text-white-400 font-normal">Collections</p>
-                      </div>
+                  </div>
+                  <div className="flex items-center gap-1.5 lg:gap-2 xl:gap-[16px] rounded-xl">
+                    <div className="relative size-8 lg:size-[48px] xl:size-[60px] shrink-0">
+                      <img
+                        src="/images/media.png"
+                        alt="Media icon"
+                        className="pointer-events-none absolute top-1/2 left-1/2 h-full w-full -translate-x-1/2 -translate-y-1/2 object-contain"
+                      />
                     </div>
+                    <div className="flex flex-col gap-0.5 xl:gap-1">
+                      <p className="ds-font-display text-[16px] lg:text-[20px] xl:text-[24px] leading-tight xl:leading-[32px] tracking-[-0.5px] text-white font-semibold">{profile.media}</p>
+                      <p className="text-[10px] lg:text-[12px] xl:text-[14px] leading-tight xl:leading-[20px] tracking-[-0.084px] text-white-400 font-normal">All media</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1.5 lg:gap-2 xl:gap-[16px] rounded-xl">
+                    <div className="relative size-8 lg:size-[48px] xl:size-[60px] shrink-0">
+                      <img
+                        src="/images/collections.png"
+                        alt="Collections icon"
+                        className="pointer-events-none absolute top-1/2 left-1/2 h-full w-full -translate-x-1/2 -translate-y-1/2 object-contain"
+                      />
+                    </div>
+                    <div className="flex flex-col gap-0.5 xl:gap-1">
+                      <p className="ds-font-display text-[16px] lg:text-[20px] xl:text-[24px] leading-tight xl:leading-[32px] tracking-[-0.5px] text-white font-semibold">{profile.collections}</p>
+                      <p className="text-[10px] lg:text-[12px] xl:text-[14px] leading-tight xl:leading-[20px] tracking-[-0.084px] text-white-400 font-normal">Collections</p>
+                    </div>
+                  </div>
                 </div>
               </div>
 
               <div className="flex items-center gap-[12px] w-full">
-                  <button onClick={() => setShowFollowModal(true)} className="flex items-center justify-center flex-1 lg:flex-none w-auto lg:w-[148px] lg:h-[48px] rounded-full bg-white text-black px-3 py-1.5 text-[12px] lg:text-[16px] font-medium tracking-[-0.096px] hover:bg-[#ececec] transition">Follow</button>
-                  <button className="flex items-center justify-center flex-1 lg:flex-none w-auto lg:w-[148px] lg:h-[48px] rounded-full border border-[#353535] bg-[#1a1a1a] text-white px-3 py-1.5 text-[12px] lg:text-[16px] font-medium tracking-[-0.096px] hover:bg-[#242424] transition">Connect</button>
-                  <button className="size-8 lg:size-[48px] shrink-0 grid place-items-center rounded-full border border-[#353535] bg-[#1a1a1a] text-white hover:bg-[#242424] transition" aria-label="More options">
-                    <span className="grid grid-cols-2 gap-1 lg:gap-1.5">
-                      <span className="h-1 w-1 rounded-full bg-white" />
-                      <span className="h-1 w-1 rounded-full bg-white" />
-                      <span className="h-1 w-1 rounded-full bg-white" />
-                      <span className="h-1 w-1 rounded-full bg-white" />
-                    </span>
-                  </button>
-                </div>
+                <button onClick={() => setShowFollowModal(true)} className="flex items-center justify-center flex-1 lg:flex-none w-auto lg:w-[148px] lg:h-[48px] rounded-full bg-white text-black px-3 py-1.5 text-[12px] lg:text-[16px] font-medium tracking-[-0.096px] hover:bg-[#ececec] transition">Follow</button>
+                <button className="flex items-center justify-center flex-1 lg:flex-none w-auto lg:w-[148px] lg:h-[48px] rounded-full border border-[#353535] bg-[#1a1a1a] text-white px-3 py-1.5 text-[12px] lg:text-[16px] font-medium tracking-[-0.096px] hover:bg-[#242424] transition">Connect</button>
+                <button className="size-8 lg:size-[48px] shrink-0 grid place-items-center rounded-full border border-[#353535] bg-[#1a1a1a] text-white hover:bg-[#242424] transition" aria-label="More options">
+                  <span className="grid grid-cols-2 gap-1 lg:gap-1.5">
+                    <span className="h-1 w-1 rounded-full bg-white" />
+                    <span className="h-1 w-1 rounded-full bg-white" />
+                    <span className="h-1 w-1 rounded-full bg-white" />
+                    <span className="h-1 w-1 rounded-full bg-white" />
+                  </span>
+                </button>
+              </div>
             </div>
 
             {/* Cover image — maintains exact aspect ratio */}
@@ -1312,578 +1310,572 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
             </div>
           </section>
 
-                    {/* Desktop: pill tabs with text */}
+          {/* Desktop: pill tabs with text */}
           <div id="profile-desktop-tabs" className="hidden min-[811px]:flex items-center justify-center gap-2 flex-wrap">
             <button
               onClick={() => handleTabChange("all")}
-              className={`rounded-full px-6 py-2 text-[16px] leading-6 tracking-[-0.096px] transition ${
-                activeTab === "all"
+              className={`rounded-full px-6 py-2 text-[16px] leading-6 tracking-[-0.096px] transition ${activeTab === "all"
                   ? "bg-black-600 border border-white text-white font-medium"
                   : "bg-black-800 border border-transparent text-white-300 font-normal"
-              }`}
+                }`}
             >
               All media
             </button>
             <button
               onClick={() => handleTabChange("countries")}
-              className={`rounded-full px-6 py-2 text-[16px] leading-6 tracking-[-0.096px] transition ${
-                activeTab === "countries"
+              className={`rounded-full px-6 py-2 text-[16px] leading-6 tracking-[-0.096px] transition ${activeTab === "countries"
                   ? "bg-black-600 border border-white text-white font-medium"
                   : "bg-black-800 border border-transparent text-white-300 font-normal"
-              }`}
+                }`}
             >
               Countries
             </button>
             <button
               onClick={() => handleTabChange("collections")}
-              className={`rounded-full px-6 py-2 text-[16px] leading-6 tracking-[-0.096px] transition ${
-                activeTab === "collections"
+              className={`rounded-full px-6 py-2 text-[16px] leading-6 tracking-[-0.096px] transition ${activeTab === "collections"
                   ? "bg-black-600 border border-white text-white font-medium"
                   : "bg-black-800 border border-transparent text-white-300 font-normal"
-              }`}
+                }`}
             >
               Collections
             </button>
             <button
               onClick={() => handleTabChange("about")}
-              className={`rounded-full px-6 py-2 text-[16px] leading-6 tracking-[-0.096px] transition ${
-                activeTab === "about"
+              className={`rounded-full px-6 py-2 text-[16px] leading-6 tracking-[-0.096px] transition ${activeTab === "about"
                   ? "bg-black-600 border border-white text-white font-medium"
                   : "bg-black-800 border border-transparent text-white-300 font-normal"
-              }`}
+                }`}
             >
               About me
             </button>
           </div>
 
-        <div className="flex flex-col gap-[12px] md:gap-0 w-full">
-          {/* Mobile/iPad: icon-only tabs with sliding underline indicator */}
-          <MobileTabs activeTab={activeTab} setActiveTab={handleTabChange} swipeOffset={swipeOffset} />
+          <div className="flex flex-col gap-[12px] md:gap-0 w-full">
+            {/* Mobile/iPad: icon-only tabs with sliding underline indicator */}
+            <MobileTabs activeTab={activeTab} setActiveTab={handleTabChange} swipeOffset={swipeOffset} />
 
-          <div
-            className="flex flex-col flex-1 min-[811px]:min-h-0 min-h-[calc(100vh-72px)]"
-            onTouchStart={handleTouchStart}
-            onTouchMove={handleTouchMove}
-            onTouchEnd={handleTouchEnd}
-          >
-            <div className={activeTab === "all" ? "block animate-tab-dissolve" : "hidden"}>
-              {
-              <section className="pb-25">
-                {allMediaItems.length === 0 ? (
-                  <div className="max-w-xl mx-auto flex flex-col items-center gap-5 text-center py-10">
-                    <h2 className="text-[30px] leading-none tracking-[-0.5px] font-semibold text-white">All media</h2>
-                    <p className="text-white-500 text-[14px] leading-[1.4]">
-                      Add media to a country or collection to start building your gallery.
-                    </p>
-                  </div>
-                ) : (
-                  <div className="columns-2 sm:columns-3 xl:columns-4 gap-[6px] md:gap-[20px]">
-                    {allMediaItems.map((item, index) => {
-                      const isMenuOpen = openContextMenuId === item.id;
-                      const displayCountryCode = item.countryCode || profileFlagCode;
-                      const collectionHref =
-                        typeof item.collectionIndex === "number" && profile.collectionImages?.[item.collectionIndex]
-                          ? `/profiles/${profile.handle.replace(/^@/, "")}/collection/${item.collectionIndex}`
-                          : undefined;
-                      const viewHref = collectionHref || (displayCountryCode
-                        ? `/profiles/${profile.handle.replace(/^@/, "")}/country/${displayCountryCode.toUpperCase()}`
-                        : undefined);
-                      const viewLabel = collectionHref ? "View collection" : "View country";
-                      const shareHref = collectionHref || viewHref;
-                      return (
-                        <div
-                          key={item.id}
-                          className={`group mb-[8px] md:mb-[20px] w-full break-inside-avoid relative [-webkit-column-break-inside:avoid] ${
-                            index >= mobileAllMediaLimit ? "hidden min-[811px]:inline-block" : "inline-block"
-                          }`}
-                        >
-                          <div className="relative overflow-hidden rounded-[8px] md:rounded-2xl bg-[#111]">
-                            {item.isVideo ? (
-                              <>
-                                <video
-                                  src={toLandingAssetUrl(item.fileUrl)}
-                                  muted
-                                  playsInline
-                                  loop
-                                  preload="metadata"
-                                  className="w-full object-cover rounded-[8px] md:rounded-2xl"
-                                  onMouseEnter={(e) => e.currentTarget.play().catch(() => {})}
-                                  onMouseLeave={(e) => { e.currentTarget.pause(); e.currentTarget.currentTime = 0; }}
+            <div
+              className="flex flex-col flex-1"
+              onTouchStart={handleTouchStart}
+              onTouchMove={handleTouchMove}
+              onTouchEnd={handleTouchEnd}
+            >
+              <div className={activeTab === "all" ? "block animate-tab-dissolve" : "hidden"}>
+                {
+                  <section className="pb-0">
+                    {allMediaItems.length === 0 ? (
+                      <div className="max-w-xl mx-auto flex flex-col items-center gap-5 text-center py-10">
+                        <h2 className="text-[30px] leading-none tracking-[-0.5px] font-semibold text-white">All media</h2>
+                        <p className="text-white-500 text-[14px] leading-[1.4]">
+                          Add media to a country or collection to start building your gallery.
+                        </p>
+                      </div>
+                    ) : (
+                      <div className="columns-2 sm:columns-3 xl:columns-4 gap-[6px] md:gap-[20px]">
+                        {allMediaItems.map((item, index) => {
+                          const isMenuOpen = openContextMenuId === item.id;
+                          const displayCountryCode = item.countryCode || profileFlagCode;
+                          const collectionHref =
+                            typeof item.collectionIndex === "number" && profile.collectionImages?.[item.collectionIndex]
+                              ? `/profiles/${profile.handle.replace(/^@/, "")}/collection/${item.collectionIndex}`
+                              : undefined;
+                          const viewHref = collectionHref || (displayCountryCode
+                            ? `/profiles/${profile.handle.replace(/^@/, "")}/country/${displayCountryCode.toUpperCase()}`
+                            : undefined);
+                          const viewLabel = collectionHref ? "View collection" : "View country";
+                          const shareHref = collectionHref || viewHref;
+                          return (
+                            <div
+                              key={item.id}
+                              className={`group mb-[8px] md:mb-[20px] w-full break-inside-avoid relative [-webkit-column-break-inside:avoid] ${index >= mobileAllMediaLimit ? "hidden min-[811px]:inline-block" : "inline-block"
+                                }`}
+                            >
+                              <div className="relative overflow-hidden rounded-[8px] md:rounded-2xl bg-[#111]">
+                                {item.isVideo ? (
+                                  <>
+                                    <video
+                                      src={toLandingAssetUrl(item.fileUrl)}
+                                      muted
+                                      playsInline
+                                      loop
+                                      preload="metadata"
+                                      className="w-full object-cover rounded-[8px] md:rounded-2xl"
+                                      onMouseEnter={(e) => e.currentTarget.play().catch(() => { })}
+                                      onMouseLeave={(e) => { e.currentTarget.pause(); e.currentTarget.currentTime = 0; }}
+                                      onClick={(event) => {
+                                        event.preventDefault();
+                                        event.stopPropagation();
+                                        openCarouselAt(index);
+                                      }}
+                                    />
+                                    <div className="absolute top-4 left-4 group-hover:opacity-0 transition-opacity pointer-events-none">
+                                      <span
+                                        className="material-symbols-rounded text-[24px] text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]"
+                                        style={{ fontVariationSettings: "'FILL' 1, 'wght' 700, 'GRAD' 200, 'opsz' 24" }}
+                                      >
+                                        play_arrow
+                                      </span>
+                                    </div>
+                                  </>
+                                ) : (
+                                  <>
+                                    <img
+                                      src={toLandingAssetUrl(item.fileUrl)}
+                                      alt="Uploaded media"
+                                      loading="lazy"
+                                      decoding="async"
+                                      className="w-full object-cover rounded-[8px] md:rounded-2xl cursor-pointer"
+                                      onClick={(event) => {
+                                        event.preventDefault();
+                                        event.stopPropagation();
+                                        openCarouselAt(index);
+                                      }}
+                                    />
+                                  </>
+                                )}
+
+                                <MoreOptionsButton
+                                  isOpen={isMenuOpen}
+                                  label="Open media menu"
+                                  size="sm"
                                   onClick={(event) => {
                                     event.preventDefault();
                                     event.stopPropagation();
-                                    openCarouselAt(index);
+                                    setOpenContextMenuId(isMenuOpen ? null : item.id);
                                   }}
                                 />
-                                <div className="absolute top-4 left-4 group-hover:opacity-0 transition-opacity pointer-events-none">
-                                  <span
-                                    className="material-symbols-rounded text-[24px] text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]"
-                                    style={{ fontVariationSettings: "'FILL' 1, 'wght' 700, 'GRAD' 200, 'opsz' 24" }}
-                                  >
-                                    play_arrow
-                                  </span>
+                              </div>
+
+                              {/* Hover Flag */}
+                              {displayCountryCode ? (
+                                <div className="absolute top-3 right-3 z-20 transition-opacity duration-200 opacity-100 min-[811px]:opacity-0 min-[811px]:group-hover:opacity-100 pointer-events-auto group/flag">
+                                  <div className="flex items-center drop-shadow-md cursor-pointer">
+                                    <img
+                                      src={toFlagAssetPath(displayCountryCode)}
+                                      alt={displayCountryCode}
+                                      className="h-3.5 w-5 rounded-xs object-cover"
+                                    />
+                                  </div>
+
+                                  {/* Tooltip */}
+                                  <div className="absolute bottom-full right-1/2 translate-x-1/2 mb-2.5 flex flex-col items-center opacity-0 transition-all duration-200 group-hover/flag:opacity-100 pointer-events-none origin-bottom scale-95 group-hover/flag:scale-100 drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]">
+                                    <div className="whitespace-nowrap rounded-xl bg-white px-3.5 py-1.5 text-[15px] font-medium tracking-tight text-black">
+                                      {COUNTRY_LIST_LOOKUP[displayCountryCode.toUpperCase()] || displayCountryCode}
+                                    </div>
+                                    <div className="-mt-1.5 h-3 w-3 rotate-45 bg-white rounded-[2px]" />
+                                  </div>
                                 </div>
-                              </>
-                            ) : (
-                              <>
-                                <img
-                                  src={toLandingAssetUrl(item.fileUrl)}
-                                  alt="Uploaded media"
-                                  loading="lazy"
-                                  decoding="async"
-                                  className="w-full object-cover rounded-[8px] md:rounded-2xl cursor-pointer"
-                                  onClick={(event) => {
-                                    event.preventDefault();
-                                    event.stopPropagation();
-                                    openCarouselAt(index);
+                              ) : null}
+
+
+                              {isMenuOpen ? (
+                                <ContextMenu
+                                  kind="media"
+                                  viewLabel={viewLabel}
+                                  shareLabel="Share photo"
+                                  flagCode={collectionHref ? undefined : displayCountryCode}
+                                  viewHref={viewHref}
+                                  onShare={() => {
+                                    const shareUrl = new URL(window.location.origin);
+                                    if (shareHref?.includes("/collection/")) {
+                                      shareUrl.pathname = shareHref;
+                                    } else if (displayCountryCode) {
+                                      shareUrl.pathname = `/profiles/${profile.handle.replace(/^@/, "")}/country/${displayCountryCode.toUpperCase()}`;
+                                    } else {
+                                      shareUrl.pathname = `/profiles/${profile.handle.replace(/^@/, "")}`;
+                                    }
+                                    shareUrl.searchParams.set("image", btoa(unescape(encodeURIComponent(item.fileUrl))));
+                                    openShareCard({
+                                      kind: "media",
+                                      title: "Share moment",
+                                      imageUrl: item.fileUrl,
+                                      shareUrl: shareUrl.toString(),
+                                      flagCode: displayCountryCode,
+                                      ownerName: shareOwnerName,
+                                      ownerHandle: shareOwnerHandle,
+                                      ownerAvatar: shareOwnerAvatar,
+                                    });
                                   }}
+                                  onClose={() => setOpenContextMenuId(null)}
+                                  menuRef={contextMenuRef as React.RefObject<HTMLDivElement>}
                                 />
-                                </>
-                            )}
-  
-                            <MoreOptionsButton
-                              isOpen={isMenuOpen}
-                              label="Open media menu"
-                              size="sm"
-                              onClick={(event) => {
-                                event.preventDefault();
-                                event.stopPropagation();
-                                setOpenContextMenuId(isMenuOpen ? null : item.id);
-                              }}
-                            />
-                          </div>
-  
-                          {/* Hover Flag */}
-                          {displayCountryCode ? (
-                            <div className="absolute top-3 right-3 z-20 transition-opacity duration-200 opacity-100 min-[811px]:opacity-0 min-[811px]:group-hover:opacity-100 pointer-events-auto group/flag">
-                              <div className="flex items-center drop-shadow-md cursor-pointer">
-                                <img
-                                  src={toFlagAssetPath(displayCountryCode)}
-                                  alt={displayCountryCode}
-                                  className="h-3.5 w-5 rounded-xs object-cover"
-                                />
-                              </div>
-  
-                              {/* Tooltip */}
-                              <div className="absolute bottom-full right-1/2 translate-x-1/2 mb-2.5 flex flex-col items-center opacity-0 transition-all duration-200 group-hover/flag:opacity-100 pointer-events-none origin-bottom scale-95 group-hover/flag:scale-100 drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]">
-                                <div className="whitespace-nowrap rounded-xl bg-white px-3.5 py-1.5 text-[15px] font-medium tracking-tight text-black">
-                                  {COUNTRY_LIST_LOOKUP[displayCountryCode.toUpperCase()] || displayCountryCode}
-                                </div>
-                                <div className="-mt-1.5 h-3 w-3 rotate-45 bg-white rounded-[2px]" />
-                              </div>
-                            </div>
-                          ) : null}
-  
-  
-                          {isMenuOpen ? (
-                            <ContextMenu
-                              kind="media"
-                              viewLabel={viewLabel}
-                              shareLabel="Share photo"
-                              flagCode={collectionHref ? undefined : displayCountryCode}
-                              viewHref={viewHref}
-                              onShare={() => {
-                                const shareUrl = new URL(window.location.origin);
-                                if (shareHref?.includes("/collection/")) {
-                                  shareUrl.pathname = shareHref;
-                                } else if (displayCountryCode) {
-                                  shareUrl.pathname = `/profiles/${profile.handle.replace(/^@/, "")}/country/${displayCountryCode.toUpperCase()}`;
-                                } else {
-                                  shareUrl.pathname = `/profiles/${profile.handle.replace(/^@/, "")}`;
-                                }
-                                shareUrl.searchParams.set("image", btoa(unescape(encodeURIComponent(item.fileUrl))));
-                                openShareCard({
-                                  kind: "media",
-                                  title: "Share moment",
-                                  imageUrl: item.fileUrl,
-                                  shareUrl: shareUrl.toString(),
-                                  flagCode: displayCountryCode,
-                                  ownerName: shareOwnerName,
-                                  ownerHandle: shareOwnerHandle,
-                                  ownerAvatar: shareOwnerAvatar,
-                                });
-                              }}
-                              onClose={() => setOpenContextMenuId(null)}
-                              menuRef={contextMenuRef as React.RefObject<HTMLDivElement>}
-                            />
-                          ) : null}
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
-                <div 
-                  ref={loadMoreRef} 
-                  className={`min-[811px]:hidden h-[1px] w-full ${allMediaItems.length > mobileAllMediaLimit ? "block" : "hidden"}`} 
-                />
-              </section>
-            }
-            </div>
-
-            <div className={activeTab === "countries" ? "block animate-tab-dissolve" : "hidden"}>
-              {
-              <section className="pb-16">
-                {countryCards.length === 0 ? (
-                  <div className="rounded-2xl border border-dashed border-[#2b2b2b] bg-[#0e0e0e] p-10 md:p-16">
-                    <div className="max-w-150 mx-auto flex flex-col items-center gap-6 text-center">
-                      <div className="flex items-center gap-3">
-                        {COUNTRIES_EMPTY_PREVIEW_IMAGES.map((src, idx) => (
-                          <div key={src} className="w-19 h-19 md:w-25 md:h-25 rounded-[10px] overflow-hidden">
-                            <img src={toLandingAssetUrl(src)} alt={`Country preview ${idx + 1}`} loading="eager" decoding="async" className="w-full h-full object-cover" />
-                          </div>
-                        ))}
-                      </div>
-                      <div className="space-y-2">
-                        <h3 className="text-white text-[24px] leading-[1.4] tracking-[-0.41px] font-semibold">Add your first country</h3>
-                        <p className="text-[#a8a8a8] text-[16px] leading-normal tracking-[-0.41px]">
-                          Start with your favorite country - you can add the rest later.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-x-[8px] gap-y-[16px] md:gap-x-5 md:gap-y-10">
-                    {countryCards.map((country) => {
-                      const contextMenuId = `country-${country.code}`;
-                      const isMenuOpen = openContextMenuId === contextMenuId;
-                      const countryHref = `/profiles/${profile.handle.replace(/^@/, "")}/country/${country.flagCode.toUpperCase()}`;
-                      return (
-                        <Link key={country.code} href={countryHref} className="flex flex-col gap-[10px]">
-                          {/* Photo */}
-                          <div className="relative group">
-                            <CardCarousel
-                              images={country.previewImages.length > 0 ? country.previewImages : [country.thumbnailUrl]}
-                              alt={country.name}
-                            />
-  
-                            <MoreOptionsButton
-                              isOpen={isMenuOpen}
-                              label={`Open menu for ${country.name}`}
-                              size="sm"
-                              onClick={(event) => {
-                                event.preventDefault();
-                                event.stopPropagation();
-                                setOpenContextMenuId(isMenuOpen ? null : contextMenuId);
-                              }}
-                            />
-  
-                            {isMenuOpen ? (
-                              <ContextMenu
-                                kind="country"
-                                viewLabel="View country"
-                                shareLabel="Share country"
-                                flagCode={country.flagCode}
-                                viewHref={countryHref}
-                                onShare={() => {
-                                  openShareCard({
-                                    kind: "country",
-                                    title: `Share ${country.name}`,
-                                    imageUrl: toLandingAssetUrl(country.previewImages[0] || country.thumbnailUrl),
-                                    shareUrl: toShareUrl(countryHref),
-                                    flagCode: country.flagCode,
-                                    ownerName: shareOwnerName,
-                                    ownerHandle: shareOwnerHandle,
-                                    ownerAvatar: shareOwnerAvatar,
-                                  });
-                                }}
-                                onClose={() => setOpenContextMenuId(null)}
-                                menuRef={contextMenuRef as React.RefObject<HTMLDivElement>}
-                              />
-                            ) : null}
-                          </div>
-  
-                          {/* Country info */}
-                          <div className="flex flex-col gap-[4px] px-[4px]">
-                            <div className="flex items-center gap-[6px]">
-                              <div className="h-[11px] w-[16px] overflow-hidden rounded-[2px] drop-shadow-[1.2px_1.2px_0.6px_rgba(0,0,0,0.18)] shrink-0">
-                                <img
-                                  src={`/flags/${country.flagCode.toUpperCase()}.svg`}
-                                  alt={country.name}
-                                  className="block w-full h-full object-cover"
-                                />
-                              </div>
-                              <p className="text-white text-[14px] font-medium leading-[20px] tracking-[-0.084px] truncate">
-                                {country.name}
-                              </p>
-                            </div>
-                            <div className="flex items-center gap-[4px]">
-                              <span className="text-[#646464] text-[12px] leading-[16px]">{country.photoCount} photos</span>
-                              <span className="text-[#646464] text-[12px] leading-[16px]">&bull;</span>
-                              <span className="text-[#646464] text-[12px] leading-[16px]">{country.videoCount} Videos</span>
-                            </div>
-                          </div>
-                        </Link>
-                      );
-                    })}
-                  </div>
-                )}
-              </section>
-            }
-            </div>
-
-            <div className={activeTab === "collections" ? "block animate-tab-dissolve" : "hidden"}>
-              {
-              <section className="w-full pb-8 md:pb-12 space-y-6">
-                {collectionCards.length === 0 ? (
-                  <div className="rounded-2xl border border-dashed border-[#2b2b2b] bg-[#0e0e0e] px-6 py-12 md:px-10 md:py-16">
-                    <div className="max-w-150 mx-auto flex flex-col items-center gap-6 text-center">
-                      <div className="flex items-center gap-3">
-                        {COLLECTIONS_EMPTY_PREVIEW_IMAGES.map((src, idx) => (
-                          <div key={src} className="w-19 h-19 md:w-25 md:h-25 rounded-[10px] overflow-hidden">
-                            <img src={toLandingAssetUrl(src)} alt={`Collection preview ${idx + 1}`} loading="eager" decoding="async" className="w-full h-full object-cover" />
-                          </div>
-                        ))}
-                      </div>
-  
-                      <div className="space-y-2">
-                        <h3 className="text-white text-[24px] leading-[1.4] tracking-[-0.41px] font-semibold">Your collections</h3>
-                        <p className="text-[#a8a8a8] text-[16px] leading-normal tracking-[-0.41px] max-w-140">
-                          Group photos and videos by theme - not location.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="grid grid-cols-1 gap-x-5 gap-y-[32px] sm:gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                    {collectionCards.map((collection, idx) => {
-                      const collectionHref = `/profiles/${profile.handle.replace(/^@/, "")}/collection/${idx}`;
-                      const contextMenuId = `collection-${collection.id}`;
-                      const isMenuOpen = openContextMenuId === contextMenuId;
-                      return (
-                        <Link
-                          key={collection.id}
-                          href={collectionHref}
-                          className="flex flex-col gap-[16px]"
-                        >
-                          <div className="relative group">
-                            <CardCarousel
-                              images={collection.previewImages.length > 0 ? collection.previewImages : [collection.thumbnailUrl]}
-                              alt={collection.title}
-                              containerClassName="aspect-[357/278] border border-[#262626]"
-                            />
-  
-                            <MoreOptionsButton
-                              isOpen={isMenuOpen}
-                              label={`Open menu for ${collection.title}`}
-                              size="sm"
-                              onClick={(event) => {
-                                event.preventDefault();
-                                event.stopPropagation();
-                                setOpenContextMenuId(isMenuOpen ? null : contextMenuId);
-                              }}
-                            />
-  
-                            {isMenuOpen ? (
-                              <ContextMenu
-                                kind="collection"
-                                viewLabel="View collection"
-                                shareLabel="Share collection"
-                                viewHref={collectionHref}
-                                onShare={() => {
-                                  openShareCard({
-                                    kind: "collection",
-                                    title: `Share ${collection.title}`,
-                                    imageUrl: toLandingAssetUrl(collection.previewImages[0] || collection.thumbnailUrl),
-                                    shareUrl: toShareUrl(collectionHref),
-                                    ownerName: shareOwnerName,
-                                    ownerHandle: shareOwnerHandle,
-                                    ownerAvatar: shareOwnerAvatar,
-                                  });
-                                }}
-                                onClose={() => setOpenContextMenuId(null)}
-                                menuRef={contextMenuRef as React.RefObject<HTMLDivElement>}
-                              />
-                            ) : null}
-                          </div>
-  
-                          <div className="flex flex-col px-[4px] gap-[12px]">
-                            <div className="flex flex-col gap-[4px]">
-                              <p className="text-[#646464] text-[12px] leading-[16px] tracking-normal">{collection.createdLabel}</p>
-                              <p className="text-white text-[14px] font-medium leading-[20px] tracking-[-0.084px] min-w-full w-min line-clamp-1">{collection.title}</p>
-                            </div>
-                            {/* Hidden countries for now as per design request until Admin CMS supports collection country multi-select */}
-                            <div className="flex flex-wrap items-center gap-1.5">
-                              {collection.countries.map((country) => (
-                                <span
-                                  key={`${collection.id}-${country}`}
-                                  className="backdrop-blur-[2px] bg-[#161616] border border-[#252525] border-solid flex items-center justify-center py-[4px] px-[8px] rounded-full text-[#989898] text-[12px] leading-[16px] font-normal tracking-normal"
-                                >
-                                  {country}
-                                </span>
-                              ))}
-                              {collection.countryOverflowCount > 0 ? (
-                                <span className="backdrop-blur-[2px] bg-[#161616] border border-[#252525] border-solid flex items-center justify-center py-[4px] px-[8px] rounded-full text-[#989898] text-[12px] leading-[16px] font-normal tracking-normal">
-                                  +{collection.countryOverflowCount}
-                                </span>
                               ) : null}
                             </div>
-                          </div>
-                        </Link>
-                      );
-                    })}
-                  </div>
-                )}
-              </section>
-            }
-            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                    <div
+                      ref={loadMoreRef}
+                      className={`min-[811px]:hidden h-[1px] w-full ${allMediaItems.length > mobileAllMediaLimit ? "block" : "hidden"}`}
+                    />
+                  </section>
+                }
+              </div>
 
-            <div className={activeTab === "about" ? "block animate-tab-dissolve" : "hidden"}>
-              {
-              hasAboutContent ? (
-                <section className="w-full max-w-[1112px] mx-auto grid md:grid-cols-[minmax(0,1fr)_320px] lg:grid-cols-[minmax(0,1fr)_360px] gap-8 items-stretch">
-                  <article className="relative min-w-0 md:rounded-[20px] md:border md:border-[#1e1e1e] md:pt-8 md:pb-10 md:px-8 md:bg-[#111] flex flex-col gap-8">
-                    <div className="flex flex-col gap-[24px] px-[4px] py-[8px] md:px-0 md:py-0">
-                      <div className="flex flex-col gap-[8px]">
-                        <h3 className="ds-font-display text-white text-[20px] md:text-[24px] font-medium md:font-semibold tracking-[-0.5px] leading-7 md:leading-8">About</h3>
-                        <p className="text-white md:text-[#dcdcdc] text-[16px] leading-6 tracking-[-0.096px]">{profile.bio || "No bio yet."}</p>
-                      </div>
-  
-                    <div 
-                      className="flex flex-nowrap gap-2 md:gap-3 overflow-x-auto no-scrollbar snap-x w-full"
-                      onTouchStart={(e) => e.stopPropagation()}
-                      onTouchMove={(e) => e.stopPropagation()}
-                      onTouchEnd={(e) => e.stopPropagation()}
-                    >
-                      {aboutPhotos.length > 0 ? (
-                        aboutPhotos.map((src, idx) => (
-                          <div key={`${src}-${idx}`} className="w-[160px] md:w-auto md:flex-1 shrink-0 min-w-0 rounded-[8px] md:rounded-[12px] overflow-hidden bg-[#151515] aspect-square snap-start">
-                            <img src={toLandingAssetUrl(src)} alt={`About photo ${idx + 1}`} loading="eager" decoding="async" draggable={false} className="w-full h-full object-cover pointer-events-none select-none" />
-                          </div>
-                        ))
-                      ) : (
-                        <div className="flex-1 rounded-[12px] border border-dashed border-[#1e1e1e] bg-[#111] p-6 text-sm text-[#989898] text-center">
-                          No photos added yet.
-                        </div>
-                      )}
-                    </div>
-                  </div>
-  
-                    <hr className="border-t border-[#1e1e1e] w-full m-0" />
-  
-                    <div className="flex flex-col gap-3 md:gap-6">
-                      <h4 className="ds-font-display text-white text-[20px] md:text-[24px] font-medium md:font-semibold tracking-[-0.5px] leading-7 md:leading-8">My Interests</h4>
-                      {profile.interests.length > 0 ? (
-                        <div className="flex flex-wrap gap-2">
-                          {profile.interests.map((interest) => (
-                            <span key={interest} className="flex items-center gap-1.5 pl-[10px] pr-[12px] py-[6px] md:pl-3 md:pr-4 md:py-2 rounded-[68px] bg-[#1e1e1e] text-white text-[14px] md:text-[16px] leading-[20px] md:leading-6 tracking-[-0.084px] md:tracking-[-0.096px]">
-                              {interest}
-                            </span>
-                          ))}
-                        </div>
-                      ) : (
-                        <p className="text-[#989898] text-[14px]">No interests added yet.</p>
-                      )}
-                    </div>
-                  </article>
-  
-                  <aside className="rounded-[16px] border border-[#1e1e1e] p-6 bg-[#111] flex flex-col gap-5">
-                    <div className="flex flex-col gap-2 pb-6 border-b border-[#1e1e1e]">
-                      <p className="text-[#989898] text-[14px] font-normal leading-5 tracking-[-0.084px]">Username</p>
-                      <div className="flex flex-col gap-1">
-                        <p className="ds-font-display text-white text-[18px] font-medium leading-6.5 tracking-[-0.198px]">{handle}</p>
-                        <div className="flex gap-1.5 items-center">
-                          <p className="text-[#656565] text-[14px] truncate tracking-[-0.41px]">travingat.com/profiles/{handle.replace(/^@/, "")}</p>
-                          <CopyButton text={`travingat.com/profiles/${handle.replace(/^@/, "")}`} />
-                        </div>
-                      </div>
-                    </div>
-  
-                    <div className="flex flex-col gap-6 md:gap-5">
-                      <div className="flex flex-col gap-2 md:gap-3">
-                        <p className="text-[#989898] text-[14px] font-normal leading-5 tracking-[-0.084px]">Home land</p>
-                        <div className="flex items-center gap-1.5 md:gap-2 text-white text-[16px] font-medium tracking-[-0.096px]">
-                          {homelandFlagSrc ? (
-                            <img
-                              src={homelandFlagSrc}
-                              alt={`${toLocationCountry(profile.homeland)} flag`}
-                              className="h-[15.6px] w-6 shrink-0 rounded-[2px] object-cover"
-                              loading="lazy"
-                              decoding="async"
-                            />
-                          ) : (
-                            <span>{homelandFlagCode}</span>
-                          )}
-                          <span className="truncate">{profile.homeland}</span>
-                        </div>
-                      </div>
-  
-                      <div className="flex flex-col gap-2 md:gap-3">
-                        <p className="text-[#989898] text-[14px] font-normal leading-5 tracking-[-0.084px]">Currently in</p>
-                        <div className="flex items-center gap-1.5 md:gap-2 text-white text-[16px] font-medium tracking-[-0.096px]">
-                          {currentlyInFlagSrc ? (
-                            <img
-                              src={currentlyInFlagSrc}
-                              alt={`${toLocationCountry(profile.currentlyIn)} flag`}
-                              className="h-[15.6px] w-6 shrink-0 rounded-[2px] object-cover"
-                              loading="lazy"
-                              decoding="async"
-                            />
-                          ) : (
-                            <span>{currentlyInFlagCode}</span>
-                          )}
-                          <span className="truncate">{profile.currentlyIn}</span>
-                        </div>
-                      </div>
-  
-                      <div className="flex flex-col gap-2 md:gap-3">
-                        <p className="text-[#989898] text-[14px] font-normal leading-5 tracking-[-0.084px]">Speaks</p>
-                        {profile.languages.length > 0 ? (
-                          <div className="flex flex-wrap gap-1.5 md:gap-2">
-                            {profile.languages.map((language) => (
-                              <span key={language} className="px-3.5 py-1.5 rounded-full bg-[#111] border border-[#1e1e1e] text-white text-[14px] leading-5 tracking-[-0.084px]">
-                                {language}
-                              </span>
+              <div className={activeTab === "countries" ? "block animate-tab-dissolve" : "hidden"}>
+                {
+                  <section className="pb-0">
+                    {countryCards.length === 0 ? (
+                      <div className="rounded-2xl border border-dashed border-[#2b2b2b] bg-[#0e0e0e] p-10 md:p-16">
+                        <div className="max-w-150 mx-auto flex flex-col items-center gap-6 text-center">
+                          <div className="flex items-center gap-3">
+                            {COUNTRIES_EMPTY_PREVIEW_IMAGES.map((src, idx) => (
+                              <div key={src} className="w-19 h-19 md:w-25 md:h-25 rounded-[10px] overflow-hidden">
+                                <img src={toLandingAssetUrl(src)} alt={`Country preview ${idx + 1}`} loading="eager" decoding="async" className="w-full h-full object-cover" />
+                              </div>
                             ))}
                           </div>
-                        ) : (
-                          <p className="text-[#989898] text-[14px]">—</p>
-                        )}
+                          <div className="space-y-2">
+                            <h3 className="text-white text-[24px] leading-[1.4] tracking-[-0.41px] font-semibold">Add your first country</h3>
+                            <p className="text-[#a8a8a8] text-[16px] leading-normal tracking-[-0.41px]">
+                              Start with your favorite country - you can add the rest later.
+                            </p>
+                          </div>
+                        </div>
                       </div>
-  
-                      <div className="flex flex-col gap-3">
-                        <p className="text-[#989898] text-[14px] font-normal leading-5 tracking-[-0.084px]">Find me On</p>
-                        {socialRows.length > 0 ? (
-                          <div className="flex flex-col gap-4 min-w-0">
-                            {socialRows.map((item) => (
-                              <a
-                                key={item.key}
-                                href={item.url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="flex items-center gap-[6px] text-white text-[16px] font-medium leading-6 tracking-[-0.096px] hover:opacity-80 transition"
-                              >
-                                <SocialIcon platform={item.key} className="h-5 w-5 shrink-0" />
-                                <span className="truncate">{item.label}</span>
-                              </a>
+                    ) : (
+                      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-x-[8px] gap-y-[16px] md:gap-x-5 md:gap-y-10">
+                        {countryCards.map((country) => {
+                          const contextMenuId = `country-${country.code}`;
+                          const isMenuOpen = openContextMenuId === contextMenuId;
+                          const countryHref = `/profiles/${profile.handle.replace(/^@/, "")}/country/${country.flagCode.toUpperCase()}`;
+                          return (
+                            <Link key={country.code} href={countryHref} className="flex flex-col gap-[10px]">
+                              {/* Photo */}
+                              <div className="relative group">
+                                <CardCarousel
+                                  images={country.previewImages.length > 0 ? country.previewImages : [country.thumbnailUrl]}
+                                  alt={country.name}
+                                />
+
+                                <MoreOptionsButton
+                                  isOpen={isMenuOpen}
+                                  label={`Open menu for ${country.name}`}
+                                  size="sm"
+                                  onClick={(event) => {
+                                    event.preventDefault();
+                                    event.stopPropagation();
+                                    setOpenContextMenuId(isMenuOpen ? null : contextMenuId);
+                                  }}
+                                />
+
+                                {isMenuOpen ? (
+                                  <ContextMenu
+                                    kind="country"
+                                    viewLabel="View country"
+                                    shareLabel="Share country"
+                                    flagCode={country.flagCode}
+                                    viewHref={countryHref}
+                                    onShare={() => {
+                                      openShareCard({
+                                        kind: "country",
+                                        title: `Share ${country.name}`,
+                                        imageUrl: toLandingAssetUrl(country.previewImages[0] || country.thumbnailUrl),
+                                        shareUrl: toShareUrl(countryHref),
+                                        flagCode: country.flagCode,
+                                        ownerName: shareOwnerName,
+                                        ownerHandle: shareOwnerHandle,
+                                        ownerAvatar: shareOwnerAvatar,
+                                      });
+                                    }}
+                                    onClose={() => setOpenContextMenuId(null)}
+                                    menuRef={contextMenuRef as React.RefObject<HTMLDivElement>}
+                                  />
+                                ) : null}
+                              </div>
+
+                              {/* Country info */}
+                              <div className="flex flex-col gap-[4px] px-[4px]">
+                                <div className="flex items-center gap-[6px]">
+                                  <div className="h-[11px] w-[16px] overflow-hidden rounded-[2px] drop-shadow-[1.2px_1.2px_0.6px_rgba(0,0,0,0.18)] shrink-0">
+                                    <img
+                                      src={`/flags/${country.flagCode.toUpperCase()}.svg`}
+                                      alt={country.name}
+                                      className="block w-full h-full object-cover"
+                                    />
+                                  </div>
+                                  <p className="text-white text-[14px] font-medium leading-[20px] tracking-[-0.084px] truncate">
+                                    {country.name}
+                                  </p>
+                                </div>
+                                <div className="flex items-center gap-[4px]">
+                                  <span className="text-[#646464] text-[12px] leading-[16px]">{country.photoCount} photos</span>
+                                  <span className="text-[#646464] text-[12px] leading-[16px]">&bull;</span>
+                                  <span className="text-[#646464] text-[12px] leading-[16px]">{country.videoCount} Videos</span>
+                                </div>
+                              </div>
+                            </Link>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </section>
+                }
+              </div>
+
+              <div className={activeTab === "collections" ? "block animate-tab-dissolve" : "hidden"}>
+                {
+                  <section className="w-full pb-8 md:pb-12 space-y-6">
+                    {collectionCards.length === 0 ? (
+                      <div className="rounded-2xl border border-dashed border-[#2b2b2b] bg-[#0e0e0e] px-6 py-12 md:px-10 md:py-16">
+                        <div className="max-w-150 mx-auto flex flex-col items-center gap-6 text-center">
+                          <div className="flex items-center gap-3">
+                            {COLLECTIONS_EMPTY_PREVIEW_IMAGES.map((src, idx) => (
+                              <div key={src} className="w-19 h-19 md:w-25 md:h-25 rounded-[10px] overflow-hidden">
+                                <img src={toLandingAssetUrl(src)} alt={`Collection preview ${idx + 1}`} loading="eager" decoding="async" className="w-full h-full object-cover" />
+                              </div>
                             ))}
                           </div>
-                        ) : (
-                          <p className="text-[#989898] text-[14px]">—</p>
-                        )}
+
+                          <div className="space-y-2">
+                            <h3 className="text-white text-[24px] leading-[1.4] tracking-[-0.41px] font-semibold">Your collections</h3>
+                            <p className="text-[#a8a8a8] text-[16px] leading-normal tracking-[-0.41px] max-w-140">
+                              Group photos and videos by theme - not location.
+                            </p>
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  </aside>
-                </section>
-              ) : (
-                <section className="w-full pb-8 md:pb-12">
-                  <div className="rounded-2xl border border-dashed border-[#2b2b2b] bg-[#0e0e0e] px-6 py-12 md:px-10 md:py-16">
-                    <div className="max-w-150 mx-auto flex flex-col items-center gap-6 text-center">
-                      <div className="space-y-2">
-                        <h3 className="text-white text-[24px] leading-[1.4] tracking-[-0.41px] font-semibold">Tell your travel story</h3>
-                        <p className="text-[#a8a8a8] text-[16px] leading-normal tracking-[-0.41px] max-w-140">
-                          Add a short bio, your interests, languages, and links so people can understand your style and follow your journey.
-                        </p>
+                    ) : (
+                      <div className="grid grid-cols-1 gap-x-5 gap-y-[32px] sm:gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                        {collectionCards.map((collection, idx) => {
+                          const collectionHref = `/profiles/${profile.handle.replace(/^@/, "")}/collection/${idx}`;
+                          const contextMenuId = `collection-${collection.id}`;
+                          const isMenuOpen = openContextMenuId === contextMenuId;
+                          return (
+                            <Link
+                              key={collection.id}
+                              href={collectionHref}
+                              className="flex flex-col gap-[16px]"
+                            >
+                              <div className="relative group">
+                                <CardCarousel
+                                  images={collection.previewImages.length > 0 ? collection.previewImages : [collection.thumbnailUrl]}
+                                  alt={collection.title}
+                                  containerClassName="aspect-[357/278] border border-[#262626]"
+                                />
+
+                                <MoreOptionsButton
+                                  isOpen={isMenuOpen}
+                                  label={`Open menu for ${collection.title}`}
+                                  size="sm"
+                                  onClick={(event) => {
+                                    event.preventDefault();
+                                    event.stopPropagation();
+                                    setOpenContextMenuId(isMenuOpen ? null : contextMenuId);
+                                  }}
+                                />
+
+                                {isMenuOpen ? (
+                                  <ContextMenu
+                                    kind="collection"
+                                    viewLabel="View collection"
+                                    shareLabel="Share collection"
+                                    viewHref={collectionHref}
+                                    onShare={() => {
+                                      openShareCard({
+                                        kind: "collection",
+                                        title: `Share ${collection.title}`,
+                                        imageUrl: toLandingAssetUrl(collection.previewImages[0] || collection.thumbnailUrl),
+                                        shareUrl: toShareUrl(collectionHref),
+                                        ownerName: shareOwnerName,
+                                        ownerHandle: shareOwnerHandle,
+                                        ownerAvatar: shareOwnerAvatar,
+                                      });
+                                    }}
+                                    onClose={() => setOpenContextMenuId(null)}
+                                    menuRef={contextMenuRef as React.RefObject<HTMLDivElement>}
+                                  />
+                                ) : null}
+                              </div>
+
+                              <div className="flex flex-col px-[4px] gap-[12px]">
+                                <div className="flex flex-col gap-[4px]">
+                                  <p className="text-[#646464] text-[12px] leading-[16px] tracking-normal">{collection.createdLabel}</p>
+                                  <p className="text-white text-[14px] font-medium leading-[20px] tracking-[-0.084px] min-w-full w-min line-clamp-1">{collection.title}</p>
+                                </div>
+                                {/* Hidden countries for now as per design request until Admin CMS supports collection country multi-select */}
+                                <div className="flex flex-wrap items-center gap-1.5">
+                                  {collection.countries.map((country) => (
+                                    <span
+                                      key={`${collection.id}-${country}`}
+                                      className="backdrop-blur-[2px] bg-[#161616] border border-[#252525] border-solid flex items-center justify-center py-[4px] px-[8px] rounded-full text-[#989898] text-[12px] leading-[16px] font-normal tracking-normal"
+                                    >
+                                      {country}
+                                    </span>
+                                  ))}
+                                  {collection.countryOverflowCount > 0 ? (
+                                    <span className="backdrop-blur-[2px] bg-[#161616] border border-[#252525] border-solid flex items-center justify-center py-[4px] px-[8px] rounded-full text-[#989898] text-[12px] leading-[16px] font-normal tracking-normal">
+                                      +{collection.countryOverflowCount}
+                                    </span>
+                                  ) : null}
+                                </div>
+                              </div>
+                            </Link>
+                          );
+                        })}
                       </div>
-                    </div>
-                  </div>
-                </section>
-              )
-            }
+                    )}
+                  </section>
+                }
+              </div>
+
+              <div className={activeTab === "about" ? "block animate-tab-dissolve" : "hidden"}>
+                {
+                  hasAboutContent ? (
+                    <section className="w-full max-w-[1112px] mx-auto grid md:grid-cols-[minmax(0,1fr)_320px] lg:grid-cols-[minmax(0,1fr)_360px] gap-8 items-stretch">
+                      <article className="relative min-w-0 md:rounded-[20px] md:border md:border-[#1e1e1e] md:pt-8 md:pb-10 md:px-8 md:bg-[#111] flex flex-col gap-8">
+                        <div className="flex flex-col gap-[24px] px-[4px] py-[8px] md:px-0 md:py-0">
+                          <div className="flex flex-col gap-[8px]">
+                            <h3 className="ds-font-display text-white text-[20px] md:text-[24px] font-medium md:font-semibold tracking-[-0.5px] leading-7 md:leading-8">About</h3>
+                            <p className="text-white md:text-[#dcdcdc] text-[16px] leading-6 tracking-[-0.096px]">{profile.bio || "No bio yet."}</p>
+                          </div>
+
+                          <div
+                            className="flex flex-nowrap gap-2 md:gap-3 overflow-x-auto no-scrollbar snap-x w-full"
+                            onTouchStart={(e) => e.stopPropagation()}
+                            onTouchMove={(e) => e.stopPropagation()}
+                            onTouchEnd={(e) => e.stopPropagation()}
+                          >
+                            {aboutPhotos.length > 0 ? (
+                              aboutPhotos.map((src, idx) => (
+                                <div key={`${src}-${idx}`} className="w-[160px] md:w-auto md:flex-1 shrink-0 min-w-0 rounded-[8px] md:rounded-[12px] overflow-hidden bg-[#151515] aspect-square snap-start">
+                                  <img src={toLandingAssetUrl(src)} alt={`About photo ${idx + 1}`} loading="eager" decoding="async" draggable={false} className="w-full h-full object-cover pointer-events-none select-none" />
+                                </div>
+                              ))
+                            ) : (
+                              <div className="flex-1 rounded-[12px] border border-dashed border-[#1e1e1e] bg-[#111] p-6 text-sm text-[#989898] text-center">
+                                No photos added yet.
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        <hr className="border-t border-[#1e1e1e] w-full m-0" />
+
+                        <div className="flex flex-col gap-3 md:gap-6">
+                          <h4 className="ds-font-display text-white text-[20px] md:text-[24px] font-medium md:font-semibold tracking-[-0.5px] leading-7 md:leading-8">My Interests</h4>
+                          {profile.interests.length > 0 ? (
+                            <div className="flex flex-wrap gap-2">
+                              {profile.interests.map((interest) => (
+                                <span key={interest} className="flex items-center gap-1.5 pl-[10px] pr-[12px] py-[6px] md:pl-3 md:pr-4 md:py-2 rounded-[68px] bg-[#1e1e1e] text-white text-[14px] md:text-[16px] leading-[20px] md:leading-6 tracking-[-0.084px] md:tracking-[-0.096px]">
+                                  {interest}
+                                </span>
+                              ))}
+                            </div>
+                          ) : (
+                            <p className="text-[#989898] text-[14px]">No interests added yet.</p>
+                          )}
+                        </div>
+                      </article>
+
+                      <aside className="rounded-[16px] border border-[#1e1e1e] p-6 bg-[#111] flex flex-col gap-5">
+                        <div className="flex flex-col gap-2 pb-6 border-b border-[#1e1e1e]">
+                          <p className="text-[#989898] text-[14px] font-normal leading-5 tracking-[-0.084px]">Username</p>
+                          <div className="flex flex-col gap-1">
+                            <p className="ds-font-display text-white text-[18px] font-medium leading-6.5 tracking-[-0.198px]">{handle}</p>
+                            <div className="flex gap-1.5 items-center">
+                              <p className="text-[#656565] text-[14px] truncate tracking-[-0.41px]">travingat.com/profiles/{handle.replace(/^@/, "")}</p>
+                              <CopyButton text={`travingat.com/profiles/${handle.replace(/^@/, "")}`} />
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="flex flex-col gap-6 md:gap-5">
+                          <div className="flex flex-col gap-2 md:gap-3">
+                            <p className="text-[#989898] text-[14px] font-normal leading-5 tracking-[-0.084px]">Home land</p>
+                            <div className="flex items-center gap-1.5 md:gap-2 text-white text-[16px] font-medium tracking-[-0.096px]">
+                              {homelandFlagSrc ? (
+                                <img
+                                  src={homelandFlagSrc}
+                                  alt={`${toLocationCountry(profile.homeland)} flag`}
+                                  className="h-[15.6px] w-6 shrink-0 rounded-[2px] object-cover"
+                                  loading="lazy"
+                                  decoding="async"
+                                />
+                              ) : (
+                                <span>{homelandFlagCode}</span>
+                              )}
+                              <span className="truncate">{profile.homeland}</span>
+                            </div>
+                          </div>
+
+                          <div className="flex flex-col gap-2 md:gap-3">
+                            <p className="text-[#989898] text-[14px] font-normal leading-5 tracking-[-0.084px]">Currently in</p>
+                            <div className="flex items-center gap-1.5 md:gap-2 text-white text-[16px] font-medium tracking-[-0.096px]">
+                              {currentlyInFlagSrc ? (
+                                <img
+                                  src={currentlyInFlagSrc}
+                                  alt={`${toLocationCountry(profile.currentlyIn)} flag`}
+                                  className="h-[15.6px] w-6 shrink-0 rounded-[2px] object-cover"
+                                  loading="lazy"
+                                  decoding="async"
+                                />
+                              ) : (
+                                <span>{currentlyInFlagCode}</span>
+                              )}
+                              <span className="truncate">{profile.currentlyIn}</span>
+                            </div>
+                          </div>
+
+                          <div className="flex flex-col gap-2 md:gap-3">
+                            <p className="text-[#989898] text-[14px] font-normal leading-5 tracking-[-0.084px]">Speaks</p>
+                            {profile.languages.length > 0 ? (
+                              <div className="flex flex-wrap gap-1.5 md:gap-2">
+                                {profile.languages.map((language) => (
+                                  <span key={language} className="px-3.5 py-1.5 rounded-full bg-[#111] border border-[#1e1e1e] text-white text-[14px] leading-5 tracking-[-0.084px]">
+                                    {language}
+                                  </span>
+                                ))}
+                              </div>
+                            ) : (
+                              <p className="text-[#989898] text-[14px]">—</p>
+                            )}
+                          </div>
+
+                          <div className="flex flex-col gap-3">
+                            <p className="text-[#989898] text-[14px] font-normal leading-5 tracking-[-0.084px]">Find me On</p>
+                            {socialRows.length > 0 ? (
+                              <div className="flex flex-col gap-4 min-w-0">
+                                {socialRows.map((item) => (
+                                  <a
+                                    key={item.key}
+                                    href={item.url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="flex items-center gap-[6px] text-white text-[16px] font-medium leading-6 tracking-[-0.096px] hover:opacity-80 transition"
+                                  >
+                                    <SocialIcon platform={item.key} className="h-5 w-5 shrink-0" />
+                                    <span className="truncate">{item.label}</span>
+                                  </a>
+                                ))}
+                              </div>
+                            ) : (
+                              <p className="text-[#989898] text-[14px]">—</p>
+                            )}
+                          </div>
+                        </div>
+                      </aside>
+                    </section>
+                  ) : (
+                    <section className="w-full pb-8 md:pb-12">
+                      <div className="rounded-2xl border border-dashed border-[#2b2b2b] bg-[#0e0e0e] px-6 py-12 md:px-10 md:py-16">
+                        <div className="max-w-150 mx-auto flex flex-col items-center gap-6 text-center">
+                          <div className="space-y-2">
+                            <h3 className="text-white text-[24px] leading-[1.4] tracking-[-0.41px] font-semibold">Tell your travel story</h3>
+                            <p className="text-[#a8a8a8] text-[16px] leading-normal tracking-[-0.41px] max-w-140">
+                              Add a short bio, your interests, languages, and links so people can understand your style and follow your journey.
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </section>
+                  )
+                }
+              </div>
             </div>
-            <ProfileFooter className="mt-auto min-[811px]:hidden" />
           </div>
-        </div>
-        <ProfileFooter className="max-[810px]:hidden mt-10" />
+          <ProfileFooter className="max-[810px]:hidden mt-10" />
         </main>
       </div>
 
@@ -1935,7 +1927,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
             {/* Copy Link */}
             <button
               onClick={() => {
-                navigator.clipboard.writeText(window.location.href).catch(() => {});
+                navigator.clipboard.writeText(window.location.href).catch(() => { });
                 setShowFollowModal(false);
               }}
               className="w-full bg-white text-black rounded-full px-4 py-2.5 text-sm font-medium tracking-[-0.084px] hover:bg-[#ececec] transition"
