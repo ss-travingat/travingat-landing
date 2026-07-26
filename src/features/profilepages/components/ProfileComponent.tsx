@@ -593,8 +593,23 @@ function PhotoCarouselModal({
 
 export default function ProfileComponent({ profile }: { profile: SampleProfile }) {
   const [activeTab, setActiveTab] = useState<TabKey>("all");
-  const [mobileAllMediaLimit, setMobileAllMediaLimit] = useState(15);
+  const [mobileAllMediaLimit, setMobileAllMediaLimit] = useState(10);
+  const loadMoreRef = useRef<HTMLDivElement>(null);
   const [swipeOffset, setSwipeOffset] = useState(0);
+
+  useEffect(() => {
+    if (typeof IntersectionObserver === "undefined" || !loadMoreRef.current) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          setMobileAllMediaLimit((prev) => prev + 10);
+        }
+      },
+      { rootMargin: "400px" }
+    );
+    observer.observe(loadMoreRef.current);
+    return () => observer.disconnect();
+  }, []);
 
   // Read initial tab from URL on mount
   useEffect(() => {
@@ -1497,16 +1512,10 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                     })}
                   </div>
                 )}
-                {allMediaItems.length > mobileAllMediaLimit && (
-                  <div className="mt-8 flex justify-center min-[811px]:hidden">
-                    <button
-                      onClick={() => setMobileAllMediaLimit((prev) => prev + 15)}
-                      className="rounded-full bg-white text-black px-6 py-2.5 text-[15px] font-semibold tracking-tight transition hover:opacity-90 active:scale-95"
-                    >
-                      Load more
-                    </button>
-                  </div>
-                )}
+                <div 
+                  ref={loadMoreRef} 
+                  className={`min-[811px]:hidden h-[1px] w-full ${allMediaItems.length > mobileAllMediaLimit ? "block" : "hidden"}`} 
+                />
               </section>
             }
             </div>
@@ -1878,7 +1887,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
         </main>
       </div>
 
-      <MobileActionBar onFollowClick={() => setShowFollowModal(true)} />
+      {/* <MobileActionBar onFollowClick={() => setShowFollowModal(true)} /> */}
 
       {showFollowModal && (
         <div

@@ -77,6 +77,6 @@ export const config = {
      * Match ALL routes except Next.js internals and static files.
      * The login page bypass is handled inside the middleware function above.
      */
-    '/((?!_next/static|_next/image|favicon\\.ico|inter-display/).*)',
+    '/((?!_next/static|_next/image|favicon\\.ico|inter-display/|images/).*)',
   ],
 };

@@ -13,12 +13,59 @@ function toFlagAssetPath(flagCode?: string): string | undefined {
 }
 
 // ==========================================
+// CUSTOM HOOK: NAVBAR VISIBILITY
+// ==========================================
+export function useNavbarVisibility(forceShow = false) {
+  const [isHidden, setIsHidden] = useState(false);
+  const lastScrollY = useRef(0);
+  const upScrollY = useRef(0);
+  const lockAnchorScrollY = useRef<number | null>(null);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      
+      if (currentScrollY <= 24) {
+        setIsHidden(false);
+        lockAnchorScrollY.current = null;
+      } else if (currentScrollY > lastScrollY.current) {
+        const tabsEl = document.getElementById("profile-mobile-tabs");
+        const isTabsLocked = tabsEl ? tabsEl.getBoundingClientRect().top <= 73 : false;
+        
+        if (isTabsLocked) {
+          if (lockAnchorScrollY.current === null) {
+            lockAnchorScrollY.current = currentScrollY;
+          }
+          if (currentScrollY - lockAnchorScrollY.current > 120) {
+            setIsHidden(true);
+          }
+        } else {
+          lockAnchorScrollY.current = null;
+        }
+        upScrollY.current = currentScrollY;
+      } else if (currentScrollY < lastScrollY.current) {
+        if (upScrollY.current - currentScrollY > 60) {
+          setIsHidden(false);
+        }
+        lockAnchorScrollY.current = null;
+      }
+      lastScrollY.current = currentScrollY;
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  return forceShow ? false : isHidden;
+}
+
+// ==========================================
 // MOBILE NAVBAR COMPONENT
 // ==========================================
 export function MobileProfileNavbar({ profile }: { profile?: any }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const isHidden = useNavbarVisibility(menuOpen);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent | TouchEvent) {
@@ -54,7 +101,7 @@ export function MobileProfileNavbar({ profile }: { profile?: any }) {
   };
 
   return (
-    <div ref={menuRef} className="fixed top-0 left-0 w-full z-50 flex flex-col pointer-events-none">
+    <div ref={menuRef} className={`fixed top-0 left-0 w-full z-50 flex flex-col pointer-events-none transition-transform duration-300 ${isHidden ? "-translate-y-full" : "translate-y-0"}`}>
       <div className={`flex items-center justify-between px-[28px] pt-[20px] pb-[16px] pointer-events-auto transition-colors duration-300 ${isScrolled ? "bg-black" : "bg-gradient-to-b from-black/50 to-transparent"}`}>
         {isScrolled && profile ? (
           <div className="flex items-center gap-2">
@@ -74,11 +121,11 @@ export function MobileProfileNavbar({ profile }: { profile?: any }) {
         >
           {menuOpen ? (
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12L19 6.41Z" fill="white"/>
+              <path d="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12L19 6.41Z" fill="white" />
             </svg>
           ) : (
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M3 7V5H21V7H3ZM3 19V17H21V19H3ZM3 13V11H21V13H3Z" fill="white"/>
+              <path d="M3 7V5H21V7H3ZM3 19V17H21V19H3ZM3 13V11H21V13H3Z" fill="white" />
             </svg>
           )}
         </button>
@@ -232,6 +279,31 @@ export function MobileHero({
             </p>
           </div>
         </div>
+
+        {/* Buttons under Stats Card */}
+        <div className="flex gap-[8px] items-center w-full mt-[4px]">
+          <button
+            className="flex-1 rounded-full bg-white text-black px-[18px] py-[10px] text-[16px] font-medium leading-[24px] tracking-[-0.096px]"
+          >
+            Follow
+          </button>
+          <button
+            className="h-[44px] w-[43px] shrink-0 rounded-full border border-[#353535] bg-[#1a1a1a] grid place-items-center text-white"
+            aria-label="More options"
+          >
+            <span className="grid grid-cols-2 gap-1">
+              <span className="h-[3px] w-[3px] rounded-full bg-white" />
+              <span className="h-[3px] w-[3px] rounded-full bg-white" />
+              <span className="h-[3px] w-[3px] rounded-full bg-white" />
+              <span className="h-[3px] w-[3px] rounded-full bg-white" />
+            </span>
+          </button>
+          <button
+            className="flex-1 rounded-full bg-[#1a1a1a] border border-[#353535] text-white px-[18px] py-[10px] text-[16px] font-medium leading-[24px] tracking-[-0.096px]"
+          >
+            Connect
+          </button>
+        </div>
       </div>
     </section>
   );
@@ -247,6 +319,7 @@ export interface MobileTabsProps {
 }
 
 export function MobileTabs({ activeTab, setActiveTab, swipeOffset = 0 }: MobileTabsProps) {
+  const isNavbarHidden = useNavbarVisibility();
   const mobileTabs: { key: TabKey }[] = [
     { key: "all" },
     { key: "countries" },
@@ -260,17 +333,17 @@ export function MobileTabs({ activeTab, setActiveTab, swipeOffset = 0 }: MobileT
     // We divide by (window.innerWidth / mobileTabs.length) so it tracks the finger 1:1
     const fraction = swipeOffset / (window.innerWidth / mobileTabs.length);
     offsetPercent = Math.max(-1, Math.min(1, fraction)) * 100;
-    
+
     // Prevent dragging highlight past the edges
     if (activeIndex === 0 && offsetPercent < 0) offsetPercent = 0;
     if (activeIndex === mobileTabs.length - 1 && offsetPercent > 0) offsetPercent = 0;
   }
-  
+
   const finalTranslate = activeIndex * 100 + offsetPercent;
   const isDragging = swipeOffset !== 0;
 
   return (
-    <div id="profile-mobile-tabs" className="flex min-[811px]:hidden flex-col w-full border-b border-[#252525] sticky top-[72px] z-40 bg-black">
+    <div id="profile-mobile-tabs" className={`flex min-[811px]:hidden flex-col w-full border-b border-[#252525] sticky z-40 bg-black transition-all duration-300 ${isNavbarHidden ? "top-0" : "top-[72px]"}`}>
       <div className="flex items-center w-full">
         {mobileTabs.map((tab) => (
           <button
@@ -307,7 +380,7 @@ export interface MobileActionBarProps {
 
 export function MobileActionBar({ onFollowClick }: MobileActionBarProps) {
   return (
-    <div className="md:hidden fixed left-1/2 -translate-x-1/2 bottom-[12px] z-40 rounded-full backdrop-blur-[6px] bg-[rgba(255,255,255,0.12)] border border-[rgba(255,255,255,0.1)] px-[9px] py-[8px] shadow-[0px_12px_12px_0px_rgba(0,0,0,0.12)] flex items-center overflow-clip w-[calc(100%-20px)] max-w-[600px]">
+    <div className="md:hidden fixed left-1/2 -translate-x-1/2 bottom-[4px] z-40 rounded-full backdrop-blur-[6px] bg-[rgba(255,255,255,0.12)] border border-[rgba(255,255,255,0.1)] px-[9px] py-[8px] shadow-[0px_12px_12px_0px_rgba(0,0,0,0.12)] flex items-center overflow-clip w-[calc(100%-20px)] max-w-[600px] opacity-0">
       <div className="flex gap-[8px] items-center w-full">
         <button
           onClick={onFollowClick}
