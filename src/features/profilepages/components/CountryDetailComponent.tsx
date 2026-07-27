@@ -9,6 +9,7 @@ import { ContextMenu } from "./ProfileComponent";
 import { MediaLightbox } from "./MediaLightbox";
 import { MoreOptionsButton } from "@/components/ui/MoreOptionsButton";
 import { WaitlistPopup } from "@/components/ui/WaitlistPopup";
+import LoadedImage from "@/components/ui/LoadedImage";
 
 /* eslint-disable @next/next/no-img-element */
 
@@ -475,12 +476,12 @@ export default function CountryDetailComponent({
                               </div>
                             </>
                           ) : (
-                            <img
+                            <LoadedImage
                               src={toLandingAssetUrl(imgUrl)}
                               alt={`${countryName} photo ${globalIndex + 1}`}
-                              loading="lazy"
-                              decoding="async"
                               className="w-full h-auto block"
+                              containerClassName="w-full"
+                              skeletonClassName="w-full aspect-[3/4]"
                             />
                           )}
                           {/* Hover overlay */}

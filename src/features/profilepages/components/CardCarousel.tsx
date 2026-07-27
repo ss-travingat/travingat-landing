@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { toLandingAssetUrl } from "@/lib/landing-assets";
+import LoadedImage from "@/components/ui/LoadedImage";
 
 export default function CardCarousel({
   images,
@@ -55,12 +56,11 @@ export default function CardCarousel({
       >
         {displayImages.map((src, i) => (
           <div key={`${src}-${i}`} className="w-full h-full flex-shrink-0 overflow-hidden relative">
-            <img
+            <LoadedImage
               src={toLandingAssetUrl(src)}
               alt={`${alt} ${i + 1}`}
-              loading="lazy"
-              decoding="async"
               className="w-full h-full object-cover block transition-transform duration-300 group-hover:scale-[1.03]"
+              containerClassName="w-full h-full"
             />
           </div>
         ))}

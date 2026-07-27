@@ -3,6 +3,7 @@ import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { toLandingAssetUrl } from "@/lib/landing-assets";
 import { type SampleProfile } from "../data/profile-data";
+import LoadedImage from "@/components/ui/LoadedImage";
 
 // Shared Types
 type TabKey = "all" | "countries" | "collections" | "about";
@@ -207,10 +208,26 @@ export function MobileHero({
         <MobileProfileNavbar profile={profile} />
         <div className="w-full flex flex-col items-center">
           <div className="w-full aspect-[377/248] -mb-[36px] rounded-2xl overflow-hidden bg-[#151515]">
-            <img src={toLandingAssetUrl(profile.images.cover)} alt="Profile cover" className="w-full h-full object-cover" />
+            <LoadedImage
+              src={toLandingAssetUrl(profile.images.cover)}
+              alt="Profile cover"
+              className="w-full h-full object-cover"
+              containerClassName="w-full h-full"
+              skeletonClassName="absolute inset-0"
+              fetchPriority="high"
+              loading="eager"
+            />
           </div>
           <div className="relative z-10 mx-auto h-20 w-20 rounded-2xl border-4 border-black overflow-hidden bg-[#151515]">
-            <img src={toLandingAssetUrl(profile.images.avatar)} alt="Profile avatar" className="w-full h-full object-cover" />
+            <LoadedImage
+              src={toLandingAssetUrl(profile.images.avatar)}
+              alt="Profile avatar"
+              className="w-full h-full object-cover"
+              containerClassName="w-full h-full"
+              skeletonClassName="absolute inset-0"
+              fetchPriority="high"
+              loading="eager"
+            />
           </div>
         </div>
 

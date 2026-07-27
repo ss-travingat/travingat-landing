@@ -12,6 +12,7 @@ import { WaitlistPopup } from "@/components/ui/WaitlistPopup";
 import { MobileHero, MobileTabs, MobileActionBar } from "./MobileProfile";
 import ProfileFooter from "./ProfileFooter";
 import CardCarousel from "./CardCarousel";
+import LoadedImage from "@/components/ui/LoadedImage";
 
 /* eslint-disable @next/next/no-img-element */
 
@@ -591,23 +592,27 @@ function PhotoCarouselModal({
 
 export default function ProfileComponent({ profile }: { profile: SampleProfile }) {
   const [activeTab, setActiveTab] = useState<TabKey>("all");
-  const [mobileAllMediaLimit, setMobileAllMediaLimit] = useState(10);
+  const [visibleLimit, setVisibleLimit] = useState(4);
+  const [loadedItemIds, setLoadedItemIds] = useState<Set<string>>(() => new Set());
   const loadMoreRef = useRef<HTMLDivElement>(null);
   const [swipeOffset, setSwipeOffset] = useState(0);
+
+  const [heroLoaded, setHeroLoaded] = useState({ cover: false, avatar: false });
+  const isHeroFullyLoaded = heroLoaded.cover && heroLoaded.avatar;
 
   useEffect(() => {
     if (typeof IntersectionObserver === "undefined" || !loadMoreRef.current) return;
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries[0].isIntersecting) {
-          setMobileAllMediaLimit((prev) => prev + 10);
+          setVisibleLimit((prev) => prev + 4);
         }
       },
       { rootMargin: "400px" }
     );
     observer.observe(loadMoreRef.current);
     return () => observer.disconnect();
-  }, []);
+  }, [visibleLimit]);
 
   // Read initial tab from URL on mount
   useEffect(() => {
@@ -1179,6 +1184,31 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
       <div className="bg-black text-white flex flex-col items-center px-[8px] pt-[8px] min-[810px]:pt-0 min-[810px]:px-[32px] min-[1200px]:px-[48px] min-[1440px]:px-[64px]">
 
         <main className="w-full max-w-[1728px] pb-[4px] md:pb-20 flex flex-col gap-[12px] min-[811px]:gap-10">
+          {/* Global Preloaders for priority images to gate gallery loading */}
+          <img 
+            src={toLandingAssetUrl(profile.images.cover)} 
+            alt="" aria-hidden 
+            className="absolute w-0 h-0 opacity-0 pointer-events-none" 
+            fetchPriority="high" loading="eager" 
+            ref={(el) => {
+              if (el?.complete) {
+                setHeroLoaded(prev => prev.cover ? prev : { ...prev, cover: true });
+              }
+            }}
+            onLoad={() => setHeroLoaded(prev => prev.cover ? prev : { ...prev, cover: true })} 
+          />
+          <img 
+            src={toLandingAssetUrl(profile.images.avatar)} 
+            alt="" aria-hidden 
+            className="absolute w-0 h-0 opacity-0 pointer-events-none" 
+            fetchPriority="high" loading="eager" 
+            ref={(el) => {
+              if (el?.complete) {
+                setHeroLoaded(prev => prev.avatar ? prev : { ...prev, avatar: true });
+              }
+            }}
+            onLoad={() => setHeroLoaded(prev => prev.avatar ? prev : { ...prev, avatar: true })} 
+          />
           <MobileHero
             profile={profile}
             displayName={displayName}
@@ -1196,7 +1226,15 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
               <div className="flex flex-col items-start gap-[16px] lg:gap-[24px] xl:gap-[32px] w-full">
                 <div className="flex flex-col items-start gap-[12px] lg:gap-[16px] xl:gap-[32px] w-full">
                   <div className="relative size-[64px] lg:size-[100px] xl:size-[120px] shrink-0 overflow-hidden rounded-[20px] bg-[#151515]">
-                    <img src={toLandingAssetUrl(profile.images.avatar)} alt="Profile avatar" loading="lazy" decoding="async" className="h-full w-full object-cover rounded-[20px]" />
+                    <LoadedImage
+                      src={toLandingAssetUrl(profile.images.avatar)}
+                      alt="Profile avatar"
+                      className="h-full w-full object-cover rounded-[20px]"
+                      containerClassName="h-full w-full"
+                      skeletonClassName="absolute inset-0"
+                      fetchPriority="high"
+                      loading="eager"
+                    />
                   </div>
 
                   <div className="flex flex-col items-center w-full shrink-0">
@@ -1304,8 +1342,16 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
 
             {/* Cover image — maintains exact aspect ratio */}
             <div className="w-full max-w-[48%] lg:max-w-[520px] xl:max-w-[640px] shrink-0">
-              <div className="relative w-full max-w-[640px] shrink-0 overflow-hidden rounded-3xl lg:rounded-[24px] xl:rounded-[32px] aspect-[640/662]">
-                <img src={toLandingAssetUrl(profile.images.cover)} alt="Profile cover" loading="lazy" decoding="async" className="absolute inset-0 w-full h-full object-cover rounded-3xl lg:rounded-[24px] xl:rounded-[32px]" />
+              <div className="relative w-full max-w-[640px] shrink-0 overflow-hidden rounded-3xl lg:rounded-[24px] xl:rounded-[32px] aspect-[640/662] bg-[#151515]">
+                <LoadedImage
+                  src={toLandingAssetUrl(profile.images.cover)}
+                  alt="Profile cover"
+                  className="absolute inset-0 w-full h-full object-cover rounded-3xl lg:rounded-[24px] xl:rounded-[32px]"
+                  containerClassName="absolute inset-0"
+                  skeletonClassName="absolute inset-0"
+                  fetchPriority="high"
+                  loading="eager"
+                />
               </div>
             </div>
           </section>
@@ -1315,8 +1361,8 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
             <button
               onClick={() => handleTabChange("all")}
               className={`rounded-full px-6 py-2 text-[16px] leading-6 tracking-[-0.096px] transition ${activeTab === "all"
-                  ? "bg-black-600 border border-white text-white font-medium"
-                  : "bg-black-800 border border-transparent text-white-300 font-normal"
+                ? "bg-black-600 border border-white text-white font-medium"
+                : "bg-black-800 border border-transparent text-white-300 font-normal"
                 }`}
             >
               All media
@@ -1324,8 +1370,8 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
             <button
               onClick={() => handleTabChange("countries")}
               className={`rounded-full px-6 py-2 text-[16px] leading-6 tracking-[-0.096px] transition ${activeTab === "countries"
-                  ? "bg-black-600 border border-white text-white font-medium"
-                  : "bg-black-800 border border-transparent text-white-300 font-normal"
+                ? "bg-black-600 border border-white text-white font-medium"
+                : "bg-black-800 border border-transparent text-white-300 font-normal"
                 }`}
             >
               Countries
@@ -1333,8 +1379,8 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
             <button
               onClick={() => handleTabChange("collections")}
               className={`rounded-full px-6 py-2 text-[16px] leading-6 tracking-[-0.096px] transition ${activeTab === "collections"
-                  ? "bg-black-600 border border-white text-white font-medium"
-                  : "bg-black-800 border border-transparent text-white-300 font-normal"
+                ? "bg-black-600 border border-white text-white font-medium"
+                : "bg-black-800 border border-transparent text-white-300 font-normal"
                 }`}
             >
               Collections
@@ -1342,8 +1388,8 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
             <button
               onClick={() => handleTabChange("about")}
               className={`rounded-full px-6 py-2 text-[16px] leading-6 tracking-[-0.096px] transition ${activeTab === "about"
-                  ? "bg-black-600 border border-white text-white font-medium"
-                  : "bg-black-800 border border-transparent text-white-300 font-normal"
+                ? "bg-black-600 border border-white text-white font-medium"
+                : "bg-black-800 border border-transparent text-white-300 font-normal"
                 }`}
             >
               About me
@@ -1387,19 +1433,19 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                           return (
                             <div
                               key={item.id}
-                              className={`group mb-[8px] md:mb-[20px] w-full break-inside-avoid relative [-webkit-column-break-inside:avoid] ${index >= mobileAllMediaLimit ? "hidden min-[811px]:inline-block" : "inline-block"
-                                }`}
+                              className="group mb-[8px] md:mb-[20px] w-full break-inside-avoid relative [-webkit-column-break-inside:avoid] inline-block"
                             >
                               <div className="relative overflow-hidden rounded-[8px] md:rounded-2xl bg-[#111]">
                                 {item.isVideo ? (
-                                  <>
+                                  (index < visibleLimit && isHeroFullyLoaded) ? (
+                                    <>
                                     <video
                                       src={toLandingAssetUrl(item.fileUrl)}
                                       muted
                                       playsInline
                                       loop
                                       preload="metadata"
-                                      className="w-full object-cover rounded-[8px] md:rounded-2xl"
+                                      className="w-full h-auto object-cover rounded-[8px] md:rounded-2xl"
                                       onMouseEnter={(e) => e.currentTarget.play().catch(() => { })}
                                       onMouseLeave={(e) => { e.currentTarget.pause(); e.currentTarget.currentTime = 0; }}
                                       onClick={(event) => {
@@ -1416,16 +1462,21 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                                         play_arrow
                                       </span>
                                     </div>
-                                  </>
+                                    </>
+                                  ) : (
+                                    <div className="w-full aspect-[3/4] bg-[#1a1a1a] animate-pulse rounded-[inherit]" />
+                                  )
                                 ) : (
                                   <>
-                                    <img
+                                    <LoadedImage
                                       src={toLandingAssetUrl(item.fileUrl)}
                                       alt="Uploaded media"
-                                      loading="lazy"
-                                      decoding="async"
-                                      className="w-full object-cover rounded-[8px] md:rounded-2xl cursor-pointer"
-                                      onClick={(event) => {
+                                      className="w-full h-auto block rounded-[8px] md:rounded-2xl cursor-pointer"
+                                      containerClassName="w-full"
+                                      skeletonClassName="w-full aspect-[3/4]"
+                                      deferLoad={!isHeroFullyLoaded || index >= visibleLimit}
+                                      onLoad={() => setLoadedItemIds((prev) => new Set(prev).add(item.id))}
+                                      onClick={(event: React.MouseEvent<HTMLImageElement>) => {
                                         event.preventDefault();
                                         event.stopPropagation();
                                         openCarouselAt(index);
@@ -1446,8 +1497,8 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                                 />
                               </div>
 
-                              {/* Hover Flag */}
-                              {displayCountryCode ? (
+                              {/* Hover Flag — only shown after image has loaded */}
+                              {displayCountryCode && loadedItemIds.has(item.id) ? (
                                 <div className="absolute top-3 right-3 z-20 transition-opacity duration-200 opacity-100 min-[811px]:opacity-0 min-[811px]:group-hover:opacity-100 pointer-events-auto group/flag">
                                   <div className="flex items-center drop-shadow-md cursor-pointer">
                                     <img
@@ -1507,7 +1558,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                     )}
                     <div
                       ref={loadMoreRef}
-                      className={`min-[811px]:hidden h-[1px] w-full ${allMediaItems.length > mobileAllMediaLimit ? "block" : "hidden"}`}
+                      className={`h-[1px] w-full ${visibleLimit < allMediaItems.length ? "block" : "hidden"}`}
                     />
                   </section>
                 }
