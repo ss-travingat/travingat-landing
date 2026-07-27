@@ -45,34 +45,32 @@ async function verifyAdminSessionTokenEdge(token: string) {
 export async function middleware(req: NextRequest) {
   const url = req.nextUrl;
 
-  // Determine if this is an admin route that needs protection
-  const isAdminRoute = url.pathname.startsWith('/admin');
-  const isAdminApiRoute = url.pathname.startsWith('/api/admin') || url.pathname.startsWith('/api/cms');
-
-  // Allow public routes and public APIs (like /api/waitlist) to bypass auth
-  if (!isAdminRoute && !isAdminApiRoute) {
-    return NextResponse.next();
-  }
-
-  // Allow access to login pages specifically
-  if (
-    url.pathname === '/admin/login' || 
+  const isWaitlistApi = url.pathname === '/api/waitlist';
+  const isLoginPage = url.pathname === '/admin/login';
+  const isAdminLoginApi =
     url.pathname.startsWith('/api/admin/login') ||
-    url.pathname.startsWith('/api/cms/login')
-  ) {
+    url.pathname.startsWith('/api/cms/login');
+  const isAdminApiRoute =
+    url.pathname.startsWith('/api/admin') ||
+    url.pathname.startsWith('/api/cms');
+
+  // Allow the public waitlist API and login routes without auth.
+  if (isWaitlistApi || isLoginPage || isAdminLoginApi) {
     return NextResponse.next();
   }
 
-  // Check for the admin session cookie
-  const SESSION_COOKIE_NAME = "travingat_cms_session";
-  const sessionCookie = req.cookies.get(SESSION_COOKIE_NAME)?.value;
+  // Require auth for every other route.
+  const SESSION_COOKIE_NAME = 'travingat_cms_session';
+  const sessionCookie = req.cookies.get(SESSION_COOKIE_NAME)?.value || '';
+  const isAuthenticated = sessionCookie
+    ? await verifyAdminSessionTokenEdge(sessionCookie)
+    : false;
 
-  if (sessionCookie && (await verifyAdminSessionTokenEdge(sessionCookie))) {
+  if (isAuthenticated) {
     return NextResponse.next();
   }
 
-  // Return 401 for API routes, redirect for admin pages
-  if (isAdminApiRoute) {
+  if (url.pathname.startsWith('/api/')) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
