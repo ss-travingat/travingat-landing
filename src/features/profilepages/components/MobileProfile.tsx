@@ -214,6 +214,7 @@ export function MobileHero({
               className="w-full h-full object-cover"
               skeletonClassName="absolute inset-0 bg-[#1a1a1a]"
               containerClassName="w-full h-full"
+              priority
             />
           </div>
           <div className="relative z-10 mx-auto h-20 w-20 rounded-2xl border-4 border-black overflow-hidden bg-[#151515]">
@@ -223,6 +224,7 @@ export function MobileHero({
               className="w-full h-full object-cover"
               skeletonClassName="absolute inset-0 bg-[#1a1a1a]"
               containerClassName="w-full h-full"
+              priority
             />
           </div>
         </div>

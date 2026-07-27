@@ -8,6 +8,7 @@ export default function LoadedImage({
   className = "",
   containerClassName = "",
   skeletonClassName = "absolute inset-0",
+  priority = false,
   onClick,
   onLoad,
 }: { 
@@ -16,6 +17,9 @@ export default function LoadedImage({
   className?: string;
   containerClassName?: string;
   skeletonClassName?: string;
+  /** When true, sets fetchPriority="high" + loading="eager" so the browser
+   *  requests this image immediately, before lower-priority images. */
+  priority?: boolean;
   onClick?: (event: React.MouseEvent<HTMLImageElement>) => void;
   onLoad?: () => void;
 }) {
@@ -36,6 +40,9 @@ export default function LoadedImage({
       {/* 
         Hidden 0×0 preloader: starts the browser download without affecting layout.
         Once the URL resolves, handleLoad fires → browser has image in cache.
+        fetchPriority="high" tells the browser to put this in the high-priority
+        fetch queue (same as LCP images), ensuring cover images load before the
+        media-grid images below the fold.
       */}
       {!loaded && (
         <img
@@ -43,6 +50,8 @@ export default function LoadedImage({
           alt=""
           aria-hidden
           className="absolute w-0 h-0 opacity-0 pointer-events-none"
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          {...(priority ? { fetchPriority: "high" as any, loading: "eager" } : { loading: "lazy" })}
           onLoad={handleLoad}
         />
       )}

@@ -614,11 +614,12 @@ function PhotoCarouselModal({
 }
 
 // ---------------------------------------------------------------------------
-// JsMasonryGrid — row-by-row loading masonry
+// JsMasonryGrid — visually-perfect CSS-columns masonry
 // ---------------------------------------------------------------------------
-// Items are distributed into column buckets in ROUND-ROBIN order so the DOM
-// order is: col0-row0, col1-row0, col2-row0, col3-row0, col0-row1, …
-// The browser fetches images in DOM order → top row loads before lower rows.
+// We use the browser's native CSS `columns` so the masonry is always
+// balanced with no bottom gaps.
+//
+// CSS columns fills top-to-bottom within each column, in DOM order.
 // ---------------------------------------------------------------------------
 type JsMasonryGridProps = {
   items: MediaItem[];
@@ -655,162 +656,148 @@ function JsMasonryGrid({
 }: JsMasonryGridProps) {
   const colCount = useColumnCount();
 
-  // Distribute items into columns in round-robin (row-by-row) order.
-  // columns[0] gets items at indices 0, colCount, 2*colCount, ...
-  // columns[1] gets items at indices 1, colCount+1, ...  etc.
-  const columns = useMemo(() => {
-    const cols: MediaItem[][] = Array.from({ length: colCount }, () => []);
-    items.forEach((item, i) => {
-      cols[i % colCount].push(item);
-    });
-    return cols;
-  }, [items, colCount]);
-
-  const gap = "gap-[6px] md:gap-[20px]";
-  const itemGap = "mb-[8px] md:mb-[20px]";
+  // Items per column (ceiling). The first item of each column sits at
+  // DOM index k * itemsPerCol and appears in the topmost visual row.
+  const itemsPerCol = Math.ceil(items.length / Math.max(colCount, 1));
 
   return (
-    <div className={`flex ${gap}`}>
-      {columns.map((colItems, colIdx) => (
-        <div key={colIdx} className="flex flex-col flex-1 min-w-0">
-          {colItems.map((item) => {
-            const originalIndex = allMediaItems.indexOf(item);
-            const isMenuOpen = openContextMenuId === item.id;
-            const displayCountryCode = item.countryCode || profileFlagCode;
-            const collectionHref =
-              typeof item.collectionIndex === "number" && profile.collectionImages?.[item.collectionIndex]
-                ? `/profiles/${profile.handle.replace(/^@/, "")}/collection/${item.collectionIndex}`
-                : undefined;
-            const viewHref = collectionHref || (displayCountryCode
-              ? `/profiles/${profile.handle.replace(/^@/, "")}/country/${displayCountryCode.toUpperCase()}`
-              : undefined);
-            const viewLabel = collectionHref ? "View collection" : "View country";
-            const shareHref = collectionHref || viewHref;
+    <div className="columns-2 sm:columns-3 xl:columns-4 gap-[6px] md:gap-[20px]">
+      {items.map((item, domIndex) => {
+        const originalIndex = allMediaItems.indexOf(item);
+        const isMenuOpen = openContextMenuId === item.id;
+        const displayCountryCode = item.countryCode || profileFlagCode;
+        const collectionHref =
+          typeof item.collectionIndex === "number" && profile.collectionImages?.[item.collectionIndex]
+            ? `/profiles/${profile.handle.replace(/^@/, "")}/collection/${item.collectionIndex}`
+            : undefined;
+        const viewHref = collectionHref || (displayCountryCode
+          ? `/profiles/${profile.handle.replace(/^@/, "")}/country/${displayCountryCode.toUpperCase()}`
+          : undefined);
+        const viewLabel = collectionHref ? "View collection" : "View country";
+        const shareHref = collectionHref || viewHref;
 
-            return (
-              <div
-                key={item.id}
-                className={`group ${itemGap} w-full relative`}
-              >
-                <div className="relative overflow-hidden rounded-[8px] md:rounded-2xl bg-[#111]">
-                  {item.isVideo ? (
-                    <>
-                      <video
-                        src={toLandingAssetUrl(item.fileUrl)}
-                        muted
-                        playsInline
-                        loop
-                        preload="metadata"
-                        className="w-full h-auto object-cover rounded-[8px] md:rounded-2xl"
-                        onMouseEnter={(e) => e.currentTarget.play().catch(() => {})}
-                        onMouseLeave={(e) => { e.currentTarget.pause(); e.currentTarget.currentTime = 0; }}
-                        onClick={(event) => {
-                          event.preventDefault();
-                          event.stopPropagation();
-                          openCarouselAt(originalIndex);
-                        }}
-                      />
-                      <div className="absolute top-4 left-4 group-hover:opacity-0 transition-opacity pointer-events-none">
-                        <span
-                          className="material-symbols-rounded text-[24px] text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]"
-                          style={{ fontVariationSettings: "'FILL' 1, 'wght' 700, 'GRAD' 200, 'opsz' 24" }}
-                        >
-                          play_arrow
-                        </span>
-                      </div>
-                    </>
-                  ) : (
-                    <LoadedImage
-                      src={toLandingAssetUrl(item.fileUrl)}
-                      alt="Uploaded media"
-                      className="w-full h-auto block rounded-[8px] md:rounded-2xl cursor-pointer"
-                      containerClassName="w-full"
-                      skeletonClassName="w-full aspect-[3/4]"
-                      onLoad={() => setLoadedItemIds((prev) => new Set(prev).add(item.id))}
-                      onClick={(event: React.MouseEvent<HTMLImageElement>) => {
-                        event.preventDefault();
-                        event.stopPropagation();
-                        openCarouselAt(originalIndex);
-                      }}
-                    />
-                  )}
-
-                  <MoreOptionsButton
-                    isOpen={isMenuOpen}
-                    label="Open media menu"
-                    size="sm"
+        return (
+          <div
+            key={item.id}
+            className="group mb-[8px] md:mb-[20px] w-full break-inside-avoid relative [-webkit-column-break-inside:avoid] inline-block"
+          >
+            <div className="relative overflow-hidden rounded-[8px] md:rounded-2xl bg-[#111]">
+              {item.isVideo ? (
+                <>
+                  <video
+                    src={toLandingAssetUrl(item.fileUrl)}
+                    muted
+                    playsInline
+                    loop
+                    preload="metadata"
+                    className="w-full h-auto object-cover rounded-[8px] md:rounded-2xl"
+                    onMouseEnter={(e) => e.currentTarget.play().catch(() => {})}
+                    onMouseLeave={(e) => { e.currentTarget.pause(); e.currentTarget.currentTime = 0; }}
                     onClick={(event) => {
                       event.preventDefault();
                       event.stopPropagation();
-                      setOpenContextMenuId(isMenuOpen ? null : item.id);
+                      openCarouselAt(originalIndex);
                     }}
+                  />
+                  <div className="absolute top-4 left-4 group-hover:opacity-0 transition-opacity pointer-events-none">
+                    <span
+                      className="material-symbols-rounded text-[24px] text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]"
+                      style={{ fontVariationSettings: "'FILL' 1, 'wght' 700, 'GRAD' 200, 'opsz' 24" }}
+                    >
+                      play_arrow
+                    </span>
+                  </div>
+                </>
+              ) : (
+                <LoadedImage
+                  src={toLandingAssetUrl(item.fileUrl)}
+                  alt="Uploaded media"
+                  className="w-full h-auto block rounded-[8px] md:rounded-2xl cursor-pointer"
+                  containerClassName="w-full"
+                  skeletonClassName="w-full aspect-[3/4]"
+                  onLoad={() => setLoadedItemIds((prev) => new Set(prev).add(item.id))}
+                  onClick={(event: React.MouseEvent<HTMLImageElement>) => {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    openCarouselAt(originalIndex);
+                  }}
+                />
+              )}
+
+              <MoreOptionsButton
+                isOpen={isMenuOpen}
+                label="Open media menu"
+                size="sm"
+                onClick={(event) => {
+                  event.preventDefault();
+                  event.stopPropagation();
+                  setOpenContextMenuId(isMenuOpen ? null : item.id);
+                }}
+              />
+            </div>
+
+            {/* Hover Flag — only shown after image has loaded */}
+            {displayCountryCode && loadedItemIds.has(item.id) ? (
+              <div className="absolute top-3 right-3 z-20 transition-opacity duration-200 opacity-100 min-[811px]:opacity-0 min-[811px]:group-hover:opacity-100 pointer-events-auto group/flag">
+                <div className="flex items-center drop-shadow-md cursor-pointer">
+                  <img
+                    src={toFlagAssetPath(displayCountryCode)}
+                    alt={displayCountryCode}
+                    className="h-3.5 w-5 rounded-xs object-cover"
                   />
                 </div>
-
-                {/* Hover Flag — only shown after image has loaded */}
-                {displayCountryCode && loadedItemIds.has(item.id) ? (
-                  <div className="absolute top-3 right-3 z-20 transition-opacity duration-200 opacity-100 min-[811px]:opacity-0 min-[811px]:group-hover:opacity-100 pointer-events-auto group/flag">
-                    <div className="flex items-center drop-shadow-md cursor-pointer">
-                      <img
-                        src={toFlagAssetPath(displayCountryCode)}
-                        alt={displayCountryCode}
-                        className="h-3.5 w-5 rounded-xs object-cover"
-                      />
-                    </div>
-                    {/* Tooltip */}
-                    <div className="absolute bottom-full right-1/2 translate-x-1/2 mb-2.5 flex flex-col items-center opacity-0 transition-all duration-200 group-hover/flag:opacity-100 pointer-events-none origin-bottom scale-95 group-hover/flag:scale-100 drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]">
-                      <div className="whitespace-nowrap rounded-xl bg-white px-3.5 py-1.5 text-[15px] font-medium tracking-tight text-black">
-                        {COUNTRY_LIST_LOOKUP[displayCountryCode.toUpperCase()] || displayCountryCode}
-                      </div>
-                      <div className="-mt-1.5 h-3 w-3 rotate-45 bg-white rounded-[2px]" />
-                    </div>
+                {/* Tooltip */}
+                <div className="absolute bottom-full right-1/2 translate-x-1/2 mb-2.5 flex flex-col items-center opacity-0 transition-all duration-200 group-hover/flag:opacity-100 pointer-events-none origin-bottom scale-95 group-hover/flag:scale-100 drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]">
+                  <div className="whitespace-nowrap rounded-xl bg-white px-3.5 py-1.5 text-[15px] font-medium tracking-tight text-black">
+                    {COUNTRY_LIST_LOOKUP[displayCountryCode.toUpperCase()] || displayCountryCode}
                   </div>
-                ) : null}
-
-                {isMenuOpen ? (
-                  <ContextMenu
-                    kind="media"
-                    viewLabel={viewLabel}
-                    shareLabel="Share photo"
-                    flagCode={collectionHref ? undefined : displayCountryCode}
-                    viewHref={viewHref}
-                    onShare={() => {
-                      const shareUrl = new URL(window.location.origin);
-                      if (shareHref?.includes("/collection/")) {
-                        shareUrl.pathname = shareHref;
-                      } else if (displayCountryCode) {
-                        shareUrl.pathname = `/profiles/${profile.handle.replace(/^@/, "")}/country/${displayCountryCode.toUpperCase()}`;
-                      } else {
-                        shareUrl.pathname = `/profiles/${profile.handle.replace(/^@/, "")}`;
-                      }
-                      shareUrl.searchParams.set("image", btoa(unescape(encodeURIComponent(item.fileUrl))));
-                      openShareCard({
-                        kind: "media",
-                        title: "Share moment",
-                        imageUrl: item.fileUrl,
-                        shareUrl: shareUrl.toString(),
-                        flagCode: displayCountryCode,
-                        ownerName: shareOwnerName,
-                        ownerHandle: shareOwnerHandle,
-                        ownerAvatar: shareOwnerAvatar,
-                      });
-                    }}
-                    onClose={() => setOpenContextMenuId(null)}
-                    menuRef={contextMenuRef}
-                  />
-                ) : null}
+                  <div className="-mt-1.5 h-3 w-3 rotate-45 bg-white rounded-[2px]" />
+                </div>
               </div>
-            );
-          })}
-        </div>
-      ))}
+            ) : null}
+
+            {isMenuOpen ? (
+              <ContextMenu
+                kind="media"
+                viewLabel={viewLabel}
+                shareLabel="Share photo"
+                flagCode={collectionHref ? undefined : displayCountryCode}
+                viewHref={viewHref}
+                onShare={() => {
+                  const shareUrl = new URL(window.location.origin);
+                  if (shareHref?.includes("/collection/")) {
+                    shareUrl.pathname = shareHref;
+                  } else if (displayCountryCode) {
+                    shareUrl.pathname = `/profiles/${profile.handle.replace(/^@/, "")}/country/${displayCountryCode.toUpperCase()}`;
+                  } else {
+                    shareUrl.pathname = `/profiles/${profile.handle.replace(/^@/, "")}`;
+                  }
+                  shareUrl.searchParams.set("image", btoa(unescape(encodeURIComponent(item.fileUrl))));
+                  openShareCard({
+                    kind: "media",
+                    title: "Share moment",
+                    imageUrl: item.fileUrl,
+                    shareUrl: shareUrl.toString(),
+                    flagCode: displayCountryCode,
+                    ownerName: shareOwnerName,
+                    ownerHandle: shareOwnerHandle,
+                    ownerAvatar: shareOwnerAvatar,
+                  });
+                }}
+                onClose={() => setOpenContextMenuId(null)}
+                menuRef={contextMenuRef}
+              />
+            ) : null}
+          </div>
+        );
+      })}
     </div>
   );
 }
 
 export default function ProfileComponent({ profile }: { profile: SampleProfile }) {
   const [activeTab, setActiveTab] = useState<TabKey>("all");
-  const [visibleLimit, setVisibleLimit] = useState(4);
+  const [visibleLimit, setVisibleLimit] = useState(10);
   const [loadedItemIds, setLoadedItemIds] = useState<Set<string>>(() => new Set());
   const loadMoreRef = useRef<HTMLDivElement>(null);
   const [swipeOffset, setSwipeOffset] = useState(0);
@@ -820,10 +807,10 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries[0].isIntersecting) {
-          setVisibleLimit((prev) => prev + 4);
+          setVisibleLimit((prev) => prev + 10);
         }
       },
-      { rootMargin: "400px" }
+      { rootMargin: "100px" }
     );
     observer.observe(loadMoreRef.current);
     return () => observer.disconnect();
@@ -1422,6 +1409,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                       className="h-full w-full object-cover rounded-[20px]"
                       skeletonClassName="absolute inset-0 bg-[#1a1a1a]"
                       containerClassName="w-full h-full"
+                      priority
                     />
                   </div>
 
@@ -1537,6 +1525,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                   className="absolute inset-0 w-full h-full object-cover rounded-3xl lg:rounded-[24px] xl:rounded-[32px]"
                   skeletonClassName="absolute inset-0 bg-[#1a1a1a]"
                   containerClassName="absolute inset-0 w-full h-full"
+                  priority
                 />
               </div>
             </div>
