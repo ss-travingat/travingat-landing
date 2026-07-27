@@ -45,7 +45,16 @@ async function verifyAdminSessionTokenEdge(token: string) {
 export async function middleware(req: NextRequest) {
   const url = req.nextUrl;
 
-  // Allow access to login pages
+  // Determine if this is an admin route that needs protection
+  const isAdminRoute = url.pathname.startsWith('/admin');
+  const isAdminApiRoute = url.pathname.startsWith('/api/admin') || url.pathname.startsWith('/api/cms');
+
+  // Allow public routes and public APIs (like /api/waitlist) to bypass auth
+  if (!isAdminRoute && !isAdminApiRoute) {
+    return NextResponse.next();
+  }
+
+  // Allow access to login pages specifically
   if (
     url.pathname === '/admin/login' || 
     url.pathname.startsWith('/api/admin/login') ||
@@ -63,7 +72,7 @@ export async function middleware(req: NextRequest) {
   }
 
   // Return 401 for API routes, redirect for admin pages
-  if (url.pathname.startsWith('/api/')) {
+  if (isAdminApiRoute) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
