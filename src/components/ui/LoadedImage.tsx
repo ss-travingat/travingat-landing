@@ -10,9 +10,6 @@ export default function LoadedImage({
   skeletonClassName = "absolute inset-0",
   onClick,
   onLoad,
-  fetchPriority,
-  loading,
-  deferLoad,
 }: { 
   src: string; 
   alt: string; 
@@ -21,9 +18,6 @@ export default function LoadedImage({
   skeletonClassName?: string;
   onClick?: (event: React.MouseEvent<HTMLImageElement>) => void;
   onLoad?: () => void;
-  fetchPriority?: "high" | "low" | "auto";
-  loading?: "eager" | "lazy";
-  deferLoad?: boolean;
 }) {
   const [loaded, setLoaded] = useState(false);
 
@@ -39,21 +33,27 @@ export default function LoadedImage({
         <div className={`bg-[#1a1a1a] animate-pulse rounded-[inherit] ${skeletonClassName}`} />
       )}
 
-      {/* Real image — hidden from layout until loaded, then pops into flow */}
-      {!deferLoad && (
+      {/* 
+        Hidden 0×0 preloader: starts the browser download without affecting layout.
+        Once the URL resolves, handleLoad fires → browser has image in cache.
+      */}
+      {!loaded && (
+        <img
+          src={src}
+          alt=""
+          aria-hidden
+          className="absolute w-0 h-0 opacity-0 pointer-events-none"
+          onLoad={handleLoad}
+        />
+      )}
+
+      {/* Real image — only rendered after load, always in normal flow at natural size */}
+      {loaded && (
         <img
           src={src}
           alt={alt}
-          className={`${className} ${loaded ? '' : 'absolute w-0 h-0 opacity-0 pointer-events-none'}`}
-          ref={(el) => {
-            if (el?.complete && !loaded) {
-              handleLoad();
-            }
-          }}
-          onLoad={handleLoad}
+          className={className}
           onClick={onClick}
-          fetchPriority={fetchPriority}
-          loading={loading}
         />
       )}
     </div>

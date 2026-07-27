@@ -597,9 +597,6 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
   const loadMoreRef = useRef<HTMLDivElement>(null);
   const [swipeOffset, setSwipeOffset] = useState(0);
 
-  const [heroLoaded, setHeroLoaded] = useState({ cover: false, avatar: false });
-  const isHeroFullyLoaded = heroLoaded.cover && heroLoaded.avatar;
-
   useEffect(() => {
     if (typeof IntersectionObserver === "undefined" || !loadMoreRef.current) return;
     const observer = new IntersectionObserver(
@@ -1184,31 +1181,6 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
       <div className="bg-black text-white flex flex-col items-center px-[8px] pt-[8px] min-[810px]:pt-0 min-[810px]:px-[32px] min-[1200px]:px-[48px] min-[1440px]:px-[64px]">
 
         <main className="w-full max-w-[1728px] pb-[4px] md:pb-20 flex flex-col gap-[12px] min-[811px]:gap-10">
-          {/* Global Preloaders for priority images to gate gallery loading */}
-          <img 
-            src={toLandingAssetUrl(profile.images.cover)} 
-            alt="" aria-hidden 
-            className="absolute w-0 h-0 opacity-0 pointer-events-none" 
-            fetchPriority="high" loading="eager" 
-            ref={(el) => {
-              if (el?.complete) {
-                setHeroLoaded(prev => prev.cover ? prev : { ...prev, cover: true });
-              }
-            }}
-            onLoad={() => setHeroLoaded(prev => prev.cover ? prev : { ...prev, cover: true })} 
-          />
-          <img 
-            src={toLandingAssetUrl(profile.images.avatar)} 
-            alt="" aria-hidden 
-            className="absolute w-0 h-0 opacity-0 pointer-events-none" 
-            fetchPriority="high" loading="eager" 
-            ref={(el) => {
-              if (el?.complete) {
-                setHeroLoaded(prev => prev.avatar ? prev : { ...prev, avatar: true });
-              }
-            }}
-            onLoad={() => setHeroLoaded(prev => prev.avatar ? prev : { ...prev, avatar: true })} 
-          />
           <MobileHero
             profile={profile}
             displayName={displayName}
@@ -1230,10 +1202,8 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                       src={toLandingAssetUrl(profile.images.avatar)}
                       alt="Profile avatar"
                       className="h-full w-full object-cover rounded-[20px]"
-                      containerClassName="h-full w-full"
-                      skeletonClassName="absolute inset-0"
-                      fetchPriority="high"
-                      loading="eager"
+                      skeletonClassName="absolute inset-0 bg-[#1a1a1a]"
+                      containerClassName="w-full h-full"
                     />
                   </div>
 
@@ -1347,10 +1317,8 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                   src={toLandingAssetUrl(profile.images.cover)}
                   alt="Profile cover"
                   className="absolute inset-0 w-full h-full object-cover rounded-3xl lg:rounded-[24px] xl:rounded-[32px]"
-                  containerClassName="absolute inset-0"
-                  skeletonClassName="absolute inset-0"
-                  fetchPriority="high"
-                  loading="eager"
+                  skeletonClassName="absolute inset-0 bg-[#1a1a1a]"
+                  containerClassName="absolute inset-0 w-full h-full"
                 />
               </div>
             </div>
@@ -1418,7 +1386,8 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                       </div>
                     ) : (
                       <div className="columns-2 sm:columns-3 xl:columns-4 gap-[6px] md:gap-[20px]">
-                        {allMediaItems.map((item, index) => {
+                        {allMediaItems.slice(0, visibleLimit).map((item) => {
+                          const originalIndex = allMediaItems.indexOf(item);
                           const isMenuOpen = openContextMenuId === item.id;
                           const displayCountryCode = item.countryCode || profileFlagCode;
                           const collectionHref =
@@ -1437,8 +1406,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                             >
                               <div className="relative overflow-hidden rounded-[8px] md:rounded-2xl bg-[#111]">
                                 {item.isVideo ? (
-                                  (index < visibleLimit && isHeroFullyLoaded) ? (
-                                    <>
+                                  <>
                                     <video
                                       src={toLandingAssetUrl(item.fileUrl)}
                                       muted
@@ -1451,7 +1419,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                                       onClick={(event) => {
                                         event.preventDefault();
                                         event.stopPropagation();
-                                        openCarouselAt(index);
+                                        openCarouselAt(originalIndex);
                                       }}
                                     />
                                     <div className="absolute top-4 left-4 group-hover:opacity-0 transition-opacity pointer-events-none">
@@ -1462,10 +1430,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                                         play_arrow
                                       </span>
                                     </div>
-                                    </>
-                                  ) : (
-                                    <div className="w-full aspect-[3/4] bg-[#1a1a1a] animate-pulse rounded-[inherit]" />
-                                  )
+                                  </>
                                 ) : (
                                   <>
                                     <LoadedImage
@@ -1474,12 +1439,11 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                                       className="w-full h-auto block rounded-[8px] md:rounded-2xl cursor-pointer"
                                       containerClassName="w-full"
                                       skeletonClassName="w-full aspect-[3/4]"
-                                      deferLoad={!isHeroFullyLoaded || index >= visibleLimit}
                                       onLoad={() => setLoadedItemIds((prev) => new Set(prev).add(item.id))}
                                       onClick={(event: React.MouseEvent<HTMLImageElement>) => {
                                         event.preventDefault();
                                         event.stopPropagation();
-                                        openCarouselAt(index);
+                                        openCarouselAt(originalIndex);
                                       }}
                                     />
                                   </>
@@ -1944,11 +1908,23 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
             {/* Cover + Avatar + Name */}
             <div className="flex flex-col gap-5 items-center">
               <div className="flex flex-col items-center pb-8 w-full">
-                <div className="-mb-8 h-48.5 w-50 overflow-hidden rounded-xl shrink-0">
-                  <img src={toLandingAssetUrl(profile.images.cover)} alt={displayName} loading="lazy" decoding="async" className="w-full h-full object-cover" />
+                <div className="-mb-8 h-48.5 w-50 overflow-hidden rounded-xl shrink-0 bg-[#151515]">
+                  <LoadedImage
+                    src={toLandingAssetUrl(profile.images.cover)}
+                    alt={displayName}
+                    className="w-full h-full object-cover"
+                    skeletonClassName="absolute inset-0 bg-[#1a1a1a]"
+                    containerClassName="w-full h-full"
+                  />
                 </div>
-                <div className="-mb-8 h-15 w-15 overflow-hidden rounded-xl shadow-[8px_8px_12px_0px_rgba(0,0,0,0.25)] shrink-0">
-                  <img src={toLandingAssetUrl(profile.images.avatar)} alt={displayName} loading="lazy" decoding="async" className="w-full h-full object-cover" />
+                <div className="-mb-8 h-15 w-15 overflow-hidden rounded-xl shadow-[8px_8px_12px_0px_rgba(0,0,0,0.25)] shrink-0 bg-[#151515]">
+                  <LoadedImage
+                    src={toLandingAssetUrl(profile.images.avatar)}
+                    alt={displayName}
+                    className="w-full h-full object-cover"
+                    skeletonClassName="absolute inset-0 bg-[#1a1a1a]"
+                    containerClassName="w-full h-full"
+                  />
                 </div>
               </div>
               <div className="flex flex-col gap-1 text-center w-full">
