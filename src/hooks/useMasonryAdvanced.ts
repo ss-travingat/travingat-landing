@@ -88,12 +88,16 @@ export function useMasonryAdvanced<T extends MasonryItemWithDimensions>(
       // Compute column width. On mobile breakpoints we allow smaller column widths
       // to preserve the requested column count (eg. 2 columns on narrow devices).
       const mobileMaxWidth = 640;
+      const desktopMinWidth = 1024;
       const MOBILE_GAP_X = 6; // mobile horizontal spacing
       const MOBILE_GAP_Y = 8; // mobile vertical spacing
+      const DESKTOP_GAP_X = Math.max(gapX, 16); // desktop horizontal spacing
+      const DESKTOP_GAP_Y = Math.max(gapY, 16); // desktop vertical spacing
       let columnWidth = (availableWidth - gapX * (columns - 1)) / columns;
       const isMobile = containerWidth <= mobileMaxWidth;
-      const gapToUseX = isMobile ? MOBILE_GAP_X : gapX;
-      const gapToUseY = isMobile ? MOBILE_GAP_Y : gapY;
+      const isDesktop = containerWidth >= desktopMinWidth;
+      const gapToUseX = isMobile ? MOBILE_GAP_X : isDesktop ? DESKTOP_GAP_X : gapX;
+      const gapToUseY = isMobile ? MOBILE_GAP_Y : isDesktop ? DESKTOP_GAP_Y : gapY;
 
       if (!isMobile) {
         // Ensure the columns actually fit the container by respecting `minColumnWidth`.

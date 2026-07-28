@@ -668,10 +668,10 @@ function JsMasonryGrid({
       minColumnWidth={200}
       initialVisibleCount={10}
       renderItem={(masonryItem, index) => {
-        const mediaItem = items[index];
+        const mediaItem = items.find((it) => String(it.id) === String(masonryItem.id)) || items[index];
         if (!mediaItem) return null;
 
-        const originalIndex = allMediaItems.indexOf(mediaItem);
+        const originalIndex = allMediaItems.findIndex((it) => String(it.id) === String(mediaItem?.id));
         const isMenuOpen = openContextMenuId === mediaItem.id;
         const displayCountryCode = mediaItem.countryCode || profileFlagCode;
         const collectionHref =
@@ -814,6 +814,7 @@ function JsMasonryGrid({
 
 export default function ProfileComponent({ profile }: { profile: SampleProfile }) {
   const [activeTab, setActiveTab] = useState<TabKey>("all");
+  const [coverLoaded, setCoverLoaded] = useState(false);
   const [visibleLimit, setVisibleLimit] = useState(10);
   const [loadedItemIds, setLoadedItemIds] = useState<Set<string>>(() => new Set());
   const loadMoreRef = useRef<HTMLDivElement>(null);
@@ -1557,6 +1558,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                   skeletonClassName="absolute inset-0 bg-[#1a1a1a]"
                   containerClassName="absolute inset-0 w-full h-full"
                   priority
+                  onLoad={() => setCoverLoaded(true)}
                 />
               </div>
             </div>
@@ -1623,22 +1625,26 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                         </p>
                       </div>
                     ) : (
-                      <JsMasonryGrid
-                        items={allMediaItems.slice(0, visibleLimit)}
-                        allMediaItems={allMediaItems}
-                        profileFlagCode={profileFlagCode}
-                        profile={profile}
-                        openContextMenuId={openContextMenuId}
-                        setOpenContextMenuId={setOpenContextMenuId}
-                        loadedItemIds={loadedItemIds}
-                        setLoadedItemIds={setLoadedItemIds}
-                        openCarouselAt={openCarouselAt}
-                        openShareCard={openShareCard}
-                        contextMenuRef={contextMenuRef as React.RefObject<HTMLDivElement>}
-                        shareOwnerName={shareOwnerName}
-                        shareOwnerHandle={shareOwnerHandle}
-                        shareOwnerAvatar={shareOwnerAvatar}
-                      />
+                      (coverLoaded ? (
+                        <JsMasonryGrid
+                          items={allMediaItems.slice(0, visibleLimit)}
+                          allMediaItems={allMediaItems}
+                          profileFlagCode={profileFlagCode}
+                          profile={profile}
+                          openContextMenuId={openContextMenuId}
+                          setOpenContextMenuId={setOpenContextMenuId}
+                          loadedItemIds={loadedItemIds}
+                          setLoadedItemIds={setLoadedItemIds}
+                          openCarouselAt={openCarouselAt}
+                          openShareCard={openShareCard}
+                          contextMenuRef={contextMenuRef as React.RefObject<HTMLDivElement>}
+                          shareOwnerName={shareOwnerName}
+                          shareOwnerHandle={shareOwnerHandle}
+                          shareOwnerAvatar={shareOwnerAvatar}
+                        />
+                      ) : (
+                        <div className="w-full h-[480px] bg-[#0e0e0e] rounded-2xl" />
+                      ))
                     )}
                     <div
                       ref={loadMoreRef}
