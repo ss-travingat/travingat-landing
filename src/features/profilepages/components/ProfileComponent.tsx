@@ -13,6 +13,9 @@ import { MobileHero, MobileTabs, MobileActionBar } from "./MobileProfile";
 import ProfileFooter from "./ProfileFooter";
 import CardCarousel from "./CardCarousel";
 import LoadedImage from "@/components/ui/LoadedImage";
+import { MasonryImageGrid } from "@/components/ui/MasonryImageGrid";
+import { createMasonryItems } from "@/lib/masonry-utils";
+import type { MasonryItemWithDimensions } from "@/hooks/useMasonryAdvanced";
 
 /* eslint-disable @next/next/no-img-element */
 
@@ -79,6 +82,8 @@ type MediaItem = {
   isVideo: boolean;
   countryCode?: string;
   collectionIndex?: number;
+  width?: number;
+  height?: number;
 };
 
 type CountryCard = {
@@ -614,12 +619,7 @@ function PhotoCarouselModal({
 }
 
 // ---------------------------------------------------------------------------
-// JsMasonryGrid — visually-perfect CSS-columns masonry
-// ---------------------------------------------------------------------------
-// We use the browser's native CSS `columns` so the masonry is always
-// balanced with no bottom gaps.
-//
-// CSS columns fills top-to-bottom within each column, in DOM order.
+// JsMasonryGrid — CSS columns with stable loading & natural aspect ratios
 // ---------------------------------------------------------------------------
 type JsMasonryGridProps = {
   items: MediaItem[];
@@ -654,90 +654,107 @@ function JsMasonryGrid({
   shareOwnerHandle,
   shareOwnerAvatar,
 }: JsMasonryGridProps) {
-  const colCount = useColumnCount();
-
-  // Items per column (ceiling). The first item of each column sits at
-  // DOM index k * itemsPerCol and appears in the topmost visual row.
-  const itemsPerCol = Math.ceil(items.length / Math.max(colCount, 1));
+  // Convert media items to masonry items with dimensions
+  const masonryItems: MasonryItemWithDimensions[] = useMemo(
+    () => createMasonryItems(items.map(item => ({ url: item.fileUrl, width: item.width, height: item.height })), "media"),
+    [items]
+  );
 
   return (
-    <div className="columns-2 sm:columns-3 xl:columns-4 gap-[6px] md:gap-[20px]">
-      {items.map((item, domIndex) => {
-        const originalIndex = allMediaItems.indexOf(item);
-        const isMenuOpen = openContextMenuId === item.id;
-        const displayCountryCode = item.countryCode || profileFlagCode;
+    <MasonryImageGrid
+      items={masonryItems}
+      gapX={8}
+      gapY={8}
+      minColumnWidth={200}
+      initialVisibleCount={10}
+      renderItem={(masonryItem, index) => {
+        const mediaItem = items[index];
+        if (!mediaItem) return null;
+
+        const originalIndex = allMediaItems.indexOf(mediaItem);
+        const isMenuOpen = openContextMenuId === mediaItem.id;
+        const displayCountryCode = mediaItem.countryCode || profileFlagCode;
         const collectionHref =
-          typeof item.collectionIndex === "number" && profile.collectionImages?.[item.collectionIndex]
-            ? `/profiles/${profile.handle.replace(/^@/, "")}/collection/${item.collectionIndex}`
+          typeof mediaItem.collectionIndex === "number" && profile.collectionImages?.[mediaItem.collectionIndex]
+            ? `/profiles/${profile.handle.replace(/^@/, "")}/collection/${mediaItem.collectionIndex}`
             : undefined;
         const viewHref = collectionHref || (displayCountryCode
           ? `/profiles/${profile.handle.replace(/^@/, "")}/country/${displayCountryCode.toUpperCase()}`
           : undefined);
         const viewLabel = collectionHref ? "View collection" : "View country";
-        const shareHref = collectionHref || viewHref;
+        const isLoaded = loadedItemIds.has(mediaItem.id);
 
         return (
-          <div
-            key={item.id}
-            className="group mb-[8px] md:mb-[20px] w-full break-inside-avoid relative [-webkit-column-break-inside:avoid] inline-block"
-          >
-            <div className="relative overflow-hidden rounded-[8px] md:rounded-2xl bg-[#111]">
-              {item.isVideo ? (
-                <>
-                  <video
-                    src={toLandingAssetUrl(item.fileUrl)}
-                    muted
-                    playsInline
-                    loop
-                    preload="metadata"
-                    className="w-full h-auto object-cover rounded-[8px] md:rounded-2xl"
-                    onMouseEnter={(e) => e.currentTarget.play().catch(() => {})}
-                    onMouseLeave={(e) => { e.currentTarget.pause(); e.currentTarget.currentTime = 0; }}
-                    onClick={(event) => {
-                      event.preventDefault();
-                      event.stopPropagation();
-                      openCarouselAt(originalIndex);
-                    }}
-                  />
-                  <div className="absolute top-4 left-4 group-hover:opacity-0 transition-opacity pointer-events-none">
-                    <span
-                      className="material-symbols-rounded text-[24px] text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]"
-                      style={{ fontVariationSettings: "'FILL' 1, 'wght' 700, 'GRAD' 200, 'opsz' 24" }}
-                    >
-                      play_arrow
-                    </span>
-                  </div>
-                </>
-              ) : (
-                <LoadedImage
-                  src={toLandingAssetUrl(item.fileUrl)}
-                  alt="Uploaded media"
-                  className="w-full h-auto block rounded-[8px] md:rounded-2xl cursor-pointer"
-                  containerClassName="w-full"
-                  skeletonClassName="w-full aspect-[3/4]"
-                  onLoad={() => setLoadedItemIds((prev) => new Set(prev).add(item.id))}
-                  onClick={(event: React.MouseEvent<HTMLImageElement>) => {
+          <div className="group h-full w-full relative overflow-hidden rounded-lg md:rounded-2xl bg-black-800">
+            {/* Skeleton placeholder with correct aspect ratio */}
+            <div
+              className={`absolute inset-0 transition-opacity duration-300 ${isLoaded ? "opacity-0 pointer-events-none" : "opacity-100"}`}
+              style={{ backgroundColor: "#1a1a1a" }}
+            />
+
+            {mediaItem.isVideo ? (
+              <>
+                <video
+                  src={toLandingAssetUrl(mediaItem.fileUrl)}
+                  muted
+                  playsInline
+                  loop
+                  preload="metadata"
+                  className="h-full w-full object-cover rounded-lg md:rounded-2xl cursor-pointer"
+                  onMouseEnter={(e) => e.currentTarget.play().catch(() => {})}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.pause();
+                    e.currentTarget.currentTime = 0;
+                  }}
+                  onClick={(event) => {
                     event.preventDefault();
                     event.stopPropagation();
                     openCarouselAt(originalIndex);
                   }}
                 />
-              )}
-
-              <MoreOptionsButton
-                isOpen={isMenuOpen}
-                label="Open media menu"
-                size="sm"
+                <div className="absolute top-3 left-3 group-hover:opacity-0 transition-opacity pointer-events-none">
+                  <span
+                    className="material-symbols-rounded text-[24px] text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]"
+                    style={{ fontVariationSettings: "'FILL' 1, 'wght' 700, 'GRAD' 200, 'opsz' 24" }}
+                  >
+                    play_arrow
+                  </span>
+                </div>
+              </>
+            ) : (
+              <img
+                src={toLandingAssetUrl(mediaItem.fileUrl)}
+                alt="Uploaded media"
+                decoding="async"
+                // gallery images are low priority so cover/avatar LCP images load first
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                {...{ fetchPriority: "low" as any, loading: "lazy" }}
+                className={`h-full w-full object-cover rounded-lg md:rounded-2xl cursor-pointer transition-opacity duration-300 ${
+                  isLoaded ? "opacity-100" : "opacity-0"
+                }`}
+                onLoad={() => setLoadedItemIds((prev) => new Set(prev).add(mediaItem.id))}
                 onClick={(event) => {
                   event.preventDefault();
                   event.stopPropagation();
-                  setOpenContextMenuId(isMenuOpen ? null : item.id);
+                  openCarouselAt(originalIndex);
                 }}
               />
-            </div>
+            )}
 
-            {/* Hover Flag — only shown after image has loaded */}
-            {displayCountryCode && loadedItemIds.has(item.id) ? (
+            {/* More options button */}
+            <MoreOptionsButton
+              isOpen={isMenuOpen}
+              label="Open media menu"
+              size="sm"
+              onClick={(event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                setOpenContextMenuId(isMenuOpen ? null : mediaItem.id);
+              }}
+            />
+
+            {/* Flag badge (visible after image loads) */}
+            {displayCountryCode && isLoaded ? (
               <div className="absolute top-3 right-3 z-20 transition-opacity duration-200 opacity-100 min-[811px]:opacity-0 min-[811px]:group-hover:opacity-100 pointer-events-auto group/flag">
                 <div className="flex items-center drop-shadow-md cursor-pointer">
                   <img
@@ -746,16 +763,16 @@ function JsMasonryGrid({
                     className="h-3.5 w-5 rounded-xs object-cover"
                   />
                 </div>
-                {/* Tooltip */}
                 <div className="absolute bottom-full right-1/2 translate-x-1/2 mb-2.5 flex flex-col items-center opacity-0 transition-all duration-200 group-hover/flag:opacity-100 pointer-events-none origin-bottom scale-95 group-hover/flag:scale-100 drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]">
                   <div className="whitespace-nowrap rounded-xl bg-white px-3.5 py-1.5 text-[15px] font-medium tracking-tight text-black">
                     {COUNTRY_LIST_LOOKUP[displayCountryCode.toUpperCase()] || displayCountryCode}
                   </div>
-                  <div className="-mt-1.5 h-3 w-3 rotate-45 bg-white rounded-[2px]" />
+                  <div className="-mt-1.5 h-3 w-3 rotate-45 bg-white rounded-xs" />
                 </div>
               </div>
             ) : null}
 
+            {/* Context menu */}
             {isMenuOpen ? (
               <ContextMenu
                 kind="media"
@@ -765,18 +782,18 @@ function JsMasonryGrid({
                 viewHref={viewHref}
                 onShare={() => {
                   const shareUrl = new URL(window.location.origin);
-                  if (shareHref?.includes("/collection/")) {
-                    shareUrl.pathname = shareHref;
+                  if (collectionHref?.includes("/collection/")) {
+                    shareUrl.pathname = collectionHref;
                   } else if (displayCountryCode) {
                     shareUrl.pathname = `/profiles/${profile.handle.replace(/^@/, "")}/country/${displayCountryCode.toUpperCase()}`;
                   } else {
                     shareUrl.pathname = `/profiles/${profile.handle.replace(/^@/, "")}`;
                   }
-                  shareUrl.searchParams.set("image", btoa(unescape(encodeURIComponent(item.fileUrl))));
+                  shareUrl.searchParams.set("image", btoa(unescape(encodeURIComponent(mediaItem.fileUrl))));
                   openShareCard({
                     kind: "media",
                     title: "Share moment",
-                    imageUrl: item.fileUrl,
+                    imageUrl: mediaItem.fileUrl,
                     shareUrl: shareUrl.toString(),
                     flagCode: displayCountryCode,
                     ownerName: shareOwnerName,
@@ -790,8 +807,8 @@ function JsMasonryGrid({
             ) : null}
           </div>
         );
-      })}
-    </div>
+      }}
+    />
   );
 }
 
@@ -984,32 +1001,44 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
   const allMediaItems = useMemo<MediaItem[]>(() => {
     const items: MediaItem[] = [];
 
-    profile.images.gallery.forEach((fileUrl) => {
+    profile.images.gallery.forEach((fileEntry) => {
+      const isObj = typeof fileEntry !== "string" && fileEntry !== null && typeof fileEntry === "object";
+      const url = isObj ? (fileEntry.url as string) : (fileEntry as string);
       items.push({
         id: `media-${profile.id}-${items.length}`,
-        fileUrl,
-        isVideo: isVideoAsset(fileUrl),
+        fileUrl: url,
+        isVideo: isVideoAsset(url),
+        width: isObj ? (fileEntry.width as number) : undefined,
+        height: isObj ? (fileEntry.height as number) : undefined,
       });
     });
 
     (profile.countryImages ?? []).forEach((country) => {
-      country.images.forEach((fileUrl) => {
+      country.images.forEach((fileEntry) => {
+        const isObj = typeof fileEntry !== "string" && fileEntry !== null && typeof fileEntry === "object";
+        const url = isObj ? (fileEntry.url as string) : (fileEntry as string);
         items.push({
           id: `media-${profile.id}-${items.length}`,
-          fileUrl,
-          isVideo: isVideoAsset(fileUrl),
+          fileUrl: url,
+          isVideo: isVideoAsset(url),
           countryCode: country.countryCode,
+          width: isObj ? (fileEntry.width as number) : undefined,
+          height: isObj ? (fileEntry.height as number) : undefined,
         });
       });
     });
 
     (profile.collectionImages ?? []).forEach((collection, collectionIdx) => {
-      collection.images.forEach((fileUrl) => {
+      collection.images.forEach((fileEntry) => {
+        const isObj = typeof fileEntry !== "string" && fileEntry !== null && typeof fileEntry === "object";
+        const url = isObj ? (fileEntry.url as string) : (fileEntry as string);
         items.push({
           id: `media-${profile.id}-${items.length}`,
-          fileUrl,
-          isVideo: isVideoAsset(fileUrl),
+          fileUrl: url,
+          isVideo: isVideoAsset(url),
           collectionIndex: collectionIdx,
+          width: isObj ? (fileEntry.width as number) : undefined,
+          height: isObj ? (fileEntry.height as number) : undefined,
         });
       });
     });
@@ -1054,16 +1083,17 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
     if (profile.countryImages && profile.countryImages.length > 0) {
       return profile.countryImages.map((ci, index) => {
         const countryName = COUNTRY_LIST_LOOKUP[ci.countryCode.toUpperCase()] || ci.countryCode;
-        const photoPreviewImages = ci.images.filter((url) => !isVideoAsset(url)).slice(0, 5);
-        const previewImages = (photoPreviewImages.length > 0 ? photoPreviewImages : ci.images).slice(0, 5);
+        const photoPreviewImages = ci.images.filter((url) => !isVideoAsset(typeof url === "string" ? url : url.url)).slice(0, 5);
+        const rawPreview = (photoPreviewImages.length > 0 ? photoPreviewImages : ci.images).slice(0, 5);
+        const previewImages = rawPreview.map((g) => (typeof g === "string" ? g : g.url));
         return {
           code: `${profile.id}-ci-${index}`,
           name: countryName,
           flagCode: ci.countryCode,
-          thumbnailUrl: previewImages[0] || profile.images.cover,
+          thumbnailUrl: previewImages[0] || (typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url),
           previewImages,
-          photoCount: ci.images.filter((url) => !isVideoAsset(url)).length,
-          videoCount: ci.images.filter((url) => isVideoAsset(url)).length,
+          photoCount: ci.images.filter((entry) => !isVideoAsset(typeof entry === "string" ? entry : entry.url)).length,
+          videoCount: ci.images.filter((entry) => isVideoAsset(typeof entry === "string" ? entry : entry.url)).length,
         };
       });
     }
@@ -1092,12 +1122,12 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
       const defaultFallbacks = photoFallbacks.length > 0
         ? photoFallbacks
         : allMediaItems.map((item) => item.fileUrl);
-      const fallback = defaultFallbacks[index % Math.max(defaultFallbacks.length, 1)] || profile.images.cover;
+      const fallback = defaultFallbacks[index % Math.max(defaultFallbacks.length, 1)] || (typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url);
       const previewImages = defaultFallbacks.length > 0
         ? Array.from({ length: Math.min(5, defaultFallbacks.length) }, (_, imageIndex) => {
           return defaultFallbacks[(index + imageIndex) % defaultFallbacks.length];
         })
-        : [profile.images.cover];
+        : [(typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url)];
       return {
         code: `${profile.id}-${index}`,
         name,
@@ -1185,7 +1215,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
 
   const shareOwnerName = profile.name;
   const shareOwnerHandle = handle;
-  const shareOwnerAvatar = profile.images.avatar;
+  const shareOwnerAvatar = typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url;
 
   const activeCarouselItem = carouselIndex !== null ? carouselItems[carouselIndex] : null;
   const carouselCountryCode = activeCarouselItem?.countryCode?.toUpperCase();
@@ -1270,8 +1300,9 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
     if (profile.collectionImages && profile.collectionImages.length > 0) {
       return profile.collectionImages.map((ci, index) => {
         const createdAt = new Date(Date.now() - index * 1000 * 60 * 60 * 24 * 19);
-        const photoPreviewImages = ci.images.filter((url) => !isVideoAsset(url)).slice(0, 5);
-        const previewImages = (photoPreviewImages.length > 0 ? photoPreviewImages : ci.images).slice(0, 5);
+        const photoPreviewImages = ci.images.filter((entry) => !isVideoAsset(typeof entry === "string" ? entry : entry.url)).slice(0, 5);
+        const rawPreview = (photoPreviewImages.length > 0 ? photoPreviewImages : ci.images).slice(0, 5);
+        const previewImages = rawPreview.map((g) => (typeof g === "string" ? g : g.url));
         return {
           id: `${profile.id}-collection-${index}`,
           title: ci.title,
@@ -1281,7 +1312,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
             month: "short",
             year: "numeric",
           }),
-          thumbnailUrl: previewImages[0] || profile.images.cover,
+          thumbnailUrl: previewImages[0] || (typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url),
           previewImages,
           countries: visibleCountries,
           countryOverflowCount,
@@ -1303,7 +1334,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
         ? Array.from({ length: Math.min(5, defaultFallbacks.length) }, (_, imageIndex) => {
           return defaultFallbacks[(index + imageIndex) % defaultFallbacks.length];
         })
-        : [profile.images.cover];
+        : [(typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url)];
 
       return {
         id: `${profile.id}-collection-${index}`,
@@ -1314,7 +1345,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
           month: "short",
           year: "numeric",
         }),
-        thumbnailUrl: thumbnailItem ? thumbnailItem.fileUrl : profile.images.cover,
+        thumbnailUrl: thumbnailItem ? thumbnailItem.fileUrl : (typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url),
         previewImages,
         countries: visibleCountries,
         countryOverflowCount,
@@ -1404,7 +1435,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                 <div className="flex flex-col items-start gap-[12px] lg:gap-[16px] xl:gap-[32px] w-full">
                   <div className="relative size-[64px] lg:size-[100px] xl:size-[120px] shrink-0 overflow-hidden rounded-[20px] bg-[#151515]">
                     <LoadedImage
-                      src={toLandingAssetUrl(profile.images.avatar)}
+                      src={toLandingAssetUrl(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url)}
                       alt="Profile avatar"
                       className="h-full w-full object-cover rounded-[20px]"
                       skeletonClassName="absolute inset-0 bg-[#1a1a1a]"
@@ -1520,7 +1551,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
             <div className="w-full max-w-[48%] lg:max-w-[520px] xl:max-w-[640px] shrink-0">
               <div className="relative w-full max-w-[640px] shrink-0 overflow-hidden rounded-3xl lg:rounded-[24px] xl:rounded-[32px] aspect-[640/662] bg-[#151515]">
                 <LoadedImage
-                  src={toLandingAssetUrl(profile.images.cover)}
+                  src={toLandingAssetUrl(typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url)}
                   alt="Profile cover"
                   className="absolute inset-0 w-full h-full object-cover rounded-3xl lg:rounded-[24px] xl:rounded-[32px]"
                   skeletonClassName="absolute inset-0 bg-[#1a1a1a]"
@@ -1999,7 +2030,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
               <div className="flex flex-col items-center pb-8 w-full">
                 <div className="-mb-8 h-48.5 w-50 overflow-hidden rounded-xl shrink-0 bg-[#151515]">
                   <LoadedImage
-                    src={toLandingAssetUrl(profile.images.cover)}
+                    src={toLandingAssetUrl(typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url)}
                     alt={displayName}
                     className="w-full h-full object-cover"
                     skeletonClassName="absolute inset-0 bg-[#1a1a1a]"
@@ -2007,8 +2038,8 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                   />
                 </div>
                 <div className="-mb-8 h-15 w-15 overflow-hidden rounded-xl shadow-[8px_8px_12px_0px_rgba(0,0,0,0.25)] shrink-0 bg-[#151515]">
-                  <LoadedImage
-                    src={toLandingAssetUrl(profile.images.avatar)}
+                    <LoadedImage
+                      src={toLandingAssetUrl(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url)}
                     alt={displayName}
                     className="w-full h-full object-cover"
                     skeletonClassName="absolute inset-0 bg-[#1a1a1a]"

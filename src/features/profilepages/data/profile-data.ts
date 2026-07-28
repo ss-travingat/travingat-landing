@@ -13,9 +13,9 @@ export type SampleProfile = {
   media: number;
   collections: number;
   images: {
-    cover: string;
-    avatar: string;
-    gallery: string[];
+    cover: string | { url: string; width?: number; height?: number };
+    avatar: string | { url: string; width?: number; height?: number };
+    gallery: Array<string | { url: string; width?: number; height?: number }>;
   };
   align: "start" | "end";
   bio: string;
@@ -31,8 +31,8 @@ export type SampleProfile = {
   };
   aboutImages?: string[];
   visitedCountryCodes: string[];
-  countryImages?: { countryCode: string; images: string[]; about?: string }[];
-  collectionImages?: { title: string; images: string[]; about?: string }[];
+  countryImages?: { countryCode: string; images: Array<string | { url: string; width?: number; height?: number }>; about?: string }[];
+  collectionImages?: { title: string; images: Array<string | { url: string; width?: number; height?: number }>; about?: string }[];
 };
 
 export const sampleProfiles = profilesData as unknown as SampleProfile[];

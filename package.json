@@ -6,6 +6,7 @@
     "predev": "node scripts/sync-inter-display-fonts.mjs",
     "dev": "next dev",
     "prebuild": "node scripts/sync-inter-display-fonts.mjs",
+    "precompute:image-metadata": "node scripts/precompute-image-metadata.mjs",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",

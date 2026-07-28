@@ -44,7 +44,11 @@ export const demoProfiles: DemoProfile[] = sampleProfiles.map((profile) => ({
   countries: profile.countries,
   media: profile.media,
   collections: profile.collections,
-  images: profile.images,
+  images: {
+    cover: typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url,
+    avatar: typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url,
+    gallery: profile.images.gallery.map((g) => (typeof g === "string" ? g : g.url)),
+  },
   align: profile.align,
   bio: profile.bio,
   interests: profile.interests,

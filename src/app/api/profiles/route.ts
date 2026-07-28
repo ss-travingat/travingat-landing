@@ -46,17 +46,21 @@ function normalizeProfile(profile: Profile): Profile {
   const collectionMediaCount = (profile.collectionImages || []).reduce((sum, c) => sum + (c.images?.length || 0), 0);
   const calculatedMedia = galleryCount + countryMediaCount + collectionMediaCount;
 
+  function resolveImageAsset(img: any) {
+    return typeof img === "string" ? img : img?.url ?? "";
+  }
+
   return {
     ...profile,
     countries: calculatedCountries,
     collections: calculatedCollections,
     media: calculatedMedia,
     images: {
-      cover: toLandingAssetUrl(profile.images.cover),
-      avatar: toLandingAssetUrl(profile.images.avatar),
-      gallery: profile.images.gallery.map(toLandingAssetUrl),
+      cover: toLandingAssetUrl(resolveImageAsset(profile.images.cover)),
+      avatar: toLandingAssetUrl(resolveImageAsset(profile.images.avatar)),
+      gallery: profile.images.gallery.map((g) => toLandingAssetUrl(resolveImageAsset(g))),
     },
-    aboutImages: (profile.aboutImages ?? []).map(toLandingAssetUrl),
+    aboutImages: (profile.aboutImages ?? []).map(resolveImageAsset).map(toLandingAssetUrl),
   };
 }
 

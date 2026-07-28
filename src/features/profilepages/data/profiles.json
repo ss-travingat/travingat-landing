@@ -87,12 +87,36 @@
       {
         "countryCode": "CO",
         "images": [
-          "https://picsum.photos/seed/colombia1/800/600",
-          "https://picsum.photos/seed/colombia2/800/600",
-          "https://picsum.photos/seed/colombia3/800/600",
-          "https://picsum.photos/seed/colombia4/800/600",
-          "https://picsum.photos/seed/colombia5/800/600",
-          "https://picsum.photos/seed/colombia6/800/600",
+          {
+            "url": "https://picsum.photos/seed/colombia1/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/colombia2/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/colombia3/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/colombia4/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/colombia5/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/colombia6/800/600",
+            "width": 800,
+            "height": 600
+          },
           "/images/collection-franceroadtrip.jpg",
           "/images/collection-portraits-figma.jpg",
           "/images/collection-streetshots.jpg"
@@ -101,38 +125,106 @@
       {
         "countryCode": "MX",
         "images": [
-          "https://picsum.photos/seed/mexico1/800/600",
-          "https://picsum.photos/seed/mexico2/800/600",
-          "https://picsum.photos/seed/mexico3/800/600",
-          "https://picsum.photos/seed/mexico4/800/600",
-          "https://picsum.photos/seed/mexico5/800/600"
+          {
+            "url": "https://picsum.photos/seed/mexico1/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/mexico2/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/mexico3/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/mexico4/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/mexico5/800/600",
+            "width": 800,
+            "height": 600
+          }
         ]
       },
       {
         "countryCode": "PE",
         "images": [
-          "https://picsum.photos/seed/peru1/800/600",
-          "https://picsum.photos/seed/peru2/800/600",
-          "https://picsum.photos/seed/peru3/800/600",
-          "https://picsum.photos/seed/peru4/800/600"
+          {
+            "url": "https://picsum.photos/seed/peru1/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/peru2/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/peru3/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/peru4/800/600",
+            "width": 800,
+            "height": 600
+          }
         ]
       },
       {
         "countryCode": "BR",
         "images": [
-          "https://picsum.photos/seed/brazil1/800/600",
-          "https://picsum.photos/seed/brazil2/800/600",
-          "https://picsum.photos/seed/brazil3/800/600",
-          "https://picsum.photos/seed/brazil4/800/600",
-          "https://picsum.photos/seed/brazil5/800/600"
+          {
+            "url": "https://picsum.photos/seed/brazil1/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/brazil2/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/brazil3/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/brazil4/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/brazil5/800/600",
+            "width": 800,
+            "height": 600
+          }
         ]
       },
       {
         "countryCode": "AR",
         "images": [
-          "https://picsum.photos/seed/argentina1/800/600",
-          "https://picsum.photos/seed/argentina2/800/600",
-          "https://picsum.photos/seed/argentina3/800/600"
+          {
+            "url": "https://picsum.photos/seed/argentina1/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/argentina2/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/argentina3/800/600",
+            "width": 800,
+            "height": 600
+          }
         ]
       }
     ],
@@ -140,31 +232,91 @@
       {
         "title": "Latin America Street Art",
         "images": [
-          "https://picsum.photos/seed/streetart1/800/600",
-          "https://picsum.photos/seed/streetart2/800/600",
-          "https://picsum.photos/seed/streetart3/800/600",
-          "https://picsum.photos/seed/streetart4/800/600",
-          "https://picsum.photos/seed/streetart5/800/600",
-          "https://picsum.photos/seed/streetart6/800/600"
+          {
+            "url": "https://picsum.photos/seed/streetart1/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/streetart2/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/streetart3/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/streetart4/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/streetart5/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/streetart6/800/600",
+            "width": 800,
+            "height": 600
+          }
         ]
       },
       {
         "title": "Mountain Trails",
         "images": [
-          "https://picsum.photos/seed/mountain1/800/600",
-          "https://picsum.photos/seed/mountain2/800/600",
-          "https://picsum.photos/seed/mountain3/800/600",
-          "https://picsum.photos/seed/mountain4/800/600",
-          "https://picsum.photos/seed/mountain5/800/600"
+          {
+            "url": "https://picsum.photos/seed/mountain1/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/mountain2/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/mountain3/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/mountain4/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/mountain5/800/600",
+            "width": 800,
+            "height": 600
+          }
         ]
       },
       {
         "title": "Local Food Markets",
         "images": [
-          "https://picsum.photos/seed/foodmarket1/800/600",
-          "https://picsum.photos/seed/foodmarket2/800/600",
-          "https://picsum.photos/seed/foodmarket3/800/600",
-          "https://picsum.photos/seed/foodmarket4/800/600"
+          {
+            "url": "https://picsum.photos/seed/foodmarket1/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/foodmarket2/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/foodmarket3/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/foodmarket4/800/600",
+            "width": 800,
+            "height": 600
+          }
         ]
       }
     ]
@@ -241,11 +393,31 @@
       {
         "countryCode": "ES",
         "images": [
-          "https://picsum.photos/seed/spain1/800/600",
-          "https://picsum.photos/seed/spain2/800/600",
-          "https://picsum.photos/seed/spain3/800/600",
-          "https://picsum.photos/seed/spain4/800/600",
-          "https://picsum.photos/seed/spain5/800/600",
+          {
+            "url": "https://picsum.photos/seed/spain1/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/spain2/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/spain3/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/spain4/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/spain5/800/600",
+            "width": 800,
+            "height": 600
+          },
           "/images/collection-europe-figma.png",
           "/images/profile-cover2-figma.png",
           "/images/country-switzerland-figma.png"
@@ -254,39 +426,111 @@
       {
         "countryCode": "FR",
         "images": [
-          "https://picsum.photos/seed/france1/800/600",
-          "https://picsum.photos/seed/france2/800/600",
-          "https://picsum.photos/seed/france3/800/600",
-          "https://picsum.photos/seed/france4/800/600",
-          "https://picsum.photos/seed/france5/800/600",
-          "https://picsum.photos/seed/france6/800/600"
+          {
+            "url": "https://picsum.photos/seed/france1/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/france2/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/france3/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/france4/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/france5/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/france6/800/600",
+            "width": 800,
+            "height": 600
+          }
         ]
       },
       {
         "countryCode": "IT",
         "images": [
-          "https://picsum.photos/seed/italy1/800/600",
-          "https://picsum.photos/seed/italy2/800/600",
-          "https://picsum.photos/seed/italy3/800/600",
-          "https://picsum.photos/seed/italy4/800/600",
-          "https://picsum.photos/seed/italy5/800/600"
+          {
+            "url": "https://picsum.photos/seed/italy1/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/italy2/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/italy3/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/italy4/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/italy5/800/600",
+            "width": 800,
+            "height": 600
+          }
         ]
       },
       {
         "countryCode": "PT",
         "images": [
-          "https://picsum.photos/seed/portugal1/800/600",
-          "https://picsum.photos/seed/portugal2/800/600",
-          "https://picsum.photos/seed/portugal3/800/600",
-          "https://picsum.photos/seed/portugal4/800/600"
+          {
+            "url": "https://picsum.photos/seed/portugal1/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/portugal2/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/portugal3/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/portugal4/800/600",
+            "width": 800,
+            "height": 600
+          }
         ]
       },
       {
         "countryCode": "DE",
         "images": [
-          "https://picsum.photos/seed/germany1/800/600",
-          "https://picsum.photos/seed/germany2/800/600",
-          "https://picsum.photos/seed/germany3/800/600"
+          {
+            "url": "https://picsum.photos/seed/germany1/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/germany2/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/germany3/800/600",
+            "width": 800,
+            "height": 600
+          }
         ]
       }
     ],
@@ -294,31 +538,91 @@
       {
         "title": "European Architecture",
         "images": [
-          "https://picsum.photos/seed/architecture1/800/600",
-          "https://picsum.photos/seed/architecture2/800/600",
-          "https://picsum.photos/seed/architecture3/800/600",
-          "https://picsum.photos/seed/architecture4/800/600",
-          "https://picsum.photos/seed/architecture5/800/600",
-          "https://picsum.photos/seed/architecture6/800/600"
+          {
+            "url": "https://picsum.photos/seed/architecture1/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/architecture2/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/architecture3/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/architecture4/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/architecture5/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/architecture6/800/600",
+            "width": 800,
+            "height": 600
+          }
         ]
       },
       {
         "title": "Portraits on the Road",
         "images": [
-          "https://picsum.photos/seed/portrait1/800/600",
-          "https://picsum.photos/seed/portrait2/800/600",
-          "https://picsum.photos/seed/portrait3/800/600",
-          "https://picsum.photos/seed/portrait4/800/600",
-          "https://picsum.photos/seed/portrait5/800/600"
+          {
+            "url": "https://picsum.photos/seed/portrait1/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/portrait2/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/portrait3/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/portrait4/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/portrait5/800/600",
+            "width": 800,
+            "height": 600
+          }
         ]
       },
       {
         "title": "France Road Trip",
         "images": [
-          "https://picsum.photos/seed/roadtrip1/800/600",
-          "https://picsum.photos/seed/roadtrip2/800/600",
-          "https://picsum.photos/seed/roadtrip3/800/600",
-          "https://picsum.photos/seed/roadtrip4/800/600"
+          {
+            "url": "https://picsum.photos/seed/roadtrip1/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/roadtrip2/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/roadtrip3/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/roadtrip4/800/600",
+            "width": 800,
+            "height": 600
+          }
         ]
       }
     ]
@@ -394,31 +698,91 @@
       {
         "title": "Volcanic Landscapes",
         "images": [
-          "https://picsum.photos/seed/volcano1/800/600",
-          "https://picsum.photos/seed/volcano2/800/600",
-          "https://picsum.photos/seed/volcano3/800/600",
-          "https://picsum.photos/seed/volcano4/800/600",
-          "https://picsum.photos/seed/volcano5/800/600"
+          {
+            "url": "https://picsum.photos/seed/volcano1/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/volcano2/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/volcano3/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/volcano4/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/volcano5/800/600",
+            "width": 800,
+            "height": 600
+          }
         ]
       },
       {
         "title": "Coastal Sunsets",
         "images": [
-          "https://picsum.photos/seed/sunset1/800/600",
-          "https://picsum.photos/seed/sunset2/800/600",
-          "https://picsum.photos/seed/sunset3/800/600",
-          "https://picsum.photos/seed/sunset4/800/600",
-          "https://picsum.photos/seed/sunset5/800/600",
-          "https://picsum.photos/seed/sunset6/800/600"
+          {
+            "url": "https://picsum.photos/seed/sunset1/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/sunset2/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/sunset3/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/sunset4/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/sunset5/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/sunset6/800/600",
+            "width": 800,
+            "height": 600
+          }
         ]
       },
       {
         "title": "Hiking Adventures",
         "images": [
-          "https://picsum.photos/seed/hiking1/800/600",
-          "https://picsum.photos/seed/hiking2/800/600",
-          "https://picsum.photos/seed/hiking3/800/600",
-          "https://picsum.photos/seed/hiking4/800/600"
+          {
+            "url": "https://picsum.photos/seed/hiking1/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/hiking2/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/hiking3/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/hiking4/800/600",
+            "width": 800,
+            "height": 600
+          }
         ]
       }
     ],
@@ -426,41 +790,121 @@
       {
         "countryCode": "NZ",
         "images": [
-          "https://picsum.photos/seed/newzealand1/800/600",
-          "https://picsum.photos/seed/newzealand2/800/600",
-          "https://picsum.photos/seed/newzealand3/800/600",
-          "https://picsum.photos/seed/newzealand4/800/600",
-          "https://picsum.photos/seed/newzealand5/800/600",
-          "https://picsum.photos/seed/newzealand6/800/600"
+          {
+            "url": "https://picsum.photos/seed/newzealand1/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/newzealand2/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/newzealand3/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/newzealand4/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/newzealand5/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/newzealand6/800/600",
+            "width": 800,
+            "height": 600
+          }
         ]
       },
       {
         "countryCode": "IS",
         "images": [
-          "https://picsum.photos/seed/iceland1/800/600",
-          "https://picsum.photos/seed/iceland2/800/600",
-          "https://picsum.photos/seed/iceland3/800/600",
-          "https://picsum.photos/seed/iceland4/800/600",
-          "https://picsum.photos/seed/iceland5/800/600"
+          {
+            "url": "https://picsum.photos/seed/iceland1/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/iceland2/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/iceland3/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/iceland4/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/iceland5/800/600",
+            "width": 800,
+            "height": 600
+          }
         ]
       },
       {
         "countryCode": "NO",
         "images": [
-          "https://picsum.photos/seed/norway1/800/600",
-          "https://picsum.photos/seed/norway2/800/600",
-          "https://picsum.photos/seed/norway3/800/600",
-          "https://picsum.photos/seed/norway4/800/600"
+          {
+            "url": "https://picsum.photos/seed/norway1/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/norway2/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/norway3/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/norway4/800/600",
+            "width": 800,
+            "height": 600
+          }
         ]
       },
       {
         "countryCode": "US",
         "images": [
-          "https://picsum.photos/seed/usa1/800/600",
-          "https://picsum.photos/seed/usa2/800/600",
-          "https://picsum.photos/seed/usa3/800/600",
-          "https://picsum.photos/seed/usa4/800/600",
-          "https://picsum.photos/seed/usa5/800/600",
+          {
+            "url": "https://picsum.photos/seed/usa1/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/usa2/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/usa3/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/usa4/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/usa5/800/600",
+            "width": 800,
+            "height": 600
+          },
           "/images/collection-hiking-figma.png",
           "/images/country-thailand-figma.png",
           "/images/collection-skiing.jpg"
@@ -469,10 +913,26 @@
       {
         "countryCode": "PE",
         "images": [
-          "https://picsum.photos/seed/peru5/800/600",
-          "https://picsum.photos/seed/peru6/800/600",
-          "https://picsum.photos/seed/peru7/800/600",
-          "https://picsum.photos/seed/peru8/800/600"
+          {
+            "url": "https://picsum.photos/seed/peru5/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/peru6/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/peru7/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/peru8/800/600",
+            "width": 800,
+            "height": 600
+          }
         ]
       }
     ]
@@ -525,31 +985,91 @@
       {
         "title": "Central America Wildlife",
         "images": [
-          "https://picsum.photos/seed/wildlife1/800/600",
-          "https://picsum.photos/seed/wildlife2/800/600",
-          "https://picsum.photos/seed/wildlife3/800/600",
-          "https://picsum.photos/seed/wildlife4/800/600",
-          "https://picsum.photos/seed/wildlife5/800/600"
+          {
+            "url": "https://picsum.photos/seed/wildlife1/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/wildlife2/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/wildlife3/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/wildlife4/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/wildlife5/800/600",
+            "width": 800,
+            "height": 600
+          }
         ]
       },
       {
         "title": "Night Photography",
         "images": [
-          "https://picsum.photos/seed/nightphoto1/800/600",
-          "https://picsum.photos/seed/nightphoto2/800/600",
-          "https://picsum.photos/seed/nightphoto3/800/600",
-          "https://picsum.photos/seed/nightphoto4/800/600",
-          "https://picsum.photos/seed/nightphoto5/800/600",
-          "https://picsum.photos/seed/nightphoto6/800/600"
+          {
+            "url": "https://picsum.photos/seed/nightphoto1/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/nightphoto2/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/nightphoto3/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/nightphoto4/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/nightphoto5/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/nightphoto6/800/600",
+            "width": 800,
+            "height": 600
+          }
         ]
       },
       {
         "title": "Art & Museums",
         "images": [
-          "https://picsum.photos/seed/museum1/800/600",
-          "https://picsum.photos/seed/museum2/800/600",
-          "https://picsum.photos/seed/museum3/800/600",
-          "https://picsum.photos/seed/museum4/800/600"
+          {
+            "url": "https://picsum.photos/seed/museum1/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/museum2/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/museum3/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/museum4/800/600",
+            "width": 800,
+            "height": 600
+          }
         ]
       }
     ],
@@ -557,11 +1077,31 @@
       {
         "countryCode": "MX",
         "images": [
-          "https://picsum.photos/seed/mexico6/800/600",
-          "https://picsum.photos/seed/mexico7/800/600",
-          "https://picsum.photos/seed/mexico8/800/600",
-          "https://picsum.photos/seed/mexico9/800/600",
-          "https://picsum.photos/seed/mexico10/800/600",
+          {
+            "url": "https://picsum.photos/seed/mexico6/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/mexico7/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/mexico8/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/mexico9/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/mexico10/800/600",
+            "width": 800,
+            "height": 600
+          },
           "/images/collection-nightportraits.jpg",
           "/images/collection-portraits.jpg",
           "/images/country-greece.jpg"
@@ -570,37 +1110,101 @@
       {
         "countryCode": "GT",
         "images": [
-          "https://picsum.photos/seed/guatemala1/800/600",
-          "https://picsum.photos/seed/guatemala2/800/600",
-          "https://picsum.photos/seed/guatemala3/800/600",
-          "https://picsum.photos/seed/guatemala4/800/600"
+          {
+            "url": "https://picsum.photos/seed/guatemala1/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/guatemala2/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/guatemala3/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/guatemala4/800/600",
+            "width": 800,
+            "height": 600
+          }
         ]
       },
       {
         "countryCode": "CR",
         "images": [
-          "https://picsum.photos/seed/costarica1/800/600",
-          "https://picsum.photos/seed/costarica2/800/600",
-          "https://picsum.photos/seed/costarica3/800/600",
-          "https://picsum.photos/seed/costarica4/800/600",
-          "https://picsum.photos/seed/costarica5/800/600"
+          {
+            "url": "https://picsum.photos/seed/costarica1/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/costarica2/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/costarica3/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/costarica4/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/costarica5/800/600",
+            "width": 800,
+            "height": 600
+          }
         ]
       },
       {
         "countryCode": "CA",
         "images": [
-          "https://picsum.photos/seed/canada1/800/600",
-          "https://picsum.photos/seed/canada2/800/600",
-          "https://picsum.photos/seed/canada3/800/600",
-          "https://picsum.photos/seed/canada4/800/600"
+          {
+            "url": "https://picsum.photos/seed/canada1/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/canada2/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/canada3/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/canada4/800/600",
+            "width": 800,
+            "height": 600
+          }
         ]
       },
       {
         "countryCode": "CO",
         "images": [
-          "https://picsum.photos/seed/colombia7/800/600",
-          "https://picsum.photos/seed/colombia8/800/600",
-          "https://picsum.photos/seed/colombia9/800/600"
+          {
+            "url": "https://picsum.photos/seed/colombia7/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/colombia8/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/colombia9/800/600",
+            "width": 800,
+            "height": 600
+          }
         ]
       }
     ]
@@ -657,12 +1261,36 @@
       {
         "countryCode": "TH",
         "images": [
-          "https://picsum.photos/seed/thailand1/800/600",
-          "https://picsum.photos/seed/thailand2/800/600",
-          "https://picsum.photos/seed/thailand3/800/600",
-          "https://picsum.photos/seed/thailand4/800/600",
-          "https://picsum.photos/seed/thailand5/800/600",
-          "https://picsum.photos/seed/thailand6/800/600",
+          {
+            "url": "https://picsum.photos/seed/thailand1/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/thailand2/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/thailand3/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/thailand4/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/thailand5/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/thailand6/800/600",
+            "width": 800,
+            "height": 600
+          },
           "/images/country-thailand.jpg",
           "/images/collection-europe.jpg",
           "/images/map-thailand.jpg"
@@ -671,38 +1299,106 @@
       {
         "countryCode": "VN",
         "images": [
-          "https://picsum.photos/seed/vietnam1/800/600",
-          "https://picsum.photos/seed/vietnam2/800/600",
-          "https://picsum.photos/seed/vietnam3/800/600",
-          "https://picsum.photos/seed/vietnam4/800/600",
-          "https://picsum.photos/seed/vietnam5/800/600"
+          {
+            "url": "https://picsum.photos/seed/vietnam1/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/vietnam2/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/vietnam3/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/vietnam4/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/vietnam5/800/600",
+            "width": 800,
+            "height": 600
+          }
         ]
       },
       {
         "countryCode": "KH",
         "images": [
-          "https://picsum.photos/seed/cambodia1/800/600",
-          "https://picsum.photos/seed/cambodia2/800/600",
-          "https://picsum.photos/seed/cambodia3/800/600",
-          "https://picsum.photos/seed/cambodia4/800/600"
+          {
+            "url": "https://picsum.photos/seed/cambodia1/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/cambodia2/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/cambodia3/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/cambodia4/800/600",
+            "width": 800,
+            "height": 600
+          }
         ]
       },
       {
         "countryCode": "ID",
         "images": [
-          "https://picsum.photos/seed/indonesia1/800/600",
-          "https://picsum.photos/seed/indonesia2/800/600",
-          "https://picsum.photos/seed/indonesia3/800/600",
-          "https://picsum.photos/seed/indonesia4/800/600",
-          "https://picsum.photos/seed/indonesia5/800/600"
+          {
+            "url": "https://picsum.photos/seed/indonesia1/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/indonesia2/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/indonesia3/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/indonesia4/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/indonesia5/800/600",
+            "width": 800,
+            "height": 600
+          }
         ]
       },
       {
         "countryCode": "LA",
         "images": [
-          "https://picsum.photos/seed/laos1/800/600",
-          "https://picsum.photos/seed/laos2/800/600",
-          "https://picsum.photos/seed/laos3/800/600"
+          {
+            "url": "https://picsum.photos/seed/laos1/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/laos2/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/laos3/800/600",
+            "width": 800,
+            "height": 600
+          }
         ]
       }
     ],
@@ -710,31 +1406,91 @@
       {
         "title": "Beach Life",
         "images": [
-          "https://picsum.photos/seed/beach1/800/600",
-          "https://picsum.photos/seed/beach2/800/600",
-          "https://picsum.photos/seed/beach3/800/600",
-          "https://picsum.photos/seed/beach4/800/600",
-          "https://picsum.photos/seed/beach5/800/600",
-          "https://picsum.photos/seed/beach6/800/600"
+          {
+            "url": "https://picsum.photos/seed/beach1/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/beach2/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/beach3/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/beach4/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/beach5/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/beach6/800/600",
+            "width": 800,
+            "height": 600
+          }
         ]
       },
       {
         "title": "Temple Hopping",
         "images": [
-          "https://picsum.photos/seed/temple1/800/600",
-          "https://picsum.photos/seed/temple2/800/600",
-          "https://picsum.photos/seed/temple3/800/600",
-          "https://picsum.photos/seed/temple4/800/600",
-          "https://picsum.photos/seed/temple5/800/600"
+          {
+            "url": "https://picsum.photos/seed/temple1/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/temple2/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/temple3/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/temple4/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/temple5/800/600",
+            "width": 800,
+            "height": 600
+          }
         ]
       },
       {
         "title": "Cafe Hopping",
         "images": [
-          "https://picsum.photos/seed/cafe1/800/600",
-          "https://picsum.photos/seed/cafe2/800/600",
-          "https://picsum.photos/seed/cafe3/800/600",
-          "https://picsum.photos/seed/cafe4/800/600"
+          {
+            "url": "https://picsum.photos/seed/cafe1/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/cafe2/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/cafe3/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/cafe4/800/600",
+            "width": 800,
+            "height": 600
+          }
         ]
       }
     ]
@@ -787,50 +1543,146 @@
       {
         "countryCode": "AU",
         "images": [
-          "https://picsum.photos/seed/australia1/800/600",
-          "https://picsum.photos/seed/australia2/800/600",
-          "https://picsum.photos/seed/australia3/800/600",
-          "https://picsum.photos/seed/australia4/800/600",
-          "https://picsum.photos/seed/australia5/800/600"
+          {
+            "url": "https://picsum.photos/seed/australia1/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/australia2/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/australia3/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/australia4/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/australia5/800/600",
+            "width": 800,
+            "height": 600
+          }
         ]
       },
       {
         "countryCode": "AT",
         "images": [
-          "https://picsum.photos/seed/austria1/800/600",
-          "https://picsum.photos/seed/austria2/800/600",
-          "https://picsum.photos/seed/austria3/800/600",
-          "https://picsum.photos/seed/austria4/800/600"
+          {
+            "url": "https://picsum.photos/seed/austria1/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/austria2/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/austria3/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/austria4/800/600",
+            "width": 800,
+            "height": 600
+          }
         ]
       },
       {
         "countryCode": "BE",
         "images": [
-          "https://picsum.photos/seed/belgium1/800/600",
-          "https://picsum.photos/seed/belgium2/800/600",
-          "https://picsum.photos/seed/belgium3/800/600",
-          "https://picsum.photos/seed/belgium4/800/600"
+          {
+            "url": "https://picsum.photos/seed/belgium1/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/belgium2/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/belgium3/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/belgium4/800/600",
+            "width": 800,
+            "height": 600
+          }
         ]
       },
       {
         "countryCode": "BR",
         "images": [
-          "https://picsum.photos/seed/brazil6/800/600",
-          "https://picsum.photos/seed/brazil7/800/600",
-          "https://picsum.photos/seed/brazil8/800/600",
-          "https://picsum.photos/seed/brazil9/800/600",
-          "https://picsum.photos/seed/brazil10/800/600"
+          {
+            "url": "https://picsum.photos/seed/brazil6/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/brazil7/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/brazil8/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/brazil9/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/brazil10/800/600",
+            "width": 800,
+            "height": 600
+          }
         ]
       },
       {
         "countryCode": "IN",
         "images": [
-          "https://picsum.photos/seed/india1/800/600",
-          "https://picsum.photos/seed/india2/800/600",
-          "https://picsum.photos/seed/india3/800/600",
-          "https://picsum.photos/seed/india4/800/600",
-          "https://picsum.photos/seed/india5/800/600",
-          "https://picsum.photos/seed/india6/800/600"
+          {
+            "url": "https://picsum.photos/seed/india1/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/india2/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/india3/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/india4/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/india5/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/india6/800/600",
+            "width": 800,
+            "height": 600
+          }
         ]
       }
     ],
@@ -838,31 +1690,91 @@
       {
         "title": "Desert & Outback",
         "images": [
-          "https://picsum.photos/seed/desert1/800/600",
-          "https://picsum.photos/seed/desert2/800/600",
-          "https://picsum.photos/seed/desert3/800/600",
-          "https://picsum.photos/seed/desert4/800/600",
-          "https://picsum.photos/seed/desert5/800/600"
+          {
+            "url": "https://picsum.photos/seed/desert1/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/desert2/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/desert3/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/desert4/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/desert5/800/600",
+            "width": 800,
+            "height": 600
+          }
         ]
       },
       {
         "title": "City Skylines",
         "images": [
-          "https://picsum.photos/seed/skyline1/800/600",
-          "https://picsum.photos/seed/skyline2/800/600",
-          "https://picsum.photos/seed/skyline3/800/600",
-          "https://picsum.photos/seed/skyline4/800/600",
-          "https://picsum.photos/seed/skyline5/800/600",
-          "https://picsum.photos/seed/skyline6/800/600"
+          {
+            "url": "https://picsum.photos/seed/skyline1/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/skyline2/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/skyline3/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/skyline4/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/skyline5/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/skyline6/800/600",
+            "width": 800,
+            "height": 600
+          }
         ]
       },
       {
         "title": "Local Festivals",
         "images": [
-          "https://picsum.photos/seed/festival1/800/600",
-          "https://picsum.photos/seed/festival2/800/600",
-          "https://picsum.photos/seed/festival3/800/600",
-          "https://picsum.photos/seed/festival4/800/600"
+          {
+            "url": "https://picsum.photos/seed/festival1/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/festival2/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/festival3/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/festival4/800/600",
+            "width": 800,
+            "height": 600
+          }
         ]
       }
     ]
@@ -922,49 +1834,141 @@
       {
         "countryCode": "AU",
         "images": [
-          "https://picsum.photos/seed/australia6/800/600",
-          "https://picsum.photos/seed/australia7/800/600",
-          "https://picsum.photos/seed/australia8/800/600",
-          "https://picsum.photos/seed/australia9/800/600"
+          {
+            "url": "https://picsum.photos/seed/australia6/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/australia7/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/australia8/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/australia9/800/600",
+            "width": 800,
+            "height": 600
+          }
         ]
       },
       {
         "countryCode": "CL",
         "images": [
-          "https://picsum.photos/seed/chile1/800/600",
-          "https://picsum.photos/seed/chile2/800/600",
-          "https://picsum.photos/seed/chile3/800/600",
-          "https://picsum.photos/seed/chile4/800/600",
-          "https://picsum.photos/seed/chile5/800/600"
+          {
+            "url": "https://picsum.photos/seed/chile1/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/chile2/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/chile3/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/chile4/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/chile5/800/600",
+            "width": 800,
+            "height": 600
+          }
         ]
       },
       {
         "countryCode": "IN",
         "images": [
-          "https://picsum.photos/seed/india7/800/600",
-          "https://picsum.photos/seed/india8/800/600",
-          "https://picsum.photos/seed/india9/800/600",
-          "https://picsum.photos/seed/india10/800/600",
-          "https://picsum.photos/seed/india11/800/600"
+          {
+            "url": "https://picsum.photos/seed/india7/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/india8/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/india9/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/india10/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/india11/800/600",
+            "width": 800,
+            "height": 600
+          }
         ]
       },
       {
         "countryCode": "HU",
         "images": [
-          "https://picsum.photos/seed/hungary1/800/600",
-          "https://picsum.photos/seed/hungary2/800/600",
-          "https://picsum.photos/seed/hungary3/800/600",
-          "https://picsum.photos/seed/hungary4/800/600"
+          {
+            "url": "https://picsum.photos/seed/hungary1/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/hungary2/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/hungary3/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/hungary4/800/600",
+            "width": 800,
+            "height": 600
+          }
         ]
       },
       {
         "countryCode": "PE",
         "images": [
-          "https://picsum.photos/seed/peru9/800/600",
-          "https://picsum.photos/seed/peru10/800/600",
-          "https://picsum.photos/seed/peru11/800/600",
-          "https://picsum.photos/seed/peru12/800/600",
-          "https://picsum.photos/seed/peru13/800/600"
+          {
+            "url": "https://picsum.photos/seed/peru9/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/peru10/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/peru11/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/peru12/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/peru13/800/600",
+            "width": 800,
+            "height": 600
+          }
         ]
       }
     ],
@@ -972,31 +1976,91 @@
       {
         "title": "South American Coastlines",
         "images": [
-          "https://picsum.photos/seed/sacoast1/800/600",
-          "https://picsum.photos/seed/sacoast2/800/600",
-          "https://picsum.photos/seed/sacoast3/800/600",
-          "https://picsum.photos/seed/sacoast4/800/600",
-          "https://picsum.photos/seed/sacoast5/800/600"
+          {
+            "url": "https://picsum.photos/seed/sacoast1/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/sacoast2/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/sacoast3/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/sacoast4/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/sacoast5/800/600",
+            "width": 800,
+            "height": 600
+          }
         ]
       },
       {
         "title": "Historic Cities",
         "images": [
-          "https://picsum.photos/seed/historic1/800/600",
-          "https://picsum.photos/seed/historic2/800/600",
-          "https://picsum.photos/seed/historic3/800/600",
-          "https://picsum.photos/seed/historic4/800/600",
-          "https://picsum.photos/seed/historic5/800/600",
-          "https://picsum.photos/seed/historic6/800/600"
+          {
+            "url": "https://picsum.photos/seed/historic1/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/historic2/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/historic3/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/historic4/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/historic5/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/historic6/800/600",
+            "width": 800,
+            "height": 600
+          }
         ]
       },
       {
         "title": "River Adventures",
         "images": [
-          "https://picsum.photos/seed/river1/800/600",
-          "https://picsum.photos/seed/river2/800/600",
-          "https://picsum.photos/seed/river3/800/600",
-          "https://picsum.photos/seed/river4/800/600"
+          {
+            "url": "https://picsum.photos/seed/river1/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/river2/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/river3/800/600",
+            "width": 800,
+            "height": 600
+          },
+          {
+            "url": "https://picsum.photos/seed/river4/800/600",
+            "width": 800,
+            "height": 600
+          }
         ]
       }
     ]

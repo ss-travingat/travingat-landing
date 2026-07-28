@@ -209,7 +209,7 @@ export function MobileHero({
         <div className="w-full flex flex-col items-center">
           <div className="w-full aspect-[377/248] -mb-[36px] rounded-2xl overflow-hidden bg-[#151515]">
             <LoadedImage
-              src={toLandingAssetUrl(profile.images.cover)}
+              src={toLandingAssetUrl(typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url)}
               alt="Profile cover"
               className="w-full h-full object-cover"
               skeletonClassName="absolute inset-0 bg-[#1a1a1a]"
@@ -219,7 +219,7 @@ export function MobileHero({
           </div>
           <div className="relative z-10 mx-auto h-20 w-20 rounded-2xl border-4 border-black overflow-hidden bg-[#151515]">
             <LoadedImage
-              src={toLandingAssetUrl(profile.images.avatar)}
+              src={toLandingAssetUrl(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url)}
               alt="Profile avatar"
               className="w-full h-full object-cover"
               skeletonClassName="absolute inset-0 bg-[#1a1a1a]"

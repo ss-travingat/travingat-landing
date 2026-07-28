@@ -190,8 +190,9 @@ export default function CountryDetailComponent({
 }: {
   profile: SampleProfile;
   countryCode: string;
-  images: string[];
+  images: Array<string | { url: string; width?: number; height?: number }>;
 }) {
+  const imageUrls = images.map((entry) => (typeof entry === "string" ? entry : entry.url));
   const countryName = COUNTRY_LIST_LOOKUP[countryCode] || countryCode;
   const [activeTab, setActiveTab] = useState<MediaTab>("all");
   const [showMenu, setShowMenu] = useState(false);
@@ -202,15 +203,17 @@ export default function CountryDetailComponent({
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const didReadFromUrl = useRef(false);
 
-  const photos = images.filter((url) => !isVideoAsset(url));
-  const videos = images.filter((url) => isVideoAsset(url));
+  const photos = imageUrls.filter((url) => !isVideoAsset(url));
+  const videos = imageUrls.filter((url) => isVideoAsset(url));
   const countryImageObj = profile.countryImages?.find(c => c.countryCode === countryCode);
   const aboutText = countryImageObj?.about;
 
   const displayImages =
     activeTab === "photos" ? photos :
     activeTab === "videos" ? videos :
-    images;
+    imageUrls;
+
+  const items = displayImages.map((url, index) => ({ url, globalIndex: index }));
 
   // Close lightbox on ESC, navigate on arrow keys
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
@@ -272,11 +275,11 @@ export default function CountryDetailComponent({
     didReadFromUrl.current = true;
     const url = new URL(window.location.href);
     const encodedImage = url.searchParams.get("image");
-    if (encodedImage && images.length > 0) {
+    if (encodedImage && imageUrls.length > 0) {
       try {
         const imageUrl = decodeURIComponent(escape(atob(encodedImage)));
         // Search in the full images array regardless of active tab
-        const indexInAll = images.indexOf(imageUrl);
+        const indexInAll = imageUrls.indexOf(imageUrl);
         if (indexInAll !== -1) {
           // Ensure we're on the "all" tab so the index lines up with displayImages
           setActiveTab("all");
@@ -312,12 +315,6 @@ export default function CountryDetailComponent({
   const [openContextMenuId, setOpenContextMenuId] = useState<string | null>(null);
   const contextMenuRef = useRef<HTMLDivElement>(null);
 
-  // Distribute images across 4 columns for masonry layout
-  const columns: { url: string; globalIndex: number }[][] = [[], [], [], []];
-  displayImages.forEach((img, i) => {
-    columns[i % 4].push({ url: img, globalIndex: i });
-  });
-
   const tabs: { key: string; label: string }[] = [
     { key: "all", label: "All media" },
     { key: "photos", label: "Photos" },
@@ -340,7 +337,7 @@ export default function CountryDetailComponent({
           onSelectIndex={setLightboxIndex}
           profileName={profile.name}
           profileHandle={profileHandle}
-          profileAvatar={profile.images.avatar}
+          profileAvatar={typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url}
           profileFlagCode={profile.flagCode}
           countryName={countryName}
           countryCode={countryCode}
@@ -369,7 +366,7 @@ export default function CountryDetailComponent({
             <div className="flex items-center gap-[8px]">
               <span className="text-[16px] text-white leading-[24px] tracking-[-0.096px] font-normal">By</span>
               <div className="h-[20px] w-[20px] overflow-hidden rounded-[6px] shrink-0">
-                <img src={toLandingAssetUrl(profile.images.avatar)} alt={profile.name} className="w-full h-full object-cover" />
+                <img src={toLandingAssetUrl(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url)} alt={profile.name} className="w-full h-full object-cover" />
               </div>
               <Link href={`/profiles/${profile.handle.replace(/^@/, "")}`} className="text-[16px] text-white leading-[24px] tracking-[-0.096px] font-normal hover:underline">
                 {profile.handle}
@@ -447,57 +444,54 @@ export default function CountryDetailComponent({
               <p className="text-[#a8a8a8] text-[16px]">No media in this category yet.</p>
             </div>
           ) : (
-            <div className="flex gap-5 w-full pb-25">
-              {columns.map((col, colIdx) => (
-                <div key={colIdx} className="flex-1 flex flex-col gap-5">
-                  {col.map(({ url: imgUrl, globalIndex }) => {
-                    const isVideo = isVideoAsset(imgUrl);
-                    return (
-                      <div
-                        key={globalIndex}
-                        className="group relative"
-                      >
-                        <div
-                          className="relative rounded-2xl overflow-hidden bg-[#151515] cursor-pointer"
-                          onClick={() => setLightboxIndex(globalIndex)}
-                        >
-                          {isVideo ? (
-                            <>
-                              <video
-                                src={toLandingAssetUrl(imgUrl)}
-                                muted
-                                playsInline
-                                loop
-                                preload="metadata"
-                                className="w-full h-auto block pointer-events-none"
-                              />
-                              <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
-                                <span className="text-white text-3xl drop-shadow-lg">▶</span>
-                              </div>
-                            </>
-                          ) : (
-                            <LoadedImage
-                              src={toLandingAssetUrl(imgUrl)}
-                              alt={`${countryName} photo ${globalIndex + 1}`}
-                              className="w-full h-auto block"
-                              containerClassName="w-full"
-                              skeletonClassName="w-full aspect-[3/4]"
-                            />
-                          )}
-                          {/* Hover overlay */}
-                          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-200 pointer-events-none" />
-                        </div>
+            <div className="columns-2 sm:columns-3 xl:columns-4 gap-[6px] md:gap-[20px]">
+              {items.map(({ url: imgUrl, globalIndex }) => {
+                const isVideo = isVideoAsset(imgUrl);
+                return (
+                  <div
+                    key={globalIndex}
+                    className="group mb-[8px] md:mb-[20px] w-full break-inside-avoid relative [-webkit-column-break-inside:avoid] inline-block"
+                  >
+                    <div
+                      className="relative rounded-2xl overflow-hidden bg-[#151515] cursor-pointer"
+                      onClick={() => setLightboxIndex(globalIndex)}
+                    >
+                      {isVideo ? (
+                        <>
+                          <video
+                            src={toLandingAssetUrl(imgUrl)}
+                            muted
+                            playsInline
+                            loop
+                            preload="metadata"
+                            className="w-full h-auto block pointer-events-none"
+                          />
+                          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
+                            <span className="text-white text-3xl drop-shadow-lg">▶</span>
+                          </div>
+                        </>
+                      ) : (
+                        <LoadedImage
+                          src={toLandingAssetUrl(imgUrl)}
+                          alt={`${countryName} photo ${globalIndex + 1}`}
+                          className="w-full h-auto block"
+                          containerClassName="w-full"
+                          skeletonClassName="w-full aspect-[3/4]"
+                        />
+                      )}
+                      {/* Hover overlay */}
+                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-200 pointer-events-none" />
+                    </div>
 
-
-                        <MoreOptionsButton
-                          isOpen={openContextMenuId === `media-${globalIndex}`}
-                          label={`Open menu for photo ${globalIndex + 1}`}
-                          size="sm"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            setOpenContextMenuId(openContextMenuId === `media-${globalIndex}` ? null : `media-${globalIndex}`);
-                          }}
+                    <MoreOptionsButton
+                      isOpen={openContextMenuId === `media-${globalIndex}`}
+                      label={`Open menu for photo ${globalIndex + 1}`}
+                      size="sm"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        setOpenContextMenuId(openContextMenuId === `media-${globalIndex}` ? null : `media-${globalIndex}`);
+                      }}
                         />
 
                         {openContextMenuId === `media-${globalIndex}` ? (
@@ -545,8 +539,6 @@ export default function CountryDetailComponent({
                       </div>
                     );
                   })}
-                </div>
-              ))}
             </div>
           )}
         </div>
