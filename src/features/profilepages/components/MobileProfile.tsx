@@ -203,10 +203,10 @@ export function MobileHero({
   flagOverflowCount,
 }: MobileHeroProps) {
   return (
-    <section id="profile-mobile-hero" className="min-[811px]:hidden space-y-[12px] flex flex-col items-center w-full">
+    <section id="profile-mobile-hero" className="min-[1200px]:hidden space-y-[12px] flex flex-col items-center w-full">
       <div className="flex flex-col items-center gap-[20px] rounded-[24px] w-full relative">
         <MobileProfileNavbar profile={profile} />
-        <div className="w-full flex flex-col items-center">
+        <div className="w-full min-[810px]:max-w-[400px] min-[810px]:mx-auto flex flex-col items-center">
           <div className="w-full aspect-[377/248] -mb-[36px] rounded-2xl overflow-hidden bg-[#151515]">
             <LoadedImage
               src={toLandingAssetUrl(typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url)}
@@ -229,7 +229,7 @@ export function MobileHero({
           </div>
         </div>
 
-        <div className="flex flex-col items-center gap-[4px] w-full">
+        <div className="flex flex-col items-center gap-[4px] w-full min-[810px]:max-w-[400px] min-[810px]:mx-auto">
           <div className="flex items-center justify-center gap-1.5 text-[#696969] text-[14px] leading-[20px] tracking-[-0.5px]">
             {profileFlagSrc ? (
               <img
@@ -248,7 +248,7 @@ export function MobileHero({
           <p className="text-[#a8a8a8] text-[14px] leading-[20px] tracking-[-0.5px] text-center w-full">{handle}</p>
         </div>
 
-        <div className="flex flex-wrap items-start justify-center gap-[4px] px-[6px] w-full">
+        <div className="flex flex-wrap items-start justify-center gap-[4px] px-[6px] w-full min-[810px]:max-w-[400px] min-[810px]:mx-auto">
           {headerFlagCodes.map((code, index) => (
             <img
               key={`${code}-${index}`}
@@ -269,7 +269,7 @@ export function MobileHero({
         </div>
 
         {/* Mobile Stats Container */}
-        <div className="bg-[#111] flex items-center justify-center gap-[20px] rounded-[12px] w-full pt-[18px] pb-[20px] px-[20px]">
+        <div className="bg-[#111] flex items-center justify-center gap-[20px] rounded-[12px] w-full min-[810px]:max-w-[400px] min-[810px]:mx-auto pt-[18px] pb-[20px] px-[20px]">
           <div className="flex flex-1 flex-col items-center justify-center gap-[4px]">
             <p className="ds-font-display text-[24px] font-semibold leading-[32px] tracking-[-0.5px] text-white">
               {profile.countries}
@@ -297,7 +297,7 @@ export function MobileHero({
         </div>
 
         {/* Buttons under Stats Card */}
-        <div className="flex gap-[8px] items-center w-full mt-[4px]">
+        <div className="flex gap-[8px] items-center w-full min-[810px]:max-w-[400px] min-[810px]:mx-auto mt-[4px]">
           <button
             className="flex-1 rounded-full bg-white text-black px-[18px] py-[10px] text-[16px] font-medium leading-[24px] tracking-[-0.096px]"
           >
@@ -358,7 +358,7 @@ export function MobileTabs({ activeTab, setActiveTab, swipeOffset = 0 }: MobileT
   const isDragging = swipeOffset !== 0;
 
   return (
-    <div id="profile-mobile-tabs" className="flex min-[811px]:hidden flex-col w-[calc(100%+16px)] -mx-[8px] border-b border-[#252525] sticky top-[72px] z-40 bg-black">
+    <div id="profile-mobile-tabs" className="flex min-[1200px]:hidden flex-col w-[calc(100%+16px)] -mx-[8px] border-b border-[#252525] sticky top-[72px] z-40 bg-black">
       <div className="flex items-center w-full">
         {mobileTabs.map((tab) => (
           <button

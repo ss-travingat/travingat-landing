@@ -59,6 +59,7 @@ export default async function CollectionDetailPage({
       profile={profile}
       title={collectionEntry.title}
       images={collectionEntry.images}
+      collectionCountryCodes={collectionEntry.countryCodes ?? []}
     />
   );
 }

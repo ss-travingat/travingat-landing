@@ -67,6 +67,30 @@ export function useMasonryAdvanced<T extends MasonryItemWithDimensions>(
   // or container size changes). Keyed by item id.
   const itemColumnMapRef = useRef<Record<string | number, number>>({});
 
+  const areLayoutsEquivalent = (
+    prev: MasonryLayout<T>,
+    next: MasonryLayout<T>
+  ) => {
+    const EPS = 0.5;
+    if (prev.columns !== next.columns) return false;
+    if (Math.abs(prev.columnWidth - next.columnWidth) > EPS) return false;
+    if (Math.abs(prev.gutter - next.gutter) > EPS) return false;
+    if (Math.abs(prev.height - next.height) > EPS) return false;
+    if (prev.items.length !== next.items.length) return false;
+
+    for (let i = 0; i < prev.items.length; i += 1) {
+      const a = prev.items[i];
+      const b = next.items[i];
+      if (a.id !== b.id) return false;
+      if (Math.abs(a.x - b.x) > EPS) return false;
+      if (Math.abs(a.y - b.y) > EPS) return false;
+      if (Math.abs(a.displayWidth - b.displayWidth) > EPS) return false;
+      if (Math.abs(a.displayHeight - b.displayHeight) > EPS) return false;
+    }
+
+    return true;
+  };
+
   const normalizedItems = useMemo(() => {
     return items.map((item) => ({
       ...item,
@@ -93,11 +117,11 @@ export function useMasonryAdvanced<T extends MasonryItemWithDimensions>(
       const MOBILE_GAP_Y = 8; // mobile vertical spacing
       const DESKTOP_GAP_X = Math.max(gapX, 16); // desktop horizontal spacing
       const DESKTOP_GAP_Y = Math.max(gapY, 16); // desktop vertical spacing
-      let columnWidth = (availableWidth - gapX * (columns - 1)) / columns;
       const isMobile = containerWidth <= mobileMaxWidth;
       const isDesktop = containerWidth >= desktopMinWidth;
       const gapToUseX = isMobile ? MOBILE_GAP_X : isDesktop ? DESKTOP_GAP_X : gapX;
       const gapToUseY = isMobile ? MOBILE_GAP_Y : isDesktop ? DESKTOP_GAP_Y : gapY;
+      let columnWidth = (availableWidth - gapToUseX * (columns - 1)) / columns;
 
       if (!isMobile) {
         // Ensure the columns actually fit the container by respecting `minColumnWidth`.
@@ -158,13 +182,15 @@ export function useMasonryAdvanced<T extends MasonryItemWithDimensions>(
       });
 
       const maxHeight = Math.max(...columnHeights, 0);
-      setLayout({
+      const nextLayout: MasonryLayout<T> = {
         columns,
         columnWidth,
         gutter: gapToUseX,
         items: positionedItems,
         height: maxHeight,
-      });
+      };
+
+      setLayout((prev) => (areLayoutsEquivalent(prev, nextLayout) ? prev : nextLayout));
     };
 
     measure();

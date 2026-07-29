@@ -14,7 +14,6 @@ import ProfileFooter from "./ProfileFooter";
 import CardCarousel from "./CardCarousel";
 import LoadedImage from "@/components/ui/LoadedImage";
 import { MasonryImageGrid } from "@/components/ui/MasonryImageGrid";
-import { createMasonryItems } from "@/lib/masonry-utils";
 import type { MasonryItemWithDimensions } from "@/hooks/useMasonryAdvanced";
 
 /* eslint-disable @next/next/no-img-element */
@@ -654,11 +653,103 @@ function JsMasonryGrid({
   shareOwnerHandle,
   shareOwnerAvatar,
 }: JsMasonryGridProps) {
-  // Convert media items to masonry items with dimensions
+  const loadRankById = useMemo(() => {
+    const rank = new Map<string, number>();
+    let index = 0;
+    for (const id of loadedItemIds) {
+      rank.set(id, index);
+      index += 1;
+    }
+    return rank;
+  }, [loadedItemIds]);
+
+  const sourceIndexById = useMemo(() => {
+    const indexMap = new Map<string, number>();
+    items.forEach((item, index) => {
+      indexMap.set(item.id, index);
+    });
+    return indexMap;
+  }, [items]);
+
+  const orderedItems = useMemo(() => {
+    return [...items].sort((a, b) => {
+      const aRank = loadRankById.get(a.id);
+      const bRank = loadRankById.get(b.id);
+
+      const aLoaded = typeof aRank === "number";
+      const bLoaded = typeof bRank === "number";
+
+      // Loaded media should appear first (top rows), preserving actual load order.
+      if (aLoaded && bLoaded) return aRank! - bRank!;
+      if (aLoaded) return -1;
+      if (bLoaded) return 1;
+
+      // Keep original source order for still-loading media.
+      return (sourceIndexById.get(a.id) ?? 0) - (sourceIndexById.get(b.id) ?? 0);
+    });
+  }, [items, loadRankById, sourceIndexById]);
+
+  const [resolvedImageDimensions, setResolvedImageDimensions] = useState<
+    Record<string, { width: number; height: number }>
+  >({});
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const unresolvedImages = orderedItems.filter(
+      (item) =>
+        !item.isVideo &&
+        (!item.width || !item.height) &&
+        !resolvedImageDimensions[item.id]
+    );
+
+    if (unresolvedImages.length === 0) return;
+
+    unresolvedImages.forEach((item) => {
+      const img = new Image();
+      img.decoding = "async";
+      img.onload = () => {
+        if (cancelled) return;
+        const width = img.naturalWidth || 1200;
+        const height = img.naturalHeight || 1200;
+        setResolvedImageDimensions((prev) => {
+          if (prev[item.id]) return prev;
+          return { ...prev, [item.id]: { width, height } };
+        });
+      };
+      img.src = toLandingAssetUrl(item.fileUrl);
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [orderedItems, resolvedImageDimensions]);
+
+  // Convert media items to masonry items with dimensions.
   const masonryItems: MasonryItemWithDimensions[] = useMemo(
-    () => createMasonryItems(items.map(item => ({ url: item.fileUrl, width: item.width, height: item.height })), "media"),
-    [items]
+    () =>
+      orderedItems.map((item, index) => {
+        const resolved = resolvedImageDimensions[item.id];
+        return {
+          id: item.id,
+          url: item.fileUrl,
+          width: item.width || resolved?.width || 1200,
+          height: item.height || resolved?.height || 1200,
+          placeholderColor: "#111111",
+          alt: `Image ${index + 1}`,
+        };
+      }),
+    [orderedItems, resolvedImageDimensions]
   );
+
+  const markItemLoaded = (id: string) => {
+    setLoadedItemIds((prev) => {
+      if (prev.has(id)) return prev;
+      const next = new Set(prev);
+      next.add(id);
+      return next;
+    });
+  };
 
   return (
     <MasonryImageGrid
@@ -668,7 +759,7 @@ function JsMasonryGrid({
       minColumnWidth={200}
       initialVisibleCount={10}
       renderItem={(masonryItem, index) => {
-        const mediaItem = items.find((it) => String(it.id) === String(masonryItem.id)) || items[index];
+        const mediaItem = orderedItems.find((it) => String(it.id) === String(masonryItem.id)) || orderedItems[index];
         if (!mediaItem) return null;
 
         const originalIndex = allMediaItems.findIndex((it) => String(it.id) === String(mediaItem?.id));
@@ -685,61 +776,61 @@ function JsMasonryGrid({
         const isLoaded = loadedItemIds.has(mediaItem.id);
 
         return (
-          <div className="group h-full w-full relative overflow-hidden rounded-lg md:rounded-2xl bg-black-800">
-            {/* Skeleton placeholder with correct aspect ratio */}
-            <div
-              className={`absolute inset-0 transition-opacity duration-300 ${isLoaded ? "opacity-0 pointer-events-none" : "opacity-100"}`}
-              style={{ backgroundColor: "#1a1a1a" }}
-            />
+          <div className={`group h-full w-full relative ${isMenuOpen ? "z-40" : "z-0"}`}>
+            <div className="absolute inset-0 overflow-hidden rounded-lg md:rounded-2xl bg-black-800">
+              {/* Skeleton placeholder with correct aspect ratio */}
+              <div
+                className={`absolute inset-0 z-0 pointer-events-none transition-opacity duration-300 ${isLoaded ? "opacity-0" : "opacity-100"}`}
+                style={{ backgroundColor: "#1a1a1a" }}
+              />
 
-            {mediaItem.isVideo ? (
-              <>
-                <video
+              {mediaItem.isVideo ? (
+                <>
+                  <video
+                    src={toLandingAssetUrl(mediaItem.fileUrl)}
+                    muted
+                    playsInline
+                    loop
+                    preload="metadata"
+                    className={`relative z-10 h-full w-full object-contain rounded-lg md:rounded-2xl cursor-pointer transition-opacity duration-300 ${isLoaded ? "opacity-100" : "opacity-0"}`}
+                    onLoadedData={() => markItemLoaded(mediaItem.id)}
+                    onCanPlay={() => markItemLoaded(mediaItem.id)}
+                    onError={() => markItemLoaded(mediaItem.id)}
+                    onMouseEnter={(e) => e.currentTarget.play().catch(() => {})}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.pause();
+                      e.currentTarget.currentTime = 0;
+                    }}
+                    onClick={(event) => {
+                      event.preventDefault();
+                      event.stopPropagation();
+                      openCarouselAt(originalIndex);
+                    }}
+                  />
+                  <div className="absolute top-3 left-3 group-hover:opacity-0 transition-opacity pointer-events-none">
+                    <span
+                      className="material-symbols-rounded text-[24px] text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]"
+                      style={{ fontVariationSettings: "'FILL' 1, 'wght' 700, 'GRAD' 200, 'opsz' 24" }}
+                    >
+                      play_arrow
+                    </span>
+                  </div>
+                </>
+              ) : (
+                <LoadedImage
                   src={toLandingAssetUrl(mediaItem.fileUrl)}
-                  muted
-                  playsInline
-                  loop
-                  preload="metadata"
-                  className="h-full w-full object-cover rounded-lg md:rounded-2xl cursor-pointer"
-                  onMouseEnter={(e) => e.currentTarget.play().catch(() => {})}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.pause();
-                    e.currentTarget.currentTime = 0;
-                  }}
+                  alt="Uploaded media"
+                  className="h-full w-full object-contain rounded-lg md:rounded-2xl cursor-pointer"
+                  containerClassName="h-full w-full rounded-lg md:rounded-2xl"
+                  skeletonClassName="absolute inset-0 rounded-lg md:rounded-2xl"
+                  onLoad={() => markItemLoaded(mediaItem.id)}
                   onClick={(event) => {
                     event.preventDefault();
                     event.stopPropagation();
                     openCarouselAt(originalIndex);
                   }}
                 />
-                <div className="absolute top-3 left-3 group-hover:opacity-0 transition-opacity pointer-events-none">
-                  <span
-                    className="material-symbols-rounded text-[24px] text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]"
-                    style={{ fontVariationSettings: "'FILL' 1, 'wght' 700, 'GRAD' 200, 'opsz' 24" }}
-                  >
-                    play_arrow
-                  </span>
-                </div>
-              </>
-            ) : (
-              <img
-                src={toLandingAssetUrl(mediaItem.fileUrl)}
-                alt="Uploaded media"
-                decoding="async"
-                // gallery images are low priority so cover/avatar LCP images load first
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                {...{ fetchPriority: "low" as any, loading: "lazy" }}
-                className={`h-full w-full object-cover rounded-lg md:rounded-2xl cursor-pointer transition-opacity duration-300 ${
-                  isLoaded ? "opacity-100" : "opacity-0"
-                }`}
-                onLoad={() => setLoadedItemIds((prev) => new Set(prev).add(mediaItem.id))}
-                onClick={(event) => {
-                  event.preventDefault();
-                  event.stopPropagation();
-                  openCarouselAt(originalIndex);
-                }}
-              />
-            )}
+              )}
 
             {/* More options button */}
             <MoreOptionsButton
@@ -753,24 +844,25 @@ function JsMasonryGrid({
               }}
             />
 
-            {/* Flag badge (visible after image loads) */}
-            {displayCountryCode && isLoaded ? (
-              <div className="absolute top-3 right-3 z-20 transition-opacity duration-200 opacity-100 min-[811px]:opacity-0 min-[811px]:group-hover:opacity-100 pointer-events-auto group/flag">
-                <div className="flex items-center drop-shadow-md cursor-pointer">
-                  <img
-                    src={toFlagAssetPath(displayCountryCode)}
-                    alt={displayCountryCode}
-                    className="h-3.5 w-5 rounded-xs object-cover"
-                  />
-                </div>
-                <div className="absolute bottom-full right-1/2 translate-x-1/2 mb-2.5 flex flex-col items-center opacity-0 transition-all duration-200 group-hover/flag:opacity-100 pointer-events-none origin-bottom scale-95 group-hover/flag:scale-100 drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]">
-                  <div className="whitespace-nowrap rounded-xl bg-white px-3.5 py-1.5 text-[15px] font-medium tracking-tight text-black">
-                    {COUNTRY_LIST_LOOKUP[displayCountryCode.toUpperCase()] || displayCountryCode}
+              {/* Flag badge (visible after image loads) */}
+              {displayCountryCode && isLoaded ? (
+                <div className="absolute top-3 right-3 z-20 transition-opacity duration-200 opacity-100 min-[1200px]:opacity-0 min-[1200px]:group-hover:opacity-100 pointer-events-auto group/flag">
+                  <div className="flex items-center drop-shadow-md cursor-pointer">
+                    <img
+                      src={toFlagAssetPath(displayCountryCode)}
+                      alt={displayCountryCode}
+                      className="h-3.5 w-5 rounded-xs object-cover"
+                    />
                   </div>
-                  <div className="-mt-1.5 h-3 w-3 rotate-45 bg-white rounded-xs" />
+                  <div className="absolute bottom-full right-1/2 translate-x-1/2 mb-2.5 flex flex-col items-center opacity-0 transition-all duration-200 group-hover/flag:opacity-100 pointer-events-none origin-bottom scale-95 group-hover/flag:scale-100 drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]">
+                    <div className="whitespace-nowrap rounded-xl bg-white px-3.5 py-1.5 text-[15px] font-medium tracking-tight text-black">
+                      {COUNTRY_LIST_LOOKUP[displayCountryCode.toUpperCase()] || displayCountryCode}
+                    </div>
+                    <div className="-mt-1.5 h-3 w-3 rotate-45 bg-white rounded-xs" />
+                  </div>
                 </div>
-              </div>
-            ) : null}
+              ) : null}
+            </div>
 
             {/* Context menu */}
             {isMenuOpen ? (
@@ -814,7 +906,6 @@ function JsMasonryGrid({
 
 export default function ProfileComponent({ profile }: { profile: SampleProfile }) {
   const [activeTab, setActiveTab] = useState<TabKey>("all");
-  const [coverLoaded, setCoverLoaded] = useState(false);
   const [visibleLimit, setVisibleLimit] = useState(10);
   const [loadedItemIds, setLoadedItemIds] = useState<Set<string>>(() => new Set());
   const loadMoreRef = useRef<HTMLDivElement>(null);
@@ -1079,6 +1170,63 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
 
   const flagOverflowCount = Math.max(0, (profile.countries ?? 0) - headerFlagCodes.length);
 
+  const desktopRenderedFlagCount = headerFlagCodes.length + (flagOverflowCount > 0 ? 1 : 0);
+  const desktopFlagRowCount = Math.ceil(desktopRenderedFlagCount / 12);
+
+  const [viewportWidth, setViewportWidth] = useState<number>(1728);
+
+  useEffect(() => {
+    const updateViewport = () => setViewportWidth(window.innerWidth);
+    updateViewport();
+    window.addEventListener("resize", updateViewport);
+    return () => window.removeEventListener("resize", updateViewport);
+  }, []);
+
+  const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
+  const progress1200To1440 = clamp((viewportWidth - 1200) / (1440 - 1200), 0, 1);
+  const progress1440To1728 = clamp((viewportWidth - 1440) / (1728 - 1440), 0, 1);
+
+  const lerp = (min: number, max: number, t: number) => min + (max - min) * t;
+
+  const shouldUseStrictDesktopGeometry = viewportWidth >= 1200 && viewportWidth <= 1728;
+
+  // Figma anchors:
+  // 1200: inset 48, left 500, cover 520.1208 x 538
+  // 1440: inset 64, left 600, cover 640 x 662
+  // 1728: inset 64, left 537, cover 640 x 662
+  const interpolatedDesktopInset = viewportWidth <= 1440
+    ? Math.round(lerp(48, 64, progress1200To1440))
+    : 64;
+
+  const interpolatedLeftWidth = viewportWidth <= 1440
+    ? Math.round(lerp(500, 600, progress1200To1440))
+    : Math.round(lerp(600, 537, progress1440To1728));
+
+  const coverBaseWidth = viewportWidth <= 1440
+    ? lerp(520.120849609375, 640, progress1200To1440)
+    : 640;
+
+  // Keep diagonal scaling by rows only below 1440.
+  // At 1440 and above, Figma uses a fixed 640x662 hero cover.
+  const rowScaleFactor = viewportWidth >= 1440
+    ? 1
+    : desktopFlagRowCount >= 3
+      ? 1.0625
+      : desktopFlagRowCount >= 2
+        ? 1
+        : 0.9375;
+  const interpolatedCoverWidth = Math.round(coverBaseWidth * rowScaleFactor);
+
+  const buttonBaseWidth = viewportWidth <= 1440
+    ? Math.round(lerp(132, 148, progress1200To1440))
+    : 148;
+  const buttonIconSize = viewportWidth <= 1440
+    ? Math.round(lerp(44, 48, progress1200To1440))
+    : 48;
+  const buttonRowWidth = buttonBaseWidth * 2 + buttonIconSize + 24;
+
+  const strictDesktopStyle = shouldUseStrictDesktopGeometry;
+
   const countryCards = useMemo<CountryCard[]>(() => {
     // Use admin-uploaded country images if available
     if (profile.countryImages && profile.countryImages.length > 0) {
@@ -1294,8 +1442,8 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
 
   const collectionCards = useMemo<CollectionCard[]>(() => {
     const allCountryNames = countryCards.map((country) => country.name);
-    const visibleCountries = allCountryNames.slice(0, 3);
-    const countryOverflowCount = Math.max(0, allCountryNames.length - visibleCountries.length);
+    const fallbackVisibleCountries = allCountryNames.slice(0, 3);
+    const fallbackOverflowCount = Math.max(0, allCountryNames.length - fallbackVisibleCountries.length);
 
     // Use admin-uploaded collection images if available
     if (profile.collectionImages && profile.collectionImages.length > 0) {
@@ -1304,6 +1452,11 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
         const photoPreviewImages = ci.images.filter((entry) => !isVideoAsset(typeof entry === "string" ? entry : entry.url)).slice(0, 5);
         const rawPreview = (photoPreviewImages.length > 0 ? photoPreviewImages : ci.images).slice(0, 5);
         const previewImages = rawPreview.map((g) => (typeof g === "string" ? g : g.url));
+        const selectedCountries = (ci.countryCodes ?? [])
+          .map((code) => COUNTRY_LIST_LOOKUP[code.toUpperCase()] || code.toUpperCase())
+          .filter(Boolean);
+        const visibleCountries = selectedCountries.slice(0, 3);
+        const countryOverflowCount = Math.max(0, selectedCountries.length - visibleCountries.length);
         return {
           id: `${profile.id}-collection-${index}`,
           title: ci.title,
@@ -1315,8 +1468,8 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
           }),
           thumbnailUrl: previewImages[0] || (typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url),
           previewImages,
-          countries: visibleCountries,
-          countryOverflowCount,
+          countries: selectedCountries.length > 0 ? visibleCountries : fallbackVisibleCountries,
+          countryOverflowCount: selectedCountries.length > 0 ? countryOverflowCount : fallbackOverflowCount,
         };
       });
     }
@@ -1348,8 +1501,8 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
         }),
         thumbnailUrl: thumbnailItem ? thumbnailItem.fileUrl : (typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url),
         previewImages,
-        countries: visibleCountries,
-        countryOverflowCount,
+        countries: fallbackVisibleCountries,
+        countryOverflowCount: fallbackOverflowCount,
       };
     });
   }, [allMediaItems, countryCards, profile.bio, profile.images.cover, profile.id, profile.interests, profile.collectionImages]);
@@ -1415,9 +1568,19 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
 
   return (
     <>
-      <div className="bg-black text-white flex flex-col items-center px-[8px] pt-[8px] min-[810px]:pt-0 min-[810px]:px-[32px] min-[1200px]:px-[48px] min-[1440px]:px-[64px]">
+      <div
+        className="bg-black text-white flex flex-col items-center px-[8px] pt-[8px] min-[810px]:pt-0 min-[810px]:px-[32px] min-[1440px]:px-[64px]"
+        style={
+          strictDesktopStyle
+            ? {
+              paddingLeft: `${interpolatedDesktopInset}px`,
+              paddingRight: `${interpolatedDesktopInset}px`,
+            }
+            : undefined
+        }
+      >
 
-        <main className="w-full max-w-[1728px] pb-[4px] md:pb-20 flex flex-col gap-[12px] min-[811px]:gap-10">
+        <main className="w-full max-w-[1728px] pb-[4px] md:pb-20 flex flex-col gap-[12px] min-[1200px]:gap-10">
           <MobileHero
             profile={profile}
             displayName={displayName}
@@ -1430,8 +1593,11 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
           />
 
 
-          <section className="hidden min-[811px]:flex items-end justify-between gap-6 w-full">
-            <div className="w-full max-w-[48%] lg:max-w-[500px] xl:max-w-[537px] shrink flex flex-col items-start justify-start gap-[24px] lg:gap-[32px] xl:gap-[40px] pt-[24px] lg:pt-[40px] xl:pt-[48px]">
+          <section className="hidden min-[1200px]:flex items-end justify-between gap-6 w-full">
+            <div
+              className="w-full max-w-[48%] lg:max-w-[500px] xl:max-w-[537px] shrink flex flex-col items-start justify-start gap-[24px] lg:gap-[32px] xl:gap-[40px] pt-[24px] lg:pt-[40px] xl:pt-[48px]"
+              style={strictDesktopStyle ? { width: `${interpolatedLeftWidth}px`, maxWidth: `${interpolatedLeftWidth}px` } : undefined}
+            >
               <div className="flex flex-col items-start gap-[16px] lg:gap-[24px] xl:gap-[32px] w-full">
                 <div className="flex flex-col items-start gap-[12px] lg:gap-[16px] xl:gap-[32px] w-full">
                   <div className="relative size-[64px] lg:size-[100px] xl:size-[120px] shrink-0 overflow-hidden rounded-[20px] bg-[#151515]">
@@ -1471,7 +1637,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                   </div>
                 </div>
 
-                <div className="flex flex-wrap items-start gap-1.5 lg:gap-2 xl:gap-[8px] w-full xl:w-[480px]">
+                <div className="flex w-full flex-wrap content-start items-start gap-1.5 lg:gap-2 xl:w-[480px] xl:gap-[8px]">
                   {headerFlagCodes.map((code, index) => (
                     <img
                       key={`${code}-${index}`}
@@ -1491,7 +1657,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                   )}
                 </div>
 
-                <div className="flex items-center justify-between xl:justify-start xl:gap-[40px] w-full rounded-[16px] border-l border-black-100 bg-linear-to-r from-[#1c1c1c] to-[rgba(0,0,0,0.1)] px-2 py-2 lg:px-3 lg:py-3 xl:px-[16px] xl:py-[20px]">
+                <div className="flex min-h-[100px] items-center justify-between xl:justify-start xl:gap-[40px] w-full rounded-[16px] border-l border-black-100 bg-linear-to-r from-[#1c1c1c] to-[rgba(0,0,0,0.1)] px-2 py-2 lg:px-3 lg:py-3 xl:px-[16px] xl:py-[20px]">
                   <div className="flex items-center gap-1.5 lg:gap-2 xl:gap-[16px] rounded-xl">
                     <div className="relative size-8 lg:size-[48px] xl:size-[60px] shrink-0">
                       <img
@@ -1534,10 +1700,28 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                 </div>
               </div>
 
-              <div className="flex items-center gap-[12px] w-full">
-                <button onClick={() => setShowFollowModal(true)} className="flex items-center justify-center flex-1 lg:flex-none w-auto lg:w-[148px] lg:h-[48px] rounded-full bg-white text-black px-3 py-1.5 text-[12px] lg:text-[16px] font-medium tracking-[-0.096px] hover:bg-[#ececec] transition">Follow</button>
-                <button className="flex items-center justify-center flex-1 lg:flex-none w-auto lg:w-[148px] lg:h-[48px] rounded-full border border-[#353535] bg-[#1a1a1a] text-white px-3 py-1.5 text-[12px] lg:text-[16px] font-medium tracking-[-0.096px] hover:bg-[#242424] transition">Connect</button>
-                <button className="size-8 lg:size-[48px] shrink-0 grid place-items-center rounded-full border border-[#353535] bg-[#1a1a1a] text-white hover:bg-[#242424] transition" aria-label="More options">
+              <div
+                className="mt-auto flex items-center gap-[12px] w-[368px]"
+                style={strictDesktopStyle ? { width: `${buttonRowWidth}px` } : undefined}
+              >
+                <button
+                  onClick={() => setShowFollowModal(true)}
+                  className="flex items-center justify-center flex-1 lg:flex-none w-auto lg:w-[148px] lg:h-[48px] rounded-full bg-white text-black px-3 py-1.5 text-[12px] lg:text-[16px] font-medium tracking-[-0.096px] hover:bg-[#ececec] transition"
+                  style={strictDesktopStyle ? { width: `${buttonBaseWidth}px`, height: `${buttonIconSize}px` } : undefined}
+                >
+                  Follow
+                </button>
+                <button
+                  className="flex items-center justify-center flex-1 lg:flex-none w-auto lg:w-[148px] lg:h-[48px] rounded-full border border-[#353535] bg-[#1a1a1a] text-white px-3 py-1.5 text-[12px] lg:text-[16px] font-medium tracking-[-0.096px] hover:bg-[#242424] transition"
+                  style={strictDesktopStyle ? { width: `${buttonBaseWidth}px`, height: `${buttonIconSize}px` } : undefined}
+                >
+                  Connect
+                </button>
+                <button
+                  className="size-8 lg:size-[48px] shrink-0 grid place-items-center rounded-full border border-[#353535] bg-[#1a1a1a] text-white hover:bg-[#242424] transition"
+                  aria-label="More options"
+                  style={strictDesktopStyle ? { width: `${buttonIconSize}px`, height: `${buttonIconSize}px` } : undefined}
+                >
                   <span className="grid grid-cols-2 gap-1 lg:gap-1.5">
                     <span className="h-1 w-1 rounded-full bg-white" />
                     <span className="h-1 w-1 rounded-full bg-white" />
@@ -1549,8 +1733,11 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
             </div>
 
             {/* Cover image — maintains exact aspect ratio */}
-            <div className="w-full max-w-[48%] lg:max-w-[520px] xl:max-w-[640px] shrink-0">
-              <div className="relative w-full max-w-[640px] shrink-0 overflow-hidden rounded-3xl lg:rounded-[24px] xl:rounded-[32px] aspect-[640/662] bg-[#151515]">
+            <div className="w-full max-w-[48%] shrink-0 flex justify-end self-end">
+              <div
+                className="relative w-full max-w-[640px] shrink-0 overflow-hidden rounded-3xl lg:rounded-[24px] xl:rounded-[32px] aspect-[640/662] bg-[#151515]"
+                style={strictDesktopStyle ? { width: `${interpolatedCoverWidth}px`, maxWidth: `${interpolatedCoverWidth}px` } : undefined}
+              >
                 <LoadedImage
                   src={toLandingAssetUrl(typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url)}
                   alt="Profile cover"
@@ -1558,14 +1745,13 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                   skeletonClassName="absolute inset-0 bg-[#1a1a1a]"
                   containerClassName="absolute inset-0 w-full h-full"
                   priority
-                  onLoad={() => setCoverLoaded(true)}
                 />
               </div>
             </div>
           </section>
 
           {/* Desktop: pill tabs with text */}
-          <div id="profile-desktop-tabs" className="hidden min-[811px]:flex items-center justify-center gap-2 flex-wrap">
+          <div id="profile-desktop-tabs" className="hidden min-[1200px]:flex items-center justify-center gap-2 flex-wrap">
             <button
               onClick={() => handleTabChange("all")}
               className={`rounded-full px-6 py-2 text-[16px] leading-6 tracking-[-0.096px] transition ${activeTab === "all"
@@ -1625,26 +1811,22 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                         </p>
                       </div>
                     ) : (
-                      (coverLoaded ? (
-                        <JsMasonryGrid
-                          items={allMediaItems.slice(0, visibleLimit)}
-                          allMediaItems={allMediaItems}
-                          profileFlagCode={profileFlagCode}
-                          profile={profile}
-                          openContextMenuId={openContextMenuId}
-                          setOpenContextMenuId={setOpenContextMenuId}
-                          loadedItemIds={loadedItemIds}
-                          setLoadedItemIds={setLoadedItemIds}
-                          openCarouselAt={openCarouselAt}
-                          openShareCard={openShareCard}
-                          contextMenuRef={contextMenuRef as React.RefObject<HTMLDivElement>}
-                          shareOwnerName={shareOwnerName}
-                          shareOwnerHandle={shareOwnerHandle}
-                          shareOwnerAvatar={shareOwnerAvatar}
-                        />
-                      ) : (
-                        <div className="w-full h-[480px] bg-[#0e0e0e] rounded-2xl" />
-                      ))
+                      <JsMasonryGrid
+                        items={allMediaItems.slice(0, visibleLimit)}
+                        allMediaItems={allMediaItems}
+                        profileFlagCode={profileFlagCode}
+                        profile={profile}
+                        openContextMenuId={openContextMenuId}
+                        setOpenContextMenuId={setOpenContextMenuId}
+                        loadedItemIds={loadedItemIds}
+                        setLoadedItemIds={setLoadedItemIds}
+                        openCarouselAt={openCarouselAt}
+                        openShareCard={openShareCard}
+                        contextMenuRef={contextMenuRef as React.RefObject<HTMLDivElement>}
+                        shareOwnerName={shareOwnerName}
+                        shareOwnerHandle={shareOwnerHandle}
+                        shareOwnerAvatar={shareOwnerAvatar}
+                      />
                     )}
                     <div
                       ref={loadMoreRef}

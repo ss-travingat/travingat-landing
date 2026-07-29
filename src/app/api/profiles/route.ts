@@ -27,7 +27,7 @@ interface Profile {
   aboutImages?: string[];
   visitedCountryCodes: string[];
   countryImages?: { countryCode: string; images: string[]; about?: string }[];
-  collectionImages?: { title: string; images: string[]; about?: string }[];
+  collectionImages?: { title: string; images: string[]; about?: string; countryCodes?: string[] }[];
 }
 
 async function readProfiles(): Promise<Profile[]> {
@@ -143,6 +143,9 @@ export async function POST(request: Request) {
             title: ci.title || "",
             images: Array.isArray(ci.images) ? ci.images : [],
             about: ci.about || "",
+            countryCodes: Array.isArray(ci.countryCodes)
+              ? ci.countryCodes.map((code: unknown) => String(code).toUpperCase())
+              : [],
           }))
         : [],
     };

@@ -124,10 +124,12 @@ export default function CollectionDetailComponent({
   profile,
   title,
   images,
+  collectionCountryCodes = [],
 }: {
   profile: SampleProfile;
   title: string;
   images: Array<string | { url: string; width?: number; height?: number }>;
+  collectionCountryCodes?: string[];
 }) {
   const imageUrls = images.map((entry) => (typeof entry === "string" ? entry : entry.url));
   const [activeTab, setActiveTab] = useState<MediaTab>("all");
@@ -231,6 +233,10 @@ export default function CollectionDetailComponent({
     { key: "videos", label: "Videos" },
     { key: "about", label: "About" },
   ];
+  const headerCountryCodes =
+    collectionCountryCodes.length > 0
+      ? collectionCountryCodes
+      : (profile.visitedCountryCodes ?? []);
 
   return (
     <div className="min-h-screen bg-black text-white flex flex-col items-center px-[12px] min-[810px]:px-[32px] min-[1200px]:px-[48px] min-[1440px]:px-[64px]">
@@ -254,7 +260,7 @@ export default function CollectionDetailComponent({
         <div className="flex flex-col items-center gap-[20px] w-full max-w-[600px]">
           <div className="flex flex-col items-center gap-[24px]">
             <div className="flex items-center gap-[8px] justify-center">
-              {profile.visitedCountryCodes?.slice(0, 4).map((code) => (
+              {headerCountryCodes.map((code) => (
                 <div key={code} className="h-[24px] w-[34px] overflow-hidden rounded-[3px] shadow-sm">
                    <img src={`/flags/${code.toUpperCase()}.svg`} className="w-full h-full object-cover" alt={code} />
                 </div>

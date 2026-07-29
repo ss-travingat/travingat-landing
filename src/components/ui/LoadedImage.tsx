@@ -28,18 +28,10 @@ export default function LoadedImage({
   const maxRetries = 2;
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const maxLoadTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const imgRef = useRef<HTMLImageElement | null>(null);
 
-  useEffect(() => {
-    // Force error state if image hangs for more than 1 minute
-    maxLoadTimeoutRef.current = setTimeout(() => {
-      setStatus("error");
-    }, 60000);
-
-    return () => {
-      if (timeoutRef.current) clearTimeout(timeoutRef.current);
-      if (maxLoadTimeoutRef.current) clearTimeout(maxLoadTimeoutRef.current);
-    };
-  }, []);
+  // Add a query param on retries to bypass broken browser cache for the failed image
+  const currentSrc = retryCount > 0 ? `${src}${src.includes("?") ? "&" : "?"}retry=${retryCount}` : src;
 
   const handleLoad = () => {
     if (maxLoadTimeoutRef.current) clearTimeout(maxLoadTimeoutRef.current);
@@ -59,19 +51,50 @@ export default function LoadedImage({
     }
   };
 
-  // Add a query param on retries to bypass broken browser cache for the failed image
-  const currentSrc = retryCount > 0 ? `${src}${src.includes("?") ? "&" : "?"}retry=${retryCount}` : src;
+  useEffect(() => {
+    setStatus("loading");
+    // Force error state if image hangs for more than 1 minute
+    maxLoadTimeoutRef.current = setTimeout(() => {
+      setStatus("error");
+    }, 60000);
+
+    return () => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+      if (maxLoadTimeoutRef.current) clearTimeout(maxLoadTimeoutRef.current);
+    };
+  }, [src, retryCount]);
+
+  useEffect(() => {
+    const node = imgRef.current;
+    if (!node) return;
+    if (node.complete && node.naturalWidth > 0) {
+      handleLoad();
+    }
+  }, [currentSrc]);
 
   return (
     <div className={`relative overflow-hidden ${containerClassName}`}>
-      {/* Skeleton placeholder — sits in flow to hold space (e.g. aspect-[3/4]) or overlays absolutely */}
+      {/* Skeleton placeholder while the real image is loading */}
       {status === "loading" && (
-        <div className={`bg-[#1a1a1a] animate-pulse rounded-[inherit] ${skeletonClassName}`} />
+        <div className={`z-0 pointer-events-none bg-[#1a1a1a] animate-pulse rounded-[inherit] ${skeletonClassName}`} />
       )}
+
+      {/* Real image stays hidden until loaded, preserving skeleton-first UX. */}
+      <img
+        ref={imgRef}
+        src={currentSrc}
+        alt={alt}
+        className={`relative z-10 transition-opacity duration-300 ${status === "loaded" ? "opacity-100" : "opacity-0"} ${className}`}
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        {...(priority ? { fetchPriority: "high" as any, loading: "eager" } : { loading: "lazy" })}
+        onClick={onClick}
+        onLoad={handleLoad}
+        onError={handleError}
+      />
 
       {/* Fallback Error State — shown when all retries fail */}
       {status === "error" && (
-        <div className={`bg-[#151515] flex items-center justify-center rounded-[inherit] ${skeletonClassName}`}>
+        <div className={`absolute inset-0 z-20 bg-[#151515] flex items-center justify-center rounded-[inherit] ${skeletonClassName}`}>
           <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path fillRule="evenodd" clipRule="evenodd" d="M20.9973 21.0011C23.5339 18.4645 27.6719 18.4899 30.2399 21.0579L53.2668 44.0848C55.8347 46.6527 55.8601 50.7908 53.3235 53.3274C50.7869 55.864 46.6489 55.8386 44.0809 53.2706L21.054 30.2437C18.4861 27.6758 18.4607 23.5377 20.9973 21.0011ZM27.0272 30.093L30.391 30.3376L30.146 26.9742L26.7826 26.7292L27.0272 30.093ZM23.0197 27.8352C22.5366 28.3184 22.5414 29.1066 23.0305 29.5957C23.5197 30.0848 24.3079 30.0897 24.791 29.6065C25.2742 29.1233 25.2693 28.3351 24.7802 27.846C24.2911 27.3569 23.5029 27.352 23.0197 27.8352ZM27.8313 23.0236C27.3482 23.5067 27.353 24.2949 27.8422 24.7841C28.3313 25.2732 29.1195 25.278 29.6026 24.7949C30.0858 24.3117 30.081 23.5235 29.5918 23.0344C29.1027 22.5453 28.3145 22.5404 27.8313 23.0236Z" fill="#212121"/>
             <path d="M8.4121 49.9708C6.82242 48.3812 6.80669 45.8195 8.37696 44.2493L18.3529 34.2733C19.4868 33.1394 21.3366 33.1508 22.4845 34.2987L26.1627 37.9769L14.1337 50.006C12.5634 51.5763 10.0018 51.5605 8.4121 49.9708Z" fill="#212121"/>
@@ -80,36 +103,6 @@ export default function LoadedImage({
             <path d="M49.967 8.41595C48.3773 6.82627 45.8157 6.81054 44.2454 8.38082L34.2695 18.3567C33.1356 19.4907 33.1469 21.3404 34.2948 22.4884L37.9731 26.1666L50.0021 14.1375C51.5724 12.5673 51.5567 10.0056 49.967 8.41595Z" fill="#212121"/>
           </svg>
         </div>
-      )}
-
-      {/* 
-        Hidden 0×0 preloader: starts the browser download without affecting layout.
-        Once the URL resolves, handleLoad fires → browser has image in cache.
-        fetchPriority="high" tells the browser to put this in the high-priority
-        fetch queue (same as LCP images), ensuring cover images load before the
-        media-grid images below the fold.
-      */}
-      {status === "loading" && (
-        <img
-          src={currentSrc}
-          alt=""
-          aria-hidden
-          className="absolute w-0 h-0 opacity-0 pointer-events-none"
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          {...(priority ? { fetchPriority: "high" as any, loading: "eager" } : { loading: "lazy" })}
-          onLoad={handleLoad}
-          onError={handleError}
-        />
-      )}
-
-      {/* Real image — only rendered after load, always in normal flow at natural size */}
-      {status === "loaded" && (
-        <img
-          src={src}
-          alt={alt}
-          className={className}
-          onClick={onClick}
-        />
       )}
     </div>
   );

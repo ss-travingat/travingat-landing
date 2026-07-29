@@ -19,6 +19,7 @@ interface CollectionImage {
   title: string;
   images: string[];
   about?: string;
+  countryCodes?: string[];
 }
 
 interface Profile {
@@ -170,6 +171,180 @@ const COUNTRY_LIST: { code: string; name: string; flag: string }[] = [
 
 function getCountryByCode(code: string) {
   return COUNTRY_LIST.find((c) => c.code === code);
+}
+
+type AvifAttempt = {
+  quality: number;
+  maxEdge: number;
+};
+
+async function getImageLongEdge(file: File): Promise<number> {
+  const bitmap = await createImageBitmap(file);
+  try {
+    return Math.max(bitmap.width, bitmap.height);
+  } finally {
+    bitmap.close();
+  }
+}
+
+async function convertToOptimizedAvif(file: File): Promise<Blob> {
+  const originalSize = file.size;
+  const longEdge = await getImageLongEdge(file);
+  const attempts: AvifAttempt[] =
+    longEdge <= 2600
+      ? [
+          { quality: 0.94, maxEdge: longEdge },
+          { quality: 0.9, maxEdge: longEdge },
+          { quality: 0.86, maxEdge: longEdge },
+          { quality: 0.82, maxEdge: longEdge },
+          { quality: 0.78, maxEdge: longEdge },
+        ]
+      : [
+          { quality: 0.94, maxEdge: 3200 },
+          { quality: 0.9, maxEdge: 3000 },
+          { quality: 0.86, maxEdge: 2800 },
+          { quality: 0.82, maxEdge: 2560 },
+          { quality: 0.78, maxEdge: 2300 },
+        ];
+
+  const isLargeSource = originalSize >= 3 * 1024 * 1024;
+  const targetRatio = isLargeSource ? 0.4 : 0.75;
+  const maxAllowedRatio = 0.98;
+
+  let best: Blob | null = null;
+  let bestUnderCap: Blob | null = null;
+
+  for (const attempt of attempts) {
+    const candidate = await imageCompression(file, {
+      useWebWorker: true,
+      fileType: "image/avif",
+      initialQuality: attempt.quality,
+      maxWidthOrHeight: attempt.maxEdge,
+      alwaysKeepResolution: attempt.maxEdge >= longEdge,
+      maxIteration: 12,
+      preserveExif: false,
+    });
+
+    if (!best || candidate.size < best.size) {
+      best = candidate;
+    }
+
+    const ratio = candidate.size / originalSize;
+    if (ratio <= targetRatio) {
+      return candidate;
+    }
+
+    if (ratio <= maxAllowedRatio && (!bestUnderCap || candidate.size < bestUnderCap.size)) {
+      bestUnderCap = candidate;
+    }
+  }
+
+  if (bestUnderCap) {
+    return bestUnderCap;
+  }
+
+  if (!best) {
+    throw new Error("Failed to generate AVIF image");
+  }
+
+  // Let caller use server-side AVIF fallback when browser AVIF is larger.
+  throw new Error("Client AVIF larger than source");
+}
+
+async function isValidAvifBlob(blob: Blob): Promise<boolean> {
+  if (blob.type && blob.type !== "image/avif") {
+    return false;
+  }
+
+  const headerBuffer = await blob.slice(0, 256).arrayBuffer();
+  const headerBytes = new Uint8Array(headerBuffer);
+  if (headerBytes.length < 16) return false;
+
+  // Explicitly reject WebP payloads, even if a bad encoder mislabeled MIME.
+  const riffTag = String.fromCharCode(
+    headerBytes[0],
+    headerBytes[1],
+    headerBytes[2],
+    headerBytes[3]
+  );
+  const webpTag = String.fromCharCode(
+    headerBytes[8],
+    headerBytes[9],
+    headerBytes[10],
+    headerBytes[11]
+  );
+  if (riffTag === "RIFF" && webpTag === "WEBP") {
+    return false;
+  }
+
+  // AVIF is an ISO BMFF container: bytes 4..7 should be 'ftyp'.
+  const boxType = String.fromCharCode(
+    headerBytes[4],
+    headerBytes[5],
+    headerBytes[6],
+    headerBytes[7]
+  );
+  if (boxType !== "ftyp") {
+    return false;
+  }
+
+  const brandChunk = String.fromCharCode(...headerBytes.slice(8, 256));
+  return brandChunk.includes("avif") || brandChunk.includes("avis");
+}
+
+async function convertToNativeAvifFallback(file: File): Promise<Blob | null> {
+  const bitmap = await createImageBitmap(file);
+  try {
+    const longEdge = Math.max(bitmap.width, bitmap.height);
+    const maxEdge = longEdge > 2600 ? 2560 : longEdge;
+    const scale = Math.min(1, maxEdge / Math.max(longEdge, 1));
+    const targetWidth = Math.max(1, Math.round(bitmap.width * scale));
+    const targetHeight = Math.max(1, Math.round(bitmap.height * scale));
+
+    const canvas = document.createElement("canvas");
+    canvas.width = targetWidth;
+    canvas.height = targetHeight;
+
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return null;
+
+    ctx.drawImage(bitmap, 0, 0, targetWidth, targetHeight);
+
+    return await new Promise<Blob | null>((resolve) => {
+      canvas.toBlob((blob) => resolve(blob), "image/avif", 0.86);
+    });
+  } finally {
+    bitmap.close();
+  }
+}
+
+async function uploadImageWithServerFallback(file: File, prefix: string): Promise<string | null> {
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("prefix", prefix);
+
+  const res = await fetch("/api/profiles/upload", {
+    method: "POST",
+    body: formData,
+  });
+
+  if (!res.ok) {
+    let msg = "Server-side AVIF conversion failed";
+    try {
+      const errData = await res.json();
+      msg = errData.error || msg;
+    } catch {
+      // ignore parse failures
+    }
+    throw new Error(msg);
+  }
+
+  const data = await res.json();
+  if (!data?.url || !/\.avif($|\?)/i.test(String(data.url))) {
+    throw new Error("Server returned a non-AVIF image URL");
+  }
+
+  return data.url as string;
 }
 
 const emptyForm: Omit<Profile, "id"> = {
@@ -572,7 +747,12 @@ export default function AdminProfilesPage() {
         ...profile,
         aboutImages: Array.isArray(profile.aboutImages) ? profile.aboutImages : [],
         countryImages: Array.isArray(profile.countryImages) ? profile.countryImages : [],
-        collectionImages: Array.isArray(profile.collectionImages) ? profile.collectionImages : [],
+        collectionImages: Array.isArray(profile.collectionImages)
+          ? profile.collectionImages.map((collection: CollectionImage) => ({
+              ...collection,
+              countryCodes: Array.isArray(collection.countryCodes) ? collection.countryCodes : [],
+            }))
+          : [],
       })) as Profile[];
       setProfiles([...normalizedProfiles].reverse());
     } catch {
@@ -733,25 +913,69 @@ export default function AdminProfilesPage() {
       showToast("Please upload an image file", true);
       return null;
     }
+    if (file.type === "image/svg+xml") {
+      showToast("SVG uploads are not supported here. Please upload a photo image.", true);
+      return null;
+    }
+    if (file.type === "image/gif") {
+      showToast("GIF uploads are not supported for profile images. Please upload a static image.", true);
+      return null;
+    }
 
     setUploading({ field: type, stage: "processing", idx, current: batch?.current, total: batch?.total });
 
     try {
-      // Step 1: Compress image on the client side → WebP
+      // Step 1: Convert and compress on the client side -> AVIF (high quality)
+      // If browser-side AVIF encoding fails, fallback to server-side conversion.
       let processedFile: File | Blob = file;
-      let uploadContentType = file.type;
+      const uploadContentType = "image/avif";
+      let shouldUseServerFallback = false;
 
-      if (file.type !== "image/gif" && file.type !== "image/svg+xml") {
+      try {
+        processedFile = await convertToOptimizedAvif(file);
+        let validAvif = await isValidAvifBlob(processedFile);
+
+        if (!validAvif) {
+          const fallbackBlob = await convertToNativeAvifFallback(file);
+          if (fallbackBlob) {
+            const fallbackValid = await isValidAvifBlob(fallbackBlob);
+            if (fallbackValid) {
+              processedFile = fallbackBlob;
+              validAvif = true;
+            }
+          }
+        }
+
+        if (!validAvif) {
+          shouldUseServerFallback = true;
+        }
+
+        const originalKb = Math.round(file.size / 1024);
+        const convertedKb = Math.round(processedFile.size / 1024);
+        const ratio = (processedFile.size / file.size).toFixed(2);
+        console.info(
+          `[profiles-upload] ${file.name}: ${originalKb}KB -> ${convertedKb}KB (ratio ${ratio})`
+        );
+      } catch (compressErr) {
+        console.warn("AVIF conversion/compression failed, falling back to server:", compressErr);
+        shouldUseServerFallback = true;
+      }
+
+      if (shouldUseServerFallback) {
+        setUploading((prev) => prev ? { ...prev, stage: "uploading" } : null);
         try {
-          processedFile = await imageCompression(file, {
-            maxSizeMB: 2,
-            maxWidthOrHeight: 2048,
-            useWebWorker: true,
-            fileType: "image/webp",
-          });
-          uploadContentType = "image/webp";
-        } catch (compressErr) {
-          console.warn("Client-side compression failed, uploading original:", compressErr);
+          const fallbackUrl = await uploadImageWithServerFallback(file, type);
+          const isLastInBatch = !batch || batch.current === batch.total;
+          if (isLastInBatch) {
+            setUploading((prev) => prev ? { ...prev, stage: "done" } : null);
+            await new Promise((r) => setTimeout(r, 800));
+          }
+          showToast(`${type.charAt(0).toUpperCase() + type.slice(1)} image uploaded`);
+          return fallbackUrl;
+        } catch (fallbackErr) {
+          const fallbackMsg = fallbackErr instanceof Error ? fallbackErr.message : "Server-side conversion failed";
+          showToast(fallbackMsg, true);
+          return null;
         }
       }
 
@@ -778,6 +1002,11 @@ export default function AdminProfilesPage() {
       }
 
       const { uploadUrl, publicUrl } = await presignRes.json();
+
+      if (!/\.avif($|\?)/i.test(String(publicUrl))) {
+        showToast("Upload endpoint returned a non-AVIF image URL.", true);
+        return null;
+      }
 
       // Step 3: Upload directly to R2 via presigned URL (bypasses Vercel entirely)
       const r2Res = await fetch(uploadUrl, {
@@ -1001,7 +1230,12 @@ export default function AdminProfilesPage() {
       aboutImages: p.aboutImages ? [...p.aboutImages] : [],
       visitedCountryCodes: [...p.visitedCountryCodes],
       countryImages: p.countryImages ? [...p.countryImages] : [],
-      collectionImages: p.collectionImages ? [...p.collectionImages] : [],
+      collectionImages: p.collectionImages
+        ? p.collectionImages.map((collection) => ({
+            ...collection,
+            countryCodes: Array.isArray(collection.countryCodes) ? [...collection.countryCodes] : [],
+          }))
+        : [],
     });
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -1107,7 +1341,7 @@ export default function AdminProfilesPage() {
                           </div>
                         </>
                       ) : (
-                        <Image src={toLandingAssetUrl(url)} alt={`Media ${i + 1}`} fill className="object-cover" />
+                        <Image unoptimized src={toLandingAssetUrl(url)} alt={`Media ${i + 1}`} fill className="object-cover" />
                       )}
                       {isAlreadyAdded && (
                         <div className="absolute inset-0 flex items-center justify-center">
@@ -1342,7 +1576,7 @@ export default function AdminProfilesPage() {
                     <div className="w-32 h-20 rounded-lg overflow-hidden bg-white/5 shrink-0 relative group">
                       {form.images.cover ? (
                         <>
-                          <Image
+                          <Image unoptimized
                             src={toLandingAssetUrl(form.images.cover)}
                             alt="Cover"
                             fill
@@ -1404,7 +1638,7 @@ export default function AdminProfilesPage() {
                     <div className="w-16 h-16 rounded-xl overflow-hidden bg-white/5 shrink-0 relative group">
                       {form.images.avatar ? (
                         <>
-                          <Image
+                          <Image unoptimized
                             src={toLandingAssetUrl(form.images.avatar)}
                             alt="Avatar"
                             fill
@@ -1466,7 +1700,7 @@ export default function AdminProfilesPage() {
                         key={i}
                         className="relative w-20 h-16 rounded-lg overflow-hidden bg-white/5 group"
                       >
-                        <Image
+                        <Image unoptimized
                           src={toLandingAssetUrl(url)}
                           alt={`About ${i + 1}`}
                           fill
@@ -1693,7 +1927,7 @@ export default function AdminProfilesPage() {
                                       </div>
                                     </>
                                   ) : (
-                                    <Image
+                                    <Image unoptimized
                                       src={toLandingAssetUrl(imgUrl)}
                                       alt={`${country?.name || ci.countryCode} ${imgIdx + 1}`}
                                       fill
@@ -1878,7 +2112,7 @@ export default function AdminProfilesPage() {
                                     </div>
                                   </>
                                 ) : (
-                                  <Image
+                                  <Image unoptimized
                                     src={toLandingAssetUrl(imgUrl)}
                                     alt={`${ci.title} ${imgIdx + 1}`}
                                     fill
@@ -1915,6 +2149,18 @@ export default function AdminProfilesPage() {
                           }
                           className="bg-white/5 border-white/10 text-white min-h-[80px]"
                         />
+                        <MultiCountrySelect
+                          label="Countries for this collection"
+                          value={ci.countryCodes || []}
+                          onChange={(codes) =>
+                            setForm((prev) => ({
+                              ...prev,
+                              collectionImages: prev.collectionImages.map((c, i) =>
+                                i === idx ? { ...c, countryCodes: codes } : c
+                              ),
+                            }))
+                          }
+                        />
                       </div>
                     ))}
                   </div>
@@ -1933,7 +2179,7 @@ export default function AdminProfilesPage() {
                               ...prev,
                               collectionImages: [
                                 ...prev.collectionImages,
-                                { title, images: [] },
+                                { title, images: [], countryCodes: [] },
                               ],
                             }));
                             setPendingCollectionTitle("");
@@ -1953,7 +2199,7 @@ export default function AdminProfilesPage() {
                           ...prev,
                           collectionImages: [
                             ...prev.collectionImages,
-                            { title, images: [] },
+                            { title, images: [], countryCodes: [] },
                           ],
                         }));
                         setPendingCollectionTitle("");
@@ -2312,7 +2558,7 @@ export default function AdminProfilesPage() {
                     {/* Avatar */}
                     <div className="w-14 h-14 rounded-xl overflow-hidden bg-white/5 shrink-0 relative">
                       {p.images.avatar ? (
-                        <Image
+                        <Image unoptimized
                           src={toLandingAssetUrl(p.images.avatar)}
                           alt={p.name}
                           fill
@@ -2398,7 +2644,7 @@ export default function AdminProfilesPage() {
                   {/* Cover preview */}
                   {p.images.cover && (
                     <div className="mt-3 h-24 rounded-xl overflow-hidden relative ring-1 ring-white/10">
-                      <Image
+                      <Image unoptimized
                         src={toLandingAssetUrl(p.images.cover)}
                         alt="Cover"
                         fill

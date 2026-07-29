@@ -32,7 +32,7 @@ export type SampleProfile = {
   aboutImages?: string[];
   visitedCountryCodes: string[];
   countryImages?: { countryCode: string; images: Array<string | { url: string; width?: number; height?: number }>; about?: string }[];
-  collectionImages?: { title: string; images: Array<string | { url: string; width?: number; height?: number }>; about?: string }[];
+  collectionImages?: { title: string; images: Array<string | { url: string; width?: number; height?: number }>; about?: string; countryCodes?: string[] }[];
 };
 
 export const sampleProfiles = profilesData as unknown as SampleProfile[];

@@ -1,19 +1,44 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Righteous } from "next/font/google";
 import localFont from "next/font/local";
 import Script from "next/script";
 import "./globals.css";
 import LandingLayout from "@landing/components/layout/LandingLayout";
 
-const inter = Inter({
-  subsets: ["latin"],
+const inter = localFont({
+  src: [
+    {
+      path: "../assets/fonts/inter-display/InterDisplay-Regular.ttf",
+      weight: "400",
+      style: "normal",
+    },
+    {
+      path: "../assets/fonts/inter-display/InterDisplay-Medium.ttf",
+      weight: "500",
+      style: "normal",
+    },
+    {
+      path: "../assets/fonts/inter-display/InterDisplay-SemiBold.ttf",
+      weight: "600",
+      style: "normal",
+    },
+    {
+      path: "../assets/fonts/inter-display/InterDisplay-Bold.ttf",
+      weight: "700",
+      style: "normal",
+    },
+  ],
   variable: "--font-inter",
   display: "swap",
 });
 
-const righteous = Righteous({
-  weight: "400",
-  subsets: ["latin"],
+const logoFont = localFont({
+  src: [
+    {
+      path: "../assets/fonts/open-sauce-two/OpenSauceTwo-SemiBold.woff2",
+      weight: "600",
+      style: "normal",
+    },
+  ],
   variable: "--font-logo",
   display: "swap",
 });
@@ -88,7 +113,7 @@ export default function RootLayout({
           {`document.querySelector('link[href*="Material+Symbols"][media="print"]').media='all'`}
         </Script>
       </head>
-      <body className={`${inter.variable} ${interDisplay.variable} ${righteous.variable} ${openSauceTwo.variable}`}>
+      <body className={`${inter.variable} ${interDisplay.variable} ${logoFont.variable} ${openSauceTwo.variable}`}>
         <LandingLayout>{children}</LandingLayout>
       </body>
     </html>
