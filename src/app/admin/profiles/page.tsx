@@ -340,11 +340,21 @@ async function uploadImageWithServerFallback(file: File, prefix: string): Promis
   }
 
   const data = await res.json();
-  if (!data?.url || !/\.avif($|\?)/i.test(String(data.url))) {
-    throw new Error("Server returned a non-AVIF image URL");
+  const returnedUrl = String(data?.url || "");
+  const returnedContentType = String(data?.contentType || "").toLowerCase();
+
+  if (!returnedUrl) {
+    throw new Error("Server returned an empty upload URL");
   }
 
-  return data.url as string;
+  const isSupportedImageUrl = /\.(avif|webp|jpe?g|png|heic|heif)($|\?)/i.test(returnedUrl);
+  const isImageContentType = returnedContentType.startsWith("image/");
+
+  if (!isSupportedImageUrl && !isImageContentType) {
+    throw new Error("Server returned an unsupported image format");
+  }
+
+  return returnedUrl;
 }
 
 const emptyForm: Omit<Profile, "id"> = {

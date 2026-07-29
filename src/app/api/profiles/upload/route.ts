@@ -5,6 +5,19 @@ import { compressImage } from "@/lib/image-compress";
 
 export const dynamic = "force-dynamic";
 
+function extensionFromMimeType(mimeType: string): string {
+  const extMap: Record<string, string> = {
+    "image/avif": ".avif",
+    "image/jpeg": ".jpeg",
+    "image/jpg": ".jpg",
+    "image/png": ".png",
+    "image/webp": ".webp",
+    "image/heic": ".heic",
+    "image/heif": ".heif",
+  };
+  return extMap[mimeType.toLowerCase()] || ".bin";
+}
+
 /**
  * POST — Generate a presigned URL for direct browser → R2 upload.
  * 
@@ -48,18 +61,34 @@ export async function POST(request: Request) {
         return NextResponse.json({ error: "Uploaded file is empty" }, { status: 400 });
       }
 
-      const compressed = await compressImage(buffer, file.type, { maxDimension: 3200 });
+      let uploadBuffer: Buffer;
+      let uploadContentType: string;
+      let uploadExt: string;
+
+      try {
+        const compressed = await compressImage(buffer, file.type, { maxDimension: 3200 });
+        uploadBuffer = compressed.buffer;
+        uploadContentType = compressed.contentType;
+        uploadExt = compressed.ext;
+      } catch (compressionErr) {
+        // Production safety fallback: if AVIF conversion fails for a specific
+        // browser/image codec, keep the upload working with original bytes.
+        console.warn("Profile upload AVIF conversion failed; uploading original image:", compressionErr);
+        uploadBuffer = buffer;
+        uploadContentType = file.type;
+        uploadExt = extensionFromMimeType(file.type);
+      }
 
       const cleanPrefix = prefix.replace(/^\/+|\/+$/g, "");
-      const fileName = `${cleanPrefix}-${Date.now()}${compressed.ext}`;
+      const fileName = `${cleanPrefix}-${Date.now()}${uploadExt}`;
       const uploaded = await uploadProfileAsset({
-        fileBuffer: compressed.buffer,
+        fileBuffer: uploadBuffer,
         fileName,
-        contentType: compressed.contentType,
+        contentType: uploadContentType,
       });
 
       return NextResponse.json(
-        { url: uploaded.url, contentType: compressed.contentType },
+        { url: uploaded.url, contentType: uploadContentType },
         { status: 201 }
       );
     }
