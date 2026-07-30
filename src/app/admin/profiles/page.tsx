@@ -319,14 +319,56 @@ async function convertToNativeAvifFallback(file: File): Promise<Blob | null> {
 }
 
 async function uploadImageWithServerFallback(file: File, prefix: string): Promise<string | null> {
+  const uploadDirectOriginal = async (): Promise<string> => {
+    const presignRes = await fetch("/api/profiles/upload", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        fileType: file.type,
+        prefix,
+      }),
+    });
+
+    if (!presignRes.ok) {
+      let msg = "Failed to get direct upload URL";
+      try {
+        const errData = await presignRes.json();
+        msg = errData.error || msg;
+      } catch {
+        // ignore parse failures
+      }
+      throw new Error(msg);
+    }
+
+    const { uploadUrl, publicUrl } = await presignRes.json();
+    const putRes = await fetch(uploadUrl, {
+      method: "PUT",
+      headers: { "Content-Type": file.type || "application/octet-stream" },
+      body: file,
+    });
+
+    if (!putRes.ok) {
+      throw new Error("Direct upload to storage failed");
+    }
+
+    return String(publicUrl || "");
+  };
+
   const formData = new FormData();
   formData.append("file", file);
   formData.append("prefix", prefix);
 
-  const res = await fetch("/api/profiles/upload", {
-    method: "POST",
-    body: formData,
-  });
+  let res: Response;
+  try {
+    res = await fetch("/api/profiles/upload", {
+      method: "POST",
+      body: formData,
+    });
+  } catch {
+    // If multipart request itself fails, try direct browser -> R2 upload.
+    const fallbackUrl = await uploadDirectOriginal();
+    return fallbackUrl;
+  }
 
   if (!res.ok) {
     let msg = "Server-side AVIF conversion failed";
@@ -336,7 +378,12 @@ async function uploadImageWithServerFallback(file: File, prefix: string): Promis
     } catch {
       // ignore parse failures
     }
-    throw new Error(msg);
+    try {
+      const fallbackUrl = await uploadDirectOriginal();
+      return fallbackUrl;
+    } catch {
+      throw new Error(msg);
+    }
   }
 
   const data = await res.json();

@@ -1,6 +1,12 @@
 const DEFAULT_R2_PUBLIC_URL = "https://cdn.travingat.com";
 const LANDING_ASSETS_PREFIX = "landingpage-assets";
 
+function isBareMediaFile(path: string): boolean {
+  // Many profile media records store only a filename (e.g. "la_123.webp").
+  // Those files are uploaded under landingpage-assets/profiles/* on R2.
+  return !path.includes("/") && /\.(avif|webp|jpe?g|png|heic|heif|mp4|mov|webm|m4v|3gp|3g2)$/i.test(path);
+}
+
 export function getLandingAssetsCdnBase(): string {
   const envBase = process.env.NEXT_PUBLIC_LANDING_ASSETS_CDN_BASE;
   if (envBase && envBase.trim().length > 0) {
@@ -18,7 +24,12 @@ export function toLandingAssetUrl(assetPath: string): string {
   if (!assetPath) return assetPath;
   if (/^https?:\/\//i.test(assetPath)) return assetPath;
 
-  const normalizedPath = assetPath
+  const normalizedInput = assetPath.replace(/^\/+/, "");
+  const assetPathWithFolder = isBareMediaFile(normalizedInput)
+    ? `profiles/${normalizedInput}`
+    : normalizedInput;
+
+  const normalizedPath = assetPathWithFolder
     .replace(/^\/+/, "")
     .split("/")
     .map((segment) => encodeURIComponent(segment))

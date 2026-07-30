@@ -13,6 +13,8 @@ import LoadedImage from "@/components/ui/LoadedImage";
 
 /* eslint-disable @next/next/no-img-element */
 
+const STATIC_LAST_UPDATED_LABEL = "27 Dec 2025";
+
 const COUNTRY_LIST_LOOKUP: Record<string, string> = {
   AF: "Afghanistan", AL: "Albania", DZ: "Algeria", AR: "Argentina", AM: "Armenia",
   AU: "Australia", AT: "Austria", AZ: "Azerbaijan", BS: "Bahamas", BD: "Bangladesh",
@@ -376,7 +378,7 @@ export default function CountryDetailComponent({
             <div className="flex items-center gap-[8px]">
               <span className="text-[16px] text-[#989898] leading-[24px] tracking-[-0.096px] font-normal">Last Updated:</span>
               <span className="text-[16px] text-[#989898] leading-[24px] tracking-[-0.096px] font-normal">
-                {new Date().toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })}
+                {STATIC_LAST_UPDATED_LABEL}
               </span>
             </div>
             <div className="h-[3px] w-[3px] rounded-full bg-[#505050] shrink-0" />

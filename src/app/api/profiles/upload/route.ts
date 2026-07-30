@@ -14,6 +14,9 @@ function extensionFromMimeType(mimeType: string): string {
     "image/webp": ".webp",
     "image/heic": ".heic",
     "image/heif": ".heif",
+    "video/mp4": ".mp4",
+    "video/webm": ".webm",
+    "video/quicktime": ".mov",
   };
   return extMap[mimeType.toLowerCase()] || ".bin";
 }
@@ -103,23 +106,8 @@ export async function POST(request: Request) {
       );
     }
 
-    const isImageUpload = typeof fileType === "string" && fileType.startsWith("image/");
-    const normalizedFileType = isImageUpload ? "image/avif" : fileType;
-
-    // Determine extension from content type
-    const extMap: Record<string, string> = {
-      "image/avif": ".avif",
-      "image/jpeg": ".jpeg",
-      "image/png": ".png",
-      "image/gif": ".gif",
-      "image/svg+xml": ".svg",
-      "video/mp4": ".mp4",
-      "video/webm": ".webm",
-      "video/quicktime": ".mov",
-    };
-    const ext = normalizedFileType.startsWith("image/")
-      ? ".avif"
-      : extMap[normalizedFileType] || ".bin";
+    const normalizedFileType = String(fileType).toLowerCase();
+    const ext = extensionFromMimeType(normalizedFileType);
     const cleanPrefix = prefix.replace(/^\/+|\/+$/g, "");
     const uniqueName = `${cleanPrefix}-${Date.now()}${ext}`;
     const keySuffix = `profiles/${uniqueName}`;

@@ -34,8 +34,8 @@ const inter = localFont({
 const logoFont = localFont({
   src: [
     {
-      path: "../assets/fonts/open-sauce-two/OpenSauceTwo-SemiBold.woff2",
-      weight: "600",
+      path: "../assets/fonts/righteous/Righteous-Regular.ttf",
+      weight: "400",
       style: "normal",
     },
   ],

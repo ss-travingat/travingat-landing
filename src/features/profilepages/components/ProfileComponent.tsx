@@ -119,6 +119,19 @@ type ShareCardData = {
   ownerAvatar: string;
 };
 
+const CREATED_AT_BASE_UTC_MS = Date.UTC(2025, 11, 27);
+const CREATED_AT_STEP_DAYS = 19;
+
+function getDeterministicCreatedLabel(index: number): string {
+  const createdAtMs = CREATED_AT_BASE_UTC_MS - index * CREATED_AT_STEP_DAYS * 24 * 60 * 60 * 1000;
+  return new Date(createdAtMs).toLocaleDateString("en-GB", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    timeZone: "UTC",
+  });
+}
+
 function isVideoAsset(url: string) {
   return /\.(mp4|mov|webm|m4v|3gp|3g2)$/i.test(url);
 }
@@ -1448,7 +1461,6 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
     // Use admin-uploaded collection images if available
     if (profile.collectionImages && profile.collectionImages.length > 0) {
       return profile.collectionImages.map((ci, index) => {
-        const createdAt = new Date(Date.now() - index * 1000 * 60 * 60 * 24 * 19);
         const photoPreviewImages = ci.images.filter((entry) => !isVideoAsset(typeof entry === "string" ? entry : entry.url)).slice(0, 5);
         const rawPreview = (photoPreviewImages.length > 0 ? photoPreviewImages : ci.images).slice(0, 5);
         const previewImages = rawPreview.map((g) => (typeof g === "string" ? g : g.url));
@@ -1461,11 +1473,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
           id: `${profile.id}-collection-${index}`,
           title: ci.title,
           description: profile.bio,
-          createdLabel: createdAt.toLocaleDateString("en-GB", {
-            day: "2-digit",
-            month: "short",
-            year: "numeric",
-          }),
+          createdLabel: getDeterministicCreatedLabel(index),
           thumbnailUrl: previewImages[0] || (typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url),
           previewImages,
           countries: selectedCountries.length > 0 ? visibleCountries : fallbackVisibleCountries,
@@ -1479,7 +1487,6 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
 
     return Array.from({ length: count }).map((_, index) => {
       const thumbnailItem = allMediaItems.length > 0 ? allMediaItems[index % allMediaItems.length] : null;
-      const createdAt = new Date(Date.now() - index * 1000 * 60 * 60 * 24 * 19);
       const photoFallbacks = allMediaItems.filter((item) => !item.isVideo).map((item) => item.fileUrl);
       const defaultFallbacks = photoFallbacks.length > 0
         ? photoFallbacks
@@ -1494,11 +1501,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
         id: `${profile.id}-collection-${index}`,
         title: titles[index % titles.length],
         description: profile.bio,
-        createdLabel: createdAt.toLocaleDateString("en-GB", {
-          day: "2-digit",
-          month: "short",
-          year: "numeric",
-        }),
+        createdLabel: getDeterministicCreatedLabel(index),
         thumbnailUrl: thumbnailItem ? thumbnailItem.fileUrl : (typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url),
         previewImages,
         countries: fallbackVisibleCountries,
