@@ -318,13 +318,53 @@ async function convertToNativeAvifFallback(file: File): Promise<Blob | null> {
   }
 }
 
+async function compressToWebPViaCanvas(file: File): Promise<Blob | null> {
+  try {
+    const bitmap = await createImageBitmap(file);
+    try {
+      const longEdge = Math.max(bitmap.width, bitmap.height);
+      const maxEdge = Math.min(longEdge, 2560);
+      const scale = maxEdge / Math.max(longEdge, 1);
+      const w = Math.max(1, Math.round(bitmap.width * scale));
+      const h = Math.max(1, Math.round(bitmap.height * scale));
+      const canvas = document.createElement("canvas");
+      canvas.width = w;
+      canvas.height = h;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return null;
+      ctx.drawImage(bitmap, 0, 0, w, h);
+      return await new Promise<Blob | null>((resolve) => {
+        canvas.toBlob((blob) => resolve(blob), "image/webp", 0.82);
+      });
+    } finally {
+      bitmap.close();
+    }
+  } catch {
+    return null;
+  }
+}
+
 async function uploadImageWithServerFallback(file: File, prefix: string): Promise<string | null> {
   const uploadDirectOriginal = async (): Promise<string> => {
+    // Compress to WebP in the browser before direct upload so we never
+    // send an uncompressed original to R2.
+    let uploadBlob: Blob = file;
+    let uploadType = file.type;
+    try {
+      const webp = await compressToWebPViaCanvas(file);
+      if (webp && webp.size < file.size * 0.98) {
+        uploadBlob = webp;
+        uploadType = "image/webp";
+      }
+    } catch {
+      // keep original
+    }
+
     const presignRes = await fetch("/api/profiles/upload", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        fileType: file.type,
+        fileType: uploadType,
         prefix,
       }),
     });
@@ -343,8 +383,8 @@ async function uploadImageWithServerFallback(file: File, prefix: string): Promis
     const { uploadUrl, publicUrl } = await presignRes.json();
     const putRes = await fetch(uploadUrl, {
       method: "PUT",
-      headers: { "Content-Type": file.type || "application/octet-stream" },
-      body: file,
+      headers: { "Content-Type": uploadType },
+      body: uploadBlob,
     });
 
     if (!putRes.ok) {

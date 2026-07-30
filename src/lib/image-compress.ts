@@ -47,7 +47,7 @@ export async function compressImage(
   // entire route module at load time.
   const sharp = (await import("sharp")).default;
 
-  let pipeline = sharp(fileBuffer)
+  const resized = sharp(fileBuffer)
     // Auto-rotate based on EXIF orientation, then strip all metadata
     .rotate()
     .resize({
@@ -55,15 +55,25 @@ export async function compressImage(
       height: maxDimension,
       fit: "inside",
       withoutEnlargement: true, // never upscale
-    })
-    // Convert to AVIF with optimized lossy compression
-    .avif({ quality: 65, effort: 4 });
+    });
 
-  const outputBuffer = await pipeline.toBuffer();
+  // Try AVIF first; fall back to WebP if AVIF encoding fails (e.g. missing
+  // codec support in some environments).
+  try {
+    const avifBuffer = await resized.clone().avif({ quality: 65, effort: 4 }).toBuffer();
+    return {
+      buffer: Buffer.from(avifBuffer),
+      contentType: "image/avif",
+      ext: ".avif",
+    };
+  } catch {
+    // AVIF encoding unavailable — use WebP as a reliable fallback.
+  }
 
+  const webpBuffer = await resized.clone().webp({ quality: 82 }).toBuffer();
   return {
-    buffer: Buffer.from(outputBuffer),
-    contentType: "image/avif",
-    ext: ".avif",
+    buffer: Buffer.from(webpBuffer),
+    contentType: "image/webp",
+    ext: ".webp",
   };
 }
