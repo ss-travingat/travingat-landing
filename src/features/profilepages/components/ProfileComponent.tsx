@@ -1912,23 +1912,23 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                               </div>
 
                               {/* Country info */}
-                              <div className="flex flex-col gap-[4px] px-[4px]">
-                                <div className="flex items-center gap-[6px]">
-                                  <div className="h-[11px] w-[16px] overflow-hidden rounded-[2px] drop-shadow-[1.2px_1.2px_0.6px_rgba(0,0,0,0.18)] shrink-0">
+                              <div className="flex flex-col gap-[4px] md:gap-[8px] px-[4px] md:px-[8px] pt-[2px] md:pt-[6px]">
+                                <div className="flex items-center gap-[6px] md:gap-[10px]">
+                                  <div className="h-[11px] w-[16px] md:h-[15px] md:w-[22px] overflow-hidden rounded-[2px] drop-shadow-[1.2px_1.2px_0.6px_rgba(0,0,0,0.18)] shrink-0">
                                     <img
                                       src={`/flags/${country.flagCode.toUpperCase()}.svg`}
                                       alt={country.name}
                                       className="block w-full h-full object-cover"
                                     />
                                   </div>
-                                  <p className="text-white text-[14px] font-medium leading-[20px] tracking-[-0.084px] truncate">
+                                  <p className="text-white text-[14px] md:text-[18px] font-medium leading-[20px] md:leading-[24px] tracking-[-0.084px] md:tracking-[-0.2px] truncate">
                                     {country.name}
                                   </p>
                                 </div>
-                                <div className="flex items-center gap-[4px]">
-                                  <span className="text-[#646464] text-[12px] leading-[16px]">{country.photoCount} photos</span>
-                                  <span className="text-[#646464] text-[12px] leading-[16px]">&bull;</span>
-                                  <span className="text-[#646464] text-[12px] leading-[16px]">{country.videoCount} Videos</span>
+                                <div className="flex items-center gap-[4px] md:gap-[6px]">
+                                  <span className="text-[#646464] text-[12px] md:text-[14px] leading-[16px] md:leading-[20px]">{country.photoCount} photos</span>
+                                  <span className="text-[#646464] text-[12px] md:text-[14px] leading-[16px] md:leading-[20px]">&bull;</span>
+                                  <span className="text-[#646464] text-[12px] md:text-[14px] leading-[16px] md:leading-[20px]">{country.videoCount} Videos</span>
                                 </div>
                               </div>
                             </Link>
@@ -1972,7 +1972,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                             <Link
                               key={collection.id}
                               href={collectionHref}
-                              className="flex flex-col gap-[16px]"
+                              className="flex flex-col gap-[16px] md:gap-[20px]"
                             >
                               <div className="relative group">
                                 <CardCarousel
@@ -2015,10 +2015,10 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                                 ) : null}
                               </div>
 
-                              <div className="flex flex-col px-[4px] gap-[12px]">
-                                <div className="flex flex-col gap-[4px]">
-                                  <p className="text-[#646464] text-[12px] leading-[16px] tracking-normal">{collection.createdLabel}</p>
-                                  <p className="text-white text-[14px] font-medium leading-[20px] tracking-[-0.084px] min-w-full w-min line-clamp-1">{collection.title}</p>
+                              <div className="flex flex-col px-[4px] md:px-[8px] gap-[12px] md:gap-[16px]">
+                                <div className="flex flex-col gap-[4px] md:gap-[8px]">
+                                  <p className="text-[#646464] text-[12px] md:text-[14px] leading-[16px] md:leading-[20px] tracking-normal">{collection.createdLabel}</p>
+                                  <p className="text-white text-[14px] md:text-[18px] font-medium leading-[20px] md:leading-[24px] tracking-[-0.084px] md:tracking-[-0.2px] min-w-full w-min line-clamp-1">{collection.title}</p>
                                 </div>
                                 {/* Hidden countries for now as per design request until Admin CMS supports collection country multi-select */}
                                 <div className="flex flex-wrap items-center gap-1.5">

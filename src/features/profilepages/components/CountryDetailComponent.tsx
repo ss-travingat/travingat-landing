@@ -343,7 +343,7 @@ export default function CountryDetailComponent({
           profileFlagCode={profile.flagCode}
           countryName={countryName}
           countryCode={countryCode}
-          description={profile.bio}
+          description={profile.countryImages?.find((c) => c.countryCode === countryCode)?.about}
         />
       )}
 

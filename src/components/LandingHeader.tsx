@@ -74,8 +74,8 @@ function LandingHeaderContent() {
       <div className={containerClasses}>
         <div className="h-23 xl:h-33 flex items-center justify-between relative">
           <div className="flex-1 flex items-center justify-start">
-            <Link href="/" className="ds-font-logo text-white text-[28px] font-normal leading-none tracking-[0.2px]">
-              travingat
+            <Link href="/" className="flex items-center">
+              <img src="/icons/travingat-logo.svg" alt="Travingat Logo" className="h-[24px] lg:h-[28px] w-auto" />
             </Link>
           </div>
 

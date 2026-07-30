@@ -111,8 +111,8 @@ export function MobileProfileNavbar({ profile }: { profile?: any }) {
             <span className="font-semibold text-[16px] text-white tracking-tight">{profile.handle}</span>
           </div>
         ) : (
-          <Link href="/" className="font-['Righteous'] text-[23.14px] text-white tracking-[-0.41px] leading-normal">
-            travingat
+          <Link href="/" className="flex items-center">
+            <img src="/icons/travingat-logo.svg" alt="Travingat Logo" className="h-[22px] w-auto" />
           </Link>
         )}
         <button
