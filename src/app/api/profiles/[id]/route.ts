@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { toLandingAssetUrl } from "@/lib/landing-assets";
 import { readJsonFromR2, writeJsonToR2 } from "@/lib/r2-upload";
 
@@ -160,6 +161,14 @@ export async function PUT(
     };
 
     await writeProfiles(profiles);
+
+    // Invalidate Next.js cache so profile and country/collection pages
+    // immediately reflect the updated data.
+    const handle = profiles[index].handle.replace(/^@/, "");
+    revalidatePath(`/profiles/${handle}`, "layout");
+    revalidatePath("/featured-profiles");
+    revalidatePath("/");
+
     return NextResponse.json(normalizeProfile(profiles[index]));
   } catch (err) {
     console.error("Failed to update profile:", err);
