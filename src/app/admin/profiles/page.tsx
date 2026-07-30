@@ -318,12 +318,19 @@ async function convertToNativeAvifFallback(file: File): Promise<Blob | null> {
   }
 }
 
-async function compressToWebPViaCanvas(file: File): Promise<Blob | null> {
+async function compressImageViaCanvas(file: File): Promise<Blob | null> {
   try {
     const bitmap = await createImageBitmap(file);
     try {
+      const TARGET_SIZE = 350 * 1024; // 350KB target
+      const maxEdge = Math.min(Math.max(bitmap.width, bitmap.height), 2560);
+      let avifQuality = 0.55;
+      let webpQuality = 0.82;
+      let blob: Blob | null = null;
+      let attempts = 0;
+
+      // Calculate dimensions once
       const longEdge = Math.max(bitmap.width, bitmap.height);
-      const maxEdge = Math.min(longEdge, 2560);
       const scale = maxEdge / Math.max(longEdge, 1);
       const w = Math.max(1, Math.round(bitmap.width * scale));
       const h = Math.max(1, Math.round(bitmap.height * scale));
@@ -333,9 +340,34 @@ async function compressToWebPViaCanvas(file: File): Promise<Blob | null> {
       const ctx = canvas.getContext("2d");
       if (!ctx) return null;
       ctx.drawImage(bitmap, 0, 0, w, h);
-      return await new Promise<Blob | null>((resolve) => {
-        canvas.toBlob((blob) => resolve(blob), "image/webp", 0.82);
-      });
+
+      while (attempts < 5) {
+        // Try AVIF encoding first
+        blob = await new Promise<Blob | null>((resolve) => {
+          canvas.toBlob((b) => resolve(b), "image/avif", avifQuality);
+        });
+
+        // If the browser doesn't support AVIF encoding (e.g. Safari), it falls back to PNG silently.
+        // We detect this and explicitly request WebP instead.
+        if (blob && blob.type !== "image/avif") {
+          blob = await new Promise<Blob | null>((resolve) => {
+            canvas.toBlob((b) => resolve(b), "image/webp", webpQuality);
+          });
+        }
+
+        // Stop if we hit our budget or if the file actually became larger than the original 
+        // (to prevent recursive destruction for no gain)
+        if (blob && (blob.size <= TARGET_SIZE || blob.size > file.size)) {
+          break;
+        }
+
+        // If it's still too large, aggressively reduce quality for the next iteration
+        avifQuality = Math.max(0.1, avifQuality - 0.1);
+        webpQuality = Math.max(0.2, webpQuality - 0.15);
+        attempts++;
+      }
+
+      return blob;
     } finally {
       bitmap.close();
     }
@@ -346,15 +378,15 @@ async function compressToWebPViaCanvas(file: File): Promise<Blob | null> {
 
 async function uploadImageWithServerFallback(file: File, prefix: string): Promise<string | null> {
   const uploadDirectOriginal = async (): Promise<string> => {
-    // Compress to WebP in the browser before direct upload so we never
+    // Compress to AVIF/WebP in the browser before direct upload so we never
     // send an uncompressed original to R2.
     let uploadBlob: Blob = file;
     let uploadType = file.type;
     try {
-      const webp = await compressToWebPViaCanvas(file);
-      if (webp && webp.size < file.size * 0.98) {
-        uploadBlob = webp;
-        uploadType = "image/webp";
+      const compressed = await compressImageViaCanvas(file);
+      if (compressed && compressed.size < file.size * 0.98) {
+        uploadBlob = compressed;
+        uploadType = compressed.type;
       }
     } catch {
       // keep original
@@ -1022,58 +1054,19 @@ export default function AdminProfilesPage() {
     setUploading({ field: type, stage: "processing", idx, current: batch?.current, total: batch?.total });
 
     try {
-      // Step 1: Convert and compress on the client side -> AVIF (high quality)
-      // If browser-side AVIF encoding fails, fallback to server-side conversion.
+      // Step 1: Compress in the browser using canvas → AVIF/WebP (fast, reliable).
+      // No external library needed — pure canvas API always works.
       let processedFile: File | Blob = file;
-      const uploadContentType = "image/avif";
-      let shouldUseServerFallback = false;
+      let uploadContentType = file.type;
 
-      try {
-        processedFile = await convertToOptimizedAvif(file);
-        let validAvif = await isValidAvifBlob(processedFile);
-
-        if (!validAvif) {
-          const fallbackBlob = await convertToNativeAvifFallback(file);
-          if (fallbackBlob) {
-            const fallbackValid = await isValidAvifBlob(fallbackBlob);
-            if (fallbackValid) {
-              processedFile = fallbackBlob;
-              validAvif = true;
-            }
-          }
-        }
-
-        if (!validAvif) {
-          shouldUseServerFallback = true;
-        }
-
+      const compressedBlob = await compressImageViaCanvas(file);
+      if (compressedBlob && compressedBlob.size < file.size) {
+        processedFile = compressedBlob;
+        uploadContentType = compressedBlob.type;
         const originalKb = Math.round(file.size / 1024);
-        const convertedKb = Math.round(processedFile.size / 1024);
-        const ratio = (processedFile.size / file.size).toFixed(2);
-        console.info(
-          `[profiles-upload] ${file.name}: ${originalKb}KB -> ${convertedKb}KB (ratio ${ratio})`
-        );
-      } catch (compressErr) {
-        console.warn("AVIF conversion/compression failed, falling back to server:", compressErr);
-        shouldUseServerFallback = true;
-      }
-
-      if (shouldUseServerFallback) {
-        setUploading((prev) => prev ? { ...prev, stage: "uploading" } : null);
-        try {
-          const fallbackUrl = await uploadImageWithServerFallback(file, type);
-          const isLastInBatch = !batch || batch.current === batch.total;
-          if (isLastInBatch) {
-            setUploading((prev) => prev ? { ...prev, stage: "done" } : null);
-            await new Promise((r) => setTimeout(r, 800));
-          }
-          showToast(`${type.charAt(0).toUpperCase() + type.slice(1)} image uploaded`);
-          return fallbackUrl;
-        } catch (fallbackErr) {
-          const fallbackMsg = fallbackErr instanceof Error ? fallbackErr.message : "Server-side conversion failed";
-          showToast(fallbackMsg, true);
-          return null;
-        }
+        const convertedKb = Math.round(compressedBlob.size / 1024);
+        const extName = uploadContentType === "image/avif" ? "AVIF" : "WebP";
+        console.info(`[profiles-upload] ${file.name}: ${originalKb}KB → ${convertedKb}KB (${extName}, ${Math.round((1 - compressedBlob.size / file.size) * 100)}% reduction)`);
       }
 
       setUploading((prev) => prev ? { ...prev, stage: "uploading" } : null);
@@ -1099,11 +1092,6 @@ export default function AdminProfilesPage() {
       }
 
       const { uploadUrl, publicUrl } = await presignRes.json();
-
-      if (!/\.avif($|\?)/i.test(String(publicUrl))) {
-        showToast("Upload endpoint returned a non-AVIF image URL.", true);
-        return null;
-      }
 
       // Step 3: Upload directly to R2 via presigned URL (bypasses Vercel entirely)
       const r2Res = await fetch(uploadUrl, {
@@ -1484,7 +1472,7 @@ export default function AdminProfilesPage() {
                 })}
               </div>
             </div>
-            <button onClick={() => setMediaPickerTarget(null)} className="mt-4 w-full py-2.5 bg-[#5A45F9] hover:bg-[#4a35e9] rounded-lg text-sm font-medium transition-colors cursor-pointer">
+            <button onClick={() => { setMediaPickerTarget(null); saveFormState(form); }} className="mt-4 w-full py-2.5 bg-[#5A45F9] hover:bg-[#4a35e9] rounded-lg text-sm font-medium transition-colors cursor-pointer">
               Done
             </button>
           </div>
@@ -1999,12 +1987,12 @@ export default function AdminProfilesPage() {
                                       }
                                     }
                                     if (urls.length > 0) {
-                                      setForm((prev) => ({
-                                        ...prev,
-                                        countryImages: prev.countryImages.map((c, i) =>
-                                          i === idx ? { ...c, images: [...c.images, ...urls] } : c
-                                        ),
-                                      }));
+                                      const newCountryImages = form.countryImages.map((c, i) =>
+                                        i === idx ? { ...c, images: [...c.images, ...urls] } : c
+                                      );
+                                      const newForm = { ...form, countryImages: newCountryImages };
+                                      setForm(newForm);
+                                      saveFormState(newForm);
                                     }
                                   }}
                                 />

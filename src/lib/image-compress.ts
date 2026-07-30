@@ -60,7 +60,24 @@ export async function compressImage(
   // Try AVIF first; fall back to WebP if AVIF encoding fails (e.g. missing
   // codec support in some environments).
   try {
-    const avifBuffer = await resized.clone().avif({ quality: 65, effort: 4 }).toBuffer();
+    const avifBuffer = await resized.clone().avif({ 
+      quality: 55,           // Optimal quality sweet-spot for AVIF (50-60)
+      effort: 5,             // CPU effort 0-9 (5 balances speed and size efficiency)
+      chromaSubsampling: '4:2:0', // Essential for lossy web compression savings
+      lossless: false,
+    }).toBuffer();
+
+    // Strict Budget Check: If compressed size exceeds source size, fall back
+    if (avifBuffer.byteLength >= fileBuffer.byteLength) {
+      const metadata = await sharp(fileBuffer).metadata();
+      const format = metadata.format || mimeType.split('/')[1] || 'bin';
+      return {
+        buffer: fileBuffer,
+        contentType: metadata.format ? `image/${metadata.format}` : mimeType,
+        ext: `.${format}`,
+      };
+    }
+
     return {
       buffer: Buffer.from(avifBuffer),
       contentType: "image/avif",
@@ -71,6 +88,18 @@ export async function compressImage(
   }
 
   const webpBuffer = await resized.clone().webp({ quality: 82 }).toBuffer();
+  
+  // Strict Budget Check for WebP as well
+  if (webpBuffer.byteLength >= fileBuffer.byteLength) {
+    const metadata = await sharp(fileBuffer).metadata();
+    const format = metadata.format || mimeType.split('/')[1] || 'bin';
+    return {
+      buffer: fileBuffer,
+      contentType: metadata.format ? `image/${metadata.format}` : mimeType,
+      ext: `.${format}`,
+    };
+  }
+
   return {
     buffer: Buffer.from(webpBuffer),
     contentType: "image/webp",
