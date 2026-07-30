@@ -1246,6 +1246,40 @@ export default function AdminProfilesPage() {
     }));
   };
 
+  const saveFormState = async (newForm: typeof form) => {
+    if (!editing) return;
+    const computedMedia =
+      newForm.countryImages.reduce((sum, c) => sum + c.images.length, 0) +
+      newForm.collectionImages.reduce((sum, c) => sum + c.images.length, 0);
+    const payload = { ...newForm, media: computedMedia };
+    try {
+      const res = await fetch(`/api/profiles/${editing.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) {
+        const errData = await res.json().catch(() => null);
+        showToast(errData?.error || `Save failed (${res.status})`, true);
+      } else {
+        await fetchProfiles();
+      }
+    } catch {
+      showToast("Failed to save changes", true);
+    }
+  };
+
+  const deleteCountryMedia = (countryIdx: number, imageIdx: number) => {
+    const newCountryImages = form.countryImages
+      .map((c, i) =>
+        i === countryIdx ? { ...c, images: c.images.filter((_, j) => j !== imageIdx) } : c
+      )
+      .filter((c) => c.images.length > 0);
+    const newForm = { ...form, countryImages: newCountryImages };
+    setForm(newForm);
+    saveFormState(newForm);
+  };
+
   const handleSave = async () => {
     if (!form.name.trim() || !form.handle.trim()) {
       showToast("Name and handle are required", true);
@@ -2005,7 +2039,8 @@ export default function AdminProfilesPage() {
                             {ci.images.map((imgUrl, imgIdx) => {
                               const isVid = /\.(mp4|mov|webm|m4v)$/i.test(imgUrl);
                               return (
-                                <div key={imgIdx} className="relative group w-16 h-12 rounded-md overflow-hidden bg-white/5 shrink-0">
+                                <div key={imgIdx} className="relative group w-16 h-12 shrink-0">
+                                  <div className="w-full h-full rounded-md overflow-hidden bg-white/5">
                                   {isVid ? (
                                     <>
                                       <video
@@ -2031,16 +2066,14 @@ export default function AdminProfilesPage() {
                                       className="object-cover"
                                     />
                                   )}
+                                  </div>
                                   <button
-                                    onClick={() =>
-                                      setForm((prev) => ({
-                                        ...prev,
-                                        countryImages: prev.countryImages.map((c, i) =>
-                                          i === idx ? { ...c, images: c.images.filter((_, j) => j !== imgIdx) } : c
-                                        ).filter((c) => c.images.length > 0),
-                                      }))
-                                    }
-                                    className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity cursor-pointer text-red-400 text-xs"
+                                    type="button"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      deleteCountryMedia(idx, imgIdx);
+                                    }}
+                                    className="absolute -top-1.5 -right-1.5 z-20 w-4 h-4 bg-black/80 hover:bg-red-500 rounded-full flex items-center justify-center text-white/70 hover:text-white transition-colors cursor-pointer text-[9px] leading-none border border-white/10"
                                   >
                                     ✕
                                   </button>
