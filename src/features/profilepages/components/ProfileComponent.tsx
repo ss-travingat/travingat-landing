@@ -22,7 +22,6 @@ import type { MasonryItemWithDimensions } from "@/hooks/useMasonryAdvanced";
 const CopyButton = ({ text }: { text: string }) => {
   const [copied, setCopied] = useState(false);
   const handleCopy = () => {
-    q
     navigator.clipboard.writeText(text);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
