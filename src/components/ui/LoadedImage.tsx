@@ -67,7 +67,11 @@ export default function LoadedImage({
   useEffect(() => {
     const node = imgRef.current;
     if (!node) return;
-    if (node.complete && node.naturalWidth > 0) {
+    
+    // SVGs might have a naturalWidth of 0 depending on their viewbox/width attributes
+    const isSvg = currentSrc.includes(".svg");
+    
+    if (node.complete && (node.naturalWidth > 0 || (isSvg && node.naturalWidth === 0))) {
       handleLoad();
     }
   }, [currentSrc]);

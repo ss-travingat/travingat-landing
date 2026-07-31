@@ -3,6 +3,8 @@
 import { type MouseEvent, useEffect, useRef, useState, Suspense } from "react";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
+import LoadedImage from "@/components/ui/LoadedImage";
+
 
 function LandingHeaderContent() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -75,12 +77,17 @@ function LandingHeaderContent() {
         <div className="h-23 xl:h-33 flex items-center justify-between relative">
           <div className="flex-1 flex items-center justify-start">
             <Link href="/" className="flex items-center">
-              <img src="/icons/travingat-logo.svg" alt="Travingat Logo" className="h-[24px] lg:h-[28px] w-auto" />
+              <LoadedImage
+                src="/icons/travingat-logo.svg?v=newlogo"
+                alt="Travingat Logo"
+                className="h-[24px] lg:h-[28px] w-auto"
+                priority
+              />
             </Link>
           </div>
 
           <div className="hidden min-[811px]:flex flex-none items-center justify-center">
-            <nav className="flex items-center rounded-[999px] border border-[rgba(161,161,161,0.1)] bg-gradient-to-b from-[rgba(46,46,46,0.8)] to-[#171717] p-1 backdrop-blur-[5px] shadow-[0px_6px_10px_0px_rgba(0,0,0,0.25)]">
+            <nav className="flex items-center rounded-[999px] bg-gradient-to-b from-[rgba(46,46,46,0.8)] to-[#171717] p-1 backdrop-blur-[5px] shadow-[0px_6px_10px_0px_rgba(0,0,0,0.25)] border-t border-[rgba(161,161,161,0.1)]">
               <Link
                 href="/"
                 className="rounded-[999px] px-5 pt-2.5 pb-3 text-[16px] font-normal leading-[19.2px] text-white hover:bg-white/10 transition"
@@ -91,7 +98,7 @@ function LandingHeaderContent() {
                 href="/newprofiles"
                 className="rounded-[999px] px-5 pt-2.5 pb-3 text-[16px] font-normal leading-[19.2px] text-white hover:bg-white/10 transition"
               >
-                Featured
+                Profiles
               </Link>
               <Link
                 href="/templates"
@@ -163,7 +170,7 @@ function LandingHeaderContent() {
             onClick={() => setMenuOpen(false)}
             className="block rounded-xl px-3 py-2 text-sm text-[#d8d8d8] hover:bg-[#1b1b1b]"
           >
-            Featured Profiles
+            Profiles
           </Link>
           <Link
             href="/templates"
