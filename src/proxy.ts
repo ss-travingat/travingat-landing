@@ -42,7 +42,7 @@ async function verifyAdminSessionTokenEdge(token: string) {
   }
 }
 
-export async function middleware(req: NextRequest) {
+export default async function proxy(req: NextRequest) {
   const url = req.nextUrl;
 
   const isWaitlistApi = url.pathname === '/api/waitlist';

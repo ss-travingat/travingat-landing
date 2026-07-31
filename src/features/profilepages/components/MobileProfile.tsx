@@ -133,47 +133,49 @@ export function MobileProfileNavbar({ profile }: { profile?: any }) {
         </button>
       </div>
 
-      <nav
-        className={`px-[12px] pointer-events-auto overflow-hidden transition-all duration-300 ${menuOpen ? "max-h-[500px] pb-5 opacity-100" : "max-h-0 pb-0 opacity-0"
-          }`}
+      {/* Mobile Full Screen Menu */}
+      <div 
+        className={`fixed inset-0 z-[60] bg-black flex flex-col transition-all duration-300 ${
+          menuOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+        }`}
       >
-        <div
-          className={`rounded-2xl border border-black-400 bg-[#101010]/95 backdrop-blur-md p-2 shadow-[0_12px_40px_rgba(0,0,0,0.45)] transition-transform duration-300 ${menuOpen ? "translate-y-0" : "-translate-y-2"
-            }`}
-        >
-          <Link
-            href="/newprofiles"
-            onClick={() => setMenuOpen(false)}
-            className="block rounded-xl px-3 py-2 text-sm text-[#d8d8d8] hover:bg-[#1b1b1b]"
-          >
-            Featured Profiles
-          </Link>
-          <Link
-            href="/templates"
-            onClick={() => setMenuOpen(false)}
-            className="block rounded-xl px-3 py-2 text-sm text-[#d8d8d8] hover:bg-[#1b1b1b]"
-          >
-            Templates
-          </Link>
-          <Link
-            href="/pricing"
-            onClick={() => setMenuOpen(false)}
-            className="block rounded-xl px-3 py-2 text-sm text-[#d8d8d8] hover:bg-[#1b1b1b]"
-          >
-            Pricing
-          </Link>
-          <Link href="/blog" onClick={() => setMenuOpen(false)} className="block rounded-xl px-3 py-2 text-sm text-[#d8d8d8] hover:bg-[#1b1b1b]">
-            Blog
-          </Link>
-          <a
-            href="/#join"
-            onClick={(e) => scrollToSection(e, "join")}
-            className="block rounded-xl px-3 py-2 text-sm text-[#d8d8d8] hover:bg-[#1b1b1b]"
-          >
-            Join now
-          </a>
+        <div className="flex items-center justify-between px-[28px] pt-[20px] pb-[16px]">
+          <div className="flex-1 flex items-center justify-start">
+            <Link href="/" onClick={() => setMenuOpen(false)} className="flex items-center">
+              <img src="/icons/travingat-logo.svg" alt="Travingat Logo" className="h-[22px] w-auto" />
+            </Link>
+          </div>
+          <div className="flex-1 flex items-center justify-end">
+            <button
+              onClick={() => setMenuOpen(false)}
+              className="flex h-11 w-11 items-center justify-center rounded-full bg-[#1c1c1c] text-white hover:bg-[#2a2a2a] transition"
+              aria-label="Close menu"
+            >
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M1 1L13 13M1 13L13 1" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+              </svg>
+            </button>
+          </div>
         </div>
-      </nav>
+
+        <nav className="flex-1 flex flex-col items-center justify-center gap-7 pb-24">
+          <Link href="/" onClick={() => setMenuOpen(false)} className="text-[32px] font-medium tracking-tight text-white hover:text-white/80 transition">Home</Link>
+          <Link href="/newprofiles" onClick={() => setMenuOpen(false)} className="text-[32px] font-medium tracking-tight text-white hover:text-white/80 transition">Profiles</Link>
+          <Link href="/templates" onClick={() => setMenuOpen(false)} className="text-[32px] font-medium tracking-tight text-white hover:text-white/80 transition">Templates</Link>
+          <Link href="/pricing" onClick={() => setMenuOpen(false)} className="text-[32px] font-medium tracking-tight text-white hover:text-white/80 transition">Pricing</Link>
+          <Link href="/blog" onClick={() => setMenuOpen(false)} className="text-[32px] font-medium tracking-tight text-white hover:text-white/80 transition">Blog</Link>
+          
+          <div className="pt-6">
+            <a
+              href="/#join"
+              onClick={(e) => scrollToSection(e, "join")}
+              className="inline-flex items-center justify-center rounded-[999px] bg-white px-8 py-3.5 text-[18px] font-medium tracking-tight text-black hover:bg-[#ececec] transition"
+            >
+              Join now
+            </a>
+          </div>
+        </nav>
+      </div>
     </div>
   );
 }

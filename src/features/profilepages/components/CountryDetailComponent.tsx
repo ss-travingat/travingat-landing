@@ -1,4 +1,5 @@
 "use client";
+import { useRouter } from "next/navigation";
 
 import Link from "next/link";
 import { useState, useRef, useEffect, useCallback } from "react";
@@ -194,6 +195,7 @@ export default function CountryDetailComponent({
   countryCode: string;
   images: Array<string | { url: string; width?: number; height?: number }>;
 }) {
+  const router = useRouter();
   const imageUrls = images.map((entry) => (typeof entry === "string" ? entry : entry.url));
   const countryName = COUNTRY_LIST_LOOKUP[countryCode] || countryCode;
   const [activeTab, setActiveTab] = useState<MediaTab>("all");
@@ -304,12 +306,12 @@ export default function CountryDetailComponent({
       const encodedUrl = btoa(unescape(encodeURIComponent(activeUrl)));
       if (url.searchParams.get("image") !== encodedUrl) {
         url.searchParams.set("image", encodedUrl);
-        window.history.replaceState({}, "", url.toString());
+        router.replace(url.pathname + url.search, { scroll: false });
       }
     } else if (didReadFromUrl.current && lightboxIndex === null) {
       if (url.searchParams.has("image")) {
         url.searchParams.delete("image");
-        window.history.replaceState({}, "", url.toString());
+        router.replace(url.pathname + url.search, { scroll: false });
       }
     }
   }, [lightboxIndex, displayImages]);

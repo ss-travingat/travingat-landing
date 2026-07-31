@@ -11,10 +11,17 @@ function LandingHeaderContent() {
   const [visible, setVisible] = useState(true);
   const lastScrollY = useRef(0);
   const headerRef = useRef<HTMLElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     function handleClickOutside(event: globalThis.MouseEvent | globalThis.TouchEvent) {
-      if (menuOpen && headerRef.current && !headerRef.current.contains(event.target as Node)) {
+      const target = event.target as Node;
+      if (
+        menuOpen &&
+        headerRef.current &&
+        !headerRef.current.contains(target) &&
+        (!menuRef.current || !menuRef.current.contains(target))
+      ) {
         setMenuOpen(false);
       }
     }
@@ -72,7 +79,8 @@ function LandingHeaderContent() {
   if (hasImage) return null;
 
   return (
-    <header ref={headerRef} className={`fixed top-0 left-0 right-0 z-50 bg-black/90 backdrop-blur transition-transform duration-300 ${visible ? "translate-y-0" : "-translate-y-full"} ${isProfileRoute ? "max-[810px]:hidden" : ""}`}>
+    <>
+      <header ref={headerRef} className={`fixed top-0 left-0 right-0 z-50 bg-black/90 backdrop-blur transition-transform duration-300 ${visible ? "translate-y-0" : "-translate-y-full"} ${isProfileRoute ? "max-[810px]:hidden" : ""}`}>
       <div className={containerClasses}>
         <div className="h-23 xl:h-33 flex items-center justify-between relative">
           <div className="flex-1 flex items-center justify-start">
@@ -156,49 +164,60 @@ function LandingHeaderContent() {
           </div>
         </div>
       </div>
-
-      <nav
-        className={`${mobileNavContainerClasses} overflow-hidden min-[811px]:hidden transition-all duration-300 ${menuOpen ? "max-h-105 pb-5 opacity-100" : "max-h-0 pb-0 opacity-0"
-          }`}
-      >
-        <div
-          className={`rounded-2xl border border-black-400 bg-[#101010] p-2 shadow-[0_12px_40px_rgba(0,0,0,0.45)] transition-transform duration-300 ${menuOpen ? "translate-y-0" : "-translate-y-2"
-            }`}
-        >
-          <Link
-            href="/newprofiles"
-            onClick={() => setMenuOpen(false)}
-            className="block rounded-xl px-3 py-2 text-sm text-[#d8d8d8] hover:bg-[#1b1b1b]"
-          >
-            Profiles
-          </Link>
-          <Link
-            href="/templates"
-            onClick={() => setMenuOpen(false)}
-            className="block rounded-xl px-3 py-2 text-sm text-[#d8d8d8] hover:bg-[#1b1b1b]"
-          >
-            Templates
-          </Link>
-          <Link
-            href="/pricing"
-            onClick={() => setMenuOpen(false)}
-            className="block rounded-xl px-3 py-2 text-sm text-[#d8d8d8] hover:bg-[#1b1b1b]"
-          >
-            Pricing
-          </Link>
-          <Link href="/blog" onClick={() => setMenuOpen(false)} className="block rounded-xl px-3 py-2 text-sm text-[#d8d8d8] hover:bg-[#1b1b1b]">
-            Blog
-          </Link>
-          <a
-            href="#join"
-            onClick={(event) => { scrollToSection(event, "join"); }}
-            className="block rounded-xl px-3 py-2 text-sm text-[#d8d8d8] hover:bg-[#1b1b1b]"
-          >
-            Join now
-          </a>
-        </div>
-      </nav>
     </header>
+
+    {/* Mobile Full Screen Menu */}
+      <div 
+        ref={menuRef}
+        className={`fixed inset-0 z-[60] bg-black flex flex-col transition-all duration-300 min-[811px]:hidden ${
+          menuOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+        }`}
+      >
+        <div className={containerClasses}>
+          <div className="h-23 flex items-center justify-between relative">
+            <div className="flex-1 flex items-center justify-start">
+              <Link href="/" onClick={() => setMenuOpen(false)} className="flex items-center">
+                <LoadedImage
+                  src="/icons/travingat-logo.svg?v=newlogo"
+                  alt="Travingat Logo"
+                  className="h-[24px] lg:h-[28px] w-auto"
+                  priority
+                />
+              </Link>
+            </div>
+            <div className="flex-1 flex items-center justify-end">
+              <button
+                onClick={() => setMenuOpen(false)}
+                className="flex h-11 w-11 items-center justify-center rounded-full bg-[#1c1c1c] text-white hover:bg-[#2a2a2a] transition"
+                aria-label="Close menu"
+              >
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M1 1L13 13M1 13L13 1" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <nav className="flex-1 flex flex-col items-center justify-center gap-7 pb-24">
+          <Link href="/" onClick={() => setMenuOpen(false)} className="text-[32px] font-medium tracking-tight text-white hover:text-white/80 transition">Home</Link>
+          <Link href="/newprofiles" onClick={() => setMenuOpen(false)} className="text-[32px] font-medium tracking-tight text-white hover:text-white/80 transition">Profiles</Link>
+          <Link href="/templates" onClick={() => setMenuOpen(false)} className="text-[32px] font-medium tracking-tight text-white hover:text-white/80 transition">Templates</Link>
+          <Link href="/pricing" onClick={() => setMenuOpen(false)} className="text-[32px] font-medium tracking-tight text-white hover:text-white/80 transition">Pricing</Link>
+          <Link href="/blog" onClick={() => setMenuOpen(false)} className="text-[32px] font-medium tracking-tight text-white hover:text-white/80 transition">Blog</Link>
+          
+          <div className="pt-6">
+            <a
+              href="#join"
+              onClick={(event) => scrollToSection(event, "join")}
+              className="inline-flex items-center justify-center rounded-[999px] bg-white px-8 py-3.5 text-[18px] font-medium tracking-tight text-black hover:bg-[#ececec] transition"
+            >
+              Join now
+            </a>
+          </div>
+        </nav>
+      </div>
+    </>
   );
 }
 

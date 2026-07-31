@@ -1,4 +1,5 @@
 "use client";
+import { useRouter } from "next/navigation";
 
 import Link from "next/link";
 import React, { useEffect, useMemo, useRef, useState } from "react";
@@ -21,6 +22,7 @@ import type { MasonryItemWithDimensions } from "@/hooks/useMasonryAdvanced";
 const CopyButton = ({ text }: { text: string }) => {
   const [copied, setCopied] = useState(false);
   const handleCopy = () => {
+    q
     navigator.clipboard.writeText(text);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
@@ -809,7 +811,7 @@ function JsMasonryGrid({
                     onLoadedData={() => markItemLoaded(mediaItem.id)}
                     onCanPlay={() => markItemLoaded(mediaItem.id)}
                     onError={() => markItemLoaded(mediaItem.id)}
-                    onMouseEnter={(e) => e.currentTarget.play().catch(() => {})}
+                    onMouseEnter={(e) => e.currentTarget.play().catch(() => { })}
                     onMouseLeave={(e) => {
                       e.currentTarget.pause();
                       e.currentTarget.currentTime = 0;
@@ -845,17 +847,17 @@ function JsMasonryGrid({
                 />
               )}
 
-            {/* More options button */}
-            <MoreOptionsButton
-              isOpen={isMenuOpen}
-              label="Open media menu"
-              size="sm"
-              onClick={(event) => {
-                event.preventDefault();
-                event.stopPropagation();
-                setOpenContextMenuId(isMenuOpen ? null : mediaItem.id);
-              }}
-            />
+              {/* More options button */}
+              <MoreOptionsButton
+                isOpen={isMenuOpen}
+                label="Open media menu"
+                size="sm"
+                onClick={(event) => {
+                  event.preventDefault();
+                  event.stopPropagation();
+                  setOpenContextMenuId(isMenuOpen ? null : mediaItem.id);
+                }}
+              />
 
               {/* Flag badge (visible after image loads) */}
               {displayCountryCode && isLoaded ? (
@@ -918,6 +920,8 @@ function JsMasonryGrid({
 }
 
 export default function ProfileComponent({ profile }: { profile: SampleProfile }) {
+  const router = useRouter();
+
   const [activeTab, setActiveTab] = useState<TabKey>("all");
   const [visibleLimit, setVisibleLimit] = useState(10);
   const [loadedItemIds, setLoadedItemIds] = useState<Set<string>>(() => new Set());
@@ -955,12 +959,12 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
     if (activeTab !== "all") {
       if (url.searchParams.get("tab") !== activeTab) {
         url.searchParams.set("tab", activeTab);
-        window.history.replaceState({}, "", url.toString());
+        router.replace(url.pathname + url.search, { scroll: false });
       }
     } else {
       if (url.searchParams.has("tab")) {
         url.searchParams.delete("tab");
-        window.history.replaceState({}, "", url.toString());
+        router.replace(url.pathname + url.search, { scroll: false });
       }
     }
   }, [activeTab]);
@@ -1320,12 +1324,12 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
       const encodedUrl = btoa(unescape(encodeURIComponent(activeUrl)));
       if (url.searchParams.get("image") !== encodedUrl) {
         url.searchParams.set("image", encodedUrl);
-        window.history.replaceState({}, "", url.toString());
+        router.replace(url.pathname + url.search, { scroll: false });
       }
     } else {
       if (url.searchParams.has("image")) {
         url.searchParams.delete("image");
-        window.history.replaceState({}, "", url.toString());
+        router.replace(url.pathname + url.search, { scroll: false });
       }
     }
   }, [carouselIndex, carouselItems]);
@@ -2229,8 +2233,8 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                   />
                 </div>
                 <div className="-mb-8 h-15 w-15 overflow-hidden rounded-xl shadow-[8px_8px_12px_0px_rgba(0,0,0,0.25)] shrink-0 bg-[#151515]">
-                    <LoadedImage
-                      src={toLandingAssetUrl(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url)}
+                  <LoadedImage
+                    src={toLandingAssetUrl(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url)}
                     alt={displayName}
                     className="w-full h-full object-cover"
                     skeletonClassName="absolute inset-0 bg-[#1a1a1a]"
