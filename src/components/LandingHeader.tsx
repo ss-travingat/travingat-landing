@@ -143,22 +143,19 @@ function LandingHeaderContent() {
             <div className="flex min-[811px]:hidden items-center gap-2">
               <button
                 onClick={() => setMenuOpen((prev) => !prev)}
-                className="relative flex h-9 w-9 items-center justify-center rounded-xl border border-black-600 bg-[#0b0b0b]"
+                className={`relative flex h-[36px] w-[36px] items-center justify-center rounded-full transition-colors ${menuOpen ? 'bg-[#1c1c1c] text-white hover:bg-[#2a2a2a]' : 'text-white'}`}
                 aria-label="Toggle navigation menu"
                 aria-expanded={menuOpen}
               >
-                <span
-                  className={`absolute h-0.5 w-5 rounded-full bg-[#e3e3e3] transition-all duration-300 ${menuOpen ? "translate-y-0 rotate-45" : "-translate-y-1.5"
-                    }`}
-                />
-                <span
-                  className={`absolute h-0.5 w-5 rounded-full bg-[#e3e3e3] transition-all duration-300 ${menuOpen ? "opacity-0" : "opacity-100"
-                    }`}
-                />
-                <span
-                  className={`absolute h-0.5 w-5 rounded-full bg-[#e3e3e3] transition-all duration-300 ${menuOpen ? "translate-y-0 -rotate-45" : "translate-y-1.5"
-                    }`}
-                />
+                {menuOpen ? (
+                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M1 1L13 13M1 13L13 1" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                  </svg>
+                ) : (
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M3 7V5H21V7H3ZM3 19V17H21V19H3ZM3 13V11H21V13H3Z" fill="white" />
+                  </svg>
+                )}
               </button>
             </div>
           </div>
@@ -166,56 +163,32 @@ function LandingHeaderContent() {
       </div>
     </header>
 
-    {/* Mobile Full Screen Menu */}
+      {/* In-flow Expanding Mobile Menu */}
       <div 
         ref={menuRef}
-        className={`fixed inset-0 z-[60] bg-black flex flex-col transition-all duration-300 min-[811px]:hidden ${
-          menuOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+        className={`w-full bg-black transition-all duration-500 ease-in-out min-[811px]:hidden grid ${
+          menuOpen ? "grid-rows-[1fr] opacity-100 pb-10 mb-0" : "grid-rows-[0fr] opacity-0 pb-0"
         }`}
       >
-        <div className={containerClasses}>
-          <div className="h-23 flex items-center justify-between relative">
-            <div className="flex-1 flex items-center justify-start">
-              <Link href="/" onClick={() => setMenuOpen(false)} className="flex items-center">
-                <LoadedImage
-                  src="/icons/travingat-logo.svg?v=newlogo"
-                  alt="Travingat Logo"
-                  className="h-[24px] lg:h-[28px] w-auto"
-                  priority
-                />
-              </Link>
-            </div>
-            <div className="flex-1 flex items-center justify-end">
-              <button
-                onClick={() => setMenuOpen(false)}
-                className="flex h-11 w-11 items-center justify-center rounded-full bg-[#1c1c1c] text-white hover:bg-[#2a2a2a] transition"
-                aria-label="Close menu"
-              >
-                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M1 1L13 13M1 13L13 1" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                </svg>
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <nav className="flex-1 flex flex-col items-center justify-center gap-7 pb-24">
-          <Link href="/" onClick={() => setMenuOpen(false)} className="text-[32px] font-medium tracking-tight text-white hover:text-white/80 transition">Home</Link>
-          <Link href="/newprofiles" onClick={() => setMenuOpen(false)} className="text-[32px] font-medium tracking-tight text-white hover:text-white/80 transition">Profiles</Link>
-          <Link href="/templates" onClick={() => setMenuOpen(false)} className="text-[32px] font-medium tracking-tight text-white hover:text-white/80 transition">Templates</Link>
-          <Link href="/pricing" onClick={() => setMenuOpen(false)} className="text-[32px] font-medium tracking-tight text-white hover:text-white/80 transition">Pricing</Link>
-          <Link href="/blog" onClick={() => setMenuOpen(false)} className="text-[32px] font-medium tracking-tight text-white hover:text-white/80 transition">Blog</Link>
-          
-          <div className="pt-6">
+        <div className="overflow-hidden w-full flex flex-col items-center">
+          <div className="pt-[100px] w-full flex flex-col items-center">
+            <nav className="relative flex flex-col items-center content-center justify-start gap-[24px] w-full z-10 py-[16px] rounded-[12px] overflow-clip">
+            <Link href="/" onClick={() => setMenuOpen(false)} className="text-[32px] font-medium leading-[1.2] text-white hover:text-white/80 transition">Home</Link>
+            <Link href="/newprofiles" onClick={() => setMenuOpen(false)} className="text-[32px] font-medium leading-[1.2] text-white hover:text-white/80 transition">Profiles</Link>
+            <Link href="/templates" onClick={() => setMenuOpen(false)} className="text-[32px] font-medium leading-[1.2] text-white hover:text-white/80 transition">Templates</Link>
+            <Link href="/pricing" onClick={() => setMenuOpen(false)} className="text-[32px] font-medium leading-[1.2] text-white hover:text-white/80 transition">Pricing</Link>
+            <Link href="/blog" onClick={() => setMenuOpen(false)} className="text-[32px] font-medium leading-[1.2] text-white hover:text-white/80 transition">Blog</Link>
+            
             <a
               href="#join"
               onClick={(event) => scrollToSection(event, "join")}
-              className="inline-flex items-center justify-center rounded-[999px] bg-white px-8 py-3.5 text-[18px] font-medium tracking-tight text-black hover:bg-[#ececec] transition"
+              className="mt-[16px] inline-flex items-center justify-center rounded-[999px] bg-white px-[24px] py-[10px] text-[15px] font-medium tracking-tight text-black hover:bg-[#ececec] transition"
             >
               Join now
             </a>
-          </div>
-        </nav>
+          </nav>
+        </div>
+        </div>
       </div>
     </>
   );

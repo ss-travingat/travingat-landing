@@ -112,7 +112,7 @@ export function MobileProfileNavbar({ profile }: { profile?: any }) {
   return (
     <>
       <div id="profile-mobile-navbar" ref={menuRef} className="fixed top-0 left-0 w-full z-50 flex flex-col pointer-events-none">
-      <div className={`flex items-center justify-between px-[28px] pt-[20px] pb-[16px] pointer-events-auto transition-colors duration-300 ${isScrolled ? "bg-black" : "bg-gradient-to-b from-black/50 to-transparent"}`}>
+      <div className={`flex items-center justify-between px-[28px] pt-[20px] pb-[16px] pointer-events-auto transition-colors duration-300 ${(isScrolled || menuOpen) ? "bg-black shadow-[0_2px_0_0_#000]" : "bg-gradient-to-b from-black/50 to-transparent"}`}>
         {isScrolled && profile ? (
           <div className="flex items-center gap-2">
             <img src={toLandingAssetUrl(profile.images.avatar)} alt="Avatar" className="w-8 h-8 rounded-full object-cover" />
@@ -125,13 +125,13 @@ export function MobileProfileNavbar({ profile }: { profile?: any }) {
         )}
         <button
           onClick={() => setMenuOpen((prev) => !prev)}
-          className="relative flex h-9 w-9 items-center justify-center rounded-xl"
+          className={`relative flex h-[36px] w-[36px] items-center justify-center rounded-full transition-colors ${menuOpen ? 'bg-[#1c1c1c] text-white hover:bg-[#2a2a2a]' : ''}`}
           aria-label="Toggle navigation menu"
           aria-expanded={menuOpen}
         >
           {menuOpen ? (
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12L19 6.41Z" fill="white" />
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M1 1L13 13M1 13L13 1" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
             </svg>
           ) : (
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -142,49 +142,32 @@ export function MobileProfileNavbar({ profile }: { profile?: any }) {
       </div>
       </div>
 
-      {/* Mobile Full Screen Menu */}
+      {/* In-flow Expanding Mobile Menu */}
       <div 
         ref={fullScreenMenuRef}
-        className={`fixed inset-0 z-[60] bg-black flex flex-col transition-all duration-300 ${
-          menuOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+        className={`w-full bg-black transition-all duration-500 ease-in-out grid ${
+          menuOpen ? "grid-rows-[1fr] opacity-100 pb-10 mb-0" : "grid-rows-[0fr] opacity-0 pb-0 -mb-[20px]"
         }`}
       >
-        <div className="flex items-center justify-between px-[28px] pt-[20px] pb-[16px]">
-          <div className="flex-1 flex items-center justify-start">
-            <Link href="/" onClick={() => setMenuOpen(false)} className="flex items-center">
-              <img src="/icons/travingat-logo.svg" alt="Travingat Logo" className="h-[22px] w-auto" />
-            </Link>
-          </div>
-          <div className="flex-1 flex items-center justify-end">
-            <button
-              onClick={() => setMenuOpen(false)}
-              className="flex h-11 w-11 items-center justify-center rounded-full bg-[#1c1c1c] text-white hover:bg-[#2a2a2a] transition"
-              aria-label="Close menu"
-            >
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M1 1L13 13M1 13L13 1" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-              </svg>
-            </button>
-          </div>
-        </div>
-
-        <nav className="flex-1 flex flex-col items-center justify-center gap-7 pb-24">
-          <Link href="/" onClick={() => setMenuOpen(false)} className="text-[32px] font-medium tracking-tight text-white hover:text-white/80 transition">Home</Link>
-          <Link href="/newprofiles" onClick={() => setMenuOpen(false)} className="text-[32px] font-medium tracking-tight text-white hover:text-white/80 transition">Profiles</Link>
-          <Link href="/templates" onClick={() => setMenuOpen(false)} className="text-[32px] font-medium tracking-tight text-white hover:text-white/80 transition">Templates</Link>
-          <Link href="/pricing" onClick={() => setMenuOpen(false)} className="text-[32px] font-medium tracking-tight text-white hover:text-white/80 transition">Pricing</Link>
-          <Link href="/blog" onClick={() => setMenuOpen(false)} className="text-[32px] font-medium tracking-tight text-white hover:text-white/80 transition">Blog</Link>
-          
-          <div className="pt-6">
+        <div className="overflow-hidden w-full flex flex-col items-center">
+          <div className="pt-[80px] w-full flex flex-col items-center">
+            <nav className="relative flex flex-col items-center content-center justify-start gap-[24px] w-full z-10 py-[16px] rounded-[12px] overflow-clip">
+            <Link href="/" onClick={() => setMenuOpen(false)} className="text-[32px] font-medium leading-[1.2] text-white hover:text-white/80 transition">Home</Link>
+            <Link href="/newprofiles" onClick={() => setMenuOpen(false)} className="text-[32px] font-medium leading-[1.2] text-white hover:text-white/80 transition">Profiles</Link>
+            <Link href="/templates" onClick={() => setMenuOpen(false)} className="text-[32px] font-medium leading-[1.2] text-white hover:text-white/80 transition">Templates</Link>
+            <Link href="/pricing" onClick={() => setMenuOpen(false)} className="text-[32px] font-medium leading-[1.2] text-white hover:text-white/80 transition">Pricing</Link>
+            <Link href="/blog" onClick={() => setMenuOpen(false)} className="text-[32px] font-medium leading-[1.2] text-white hover:text-white/80 transition">Blog</Link>
+            
             <a
               href="/#join"
               onClick={(e) => scrollToSection(e, "join")}
-              className="inline-flex items-center justify-center rounded-[999px] bg-white px-8 py-3.5 text-[18px] font-medium tracking-tight text-black hover:bg-[#ececec] transition"
+              className="mt-[16px] inline-flex items-center justify-center rounded-[999px] bg-white px-[24px] py-[10px] text-[15px] font-medium tracking-tight text-black hover:bg-[#ececec] transition shrink-0"
             >
               Join now
             </a>
-          </div>
-        </nav>
+          </nav>
+        </div>
+        </div>
       </div>
     </>
   );
