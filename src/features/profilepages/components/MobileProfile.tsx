@@ -67,11 +67,18 @@ export function MobileProfileNavbar({ profile }: { profile?: any }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const fullScreenMenuRef = useRef<HTMLDivElement>(null);
   useNavbarVisibility(menuOpen);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent | TouchEvent) {
-      if (menuOpen && menuRef.current && !menuRef.current.contains(event.target as Node)) {
+      const target = event.target as Node;
+      if (
+        menuOpen &&
+        menuRef.current &&
+        !menuRef.current.contains(target) &&
+        (!fullScreenMenuRef.current || !fullScreenMenuRef.current.contains(target))
+      ) {
         setMenuOpen(false);
       }
     }
@@ -103,7 +110,8 @@ export function MobileProfileNavbar({ profile }: { profile?: any }) {
   };
 
   return (
-    <div id="profile-mobile-navbar" ref={menuRef} className="fixed top-0 left-0 w-full z-50 flex flex-col pointer-events-none">
+    <>
+      <div id="profile-mobile-navbar" ref={menuRef} className="fixed top-0 left-0 w-full z-50 flex flex-col pointer-events-none">
       <div className={`flex items-center justify-between px-[28px] pt-[20px] pb-[16px] pointer-events-auto transition-colors duration-300 ${isScrolled ? "bg-black" : "bg-gradient-to-b from-black/50 to-transparent"}`}>
         {isScrolled && profile ? (
           <div className="flex items-center gap-2">
@@ -132,9 +140,11 @@ export function MobileProfileNavbar({ profile }: { profile?: any }) {
           )}
         </button>
       </div>
+      </div>
 
       {/* Mobile Full Screen Menu */}
       <div 
+        ref={fullScreenMenuRef}
         className={`fixed inset-0 z-[60] bg-black flex flex-col transition-all duration-300 ${
           menuOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
         }`}
@@ -176,7 +186,7 @@ export function MobileProfileNavbar({ profile }: { profile?: any }) {
           </div>
         </nav>
       </div>
-    </div>
+    </>
   );
 }
 
