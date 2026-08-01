@@ -34,10 +34,10 @@ export function useNavbarVisibility(menuOpen = false) {
         updateDOM();
         return;
       }
-      
+
       const currentScrollY = window.scrollY;
       const delta = currentScrollY - lastScrollY.current;
-      
+
       const tabsEl = document.getElementById("profile-mobile-tabs");
       const isTabsLocked = tabsEl ? tabsEl.getBoundingClientRect().top <= (72 - offsetRef.current + 2) : false;
 
@@ -50,7 +50,7 @@ export function useNavbarVisibility(menuOpen = false) {
           offsetRef.current = Math.max(0, offsetRef.current + delta);
         }
       }
-      
+
       updateDOM();
       lastScrollY.current = currentScrollY;
     };
@@ -123,38 +123,37 @@ export function MobileProfileNavbar({ profile }: { profile?: any }) {
   return (
     <>
       <div id="profile-mobile-navbar" ref={menuRef} className="fixed top-0 left-0 w-full z-[100] flex flex-col pointer-events-none">
-      <div className={`flex items-center justify-between px-[28px] pt-[20px] pb-[16px] pointer-events-auto transition-colors duration-300 ${(isScrolled || menuOpen) ? "bg-black shadow-[0_2px_0_0_#000]" : "bg-gradient-to-b from-black/50 to-transparent"}`}>
-        {isScrolled && profile ? (
-          <div className="flex items-center gap-2">
-            <img src={toLandingAssetUrl(profile.images.avatar)} alt="Avatar" className="w-8 h-8 rounded-full object-cover" />
-            <span className="font-semibold text-[16px] text-white tracking-tight">{profile.handle}</span>
-          </div>
-        ) : (
-          <Link href="/" className="flex items-center">
-            <img src="/icons/travingat-logo.svg" alt="Travingat Logo" className="h-[22px] w-auto" />
-          </Link>
-        )}
-        <button
-          onClick={() => setMenuOpen((prev) => !prev)}
-          className={`relative flex h-[36px] w-[36px] flex-col items-center justify-center gap-[4px] rounded-full transition-colors ${menuOpen ? 'bg-[#1c1c1c] text-white hover:bg-[#2a2a2a]' : ''}`}
-          aria-label="Toggle navigation menu"
-          aria-expanded={menuOpen}
-        >
-          <span className={`block h-[2px] w-[18px] origin-center rounded-full bg-white transition-all duration-300 ease-in-out ${menuOpen ? 'translate-y-[6px] rotate-45' : ''}`} />
-          <span className={`block h-[2px] w-[18px] origin-center rounded-full bg-white transition-all duration-300 ease-in-out ${menuOpen ? 'opacity-0' : ''}`} />
-          <span className={`block h-[2px] w-[18px] origin-center rounded-full bg-white transition-all duration-300 ease-in-out ${menuOpen ? '-translate-y-[6px] -rotate-45' : ''}`} />
-        </button>
-      </div>
+        <div className={`flex items-center justify-between px-[28px] pt-[20px] pb-[16px] pointer-events-auto transition-colors duration-300 ${(isScrolled || menuOpen) ? "bg-black shadow-[0_2px_0_0_#000]" : "bg-gradient-to-b from-black/50 to-transparent"}`}>
+          {isScrolled && profile ? (
+            <div className="flex items-center gap-2">
+              <img src={toLandingAssetUrl(profile.images.avatar)} alt="Avatar" className="w-8 h-8 rounded-full object-cover" />
+              <span className="font-semibold text-[16px] text-white tracking-tight">{profile.handle}</span>
+            </div>
+          ) : (
+            <Link href="/" className="flex items-center">
+              <img src="/icons/travingat-logo.svg" alt="Travingat Logo" className="h-[22px] w-auto" />
+            </Link>
+          )}
+          <button
+            onClick={() => setMenuOpen((prev) => !prev)}
+            className={`relative flex h-[36px] w-[36px] flex-col items-center justify-center gap-[4px] rounded-full transition-colors ${menuOpen ? 'bg-[#1c1c1c] text-white hover:bg-[#2a2a2a]' : ''}`}
+            aria-label="Toggle navigation menu"
+            aria-expanded={menuOpen}
+          >
+            <span className={`block h-[2px] w-[18px] origin-center rounded-full bg-white transition-all duration-300 ease-in-out ${menuOpen ? 'translate-y-[6px] rotate-45' : ''}`} />
+            <span className={`block h-[2px] w-[18px] origin-center rounded-full bg-white transition-all duration-300 ease-in-out ${menuOpen ? 'opacity-0' : ''}`} />
+            <span className={`block h-[2px] w-[18px] origin-center rounded-full bg-white transition-all duration-300 ease-in-out ${menuOpen ? '-translate-y-[6px] -rotate-45' : ''}`} />
+          </button>
+        </div>
       </div>
 
       {/* Fixed Full-Screen Mobile Overlay Menu */}
-      <div 
+      <div
         ref={fullScreenMenuRef}
-        className={`fixed inset-0 z-[90] min-[1200px]:hidden bg-black/95 backdrop-blur-xl transition-all duration-300 ease-in-out flex flex-col justify-center items-center px-6 pt-[90px] pb-10 ${
-          menuOpen
+        className={`fixed inset-0 z-[90] min-[1200px]:hidden bg-black/95 backdrop-blur-xl transition-all duration-300 ease-in-out flex flex-col justify-center items-center px-6 pt-[90px] pb-10 ${menuOpen
             ? "opacity-100 pointer-events-auto translate-y-0"
             : "opacity-0 pointer-events-none -translate-y-4"
-        }`}
+          }`}
       >
         <div className="w-full max-w-xs flex flex-col items-center gap-[24px]">
           <nav className="flex flex-col items-center justify-center gap-[24px] w-full">
@@ -163,7 +162,7 @@ export function MobileProfileNavbar({ profile }: { profile?: any }) {
             <Link href="/templates" onClick={() => setMenuOpen(false)} className="text-[28px] font-medium leading-[1.2] text-white hover:text-white/80 transition">Templates</Link>
             <Link href="/pricing" onClick={() => setMenuOpen(false)} className="text-[28px] font-medium leading-[1.2] text-white hover:text-white/80 transition">Pricing</Link>
             <Link href="/blog" onClick={() => setMenuOpen(false)} className="text-[28px] font-medium leading-[1.2] text-white hover:text-white/80 transition">Blog</Link>
-            
+
             <a
               href="/#join"
               onClick={(e) => scrollToSection(e, "join")}
@@ -217,7 +216,7 @@ export function MobileHero({
               priority
             />
           </div>
-          <div className="relative z-10 mx-auto h-20 w-20 rounded-2xl border-4 border-black overflow-hidden bg-[#151515]">
+          <div className="relative z-10 mx-auto h-[88px] w-[88px] rounded-2xl border-4 border-black overflow-hidden bg-[#151515]">
             <LoadedImage
               src={toLandingAssetUrl(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url)}
               alt="Profile avatar"
@@ -229,7 +228,7 @@ export function MobileHero({
           </div>
         </div>
 
-        <div className="flex flex-col items-center gap-[8px] w-full min-[810px]:max-w-[400px] min-[810px]:mx-auto">
+        <div className="flex flex-col items-center gap-[8px] mt-[4px] w-full min-[810px]:max-w-[400px] min-[810px]:mx-auto">
           <div className="flex items-center justify-center gap-1.5 text-[#696969] text-[14px] leading-[20px] tracking-[-0.5px] font-[family-name:var(--font-inter-google)] font-normal">
             {profileFlagSrc ? (
               <img
