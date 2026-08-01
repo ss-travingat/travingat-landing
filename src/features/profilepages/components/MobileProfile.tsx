@@ -25,7 +25,7 @@ export function useNavbarVisibility(menuOpen = false) {
       const navbarEl = document.getElementById("profile-mobile-navbar");
       const tabsEl = document.getElementById("profile-mobile-tabs");
       if (navbarEl) navbarEl.style.transform = `translateY(-${offsetRef.current}px)`;
-      if (tabsEl) tabsEl.style.top = `${72 - offsetRef.current}px`;
+      if (tabsEl) tabsEl.style.transform = `translateY(-${offsetRef.current}px)`;
     };
 
     const handleScroll = () => {
@@ -98,6 +98,17 @@ export function MobileProfileNavbar({ profile }: { profile?: any }) {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  useEffect(() => {
+    if (menuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [menuOpen]);
+
   const scrollToSection = (event: React.MouseEvent<HTMLAnchorElement>, sectionId: string) => {
     event.preventDefault();
     const section = document.getElementById(sectionId);
@@ -111,7 +122,7 @@ export function MobileProfileNavbar({ profile }: { profile?: any }) {
 
   return (
     <>
-      <div id="profile-mobile-navbar" ref={menuRef} className="fixed top-0 left-0 w-full z-50 flex flex-col pointer-events-none">
+      <div id="profile-mobile-navbar" ref={menuRef} className="fixed top-0 left-0 w-full z-[100] flex flex-col pointer-events-none">
       <div className={`flex items-center justify-between px-[28px] pt-[20px] pb-[16px] pointer-events-auto transition-colors duration-300 ${(isScrolled || menuOpen) ? "bg-black shadow-[0_2px_0_0_#000]" : "bg-gradient-to-b from-black/50 to-transparent"}`}>
         {isScrolled && profile ? (
           <div className="flex items-center gap-2">
@@ -125,48 +136,42 @@ export function MobileProfileNavbar({ profile }: { profile?: any }) {
         )}
         <button
           onClick={() => setMenuOpen((prev) => !prev)}
-          className={`relative flex h-[36px] w-[36px] items-center justify-center rounded-full transition-colors ${menuOpen ? 'bg-[#1c1c1c] text-white hover:bg-[#2a2a2a]' : ''}`}
+          className={`relative flex h-[36px] w-[36px] flex-col items-center justify-center gap-[4px] rounded-full transition-colors ${menuOpen ? 'bg-[#1c1c1c] text-white hover:bg-[#2a2a2a]' : ''}`}
           aria-label="Toggle navigation menu"
           aria-expanded={menuOpen}
         >
-          {menuOpen ? (
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M1 1L13 13M1 13L13 1" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-            </svg>
-          ) : (
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M3 7V5H21V7H3ZM3 19V17H21V19H3ZM3 13V11H21V13H3Z" fill="white" />
-            </svg>
-          )}
+          <span className={`block h-[2px] w-[18px] origin-center rounded-full bg-white transition-all duration-300 ease-in-out ${menuOpen ? 'translate-y-[6px] rotate-45' : ''}`} />
+          <span className={`block h-[2px] w-[18px] origin-center rounded-full bg-white transition-all duration-300 ease-in-out ${menuOpen ? 'opacity-0' : ''}`} />
+          <span className={`block h-[2px] w-[18px] origin-center rounded-full bg-white transition-all duration-300 ease-in-out ${menuOpen ? '-translate-y-[6px] -rotate-45' : ''}`} />
         </button>
       </div>
       </div>
 
-      {/* In-flow Expanding Mobile Menu */}
+      {/* Fixed Full-Screen Mobile Overlay Menu */}
       <div 
         ref={fullScreenMenuRef}
-        className={`w-full bg-black transition-all duration-500 ease-in-out grid ${
-          menuOpen ? "grid-rows-[1fr] opacity-100 pb-10 mb-0" : "grid-rows-[0fr] opacity-0 pb-0 -mb-[20px]"
+        className={`fixed inset-0 z-[90] min-[1200px]:hidden bg-black/95 backdrop-blur-xl transition-all duration-300 ease-in-out flex flex-col justify-center items-center px-6 pt-[90px] pb-10 ${
+          menuOpen
+            ? "opacity-100 pointer-events-auto translate-y-0"
+            : "opacity-0 pointer-events-none -translate-y-4"
         }`}
       >
-        <div className="overflow-hidden w-full flex flex-col items-center">
-          <div className="pt-[80px] w-full flex flex-col items-center">
-            <nav className="relative flex flex-col items-center content-center justify-start gap-[24px] w-full z-10 py-[16px] rounded-[12px] overflow-clip">
-            <Link href="/" onClick={() => setMenuOpen(false)} className="text-[32px] font-medium leading-[1.2] text-white hover:text-white/80 transition">Home</Link>
-            <Link href="/newprofiles" onClick={() => setMenuOpen(false)} className="text-[32px] font-medium leading-[1.2] text-white hover:text-white/80 transition">Profiles</Link>
-            <Link href="/templates" onClick={() => setMenuOpen(false)} className="text-[32px] font-medium leading-[1.2] text-white hover:text-white/80 transition">Templates</Link>
-            <Link href="/pricing" onClick={() => setMenuOpen(false)} className="text-[32px] font-medium leading-[1.2] text-white hover:text-white/80 transition">Pricing</Link>
-            <Link href="/blog" onClick={() => setMenuOpen(false)} className="text-[32px] font-medium leading-[1.2] text-white hover:text-white/80 transition">Blog</Link>
+        <div className="w-full max-w-xs flex flex-col items-center gap-[24px]">
+          <nav className="flex flex-col items-center justify-center gap-[24px] w-full">
+            <Link href="/" onClick={() => setMenuOpen(false)} className="text-[28px] font-medium leading-[1.2] text-white hover:text-white/80 transition">Home</Link>
+            <Link href="/newprofiles" onClick={() => setMenuOpen(false)} className="text-[28px] font-medium leading-[1.2] text-white hover:text-white/80 transition">Profiles</Link>
+            <Link href="/templates" onClick={() => setMenuOpen(false)} className="text-[28px] font-medium leading-[1.2] text-white hover:text-white/80 transition">Templates</Link>
+            <Link href="/pricing" onClick={() => setMenuOpen(false)} className="text-[28px] font-medium leading-[1.2] text-white hover:text-white/80 transition">Pricing</Link>
+            <Link href="/blog" onClick={() => setMenuOpen(false)} className="text-[28px] font-medium leading-[1.2] text-white hover:text-white/80 transition">Blog</Link>
             
             <a
               href="/#join"
               onClick={(e) => scrollToSection(e, "join")}
-              className="mt-[16px] inline-flex items-center justify-center rounded-[999px] bg-white px-[24px] py-[10px] text-[15px] font-medium tracking-tight text-black hover:bg-[#ececec] transition shrink-0"
+              className="mt-[12px] w-full text-center rounded-[999px] bg-white px-[28px] py-[12px] text-[15px] font-medium tracking-tight text-black hover:bg-[#ececec] transition shadow-lg shrink-0"
             >
               Join now
             </a>
           </nav>
-        </div>
         </div>
       </div>
     </>
@@ -224,8 +229,8 @@ export function MobileHero({
           </div>
         </div>
 
-        <div className="flex flex-col items-center gap-[4px] w-full min-[810px]:max-w-[400px] min-[810px]:mx-auto">
-          <div className="flex items-center justify-center gap-1.5 text-[#696969] text-[14px] leading-[20px] tracking-[-0.5px]">
+        <div className="flex flex-col items-center gap-[8px] w-full min-[810px]:max-w-[400px] min-[810px]:mx-auto">
+          <div className="flex items-center justify-center gap-1.5 text-[#696969] text-[14px] leading-[20px] tracking-[-0.5px] font-[family-name:var(--font-inter-google)] font-normal">
             {profileFlagSrc ? (
               <img
                 src={profileFlagSrc}
@@ -240,7 +245,7 @@ export function MobileHero({
             <span>{basedIn}</span>
           </div>
           <h1 className="text-white text-[20px] leading-[24px] tracking-[-0.41px] font-semibold text-center w-full">{displayName}</h1>
-          <p className="text-[#a8a8a8] text-[14px] leading-[20px] tracking-[-0.5px] text-center w-full">{handle}</p>
+          <p className="text-[#a8a8a8] text-[14px] leading-[20px] tracking-[-0.5px] text-center w-full font-[family-name:var(--font-inter-google)] font-normal">{handle}</p>
         </div>
 
         <div className="flex flex-wrap items-start justify-center gap-[4px] px-[6px] w-full min-[810px]:max-w-[400px] min-[810px]:mx-auto">

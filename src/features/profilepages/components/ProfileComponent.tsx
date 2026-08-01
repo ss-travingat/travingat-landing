@@ -1586,7 +1586,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
         }
       >
 
-        <main className="w-full max-w-[1728px] pb-[4px] md:pb-20 flex flex-col gap-[12px] min-[1200px]:gap-10">
+        <main className="w-full max-w-[1728px] pb-[4px] md:pb-20 flex flex-col gap-[12px] min-[1200px]:gap-0">
           <MobileHero
             profile={profile}
             displayName={displayName}
@@ -1757,7 +1757,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
           </section>
 
           {/* Desktop: pill tabs with text */}
-          <div id="profile-desktop-tabs" className="hidden min-[1200px]:flex items-center justify-center gap-2 flex-wrap">
+          <div id="profile-desktop-tabs" className="hidden min-[1200px]:flex items-center justify-center gap-2 flex-wrap min-[1200px]:mt-[64px] min-[1440px]:mt-[80px]">
             <button
               onClick={() => handleTabChange("all")}
               className={`rounded-full px-6 py-2 text-[16px] leading-6 tracking-[-0.096px] transition ${activeTab === "all"
@@ -1796,7 +1796,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
             </button>
           </div>
 
-          <div className="flex flex-col gap-[12px] md:gap-0 w-full">
+          <div className="flex flex-col gap-[12px] md:gap-0 w-full min-[1200px]:mt-[32px] min-[1440px]:mt-[48px]">
             {/* Mobile/iPad: icon-only tabs with sliding underline indicator */}
             <MobileTabs activeTab={activeTab} setActiveTab={handleTabChange} swipeOffset={swipeOffset} />
 

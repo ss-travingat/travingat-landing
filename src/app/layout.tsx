@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
+import { Inter } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
 import LandingLayout from "@landing/components/layout/LandingLayout";
@@ -82,6 +83,12 @@ const openSauceTwo = localFont({
   display: "swap",
 });
 
+const interGoogle = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter-google",
+  display: "swap",
+});
+
 export const metadata: Metadata = {
   title: "Travingat - Travel Portfolio for Explorers",
   description: "Build your travel portfolio and organize every journey in one place.",
@@ -113,7 +120,7 @@ export default function RootLayout({
           {`document.querySelector('link[href*="Material+Symbols"][media="print"]').media='all'`}
         </Script>
       </head>
-      <body className={`${inter.variable} ${interDisplay.variable} ${logoFont.variable} ${openSauceTwo.variable}`}>
+      <body className={`${inter.variable} ${interDisplay.variable} ${logoFont.variable} ${openSauceTwo.variable} ${interGoogle.variable}`}>
         <LandingLayout>{children}</LandingLayout>
       </body>
     </html>
