@@ -216,19 +216,19 @@ export function MobileHero({
               priority
             />
           </div>
-          <div className="relative z-10 mx-auto h-[88px] w-[88px] rounded-2xl border-4 border-black overflow-hidden bg-[#151515]">
+          <div className="relative z-10 mx-auto w-[80px] h-[80px] rounded-2xl ring-4 ring-black bg-[#151515]">
             <LoadedImage
               src={toLandingAssetUrl(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url)}
               alt="Profile avatar"
-              className="w-full h-full object-cover"
-              skeletonClassName="absolute inset-0 bg-[#1a1a1a]"
-              containerClassName="w-full h-full"
+              className="w-full h-full object-cover rounded-2xl"
+              skeletonClassName="absolute inset-0 bg-[#1a1a1a] rounded-2xl"
+              containerClassName="w-full h-full rounded-2xl"
               priority
             />
           </div>
         </div>
 
-        <div className="flex flex-col items-center gap-[8px] mt-[4px] w-full min-[810px]:max-w-[400px] min-[810px]:mx-auto">
+        <div className="flex flex-col items-center gap-[8px] w-full min-[810px]:max-w-[400px] min-[810px]:mx-auto">
           <div className="flex items-center justify-center gap-1.5 text-[#696969] text-[14px] leading-[20px] tracking-[-0.5px] font-[family-name:var(--font-inter-google)] font-normal">
             {profileFlagSrc ? (
               <img
