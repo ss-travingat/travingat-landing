@@ -88,9 +88,9 @@ export default function LandingLayout({
     <div className="min-h-screen w-full bg-black text-white overflow-x-clip">
       <PageLoader visible={loading} />
       <Suspense fallback={null}>
-        {hideNavbar ? null : <LandingHeader />}
+        {hideNavbar ? null : <LandingHeader className={isProfileRoute ? "max-[1199px]:hidden" : ""} />}
       </Suspense>
-      {hideNavbar ? null : <div className={`h-[92px] lg:h-[124px] ${isProfileRoute ? "max-[810px]:hidden" : ""}`} aria-hidden="true" />}
+      {hideNavbar ? null : <div className={`h-[92px] lg:h-[124px] ${isProfileRoute ? "max-[1199px]:hidden" : ""}`} aria-hidden="true" />}
       <div className="animate-page-in">
         {children}
       </div>

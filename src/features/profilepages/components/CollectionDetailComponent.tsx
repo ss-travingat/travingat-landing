@@ -10,6 +10,7 @@ import { ContextMenu } from "./ProfileComponent";
 import { MediaLightbox } from "./MediaLightbox";
 import { MoreOptionsButton } from "@/components/ui/MoreOptionsButton";
 import LoadedImage from "@/components/ui/LoadedImage";
+import { useMobileComingSoon } from "@/components/ui/MobileComingSoonToast";
 
 /* eslint-disable @next/next/no-img-element */
 
@@ -48,6 +49,8 @@ function CollectionLightbox({
   const displayIndex = activeIndex + 1;
   const avatarSrc = toLandingAssetUrl(profileAvatar);
 
+  const { showComingSoonToast } = useMobileComingSoon();
+
   return (
     <MediaLightbox
       items={items.map((url) => ({
@@ -62,57 +65,60 @@ function CollectionLightbox({
       sidebarContent={
         <aside
           className="flex w-[360px] shrink-0 flex-col gap-8 overflow-y-auto bg-[#111111] p-8 text-white"
-        onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
-      >
-        <div className="flex items-start justify-between">
-          <div className="h-[72px] w-[72px] overflow-hidden rounded-2xl">
-            <img src={avatarSrc} alt={profileName} className="h-full w-full object-cover" />
+          onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
+        >
+          <div className="flex items-start justify-between">
+            <div className="h-[72px] w-[72px] overflow-hidden rounded-2xl">
+              <img src={avatarSrc} alt={profileName} className="h-full w-full object-cover" />
+            </div>
+            <button
+              type="button"
+              onClick={onClose}
+              className="flex h-8 w-8 items-center justify-center text-[#666] transition hover:text-white"
+              aria-label="Close"
+            >
+              <span className="material-symbols-rounded text-[24px]">close</span>
+            </button>
           </div>
-          <button
-            type="button"
-            onClick={onClose}
-            className="flex h-8 w-8 items-center justify-center text-[#666] transition hover:text-white"
-            aria-label="Close"
-          >
-            <span className="material-symbols-rounded text-[24px]">close</span>
-          </button>
-        </div>
 
-        <div className="flex flex-col gap-3">
-          <div className="flex items-center gap-2 text-[13px] text-[#888]">
-            <span>{profileName}</span>
+          <div className="flex flex-col gap-3">
+            <div className="flex items-center gap-2 text-[13px] text-[#888]">
+              <span>{profileName}</span>
+            </div>
+            <p className="text-[20px] font-semibold tracking-[-0.5px] text-white">{profileHandle}</p>
           </div>
-          <p className="text-[20px] font-semibold tracking-[-0.5px] text-white">{profileHandle}</p>
-        </div>
 
-        <div className="flex items-center gap-2">
-          <button
-            type="button"
-            className="h-[38px] flex-1 rounded-full bg-white text-[14px] font-medium text-black transition hover:bg-[#e8e8e8]"
-          >
-            Follow
-          </button>
-          <button
-            type="button"
-            className="h-[38px] flex-1 rounded-full border border-[#2e2e2e] bg-[#1a1a1a] text-[14px] font-medium text-white transition hover:bg-[#222]"
-          >
-            Connect
-          </button>
-          <button
-            type="button"
-            className="flex h-[38px] w-[38px] shrink-0 items-center justify-center rounded-full border border-[#2e2e2e] bg-[#1a1a1a] text-white transition hover:bg-[#222]"
-            aria-label="More options"
-          >
-            <span className="material-symbols-rounded text-[20px]">more_horiz</span>
-          </button>
-        </div>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => showComingSoonToast("featureLaunch")}
+              className="h-[38px] flex-1 rounded-full bg-white text-[14px] font-medium text-black transition hover:bg-[#e8e8e8]"
+            >
+              Follow
+            </button>
+            <button
+              type="button"
+              onClick={() => showComingSoonToast("featureLaunch")}
+              className="h-[38px] flex-1 rounded-full border border-[#2e2e2e] bg-[#1a1a1a] text-[14px] font-medium text-white transition hover:bg-[#222]"
+            >
+              Connect
+            </button>
+            <button
+              type="button"
+              onClick={() => showComingSoonToast("featureLaunch")}
+              className="flex h-[38px] w-[38px] shrink-0 items-center justify-center rounded-full border border-[#2e2e2e] bg-[#1a1a1a] text-white transition hover:bg-[#222]"
+              aria-label="More options"
+            >
+              <span className="material-symbols-rounded text-[20px]">more_horiz</span>
+            </button>
+          </div>
 
-        <div className="flex flex-col gap-4">
-          <p className="text-[22px] font-semibold tracking-[-0.5px] text-[#ededed]">
-            {collectionTitle}
-          </p>
+          <div className="flex flex-col gap-4">
+            <p className="text-[22px] font-semibold tracking-[-0.5px] text-[#ededed]">
+              {collectionTitle}
+            </p>
           {description ? (
-            <p className="text-[15px] leading-[1.6] tracking-[-0.3px] text-[#a0a0a0] line-clamp-6">{description}</p>
+            <p className="text-[15px] leading-[1.6] tracking-[-0.3px] text-[#a0a0a0]">{description}</p>
           ) : null}
         </div>
       </aside>
@@ -133,6 +139,7 @@ export default function CollectionDetailComponent({
   collectionCountryCodes?: string[];
 }) {
   const router = useRouter();
+  const { showComingSoonToast } = useMobileComingSoon();
   const imageUrls = images.map((entry) => (typeof entry === "string" ? entry : entry.url));
   const [activeTab, setActiveTab] = useState<MediaTab>("all");
   const [showMenu, setShowMenu] = useState(false);
@@ -363,7 +370,15 @@ export default function CollectionDetailComponent({
                   >
                     <div
                       className="relative rounded-2xl overflow-hidden bg-[#151515] cursor-pointer"
-                      onClick={() => setLightboxIndex(globalIndex)}
+                      onClick={(e) => {
+                        if (window.innerWidth < 811) {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          showComingSoonToast();
+                        } else {
+                          setLightboxIndex(globalIndex);
+                        }
+                      }}
                     >
                       {isVideo ? (
                         <>

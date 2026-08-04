@@ -4,6 +4,7 @@ import { Inter } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
 import LandingLayout from "@landing/components/layout/LandingLayout";
+import { MobileComingSoonProvider } from "@/components/ui/MobileComingSoonToast";
 
 const inter = localFont({
   src: [
@@ -133,7 +134,9 @@ export default function RootLayout({
         </Script>
       </head>
       <body className={`${inter.variable} ${interDisplay.variable} ${logoFont.variable} ${openSauceTwo.variable} ${interGoogle.variable}`}>
-        <LandingLayout>{children}</LandingLayout>
+        <MobileComingSoonProvider>
+          <LandingLayout>{children}</LandingLayout>
+        </MobileComingSoonProvider>
       </body>
     </html>
   );

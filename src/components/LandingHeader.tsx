@@ -62,8 +62,18 @@ export default function LandingHeader({
     const [pathname, setPathname] = useState("")
     const [isDesktopActiveEnabled, setIsDesktopActiveEnabled] = useState(false)
     const [hidden, setHidden] = useState(false)
+    const [isScrolled, setIsScrolled] = useState(false)
     const searchParams = useSearchParams()
     const isFullScreen = searchParams ? searchParams.has("image") : false
+
+    useEffect(() => {
+        const handleForceHidden = () => {
+            setHidden(true)
+            document.body.classList.add("header-hidden")
+        }
+        window.addEventListener('forceHeaderHidden', handleForceHidden)
+        return () => window.removeEventListener('forceHeaderHidden', handleForceHidden)
+    }, [])
 
     useEffect(() => {
         if (typeof window === "undefined") return
@@ -78,11 +88,24 @@ export default function LandingHeader({
 
         let lastScrollY = window.scrollY
         const handleScroll = () => {
+            if ((window as any).__isProgrammaticScroll) {
+                lastScrollY = window.scrollY
+                return
+            }
             const currentScrollY = window.scrollY
+            
+            if (currentScrollY > 10) {
+                setIsScrolled(true)
+            } else {
+                setIsScrolled(false)
+            }
+
             if (currentScrollY > lastScrollY && currentScrollY > 100) {
                 setHidden(true)
+                document.body.classList.add("header-hidden")
             } else if (currentScrollY < lastScrollY) {
                 setHidden(false)
+                document.body.classList.remove("header-hidden")
             }
             lastScrollY = currentScrollY
         }
@@ -120,7 +143,7 @@ export default function LandingHeader({
     )
 
     return (
-        <header className={`trv-header ${className} ${hidden && !menuOpen ? "is-hidden" : ""} ${isFullScreen ? "is-fullscreen" : ""}`.trim()}>
+        <header className={`trv-header ${className} ${hidden && !menuOpen ? "is-hidden" : ""} ${isScrolled ? "is-scrolled" : ""} ${isFullScreen ? "is-fullscreen" : ""}`.trim()}>
             <div className={`trv-shell ${menuOpen ? "is-open" : ""}`}>
                 <div className="trv-top-row">
                     <a className="trv-logo-link" href={logoHref} aria-label="Go to homepage">
@@ -207,11 +230,14 @@ export default function LandingHeader({
                     color: #ffffff;
                     background: linear-gradient(180deg, rgb(0, 0, 0) 0%, rgba(0, 0, 0, 0) 100%);
                     z-index: 100;
-                    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.3s ease;
                 }
 
                 .trv-header.is-hidden {
                     transform: translateY(-100%);
+                }
+                .trv-header.is-scrolled {
+                    background: rgb(0, 0, 0);
                 }
                 .trv-header.is-fullscreen {
                     display: none;
@@ -219,7 +245,7 @@ export default function LandingHeader({
 
                 .trv-shell {
                     width: 100%;
-                    max-width: 390px;
+                    max-width: none;
                     margin: 0 auto;
                     box-sizing: border-box;
                     padding: 16px 24px 20px 24px;
@@ -239,7 +265,7 @@ export default function LandingHeader({
                     align-items: center;
                     justify-content: space-between;
                     width: 100%;
-                    max-width: 342px;
+                    max-width: none;
                     gap: 12px;
                 }
 
@@ -336,7 +362,7 @@ export default function LandingHeader({
                     width: 100%;
                     display: flex;
                     flex-direction: column;
-                    align-items: flex-start;
+                    align-items: center;
                     gap: 24px;
                     padding: 16px 0;
                     box-sizing: border-box;
@@ -351,7 +377,7 @@ export default function LandingHeader({
                     font-weight: 500;
                     line-height: 1.2em;
                     letter-spacing: 0;
-                    text-align: left;
+                    text-align: center;
                 }
 
                 .trv-cta-mobile {
@@ -384,6 +410,18 @@ export default function LandingHeader({
                 }
 
                 @media (min-width: 810px) {
+                    .trv-shell {
+                        max-width: none;
+                        width: 100%;
+                        padding: 24px 48px;
+                    }
+                    .trv-top-row {
+                        max-width: none;
+                        width: 100%;
+                    }
+                }
+
+                @media (min-width: 1200px) {
                     .trv-shell {
                         max-width: none;
                         width: 100%;
@@ -442,16 +480,17 @@ export default function LandingHeader({
                     .trv-nav-pill {
                         display: inline-flex;
                         align-items: center;
-                        justify-content: space-between;
+                        justify-content: center;
                         gap: 2px;
-                        width: 475.59px !important;
-                        height: 49.2px !important;
+                        width: auto !important;
+                        height: auto !important;
+                        min-height: 49.2px;
                         box-sizing: border-box;
                         margin: 0;
                         padding: 3px;
                         list-style: none;
                         border-radius: 999px;
-                        border: 1px solid rgba(161, 161, 161, 0.1) !important;
+                        border: none !important;
                         background: linear-gradient(180deg, rgba(46, 46, 46, 0.8) 0%, rgb(23, 23, 23) 100%) !important;
                         backdrop-filter: blur(12px);
                         -webkit-backdrop-filter: blur(12px);
@@ -475,7 +514,7 @@ export default function LandingHeader({
                         border-radius: 999px;
                         border: none !important;
                         color: #ffffff !important;
-                        padding: 0px 18px;
+                        padding: 10px 20px 12px 20px;
                         font-family: Inter, sans-serif !important;
                         font-size: 16px !important;
                         font-weight: 500 !important;

@@ -91,7 +91,9 @@ export function WaitlistPopup({
           className="absolute right-5 top-5 flex h-10 w-10 items-center justify-center rounded-full border border-[#2a2a2a] text-[#b8b8b8] transition hover:text-white"
           aria-label="Close"
         >
-          <span className="material-symbols-rounded text-[20px]">close</span>
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M5.33333 15.8333L4.16667 14.6667L8.83333 10L4.16667 5.33333L5.33333 4.16667L10 8.83333L14.6667 4.16667L15.8333 5.33333L11.1667 10L15.8333 14.6667L14.6667 15.8333L10 11.1667L5.33333 15.8333Z" fill="currentColor"/>
+          </svg>
         </button>
 
         <div className="relative z-10 mx-auto flex max-w-[1060px] flex-col items-center text-center">

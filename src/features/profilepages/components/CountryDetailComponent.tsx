@@ -11,6 +11,7 @@ import { MediaLightbox } from "./MediaLightbox";
 import { MoreOptionsButton } from "@/components/ui/MoreOptionsButton";
 import { WaitlistPopup } from "@/components/ui/WaitlistPopup";
 import LoadedImage from "@/components/ui/LoadedImage";
+import { useMobileComingSoon } from "@/components/ui/MobileComingSoonToast";
 
 /* eslint-disable @next/next/no-img-element */
 
@@ -85,6 +86,7 @@ function PhotoLightbox({
   description?: string;
   quote?: string;
 }) {
+  const { showComingSoonToast } = useMobileComingSoon();
   const totalCount = items.length;
   const displayIndex = activeIndex + 1;
   const avatarSrc = toLandingAssetUrl(profileAvatar);
@@ -137,18 +139,21 @@ function PhotoLightbox({
           <div className="flex items-center gap-2">
             <button
               type="button"
+              onClick={() => showComingSoonToast("featureLaunch")}
               className="h-[38px] flex-1 rounded-full bg-white text-[14px] font-medium text-black transition hover:bg-[#e8e8e8]"
             >
               Follow
             </button>
             <button
               type="button"
+              onClick={() => showComingSoonToast("featureLaunch")}
               className="h-[38px] flex-1 rounded-full border border-[#2e2e2e] bg-[#1a1a1a] text-[14px] font-medium text-white transition hover:bg-[#222]"
             >
               Connect
             </button>
             <button
               type="button"
+              onClick={() => showComingSoonToast("featureLaunch")}
               className="flex h-[38px] w-[38px] shrink-0 items-center justify-center rounded-full border border-[#2e2e2e] bg-[#1a1a1a] text-white transition hover:bg-[#222]"
               aria-label="More options"
             >
@@ -167,7 +172,7 @@ function PhotoLightbox({
               </p>
             </div>
             {description ? (
-              <p className="text-[15px] leading-[1.6] tracking-[-0.3px] text-[#a0a0a0] line-clamp-6">{description}</p>
+              <p className="text-[15px] leading-[1.6] tracking-[-0.3px] text-[#a0a0a0]">{description}</p>
             ) : null}
           </div>
 
@@ -195,6 +200,7 @@ export default function CountryDetailComponent({
   countryCode: string;
   images: Array<string | { url: string; width?: number; height?: number }>;
 }) {
+  const { showComingSoonToast } = useMobileComingSoon();
   const router = useRouter();
   const imageUrls = images.map((entry) => (typeof entry === "string" ? entry : entry.url));
   const countryName = COUNTRY_LIST_LOOKUP[countryCode] || countryCode;
@@ -461,7 +467,15 @@ export default function CountryDetailComponent({
                           <div key={globalIndex} className="group relative">
                             <div
                               className="relative rounded-2xl overflow-hidden bg-[#151515] cursor-pointer"
-                              onClick={() => setLightboxIndex(globalIndex)}
+                              onClick={(e) => {
+                                if (window.innerWidth < 811) {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  showComingSoonToast();
+                                } else {
+                                  setLightboxIndex(globalIndex);
+                                }
+                              }}
                             >
                               {isVideo ? (
                                 <>
@@ -509,7 +523,12 @@ export default function CountryDetailComponent({
                                   <button
                                     type="button"
                                     role="menuitem"
-                                    onClick={(event) => { event.preventDefault(); event.stopPropagation(); setOpenContextMenuId(null); setIsWaitlistOpen(true); }}
+                                    onClick={(event) => {
+                                      event.preventDefault();
+                                      event.stopPropagation();
+                                      setOpenContextMenuId(null);
+                                      showComingSoonToast("featureLaunch");
+                                    }}
                                     className="flex w-full items-center gap-3 text-[15px] font-medium tracking-[-0.3px] text-white hover:text-[#d4d4d4] transition-colors"
                                   >
                                     <span className="material-symbols-rounded text-[22px]">favorite_border</span>
@@ -544,7 +563,15 @@ export default function CountryDetailComponent({
                     >
                       <div
                         className="relative rounded-2xl overflow-hidden bg-[#151515] cursor-pointer"
-                        onClick={() => setLightboxIndex(globalIndex)}
+                        onClick={(e) => {
+                          if (window.innerWidth < 811) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            showComingSoonToast();
+                          } else {
+                            setLightboxIndex(globalIndex);
+                          }
+                        }}
                       >
                         {isVideo ? (
                           <>
@@ -592,7 +619,12 @@ export default function CountryDetailComponent({
                             <button
                               type="button"
                               role="menuitem"
-                              onClick={(event) => { event.preventDefault(); event.stopPropagation(); setOpenContextMenuId(null); setIsWaitlistOpen(true); }}
+                              onClick={(event) => {
+                                event.preventDefault();
+                                event.stopPropagation();
+                                setOpenContextMenuId(null);
+                                showComingSoonToast("featureLaunch");
+                              }}
                               className="flex w-full items-center gap-3 text-[15px] font-medium tracking-[-0.3px] text-white hover:text-[#d4d4d4] transition-colors"
                             >
                               <span className="material-symbols-rounded text-[22px]">favorite_border</span>

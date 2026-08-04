@@ -4,6 +4,7 @@ import Link from "next/link";
 import { toLandingAssetUrl } from "@/lib/landing-assets";
 import { type SampleProfile } from "../data/profile-data";
 import LoadedImage from "@/components/ui/LoadedImage";
+import { useMobileComingSoon } from "@/components/ui/MobileComingSoonToast";
 
 // Shared Types
 type TabKey = "all" | "countries" | "collections" | "about";
@@ -201,6 +202,7 @@ export function MobileHero({
   headerFlagCodes,
   flagOverflowCount,
 }: MobileHeroProps) {
+  const { showComingSoonToast } = useMobileComingSoon();
   return (
     <section id="profile-mobile-hero" className="min-[1200px]:hidden space-y-[12px] flex flex-col items-center w-full">
       <div className="flex flex-col items-center gap-[20px] rounded-[24px] w-full relative">
@@ -298,11 +300,13 @@ export function MobileHero({
         {/* Buttons under Stats Card */}
         <div className="flex gap-[8px] items-center w-full min-[810px]:max-w-[400px] min-[810px]:mx-auto mt-[4px]">
           <button
+            onClick={() => showComingSoonToast("featureLaunch")}
             className="flex-1 rounded-full bg-white text-black px-[18px] py-[10px] text-[16px] font-medium leading-[24px] tracking-[-0.096px]"
           >
             Follow
           </button>
           <button
+            onClick={() => showComingSoonToast("featureLaunch")}
             className="h-[44px] w-[43px] shrink-0 rounded-full border border-[#353535] bg-[#1a1a1a] grid place-items-center text-white"
             aria-label="More options"
           >
@@ -314,6 +318,7 @@ export function MobileHero({
             </span>
           </button>
           <button
+            onClick={() => showComingSoonToast("featureLaunch")}
             className="flex-1 rounded-full bg-[#1a1a1a] border border-[#353535] text-white px-[18px] py-[10px] text-[16px] font-medium leading-[24px] tracking-[-0.096px]"
           >
             Connect

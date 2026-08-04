@@ -16,6 +16,7 @@ import CardCarousel from "./CardCarousel";
 import LoadedImage from "@/components/ui/LoadedImage";
 import { MasonryImageGrid } from "@/components/ui/MasonryImageGrid";
 import type { MasonryItemWithDimensions } from "@/hooks/useMasonryAdvanced";
+import { useMobileComingSoon } from "@/components/ui/MobileComingSoonToast";
 
 /* eslint-disable @next/next/no-img-element */
 
@@ -228,6 +229,7 @@ export function ContextMenu({
   onClose: () => void;
   menuRef: React.RefObject<HTMLDivElement | null>;
 }) {
+  const { showComingSoonToast } = useMobileComingSoon();
   const [isWaitlistOpen, setIsWaitlistOpen] = useState(false);
   const flagSrc = toFlagAssetPath(flagCode);
   const handleView = () => {
@@ -301,6 +303,7 @@ export function ContextMenu({
               event.preventDefault();
               event.stopPropagation();
               setIsWaitlistOpen(true);
+              showComingSoonToast("featureLaunch");
             }}
             className="flex w-full items-center gap-3 text-[14px] font-normal text-white hover:text-[#d4d4d4] transition-colors"
           >
@@ -530,6 +533,7 @@ function PhotoCarouselModal({
   description?: string;
   quote?: string;
 }) {
+  const { showComingSoonToast } = useMobileComingSoon();
   const avatarSrc = toLandingAssetUrl(profileAvatar);
   const profileFlagSrc = toFlagAssetPath(profileFlagCode);
   const countryFlagSrc = toFlagAssetPath(countryFlagCode);
@@ -581,18 +585,21 @@ function PhotoCarouselModal({
           <div className="flex items-center gap-2">
             <button
               type="button"
+              onClick={() => showComingSoonToast("featureLaunch")}
               className="h-[38px] flex-1 rounded-full bg-white text-[14px] font-medium text-black transition hover:bg-[#e8e8e8]"
             >
               Follow
             </button>
             <button
               type="button"
+              onClick={() => showComingSoonToast("featureLaunch")}
               className="h-[38px] flex-1 rounded-full border border-[#2e2e2e] bg-[#1a1a1a] text-[14px] font-medium text-white transition hover:bg-[#222]"
             >
               Connect
             </button>
             <button
               type="button"
+              onClick={() => showComingSoonToast("featureLaunch")}
               aria-label="More options"
               className="grid h-[38px] w-[38px] place-items-center rounded-full border border-[#2e2e2e] bg-[#1a1a1a] text-white transition hover:bg-[#222]"
             >
@@ -667,6 +674,7 @@ function JsMasonryGrid({
   shareOwnerHandle,
   shareOwnerAvatar,
 }: JsMasonryGridProps) {
+  const { showComingSoonToast } = useMobileComingSoon();
   const loadRankById = useMemo(() => {
     const rank = new Map<string, number>();
     let index = 0;
@@ -818,7 +826,11 @@ function JsMasonryGrid({
                     onClick={(event) => {
                       event.preventDefault();
                       event.stopPropagation();
-                      openCarouselAt(originalIndex);
+                      if (window.innerWidth < 811) {
+                        showComingSoonToast();
+                      } else {
+                        openCarouselAt(originalIndex);
+                      }
                     }}
                   />
                   <div className="absolute top-3 left-3 group-hover:opacity-0 transition-opacity pointer-events-none">
@@ -841,42 +853,46 @@ function JsMasonryGrid({
                   onClick={(event) => {
                     event.preventDefault();
                     event.stopPropagation();
-                    openCarouselAt(originalIndex);
+                    if (window.innerWidth < 811) {
+                      showComingSoonToast();
+                    } else {
+                      openCarouselAt(originalIndex);
+                    }
                   }}
                 />
               )}
-
-              {/* More options button */}
-              <MoreOptionsButton
-                isOpen={isMenuOpen}
-                label="Open media menu"
-                size="sm"
-                onClick={(event) => {
-                  event.preventDefault();
-                  event.stopPropagation();
-                  setOpenContextMenuId(isMenuOpen ? null : mediaItem.id);
-                }}
-              />
-
-              {/* Flag badge (visible after image loads) */}
-              {displayCountryCode && isLoaded ? (
-                <div className="absolute top-3 right-3 z-20 transition-opacity duration-200 opacity-100 min-[1200px]:opacity-0 min-[1200px]:group-hover:opacity-100 pointer-events-auto group/flag">
-                  <div className="flex items-center drop-shadow-md cursor-pointer">
-                    <img
-                      src={toFlagAssetPath(displayCountryCode)}
-                      alt={displayCountryCode}
-                      className="h-3.5 w-5 rounded-xs object-cover"
-                    />
-                  </div>
-                  <div className="absolute bottom-full right-1/2 translate-x-1/2 mb-2.5 flex flex-col items-center opacity-0 transition-all duration-200 group-hover/flag:opacity-100 pointer-events-none origin-bottom scale-95 group-hover/flag:scale-100 drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]">
-                    <div className="whitespace-nowrap rounded-xl bg-white px-3.5 py-1.5 text-[15px] font-medium tracking-tight text-black">
-                      {COUNTRY_LIST_LOOKUP[displayCountryCode.toUpperCase()] || displayCountryCode}
-                    </div>
-                    <div className="-mt-1.5 h-3 w-3 rotate-45 bg-white rounded-xs" />
-                  </div>
-                </div>
-              ) : null}
             </div>
+
+            {/* More options button */}
+            <MoreOptionsButton
+              isOpen={isMenuOpen}
+              label="Open media menu"
+              size="sm"
+              onClick={(event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                setOpenContextMenuId(isMenuOpen ? null : mediaItem.id);
+              }}
+            />
+
+            {/* Flag badge (visible after image loads) */}
+            {displayCountryCode && isLoaded ? (
+              <div className="absolute top-3 right-3 z-20 transition-opacity duration-200 opacity-100 min-[1200px]:opacity-0 min-[1200px]:group-hover:opacity-100 pointer-events-auto group/flag">
+                <div className="flex items-center drop-shadow-md cursor-pointer">
+                  <img
+                    src={toFlagAssetPath(displayCountryCode)}
+                    alt={displayCountryCode}
+                    className="h-3.5 w-5 rounded-xs object-cover"
+                  />
+                </div>
+                <div className="absolute bottom-full right-1/2 translate-x-1/2 mb-2.5 flex flex-col items-center opacity-0 transition-all duration-200 group-hover/flag:opacity-100 pointer-events-none origin-bottom scale-95 group-hover/flag:scale-100 drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]">
+                  <div className="whitespace-nowrap rounded-xl bg-white px-3.5 py-1.5 text-[15px] font-medium tracking-tight text-black">
+                    {COUNTRY_LIST_LOOKUP[displayCountryCode.toUpperCase()] || displayCountryCode}
+                  </div>
+                  <div className="-mt-1.5 h-3 w-3 rotate-45 bg-white rounded-xs" />
+                </div>
+              </div>
+            ) : null}
 
             {/* Context menu */}
             {isMenuOpen ? (
@@ -919,13 +935,29 @@ function JsMasonryGrid({
 }
 
 export default function ProfileComponent({ profile }: { profile: SampleProfile }) {
+  const { showComingSoonToast } = useMobileComingSoon();
   const router = useRouter();
 
   const [activeTab, setActiveTab] = useState<TabKey>("all");
-  const [visibleLimit, setVisibleLimit] = useState(10);
+  const [visibleLimit, setVisibleLimit] = useState(15);
   const [loadedItemIds, setLoadedItemIds] = useState<Set<string>>(() => new Set());
   const loadMoreRef = useRef<HTMLDivElement>(null);
   const [swipeOffset, setSwipeOffset] = useState(0);
+
+  const [headerHeight, setHeaderHeight] = useState(0);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const updateHeaderHeight = () => {
+      const header = document.querySelector(".trv-header");
+      if (header) {
+        setHeaderHeight(header.clientHeight);
+      }
+    };
+    updateHeaderHeight();
+    window.addEventListener("resize", updateHeaderHeight);
+    return () => window.removeEventListener("resize", updateHeaderHeight);
+  }, []);
 
   useEffect(() => {
     if (typeof IntersectionObserver === "undefined" || !loadMoreRef.current) return;
@@ -975,6 +1007,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
   const contextMenuRef = useRef<HTMLDivElement>(null);
 
   const handleTabChange = (tab: TabKey) => {
+    (window as any).__isProgrammaticScroll = true;
     setActiveTab(tab);
     setTimeout(() => {
       const isMobile = window.innerWidth < 811;
@@ -990,12 +1023,16 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
       } else {
         const desktopTabs = document.getElementById("profile-desktop-tabs");
         if (desktopTabs) {
-          const offset = desktopTabs.offsetTop - 72;
+          const offset = desktopTabs.offsetTop;
           if (window.scrollY > offset) {
+            window.dispatchEvent(new Event('forceHeaderHidden'));
             window.scrollTo({ top: offset, behavior: "instant" });
           }
         }
       }
+      setTimeout(() => {
+        (window as any).__isProgrammaticScroll = false;
+      }, 100);
     }, 10);
   };
 
@@ -1717,19 +1754,21 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                 style={strictDesktopStyle ? { width: `${buttonRowWidth}px` } : undefined}
               >
                 <button
-                  onClick={() => setShowFollowModal(true)}
+                  onClick={() => showComingSoonToast("featureLaunch")}
                   className="flex items-center justify-center flex-1 lg:flex-none w-auto lg:w-[148px] lg:h-[48px] rounded-full bg-white text-black px-3 py-1.5 text-[12px] lg:text-[16px] font-medium tracking-[-0.096px] hover:bg-[#ececec] transition"
                   style={strictDesktopStyle ? { width: `${buttonBaseWidth}px`, height: `${buttonIconSize}px` } : undefined}
                 >
                   Follow
                 </button>
                 <button
+                  onClick={() => showComingSoonToast("featureLaunch")}
                   className="flex items-center justify-center flex-1 lg:flex-none w-auto lg:w-[148px] lg:h-[48px] rounded-full border border-[#353535] bg-[#1a1a1a] text-white px-3 py-1.5 text-[12px] lg:text-[16px] font-medium tracking-[-0.096px] hover:bg-[#242424] transition"
                   style={strictDesktopStyle ? { width: `${buttonBaseWidth}px`, height: `${buttonIconSize}px` } : undefined}
                 >
                   Connect
                 </button>
                 <button
+                  onClick={() => showComingSoonToast("featureLaunch")}
                   className="size-8 lg:size-[48px] shrink-0 grid place-items-center rounded-full border border-[#353535] bg-[#1a1a1a] text-white hover:bg-[#242424] transition"
                   aria-label="More options"
                   style={strictDesktopStyle ? { width: `${buttonIconSize}px`, height: `${buttonIconSize}px` } : undefined}
@@ -1763,7 +1802,10 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
           </section>
 
           {/* Desktop: pill tabs with text */}
-          <div id="profile-desktop-tabs" className="hidden min-[1200px]:flex items-center justify-center gap-2 flex-wrap min-[1200px]:mt-[64px] min-[1440px]:mt-[80px]">
+          <div 
+            id="profile-desktop-tabs" 
+            className={`hidden min-[1200px]:flex items-center justify-center gap-2 flex-wrap min-[1200px]:mt-[48px] min-[1440px]:mt-[64px] sticky z-40 bg-black py-4 -mx-4 px-4 lg:-mx-8 lg:px-8 xl:-mx-10 xl:px-10 transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] top-[120px] [.header-hidden_&]:top-0`}
+          >
             <button
               onClick={() => handleTabChange("all")}
               className={`rounded-full px-6 py-2 text-[16px] leading-6 tracking-[-0.096px] transition ${activeTab === "all"
@@ -1802,12 +1844,12 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
             </button>
           </div>
 
-          <div className="flex flex-col gap-[12px] md:gap-0 w-full min-[1200px]:mt-[32px] min-[1440px]:mt-[48px]">
+          <div className="flex flex-col gap-[12px] md:gap-0 w-full min-[1200px]:mt-[16px] min-[1440px]:mt-[32px]">
             {/* Mobile/iPad: icon-only tabs with sliding underline indicator */}
             <MobileTabs activeTab={activeTab} setActiveTab={handleTabChange} swipeOffset={swipeOffset} />
 
             <div
-              className="flex flex-col flex-1"
+              className="flex flex-col flex-1 min-h-screen"
               onTouchStart={handleTouchStart}
               onTouchMove={handleTouchMove}
               onTouchEnd={handleTouchEnd}
@@ -1876,7 +1918,17 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                           const isMenuOpen = openContextMenuId === contextMenuId;
                           const countryHref = `/profiles/${profile.handle.replace(/^@/, "")}/country/${country.flagCode.toUpperCase()}`;
                           return (
-                            <Link key={country.code} href={countryHref} className="flex flex-col gap-[10px]">
+                            <Link 
+                              key={country.code} 
+                              href={countryHref} 
+                              className="flex flex-col gap-[10px]"
+                              onClick={(e) => {
+                                if (window.innerWidth < 811) {
+                                  e.preventDefault();
+                                  showComingSoonToast();
+                                }
+                              }}
+                            >
                               {/* Photo */}
                               <div className="relative group">
                                 <CardCarousel
@@ -1982,6 +2034,12 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                               key={collection.id}
                               href={collectionHref}
                               className="flex flex-col gap-[16px] md:gap-[20px]"
+                              onClick={(e) => {
+                                if (window.innerWidth < 811) {
+                                  e.preventDefault();
+                                  showComingSoonToast();
+                                }
+                              }}
                             >
                               <div className="relative group">
                                 <CardCarousel

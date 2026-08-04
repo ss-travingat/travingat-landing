@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { toLandingAssetUrl } from "@/lib/landing-assets";
+import { useMobileComingSoon } from "@/components/ui/MobileComingSoonToast";
 
 export type LightboxItem = {
   id?: string;
@@ -30,6 +31,7 @@ export function MediaLightbox({
   onShareClick,
   sidebarContent,
 }: MediaLightboxProps) {
+  const { showComingSoonToast } = useMobileComingSoon();
   const [showBrowser, setShowBrowser] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
@@ -128,6 +130,7 @@ export function MediaLightbox({
                   <div className="absolute top-4 right-4 z-20 flex items-center gap-2 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
                     <button
                       type="button"
+                      onClick={() => showComingSoonToast("featureLaunch")}
                       className="flex h-9 w-9 items-center justify-center rounded-full bg-black/40 backdrop-blur-sm text-white transition hover:bg-black/60"
                       aria-label="Like"
                     >
@@ -135,7 +138,10 @@ export function MediaLightbox({
                     </button>
                     <button
                       type="button"
-                      onClick={onShareClick}
+                      onClick={(e) => {
+                        if (onShareClick) onShareClick();
+                        else showComingSoonToast("featureLaunch");
+                      }}
                       className="flex h-9 w-9 items-center justify-center rounded-full bg-black/40 backdrop-blur-sm text-white transition hover:bg-black/60"
                       aria-label="Share"
                     >
