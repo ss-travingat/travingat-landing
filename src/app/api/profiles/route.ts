@@ -26,8 +26,8 @@ interface Profile {
   socials: { x?: string; instagram?: string; linkedin?: string; youtube?: string };
   aboutImages?: string[];
   visitedCountryCodes: string[];
-  countryImages?: { countryCode: string; images: string[]; about?: string }[];
-  collectionImages?: { title: string; images: string[]; about?: string; countryCodes?: string[] }[];
+  countryImages?: { countryCode: string; images: string[]; coverPhoto?: string; about?: string }[];
+  collectionImages?: { title: string; images: string[]; coverPhoto?: string; about?: string; countryCodes?: string[] }[];
 }
 
 async function readProfiles(): Promise<Profile[]> {
@@ -135,6 +135,7 @@ export async function POST(request: Request) {
         ? body.countryImages.map((ci: any) => ({
             countryCode: ci.countryCode || "",
             images: Array.isArray(ci.images) ? ci.images : [],
+            coverPhoto: ci.coverPhoto || undefined,
             about: ci.about || "",
           }))
         : [],
@@ -142,6 +143,7 @@ export async function POST(request: Request) {
         ? body.collectionImages.map((ci: any) => ({
             title: ci.title || "",
             images: Array.isArray(ci.images) ? ci.images : [],
+            coverPhoto: ci.coverPhoto || undefined,
             about: ci.about || "",
             countryCodes: Array.isArray(ci.countryCodes)
               ? ci.countryCodes.map((code: unknown) => String(code).toUpperCase())

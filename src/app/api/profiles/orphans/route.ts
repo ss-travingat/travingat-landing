@@ -10,8 +10,8 @@ const PROFILES_ASSETS_PREFIX = "landingpage-assets/profiles/";
 interface Profile {
   images: { cover: string; avatar: string; gallery: string[] };
   aboutImages?: string[];
-  countryImages?: { countryCode: string; images: string[] }[];
-  collectionImages?: { title: string; images: string[] }[];
+  countryImages?: { countryCode: string; images: string[]; coverPhoto?: string; about?: string }[];
+  collectionImages?: { title: string; images: string[]; coverPhoto?: string; about?: string; countryCodes?: string[] }[];
 }
 
 /**

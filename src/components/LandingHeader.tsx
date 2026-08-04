@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useMemo, useState } from "react"
+import { useSearchParams } from "next/navigation"
 
 // Standalone React header export generated from the Framer "Modern Navbar" design for direct use in Next.js/React apps.
 
@@ -60,6 +61,9 @@ export default function LandingHeader({
     const [menuOpen, setMenuOpen] = useState(false)
     const [pathname, setPathname] = useState("")
     const [isDesktopActiveEnabled, setIsDesktopActiveEnabled] = useState(false)
+    const [hidden, setHidden] = useState(false)
+    const searchParams = useSearchParams()
+    const isFullScreen = searchParams ? searchParams.has("image") : false
 
     useEffect(() => {
         if (typeof window === "undefined") return
@@ -72,12 +76,24 @@ export default function LandingHeader({
             if (event.key === "Escape") setMenuOpen(false)
         }
 
+        let lastScrollY = window.scrollY
+        const handleScroll = () => {
+            const currentScrollY = window.scrollY
+            if (currentScrollY > lastScrollY && currentScrollY > 100) {
+                setHidden(true)
+            } else if (currentScrollY < lastScrollY) {
+                setHidden(false)
+            }
+            lastScrollY = currentScrollY
+        }
+
         readPath()
         readDesktopActive()
 
         window.addEventListener("popstate", readPath)
         window.addEventListener("hashchange", readPath)
         window.addEventListener("keydown", onKeyDown)
+        window.addEventListener("scroll", handleScroll, { passive: true })
 
         if (typeof desktopActiveQuery.addEventListener === "function") {
             desktopActiveQuery.addEventListener("change", readDesktopActive)
@@ -89,6 +105,7 @@ export default function LandingHeader({
             window.removeEventListener("popstate", readPath)
             window.removeEventListener("hashchange", readPath)
             window.removeEventListener("keydown", onKeyDown)
+            window.removeEventListener("scroll", handleScroll)
             if (typeof desktopActiveQuery.removeEventListener === "function") {
                 desktopActiveQuery.removeEventListener("change", readDesktopActive)
             } else if (typeof desktopActiveQuery.removeListener === "function") {
@@ -103,7 +120,7 @@ export default function LandingHeader({
     )
 
     return (
-        <header className={`trv-header ${className}`.trim()}>
+        <header className={`trv-header ${className} ${hidden && !menuOpen ? "is-hidden" : ""} ${isFullScreen ? "is-fullscreen" : ""}`.trim()}>
             <div className={`trv-shell ${menuOpen ? "is-open" : ""}`}>
                 <div className="trv-top-row">
                     <a className="trv-logo-link" href={logoHref} aria-label="Go to homepage">
@@ -190,6 +207,14 @@ export default function LandingHeader({
                     color: #ffffff;
                     background: linear-gradient(180deg, rgb(0, 0, 0) 0%, rgba(0, 0, 0, 0) 100%);
                     z-index: 100;
+                    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                }
+
+                .trv-header.is-hidden {
+                    transform: translateY(-100%);
+                }
+                .trv-header.is-fullscreen {
+                    display: none;
                 }
 
                 .trv-shell {
@@ -223,7 +248,7 @@ export default function LandingHeader({
                     align-items: center;
                     text-decoration: none;
                     position: relative;
-                    top: 2px;
+                    top: 0px;
                 }
 
                 .trv-header .trv-logo {
@@ -417,17 +442,19 @@ export default function LandingHeader({
                     .trv-nav-pill {
                         display: inline-flex;
                         align-items: center;
-                        gap: 6px;
+                        justify-content: space-between;
+                        gap: 2px;
+                        width: 475.59px !important;
+                        height: 49.2px !important;
+                        box-sizing: border-box;
                         margin: 0;
                         padding: 3px;
-                        min-height: 49px;
                         list-style: none;
                         border-radius: 999px;
-                        border: 1px solid rgba(161, 161, 161, 0.1);
-                        background: linear-gradient(180deg, rgba(46, 46, 46, 0.8) 0%, rgb(23, 23, 23) 100%);
-                        backdrop-filter: blur(10px);
-                        -webkit-backdrop-filter: blur(10px);
-                        box-shadow: 0px 6px 10px 0px rgba(0, 0, 0, 0.25);
+                        border: 1px solid rgba(161, 161, 161, 0.1) !important;
+                        background: linear-gradient(180deg, rgba(46, 46, 46, 0.8) 0%, rgb(23, 23, 23) 100%) !important;
+                        backdrop-filter: blur(12px);
+                        -webkit-backdrop-filter: blur(12px);
                         overflow: clip;
                     }
 
@@ -441,27 +468,34 @@ export default function LandingHeader({
                         display: inline-flex;
                         align-items: center;
                         justify-content: center;
+                        height: 100%;
                         min-height: 41px;
                         box-sizing: border-box;
                         text-decoration: none;
                         border-radius: 999px;
-                        color: rgb(255, 255, 255);
-                        padding: 10px 20px 12px 20px;
-                        font-family: Inter, sans-serif;
+                        border: none !important;
+                        color: #ffffff !important;
+                        padding: 0px 18px;
+                        font-family: Inter, sans-serif !important;
                         font-size: 16px !important;
-                        font-weight: 400;
+                        font-weight: 500 !important;
                         line-height: 1.2em;
-                        letter-spacing: 0.02em;
+                        letter-spacing: 0.02em !important;
                         white-space: nowrap;
-                        transition: background-color 0.25s ease;
+                        -webkit-font-smoothing: antialiased;
+                        -moz-osx-font-smoothing: grayscale;
+                        transition: background-color 0.25s ease, color 0.25s ease;
                     }
 
                     .trv-nav-link:hover {
+                        color: #ffffff !important;
                         background: rgba(255, 255, 255, 0.08);
                     }
 
                     .trv-nav-link.is-active {
-                        background: rgba(255, 255, 255, 0.08);
+                        color: #ffffff !important;
+                        background: rgba(255, 255, 255, 0.09) !important;
+                        border: none !important;
                     }
 
                     .trv-cta-desktop {
@@ -479,7 +513,7 @@ export default function LandingHeader({
                         background: rgb(255, 255, 255);
                         color: rgb(0, 0, 0);
                         font-family: Inter, sans-serif;
-                        font-size: 16px;
+                        font-size: 17px !important;
                         font-weight: 500;
                         line-height: 1.2em;
                         letter-spacing: -0.01em;

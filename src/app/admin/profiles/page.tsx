@@ -12,12 +12,14 @@ import imageCompression from "browser-image-compression";
 interface CountryImage {
   countryCode: string;
   images: string[];
+  coverPhoto?: string;
   about?: string;
 }
 
 interface CollectionImage {
   title: string;
   images: string[];
+  coverPhoto?: string;
   about?: string;
   countryCodes?: string[];
 }
@@ -2054,6 +2056,26 @@ export default function AdminProfilesPage() {
                                       className="object-cover"
                                     />
                                   )}
+                                  {ci.coverPhoto === imgUrl && (
+                                    <div className="absolute top-1 left-1 z-20 bg-[#5A45F9] text-white text-[8px] font-bold px-1.5 py-0.5 rounded-sm pointer-events-none shadow-sm">COVER</div>
+                                  )}
+                                  <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center z-10">
+                                    <button
+                                      type="button"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        setForm((prev) => ({
+                                          ...prev,
+                                          countryImages: prev.countryImages.map((c, i) =>
+                                            i === idx ? { ...c, coverPhoto: imgUrl } : c
+                                          ),
+                                        }));
+                                      }}
+                                      className="px-2 py-1 bg-white/20 hover:bg-[#5A45F9] text-white text-[9px] font-medium rounded-sm transition-colors"
+                                    >
+                                      Set Cover
+                                    </button>
+                                  </div>
                                   </div>
                                   <button
                                     type="button"
@@ -2237,20 +2259,42 @@ export default function AdminProfilesPage() {
                                     className="object-cover"
                                   />
                                 )}
-                                <button
-                                  onClick={() =>
-                                    setForm((prev) => ({
-                                      ...prev,
-                                      collectionImages: prev.collectionImages.map((c, i) =>
-                                        i === idx ? { ...c, images: c.images.filter((_, j) => j !== imgIdx) } : c
-                                      ).filter((c) => c.images.length > 0),
-                                    }))
-                                  }
-                                  className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity cursor-pointer text-red-400 text-xs"
-                                >
-                                  ✕
-                                </button>
-                              </div>
+                                  {ci.coverPhoto === imgUrl && (
+                                    <div className="absolute top-1 left-1 z-20 bg-[#5A45F9] text-white text-[8px] font-bold px-1.5 py-0.5 rounded-sm pointer-events-none shadow-sm">COVER</div>
+                                  )}
+                                  <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1 z-10">
+                                    <button
+                                      type="button"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        setForm((prev) => ({
+                                          ...prev,
+                                          collectionImages: prev.collectionImages.map((c, i) =>
+                                            i === idx ? { ...c, coverPhoto: imgUrl } : c
+                                          ),
+                                        }));
+                                      }}
+                                      className="px-1.5 py-0.5 bg-white/20 hover:bg-[#5A45F9] text-white text-[9px] font-medium rounded-sm transition-colors"
+                                    >
+                                      Set Cover
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        setForm((prev) => ({
+                                          ...prev,
+                                          collectionImages: prev.collectionImages.map((c, i) =>
+                                            i === idx ? { ...c, images: c.images.filter((_, j) => j !== imgIdx) } : c
+                                          ).filter((c) => c.images.length > 0),
+                                        }));
+                                      }}
+                                      className="w-5 h-5 bg-black/80 hover:bg-red-500 rounded-full flex items-center justify-center text-white/70 hover:text-white transition-colors cursor-pointer text-[9px] leading-none border border-white/10"
+                                    >
+                                      ✕
+                                    </button>
+                                  </div>
+                                </div>
                             );
                           })}
                         </div>

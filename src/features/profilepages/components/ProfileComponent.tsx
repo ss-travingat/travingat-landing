@@ -1250,12 +1250,15 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
         const countryName = COUNTRY_LIST_LOOKUP[ci.countryCode.toUpperCase()] || ci.countryCode;
         const photoPreviewImages = ci.images.filter((url) => !isVideoAsset(typeof url === "string" ? url : url.url)).slice(0, 5);
         const rawPreview = (photoPreviewImages.length > 0 ? photoPreviewImages : ci.images).slice(0, 5);
-        const previewImages = rawPreview.map((g) => (typeof g === "string" ? g : g.url));
+        let previewImages = rawPreview.map((g) => (typeof g === "string" ? g : g.url));
+        if (ci.coverPhoto) {
+          previewImages = [ci.coverPhoto, ...previewImages.filter((url) => url !== ci.coverPhoto)];
+        }
         return {
           code: `${profile.id}-ci-${index}`,
           name: countryName,
           flagCode: ci.countryCode,
-          thumbnailUrl: previewImages[0] || (typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url),
+          thumbnailUrl: ci.coverPhoto || previewImages[0] || (typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url),
           previewImages,
           photoCount: ci.images.filter((entry) => !isVideoAsset(typeof entry === "string" ? entry : entry.url)).length,
           videoCount: ci.images.filter((entry) => isVideoAsset(typeof entry === "string" ? entry : entry.url)).length,
@@ -1466,7 +1469,10 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
       return profile.collectionImages.map((ci, index) => {
         const photoPreviewImages = ci.images.filter((entry) => !isVideoAsset(typeof entry === "string" ? entry : entry.url)).slice(0, 5);
         const rawPreview = (photoPreviewImages.length > 0 ? photoPreviewImages : ci.images).slice(0, 5);
-        const previewImages = rawPreview.map((g) => (typeof g === "string" ? g : g.url));
+        let previewImages = rawPreview.map((g) => (typeof g === "string" ? g : g.url));
+        if (ci.coverPhoto) {
+          previewImages = [ci.coverPhoto, ...previewImages.filter((url) => url !== ci.coverPhoto)];
+        }
         const selectedCountries = (ci.countryCodes ?? [])
           .map((code) => COUNTRY_LIST_LOOKUP[code.toUpperCase()] || code.toUpperCase())
           .filter(Boolean);
@@ -1477,7 +1483,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
           title: ci.title,
           description: profile.bio,
           createdLabel: getDeterministicCreatedLabel(index),
-          thumbnailUrl: previewImages[0] || (typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url),
+          thumbnailUrl: ci.coverPhoto || previewImages[0] || (typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url),
           previewImages,
           countries: selectedCountries.length > 0 ? visibleCountries : fallbackVisibleCountries,
           countryOverflowCount: selectedCountries.length > 0 ? countryOverflowCount : fallbackOverflowCount,

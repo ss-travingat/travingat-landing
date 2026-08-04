@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import { usePathname } from "next/navigation";
 import LandingHeader from "@/components/LandingHeader";
 import LandingFooter from "@/components/LandingFooter";
@@ -87,7 +87,9 @@ export default function LandingLayout({
   return (
     <div className="min-h-screen w-full bg-black text-white overflow-x-clip">
       <PageLoader visible={loading} />
-      {hideNavbar ? null : <LandingHeader />}
+      <Suspense fallback={null}>
+        {hideNavbar ? null : <LandingHeader />}
+      </Suspense>
       {hideNavbar ? null : <div className={`h-[92px] lg:h-[124px] ${isProfileRoute ? "max-[810px]:hidden" : ""}`} aria-hidden="true" />}
       <div className="animate-page-in">
         {children}
