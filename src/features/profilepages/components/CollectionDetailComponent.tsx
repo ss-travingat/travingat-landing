@@ -254,7 +254,7 @@ export default function CollectionDetailComponent({
           profileHandle={profile.handle.startsWith("@") ? profile.handle : `@${profile.handle}`}
           profileAvatar={typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url}
           collectionTitle={title}
-          description={profile.bio}
+          description={aboutText}
         />
       )}
       {/* Collection Info */}
