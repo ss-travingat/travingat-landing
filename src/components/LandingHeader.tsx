@@ -480,7 +480,7 @@ export default function LandingHeader({
                         font-size: 16px !important;
                         font-weight: 500 !important;
                         line-height: 1.2em;
-                        letter-spacing: 0.02em !important;
+                        letter-spacing: 0.04em !important;
                         white-space: nowrap;
                         -webkit-font-smoothing: antialiased;
                         -moz-osx-font-smoothing: grayscale;

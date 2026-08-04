@@ -92,6 +92,18 @@ const interGoogle = Inter({
 export const metadata: Metadata = {
   title: "Travingat - Travel Portfolio for Explorers",
   description: "Build your travel portfolio and organize every journey in one place.",
+  icons: [
+    {
+      media: "(prefers-color-scheme: light)",
+      url: "/favicons/Fav icon - light.png",
+      href: "/favicons/Fav icon - light.png",
+    },
+    {
+      media: "(prefers-color-scheme: dark)",
+      url: "/favicons/Fav icon -dark.png",
+      href: "/favicons/Fav icon -dark.png",
+    },
+  ],
 };
 
 export const viewport: Viewport = {
