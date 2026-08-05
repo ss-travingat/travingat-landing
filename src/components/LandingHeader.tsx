@@ -372,7 +372,7 @@ export default function LandingHeader({
                     width: 100%;
                     text-decoration: none;
                     color: rgb(255, 255, 255);
-                    font-family: Inter, sans-serif;
+                    font-family: var(--font-inter-google, "Inter", sans-serif);
                     font-size: 32px;
                     font-weight: 500;
                     line-height: 1.2em;
@@ -394,11 +394,11 @@ export default function LandingHeader({
                     color: rgb(0, 0, 0);
                     border-radius: 999px;
                     padding: 12px 32px;
-                    font-family: Inter, sans-serif;
+                    font-family: var(--font-inter-google, "Inter", sans-serif);
                     font-size: 16px;
                     font-weight: 500;
-                    line-height: 1.2em;
-                    letter-spacing: -0.01em;
+                    line-height: 19.2px;
+                    letter-spacing: 0px;
                     transition: background-color 0.4s cubic-bezier(0.44, 0, 0.56, 1), color 0.4s cubic-bezier(0.44, 0, 0.56, 1);
                     box-sizing: border-box;
                     white-space: nowrap;
@@ -515,11 +515,11 @@ export default function LandingHeader({
                         border: none !important;
                         color: #ffffff !important;
                         padding: 10px 20px 12px 20px;
-                        font-family: Inter, sans-serif !important;
+                        font-family: var(--font-inter-google, "Inter", sans-serif) !important;
                         font-size: 16px !important;
-                        font-weight: 500 !important;
+                        font-weight: 400 !important;
                         line-height: 1.2em;
-                        letter-spacing: 0.04em !important;
+                        letter-spacing: 0px !important;
                         white-space: nowrap;
                         -webkit-font-smoothing: antialiased;
                         -moz-osx-font-smoothing: grayscale;
@@ -551,11 +551,11 @@ export default function LandingHeader({
                         padding: 12px 32px;
                         background: rgb(255, 255, 255);
                         color: rgb(0, 0, 0);
-                        font-family: Inter, sans-serif;
-                        font-size: 17px !important;
+                        font-family: var(--font-inter-google, "Inter", sans-serif);
+                        font-size: 16px !important;
                         font-weight: 500;
-                        line-height: 1.2em;
-                        letter-spacing: -0.01em;
+                        line-height: 19.2px;
+                        letter-spacing: 0px;
                         transition: background-color 0.4s cubic-bezier(0.44, 0, 0.56, 1), color 0.4s cubic-bezier(0.44, 0, 0.56, 1);
                     }
 
