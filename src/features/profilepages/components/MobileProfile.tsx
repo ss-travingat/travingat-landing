@@ -151,13 +151,13 @@ export function MobileProfileNavbar({ profile }: { profile?: any }) {
       {/* Fixed Full-Screen Mobile Overlay Menu */}
       <div
         ref={fullScreenMenuRef}
-        className={`fixed inset-0 z-[90] min-[1200px]:hidden bg-black/95 backdrop-blur-xl transition-all duration-300 ease-in-out flex flex-col justify-center items-center px-6 pt-[90px] pb-10 ${menuOpen
+        className={`fixed inset-0 z-[90] min-[1200px]:hidden bg-black/95 backdrop-blur-xl transition-all duration-300 ease-in-out flex flex-col justify-start items-center px-6 pt-[100px] pb-10 ${menuOpen
             ? "opacity-100 pointer-events-auto translate-y-0"
             : "opacity-0 pointer-events-none -translate-y-4"
           }`}
       >
         <div className="w-full max-w-xs flex flex-col items-center gap-[24px]">
-          <nav className="flex flex-col items-center justify-center gap-[24px] w-full">
+          <nav className="flex flex-col items-center justify-start gap-[24px] w-full">
             <Link href="/" onClick={() => setMenuOpen(false)} className="text-[28px] font-medium leading-[1.2] text-white hover:text-white/80 transition">Home</Link>
             <Link href="/newprofiles" onClick={() => setMenuOpen(false)} className="text-[28px] font-medium leading-[1.2] text-white hover:text-white/80 transition">Profiles</Link>
             <Link href="/templates" onClick={() => setMenuOpen(false)} className="text-[28px] font-medium leading-[1.2] text-white hover:text-white/80 transition">Templates</Link>

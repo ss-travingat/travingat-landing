@@ -248,7 +248,7 @@ export default function LandingHeader({
                     max-width: none;
                     margin: 0 auto;
                     box-sizing: border-box;
-                    padding: 16px 24px 20px 24px;
+                    padding: 16px 12px 20px 12px;
                     min-height: 90px;
                     height: 90px;
                     overflow: hidden;
@@ -346,7 +346,7 @@ export default function LandingHeader({
                 }
 
                 .trv-mobile-drawer {
-                    margin-top: 20px;
+                    margin-top: -16px;
                     opacity: 0;
                     max-height: 0;
                     overflow: hidden;
@@ -363,8 +363,10 @@ export default function LandingHeader({
                     display: flex;
                     flex-direction: column;
                     align-items: center;
+                    justify-content: flex-start;
                     gap: 24px;
-                    padding: 16px 0;
+                    padding: 0;
+                    margin: 0;
                     box-sizing: border-box;
                 }
 
@@ -413,7 +415,7 @@ export default function LandingHeader({
                     .trv-shell {
                         max-width: none;
                         width: 100%;
-                        padding: 24px 48px;
+                        padding: 24px 32px;
                     }
                     .trv-top-row {
                         max-width: none;
@@ -429,7 +431,7 @@ export default function LandingHeader({
                         min-height: 0;
                         overflow: visible;
                         margin: 0 auto;
-                        padding: 32px 64px 48px;
+                        padding: 32px 48px 48px;
                         background: transparent;
                     }
 
@@ -562,6 +564,18 @@ export default function LandingHeader({
                     .trv-cta-desktop:hover {
                         background: rgb(90, 69, 249);
                         color: rgb(255, 255, 255);
+                    }
+                }
+
+                @media (min-width: 1440px) {
+                    .trv-shell {
+                        padding: 32px 64px 48px;
+                    }
+                }
+
+                @media (min-width: 1728px) {
+                    .trv-shell {
+                        max-width: 1728px;
                     }
                 }
             `}</style>
