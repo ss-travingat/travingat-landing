@@ -85,7 +85,7 @@ export function MobileComingSoonProvider({ children }: { children: React.ReactNo
                       This feature will be available at launch.{" "}
                       <button 
                         type="button"
-                        className={`text-[#1fbcfe] hover:text-[#60a5fa] transition-colors bg-transparent border-none p-0 cursor-pointer font-normal ${activeType === "desktopOnly" ? "text-[14px]" : "text-[14px] md:text-[18px]"}`} 
+                        className="text-[#1fbcfe] hover:text-[#60a5fa] transition-colors bg-transparent border-none p-0 cursor-pointer font-normal text-[14px] md:text-[18px]" 
                         onClick={() => {
                           closeToast();
                           setTimeout(() => setIsWaitlistOpen(true), 150); // slight delay to feel smoother

@@ -45,7 +45,7 @@ export async function POST(request: Request) {
         return NextResponse.json({ error: "Uploaded file is empty" }, { status: 400 });
       }
 
-      let uploadBuffer = buffer;
+      let uploadBuffer: Buffer = buffer;
       let uploadContentType = file.type;
       let uploadExt = extensionFromMimeType(file.type);
 
