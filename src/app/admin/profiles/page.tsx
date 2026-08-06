@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
 import imageCompression from "browser-image-compression";
+import { encode as encodeWebP } from "@jsquash/webp";
 
 interface CountryImage {
   countryCode: string;
@@ -173,152 +174,6 @@ const COUNTRY_LIST: { code: string; name: string; flag: string }[] = [
 
 function getCountryByCode(code: string) {
   return COUNTRY_LIST.find((c) => c.code === code);
-}
-
-type AvifAttempt = {
-  quality: number;
-  maxEdge: number;
-};
-
-async function getImageLongEdge(file: File): Promise<number> {
-  const bitmap = await createImageBitmap(file);
-  try {
-    return Math.max(bitmap.width, bitmap.height);
-  } finally {
-    bitmap.close();
-  }
-}
-
-async function convertToOptimizedWebp(file: File): Promise<Blob> {
-  const originalSize = file.size;
-  const longEdge = await getImageLongEdge(file);
-  const attempts: AvifAttempt[] =
-    longEdge <= 2600
-      ? [
-          { quality: 0.94, maxEdge: longEdge },
-          { quality: 0.9, maxEdge: longEdge },
-          { quality: 0.86, maxEdge: longEdge },
-          { quality: 0.82, maxEdge: longEdge },
-          { quality: 0.78, maxEdge: longEdge },
-        ]
-      : [
-          { quality: 0.94, maxEdge: 3200 },
-          { quality: 0.9, maxEdge: 3000 },
-          { quality: 0.86, maxEdge: 2800 },
-          { quality: 0.82, maxEdge: 2560 },
-          { quality: 0.78, maxEdge: 2300 },
-        ];
-
-  const isLargeSource = originalSize >= 3 * 1024 * 1024;
-  const targetRatio = isLargeSource ? 0.4 : 0.75;
-  const maxAllowedRatio = 0.98;
-
-  let best: Blob | null = null;
-  let bestUnderCap: Blob | null = null;
-  const isSafari = typeof window !== 'undefined' && /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-
-  for (const attempt of attempts) {
-    const candidate = await imageCompression(file, {
-      useWebWorker: !isSafari,
-      fileType: "image/webp",
-      initialQuality: attempt.quality,
-      maxWidthOrHeight: attempt.maxEdge,
-      alwaysKeepResolution: attempt.maxEdge >= longEdge,
-      maxIteration: 12,
-      preserveExif: false,
-    });
-
-    if (!best || candidate.size < best.size) {
-      best = candidate;
-    }
-
-    const ratio = candidate.size / originalSize;
-    if (ratio <= targetRatio) {
-      return candidate;
-    }
-
-    if (ratio <= maxAllowedRatio && (!bestUnderCap || candidate.size < bestUnderCap.size)) {
-      bestUnderCap = candidate;
-    }
-  }
-
-  if (bestUnderCap) {
-    return bestUnderCap;
-  }
-
-  if (!best) {
-    throw new Error("Failed to generate AVIF image");
-  }
-
-  // Let caller use server-side AVIF fallback when browser AVIF is larger.
-  throw new Error("Client AVIF larger than source");
-}
-
-async function isValidAvifBlob(blob: Blob): Promise<boolean> {
-  if (blob.type && blob.type !== "image/avif") {
-    return false;
-  }
-
-  const headerBuffer = await blob.slice(0, 256).arrayBuffer();
-  const headerBytes = new Uint8Array(headerBuffer);
-  if (headerBytes.length < 16) return false;
-
-  // Explicitly reject WebP payloads, even if a bad encoder mislabeled MIME.
-  const riffTag = String.fromCharCode(
-    headerBytes[0],
-    headerBytes[1],
-    headerBytes[2],
-    headerBytes[3]
-  );
-  const webpTag = String.fromCharCode(
-    headerBytes[8],
-    headerBytes[9],
-    headerBytes[10],
-    headerBytes[11]
-  );
-  if (riffTag === "RIFF" && webpTag === "WEBP") {
-    return false;
-  }
-
-  // AVIF is an ISO BMFF container: bytes 4..7 should be 'ftyp'.
-  const boxType = String.fromCharCode(
-    headerBytes[4],
-    headerBytes[5],
-    headerBytes[6],
-    headerBytes[7]
-  );
-  if (boxType !== "ftyp") {
-    return false;
-  }
-
-  const brandChunk = String.fromCharCode(...headerBytes.slice(8, 256));
-  return brandChunk.includes("avif") || brandChunk.includes("avis");
-}
-
-async function convertToNativeAvifFallback(file: File): Promise<Blob | null> {
-  const bitmap = await createImageBitmap(file);
-  try {
-    const longEdge = Math.max(bitmap.width, bitmap.height);
-    const maxEdge = longEdge > 2600 ? 2560 : longEdge;
-    const scale = Math.min(1, maxEdge / Math.max(longEdge, 1));
-    const targetWidth = Math.max(1, Math.round(bitmap.width * scale));
-    const targetHeight = Math.max(1, Math.round(bitmap.height * scale));
-
-    const canvas = document.createElement("canvas");
-    canvas.width = targetWidth;
-    canvas.height = targetHeight;
-
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return null;
-
-    ctx.drawImage(bitmap, 0, 0, targetWidth, targetHeight);
-
-    return await new Promise<Blob | null>((resolve) => {
-      canvas.toBlob((blob) => resolve(blob), "image/avif", 0.86);
-    });
-  } finally {
-    bitmap.close();
-  }
 }
 
 
@@ -901,135 +756,144 @@ export default function AdminProfilesPage() {
     setUploading({ field: type, stage: "processing", idx, current: batch?.current, total: batch?.total });
 
     try {
-      // Step 1: Compress in the browser using canvas → AVIF/WebP (fast, reliable).
-      // No external library needed — pure canvas API always works.
-      let processedFile: File | Blob = file;
-      let uploadContentType = file.type;
+      // ── Step 1: Compress with browser-image-compression ──
+      // This library works reliably on both Chrome and Safari.
+      // It outputs the same format as the input (JPEG→JPEG, PNG→PNG).
+      let compressedFile: File | Blob = file;
 
-      // Skip client-side destruction if the image is already small.
       if (file.size > 500 * 1024) {
         try {
-          const compressedFile = await imageCompression(file, {
-            maxSizeMB: 0.35, // 350KB
+          compressedFile = await imageCompression(file, {
+            maxSizeMB: 0.35, // 350KB target
             maxWidthOrHeight: 2560,
             useWebWorker: false,
           });
-          
-          if (compressedFile) {
-            // Only reject the compressed blob if it's massively larger (e.g. 2x) or if it's the exact same format but larger.
-            const isSameFormat = compressedFile.type === file.type;
-            const isMassivelyLarger = compressedFile.size > file.size * 2;
-            
-            if (!isMassivelyLarger && !(isSameFormat && compressedFile.size > file.size)) {
-              processedFile = compressedFile;
-              const originalKb = Math.round(file.size / 1024);
-              const convertedKb = Math.round(compressedFile.size / 1024);
-              const extName = processedFile.type === "image/avif" ? "AVIF" : processedFile.type === "image/webp" ? "WebP" : "JPEG";
-              console.info(`[profiles-upload] ${file.name}: ${originalKb}KB → ${convertedKb}KB (${extName}, ${Math.round((1 - compressedFile.size / file.size) * 100)}% reduction)`);
-            }
-          }
+          const originalKb = Math.round(file.size / 1024);
+          const compressedKb = Math.round(compressedFile.size / 1024);
+          console.info(`[profiles-upload] Step 1 — Compressed: ${file.name}: ${originalKb}KB → ${compressedKb}KB (${Math.round((1 - compressedFile.size / file.size) * 100)}% reduction)`);
         } catch (e) {
-          console.warn("Client-side compression failed, falling back to original file:", e);
+          console.warn("[profiles-upload] browser-image-compression failed, using original:", e);
         }
       } else {
-        console.info(`[profiles-upload] ${file.name} is ${Math.round(file.size / 1024)}KB. Bypassing client-side compression.`);
+        console.info(`[profiles-upload] ${file.name} is ${Math.round(file.size / 1024)}KB — skipping compression.`);
       }
 
+      // ── Step 2: Convert to WebP in the browser ──
+      // Strategy: Use canvas.toBlob("image/webp"). If the browser doesn't
+      // support WebP encoding (old Safari), keep the compressed JPEG.
+      let finalBlob: Blob = compressedFile;
+      let finalContentType = compressedFile.type || file.type;
+
+      try {
+        const img = new window.Image();
+        const objectUrl = URL.createObjectURL(compressedFile);
+        
+        await new Promise<void>((resolve, reject) => {
+          img.onload = () => resolve();
+          img.onerror = () => reject(new Error("Failed to load image for WebP conversion"));
+          img.src = objectUrl;
+        });
+
+        const canvas = document.createElement("canvas");
+        canvas.width = img.naturalWidth;
+        canvas.height = img.naturalHeight;
+        const ctx = canvas.getContext("2d");
+
+        if (ctx) {
+          ctx.drawImage(img, 0, 0);
+
+          // First, quick feature-detect: can this browser encode WebP at all?
+          const testCanvas = document.createElement("canvas");
+          testCanvas.width = 1;
+          testCanvas.height = 1;
+          const supportsWebP = testCanvas.toDataURL("image/webp").startsWith("data:image/webp");
+          console.info(`[profiles-upload] Step 2 — Browser WebP encoding support: ${supportsWebP}`);
+
+          if (supportsWebP) {
+            const webpBlob = await new Promise<Blob | null>((resolve) => {
+              canvas.toBlob((b) => resolve(b), "image/webp", 0.82);
+            });
+
+            console.info(`[profiles-upload] Step 2 — toBlob result: type="${webpBlob?.type}", size=${webpBlob?.size}`);
+
+            if (webpBlob && webpBlob.size > 0 && webpBlob.type === "image/webp") {
+              finalBlob = webpBlob;
+              finalContentType = "image/webp";
+              console.info(`[profiles-upload] Step 2 ✅ Native converted to WebP: ${Math.round(webpBlob.size / 1024)}KB`);
+            } else if (webpBlob && webpBlob.size > 0) {
+              const header = new Uint8Array(await webpBlob.slice(0, 12).arrayBuffer());
+              const riff = String.fromCharCode(header[0], header[1], header[2], header[3]);
+              const webp = String.fromCharCode(header[8], header[9], header[10], header[11]);
+              
+              if (riff === "RIFF" && webp === "WEBP") {
+                finalBlob = new Blob([webpBlob], { type: "image/webp" });
+                finalContentType = "image/webp";
+                console.info(`[profiles-upload] Step 2 ✅ Native WebP detected via header (${Math.round(webpBlob.size / 1024)}KB)`);
+              } else {
+                console.warn(`[profiles-upload] Step 2 — Not WebP. Got type="${webpBlob.type}". Keeping compressed ${finalContentType}.`);
+              }
+            }
+          } else {
+            console.warn("[profiles-upload] Step 2 — Browser does not support native WebP encoding. Using WASM fallback...");
+            try {
+              const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+              const webpArrayBuffer = await encodeWebP(imageData, { quality: 82 });
+              finalBlob = new Blob([webpArrayBuffer], { type: "image/webp" });
+              finalContentType = "image/webp";
+              console.info(`[profiles-upload] Step 2 ✅ WASM converted to WebP: ${Math.round(finalBlob.size / 1024)}KB`);
+            } catch (wasmError) {
+               console.error("[profiles-upload] WASM WebP encoding failed, keeping original format:", wasmError);
+            }
+          }
+        }
+
+        URL.revokeObjectURL(objectUrl);
+      } catch (e) {
+        console.warn("[profiles-upload] Step 2 — WebP conversion error, keeping compressed format:", e);
+      }
+
+      // ── Step 3: Upload directly to R2 via presigned URL ──
+      // No server-side processing needed. The file is already compressed + WebP.
       setUploading((prev) => prev ? { ...prev, stage: "uploading" } : null);
 
-      // Step 2: If the file is still larger than 4MB, Vercel will crash with a 413 Payload Too Large.
-      // We must bypass the server WebP conversion and upload directly to R2 via presign.
-      if (processedFile.size > 4 * 1024 * 1024) {
-        console.info(`[profiles-upload] ${file.name} is large (${Math.round(processedFile.size / 1024)}KB). Routing direct to R2.`);
-        const presignRes = await fetch("/api/upload/presign", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            fileName: file.name,
-            fileType: processedFile.type,
-            prefix: type,
-          }),
-        });
+      const ext = finalContentType === "image/webp" ? ".webp"
+        : finalContentType === "image/png" ? ".png"
+        : ".jpeg";
 
-        if (!presignRes.ok) {
-          let err = "Failed to get direct upload URL";
-          try { err = (await presignRes.json()).error || err; } catch {}
-          throw new Error(err);
-        }
-
-        const { uploadUrl, publicUrl } = await presignRes.json();
-        const putRes = await fetch(uploadUrl, {
-          method: "PUT",
-          headers: { "Content-Type": processedFile.type },
-          body: processedFile,
-        });
-
-        if (!putRes.ok) throw new Error("Direct upload to storage failed");
-        
-        console.info(`[profiles-upload] Uploaded ${file.name} to R2 directly. Now asking server to compress and convert to WebP...`);
-        showToast("Processing large image...", false);
-        
-        // Now ask the server to download it from R2, compress it to WebP, and re-upload it
-        const processRes = await fetch("/api/profiles/process-large-image", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            imageUrl: publicUrl,
-            prefix: type,
-          }),
-        });
-        
-        let finalUrl = publicUrl;
-        
-        if (processRes.ok) {
-           const processData = await processRes.json();
-           finalUrl = processData.url || publicUrl;
-           console.info(`[profiles-upload] Large image processed successfully: ${finalUrl}`);
-        } else {
-           console.warn(`[profiles-upload] Server failed to compress large image. Falling back to original R2 URL.`);
-        }
-        
-        const isLastInBatch = !batch || batch.current === batch.total;
-        if (isLastInBatch) {
-          setUploading((prev) => prev ? { ...prev, stage: "done" } : null);
-          await new Promise((r) => setTimeout(r, 800));
-        }
-        showToast("Image uploaded");
-        return String(finalUrl);
-      }
-
-      // Step 3: Safe to send to Vercel for WebP conversion
-      const formData = new FormData();
-      // Explicitly pass file.name so that if processedFile is a Blob, it gets sent with a filename
-      // Otherwise Next.js/Safari might treat it as a string field instead of a File object.
-      formData.append("file", processedFile, file.name);
-      formData.append("prefix", type);
-
-      const uploadRes = await fetch("/api/profiles/upload", {
+      const presignRes = await fetch("/api/profiles/upload", {
         method: "POST",
-        body: formData,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          fileType: finalContentType,
+          prefix: type,
+        }),
       });
 
-      if (!uploadRes.ok) {
-        let errorMsg = "Failed to upload image";
-        try {
-          const errData = await uploadRes.json();
-          errorMsg = errData.error || errorMsg;
-        } catch {}
-        showToast(errorMsg, true);
-        return null;
+      if (!presignRes.ok) {
+        let err = "Failed to get upload URL";
+        try { err = (await presignRes.json()).error || err; } catch {}
+        throw new Error(err);
       }
 
-      const { url } = await uploadRes.json();
-      
+      const { uploadUrl, publicUrl } = await presignRes.json();
+
+      const putRes = await fetch(uploadUrl, {
+        method: "PUT",
+        headers: { "Content-Type": finalContentType },
+        body: finalBlob,
+      });
+
+      if (!putRes.ok) throw new Error("Upload to storage failed");
+
+      console.info(`[profiles-upload] ✅ Done: ${file.name} → ${publicUrl} (${finalContentType}, ${Math.round(finalBlob.size / 1024)}KB)`);
+
       const isLastInBatch = !batch || batch.current === batch.total;
       if (isLastInBatch) {
         setUploading((prev) => prev ? { ...prev, stage: "done" } : null);
         await new Promise((r) => setTimeout(r, 800));
       }
       showToast(`${type.charAt(0).toUpperCase() + type.slice(1)} image uploaded`);
-      return url;
-
+      return String(publicUrl);
 
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Network error";
