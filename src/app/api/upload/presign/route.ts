@@ -1,11 +1,80 @@
 import { NextResponse } from "next/server";
-import { generatePresignedUrl } from "@/lib/r2-upload";
+import { generatePresignedUrl, uploadLandingAsset } from "@/lib/r2-upload";
+import { compressImage } from "@/lib/image-compress";
 import path from "path";
 
 export const dynamic = "force-dynamic";
 
+function extensionFromMimeType(mimeType: string): string {
+  const extMap: Record<string, string> = {
+    "image/avif": ".avif",
+    "image/jpeg": ".jpeg",
+    "image/jpg": ".jpg",
+    "image/png": ".png",
+    "image/webp": ".webp",
+    "image/heic": ".heic",
+    "image/heif": ".heif",
+    "video/mp4": ".mp4",
+    "video/webm": ".webm",
+    "video/quicktime": ".mov",
+  };
+  return extMap[mimeType.toLowerCase()] || ".bin";
+}
+
 export async function POST(request: Request) {
   try {
+    const contentType = request.headers.get("content-type") || "";
+
+    if (contentType.includes("multipart/form-data")) {
+      const formData = await request.formData();
+      const file = formData.get("file") as File | null;
+      const prefixValue = formData.get("prefix");
+      const prefix = typeof prefixValue === "string" ? prefixValue : "uploads";
+
+      if (!file || typeof file.arrayBuffer !== "function") {
+        return NextResponse.json({ error: "No valid file found in upload" }, { status: 400 });
+      }
+
+      if (!file.type.startsWith("image/")) {
+        return NextResponse.json({ error: "Only image uploads are supported" }, { status: 400 });
+      }
+
+      const arrayBuffer = await file.arrayBuffer();
+      const buffer = Buffer.from(arrayBuffer);
+      if (buffer.length === 0) {
+        return NextResponse.json({ error: "Uploaded file is empty" }, { status: 400 });
+      }
+
+      let uploadBuffer = buffer;
+      let uploadContentType = file.type;
+      let uploadExt = extensionFromMimeType(file.type);
+
+      try {
+        const compressed = await compressImage(buffer, file.type, { maxDimension: 3200 });
+        uploadBuffer = compressed.buffer;
+        uploadContentType = compressed.contentType;
+        uploadExt = compressed.ext;
+      } catch (compressionErr) {
+        console.warn("Upload AVIF/WebP conversion failed; uploading original image:", compressionErr);
+      }
+
+      const cleanPrefix = prefix.replace(/^\/+|\/+$/g, "");
+      const fileName = `${cleanPrefix}-${Date.now()}${uploadExt}`;
+      const keySuffix = `${cleanPrefix}/${fileName}`;
+
+      const uploaded = await uploadLandingAsset({
+        fileBuffer: uploadBuffer,
+        keySuffix,
+        contentType: uploadContentType,
+      });
+
+      return NextResponse.json(
+        { publicUrl: uploaded.url, uploadUrl: uploaded.url }, // Backwards compatibility for callers expecting publicUrl
+        { status: 201 }
+      );
+    }
+
+    // Standard presign path
     const body = await request.json();
     const { fileName, fileType, prefix } = body;
 
@@ -16,10 +85,8 @@ export async function POST(request: Request) {
       );
     }
 
-    // Clean prefix to ensure it doesn't have leading/trailing slashes
     const cleanPrefix = prefix.replace(/^\/+|\/+$/g, "");
     const ext = path.extname(fileName) || "";
-    // We generate a unique name so that uploads don't overwrite each other easily
     const uniqueName = `${cleanPrefix}-${Date.now()}${ext}`;
     const keySuffix = `${cleanPrefix}/${uniqueName}`;
 
@@ -33,7 +100,7 @@ export async function POST(request: Request) {
     const message = err instanceof Error ? err.message : "Unknown error";
     console.error("Presign URL generation error:", message);
     return NextResponse.json(
-      { error: `Failed to generate upload URL: ${message}` },
+      { error: `Failed to process upload: ${message}` },
       { status: 500 }
     );
   }

@@ -82,35 +82,29 @@ export default function AdminTestimonialsPage() {
       const compressedFile = await imageCompression(file, {
         maxSizeMB: 5,
         maxWidthOrHeight: 2048,
-        useWebWorker: true,
+        useWebWorker: false,
       });
 
-      const presignRes = await fetch("/api/upload/presign", {
+      const formData = new FormData();
+      formData.append("file", compressedFile);
+      formData.append("prefix", "testimonials");
+
+      const uploadRes = await fetch("/api/upload/presign", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          fileName: compressedFile.name,
-          fileType: compressedFile.type,
-          prefix: "testimonials",
-        }),
+        body: formData,
       });
-      const presignData = await presignRes.json();
-      if (!presignRes.ok) {
-        showToast(presignData.error || "Failed to get upload URL");
+
+      if (!uploadRes.ok) {
+        let err = "Failed to upload photo";
+        try {
+          const data = await uploadRes.json();
+          err = data.error || err;
+        } catch {}
+        showToast(err);
         return;
       }
       
-      const { uploadUrl, publicUrl } = presignData;
-
-      const uploadRes = await fetch(uploadUrl, {
-        method: "PUT",
-        headers: { "Content-Type": compressedFile.type },
-        body: compressedFile,
-      });
-      if (!uploadRes.ok) {
-        showToast("Direct upload to R2 failed");
-        return;
-      }
+      const { publicUrl } = await uploadRes.json();
       
       setForm((prev) => ({ ...prev, photo: toLandingAssetUrl(publicUrl) }));
       showToast("Photo uploaded");
@@ -251,7 +245,7 @@ export default function AdminTestimonialsPage() {
                   <input
                     ref={fileInputRef}
                     type="file"
-                    accept="image/*"
+                    accept="image/jpeg, image/png, image/webp"
                     onChange={handlePhotoUpload}
                     className="hidden"
                   />

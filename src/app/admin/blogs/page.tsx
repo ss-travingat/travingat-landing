@@ -104,35 +104,29 @@ export default function AdminBlogsPage() {
       const compressedFile = await imageCompression(file, {
         maxSizeMB: 5,
         maxWidthOrHeight: 2048,
-        useWebWorker: true,
+        useWebWorker: false,
       });
 
-      const presignRes = await fetch("/api/upload/presign", {
+      const formData = new FormData();
+      formData.append("file", compressedFile);
+      formData.append("prefix", "blogs");
+
+      const uploadRes = await fetch("/api/upload/presign", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          fileName: compressedFile.name,
-          fileType: compressedFile.type,
-          prefix: "blogs",
-        }),
+        body: formData,
       });
-      const presignData = await presignRes.json();
-      if (!presignRes.ok) {
-        showToast(presignData.error || "Failed to get upload URL");
+
+      if (!uploadRes.ok) {
+        let err = "Failed to upload photo";
+        try {
+          const data = await uploadRes.json();
+          err = data.error || err;
+        } catch {}
+        showToast(err);
         return null;
       }
       
-      const { uploadUrl, publicUrl } = presignData;
-
-      const uploadRes = await fetch(uploadUrl, {
-        method: "PUT",
-        headers: { "Content-Type": compressedFile.type },
-        body: compressedFile,
-      });
-      if (!uploadRes.ok) {
-        showToast("Direct upload to R2 failed");
-        return null;
-      }
+      const { publicUrl } = await uploadRes.json();
       return publicUrl;
     } catch {
       showToast("Upload failed");
@@ -615,7 +609,7 @@ export default function AdminBlogsPage() {
                 <input
                   ref={coverInputRef}
                   type="file"
-                  accept="image/*"
+                  accept="image/jpeg, image/png, image/webp"
                   onChange={handleCoverFileSelect}
                   className="hidden"
                 />
@@ -717,7 +711,7 @@ export default function AdminBlogsPage() {
               <input
                 ref={contentImageInputRef}
                 type="file"
-                accept="image/*"
+                accept="image/jpeg, image/png, image/webp"
                 onChange={handleContentImageSelect}
                 className="hidden"
               />

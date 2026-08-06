@@ -189,7 +189,7 @@ async function getImageLongEdge(file: File): Promise<number> {
   }
 }
 
-async function convertToOptimizedAvif(file: File): Promise<Blob> {
+async function convertToOptimizedWebp(file: File): Promise<Blob> {
   const originalSize = file.size;
   const longEdge = await getImageLongEdge(file);
   const attempts: AvifAttempt[] =
@@ -215,11 +215,12 @@ async function convertToOptimizedAvif(file: File): Promise<Blob> {
 
   let best: Blob | null = null;
   let bestUnderCap: Blob | null = null;
+  const isSafari = typeof window !== 'undefined' && /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 
   for (const attempt of attempts) {
     const candidate = await imageCompression(file, {
-      useWebWorker: true,
-      fileType: "image/avif",
+      useWebWorker: !isSafari,
+      fileType: "image/webp",
       initialQuality: attempt.quality,
       maxWidthOrHeight: attempt.maxEdge,
       alwaysKeepResolution: attempt.maxEdge >= longEdge,
@@ -357,6 +358,14 @@ async function compressImageViaCanvas(file: File): Promise<Blob | null> {
           });
         }
 
+        // Safari versions prior to 16.4 do not support WebP encoding in canvas either, falling back to PNG again.
+        // If it falls back to PNG, the file size balloons. In this case, we MUST fallback to JPEG encoding.
+        if (blob && blob.type === "image/png") {
+          blob = await new Promise<Blob | null>((resolve) => {
+            canvas.toBlob((b) => resolve(b), "image/jpeg", webpQuality);
+          });
+        }
+
         // Stop if we hit our budget or if the file actually became larger than the original 
         // (to prevent recursive destruction for no gain)
         if (blob && (blob.size <= TARGET_SIZE || blob.size > file.size)) {
@@ -428,36 +437,32 @@ async function uploadImageWithServerFallback(file: File, prefix: string): Promis
     return String(publicUrl || "");
   };
 
+  // 1. Try client-side direct upload first. This allows Safari to natively 
+  // convert HEIC images to WebP via canvas, avoiding backend sharp failures.
+  try {
+    const directUrl = await uploadDirectOriginal();
+    if (directUrl) return directUrl;
+  } catch (e) {
+    // Fall back to server if direct upload fails
+  }
+
+  // 2. Server fallback for environments where canvas compression or direct R2 PUT fails.
   const formData = new FormData();
   formData.append("file", file);
   formData.append("prefix", prefix);
 
-  let res: Response;
-  try {
-    res = await fetch("/api/profiles/upload", {
-      method: "POST",
-      body: formData,
-    });
-  } catch {
-    // If multipart request itself fails, try direct browser -> R2 upload.
-    const fallbackUrl = await uploadDirectOriginal();
-    return fallbackUrl;
-  }
+  const res = await fetch("/api/profiles/upload", {
+    method: "POST",
+    body: formData,
+  });
 
   if (!res.ok) {
-    let msg = "Server-side AVIF conversion failed";
+    let msg = "Server-side upload failed";
     try {
       const errData = await res.json();
       msg = errData.error || msg;
-    } catch {
-      // ignore parse failures
-    }
-    try {
-      const fallbackUrl = await uploadDirectOriginal();
-      return fallbackUrl;
-    } catch {
-      throw new Error(msg);
-    }
+    } catch {}
+    throw new Error(msg);
   }
 
   const data = await res.json();
@@ -1061,59 +1066,59 @@ export default function AdminProfilesPage() {
       let processedFile: File | Blob = file;
       let uploadContentType = file.type;
 
-      const compressedBlob = await compressImageViaCanvas(file);
-      if (compressedBlob && compressedBlob.size < file.size) {
-        processedFile = compressedBlob;
-        uploadContentType = compressedBlob.type;
-        const originalKb = Math.round(file.size / 1024);
-        const convertedKb = Math.round(compressedBlob.size / 1024);
-        const extName = uploadContentType === "image/avif" ? "AVIF" : "WebP";
-        console.info(`[profiles-upload] ${file.name}: ${originalKb}KB → ${convertedKb}KB (${extName}, ${Math.round((1 - compressedBlob.size / file.size) * 100)}% reduction)`);
+      // Skip client-side destruction if the image is already small.
+      if (file.size > 500 * 1024) {
+        const compressedBlob = await compressImageViaCanvas(file);
+        if (compressedBlob) {
+          // Only reject the compressed blob if it's massively larger (e.g. 2x) or if it's the exact same format but larger.
+          const isSameFormat = compressedBlob.type === file.type;
+          const isMassivelyLarger = compressedBlob.size > file.size * 2;
+          
+          if (!isMassivelyLarger && !(isSameFormat && compressedBlob.size > file.size)) {
+            processedFile = compressedBlob;
+            const originalKb = Math.round(file.size / 1024);
+            const convertedKb = Math.round(compressedBlob.size / 1024);
+            const extName = processedFile.type === "image/avif" ? "AVIF" : processedFile.type === "image/webp" ? "WebP" : "JPEG";
+            console.info(`[profiles-upload] ${file.name}: ${originalKb}KB → ${convertedKb}KB (${extName}, ${Math.round((1 - compressedBlob.size / file.size) * 100)}% reduction)`);
+          }
+        }
+      } else {
+        console.info(`[profiles-upload] ${file.name} is ${Math.round(file.size / 1024)}KB. Bypassing client-side compression.`);
       }
 
       setUploading((prev) => prev ? { ...prev, stage: "uploading" } : null);
 
-      // Step 2: Get a presigned URL from the API (lightweight, no file transfer)
-      const presignRes = await fetch("/api/profiles/upload", {
+      // Step 2: Send the heavily compressed file to the server for final transcoding to AVIF/WebP
+      const formData = new FormData();
+      formData.append("file", processedFile);
+      formData.append("prefix", type);
+
+      const uploadRes = await fetch("/api/profiles/upload", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          fileType: uploadContentType,
-          prefix: type,
-        }),
+        body: formData,
       });
 
-      if (!presignRes.ok) {
-        let errorMsg = "Failed to get upload URL";
+      if (!uploadRes.ok) {
+        let errorMsg = "Failed to upload image";
         try {
-          const errData = await presignRes.json();
+          const errData = await uploadRes.json();
           errorMsg = errData.error || errorMsg;
-        } catch { /* ignore parse error */ }
+        } catch {}
         showToast(errorMsg, true);
         return null;
       }
 
-      const { uploadUrl, publicUrl } = await presignRes.json();
-
-      // Step 3: Upload directly to R2 via presigned URL (bypasses Vercel entirely)
-      const r2Res = await fetch(uploadUrl, {
-        method: "PUT",
-        headers: { "Content-Type": uploadContentType },
-        body: processedFile,
-      });
-
-      if (!r2Res.ok) {
-        showToast("Failed to upload file to storage", true);
-        return null;
-      }
-
+      const { url } = await uploadRes.json();
+      
       const isLastInBatch = !batch || batch.current === batch.total;
       if (isLastInBatch) {
         setUploading((prev) => prev ? { ...prev, stage: "done" } : null);
         await new Promise((r) => setTimeout(r, 800));
       }
       showToast(`${type.charAt(0).toUpperCase() + type.slice(1)} image uploaded`);
-      return publicUrl;
+      return url;
+
+
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Network error";
       showToast(`Upload failed: ${msg}`, true);
@@ -1739,7 +1744,7 @@ export default function AdminProfilesPage() {
                       <input
                         ref={coverInputRef}
                         type="file"
-                        accept="image/*"
+                        accept="image/jpeg, image/png, image/webp"
                         onChange={handleCoverUpload}
                         className="hidden"
                       />
@@ -1801,7 +1806,7 @@ export default function AdminProfilesPage() {
                       <input
                         ref={avatarInputRef}
                         type="file"
-                        accept="image/*"
+                        accept="image/jpeg, image/png, image/webp"
                         onChange={handleAvatarUpload}
                         className="hidden"
                       />
@@ -1870,7 +1875,7 @@ export default function AdminProfilesPage() {
                     <input
                       ref={aboutInputRef}
                       type="file"
-                      accept="image/*,video/*"
+                      accept="image/jpeg, image/png, image/webp, video/*"
                       multiple
                       onChange={async (e) => {
                         const files = Array.from(e.target.files ?? []);
@@ -1969,7 +1974,7 @@ export default function AdminProfilesPage() {
                                 ) : "+ Add Media"}
                                 <input
                                   type="file"
-                                  accept="image/*,video/*"
+                                  accept="image/jpeg, image/png, image/webp, video/*"
                                   multiple
                                   className="hidden"
                                   onChange={async (e) => {
@@ -2173,7 +2178,7 @@ export default function AdminProfilesPage() {
                               ) : "+ Add Media"}
                               <input
                                 type="file"
-                                accept="image/*,video/*"
+                                accept="image/jpeg, image/png, image/webp, video/*"
                                 multiple
                                 className="hidden"
                                 onChange={async (e) => {
