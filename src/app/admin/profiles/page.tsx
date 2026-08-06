@@ -966,13 +966,36 @@ export default function AdminProfilesPage() {
 
         if (!putRes.ok) throw new Error("Direct upload to storage failed");
         
+        console.info(`[profiles-upload] Uploaded ${file.name} to R2 directly. Now asking server to compress and convert to WebP...`);
+        showToast("Processing large image...", false);
+        
+        // Now ask the server to download it from R2, compress it to WebP, and re-upload it
+        const processRes = await fetch("/api/profiles/process-large-image", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            imageUrl: publicUrl,
+            prefix: type,
+          }),
+        });
+        
+        let finalUrl = publicUrl;
+        
+        if (processRes.ok) {
+           const processData = await processRes.json();
+           finalUrl = processData.url || publicUrl;
+           console.info(`[profiles-upload] Large image processed successfully: ${finalUrl}`);
+        } else {
+           console.warn(`[profiles-upload] Server failed to compress large image. Falling back to original R2 URL.`);
+        }
+        
         const isLastInBatch = !batch || batch.current === batch.total;
         if (isLastInBatch) {
           setUploading((prev) => prev ? { ...prev, stage: "done" } : null);
           await new Promise((r) => setTimeout(r, 800));
         }
         showToast("Image uploaded");
-        return String(publicUrl);
+        return String(finalUrl);
       }
 
       // Step 3: Safe to send to Vercel for WebP conversion
