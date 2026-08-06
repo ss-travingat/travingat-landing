@@ -80,7 +80,7 @@ export default function AdminTestimonialsPage() {
     try {
       showToast("Compressing image...");
       const compressedFile = await imageCompression(file, {
-        maxSizeMB: 5,
+        maxSizeMB: 4,
         maxWidthOrHeight: 2048,
         useWebWorker: false,
       });

@@ -102,7 +102,7 @@ export default function AdminBlogsPage() {
       showToast("Compressing image...");
       const file = new File([blob], `${prefix}-${Date.now()}.jpg`, { type: "image/jpeg" });
       const compressedFile = await imageCompression(file, {
-        maxSizeMB: 5,
+        maxSizeMB: 4,
         maxWidthOrHeight: 2048,
         useWebWorker: false,
       });

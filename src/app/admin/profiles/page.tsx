@@ -322,27 +322,46 @@ async function convertToNativeAvifFallback(file: File): Promise<Blob | null> {
 }
 
 async function compressImageViaCanvas(file: File): Promise<Blob | null> {
-  try {
-    const bitmap = await createImageBitmap(file);
+    let imgSource: ImageBitmap | HTMLImageElement;
+    let width = 0;
+    let height = 0;
+
+    try {
+      imgSource = await createImageBitmap(file);
+      width = imgSource.width;
+      height = imgSource.height;
+    } catch {
+      // Fallback for Safari and other browsers where createImageBitmap fails
+      const img = new window.Image();
+      img.src = URL.createObjectURL(file);
+      await new Promise((resolve, reject) => {
+        img.onload = resolve;
+        img.onerror = reject;
+      });
+      imgSource = img;
+      width = img.width;
+      height = img.height;
+    }
+
     try {
       const TARGET_SIZE = 350 * 1024; // 350KB target
-      const maxEdge = Math.min(Math.max(bitmap.width, bitmap.height), 2560);
+      const maxEdge = Math.min(Math.max(width, height), 2560);
       let avifQuality = 0.55;
       let webpQuality = 0.82;
       let blob: Blob | null = null;
       let attempts = 0;
 
       // Calculate dimensions once
-      const longEdge = Math.max(bitmap.width, bitmap.height);
+      const longEdge = Math.max(width, height);
       const scale = maxEdge / Math.max(longEdge, 1);
-      const w = Math.max(1, Math.round(bitmap.width * scale));
-      const h = Math.max(1, Math.round(bitmap.height * scale));
+      const w = Math.max(1, Math.round(width * scale));
+      const h = Math.max(1, Math.round(height * scale));
       const canvas = document.createElement("canvas");
       canvas.width = w;
       canvas.height = h;
       const ctx = canvas.getContext("2d");
       if (!ctx) return null;
-      ctx.drawImage(bitmap, 0, 0, w, h);
+      ctx.drawImage(imgSource, 0, 0, w, h);
 
       while (attempts < 5) {
         // Try AVIF encoding first
@@ -380,11 +399,10 @@ async function compressImageViaCanvas(file: File): Promise<Blob | null> {
 
       return blob;
     } finally {
-      bitmap.close();
+      if ('close' in imgSource) {
+        imgSource.close();
+      }
     }
-  } catch {
-    return null;
-  }
 }
 
 async function uploadImageWithServerFallback(file: File, prefix: string): Promise<string | null> {
@@ -1088,6 +1106,45 @@ export default function AdminProfilesPage() {
 
       setUploading((prev) => prev ? { ...prev, stage: "uploading" } : null);
 
+      // Step 2: If the file is still larger than 4MB, Vercel will crash with a 413 Payload Too Large.
+      // We must bypass the server WebP conversion and upload directly to R2 via presign.
+      if (processedFile.size > 4 * 1024 * 1024) {
+        console.info(`[profiles-upload] ${file.name} is large (${Math.round(processedFile.size / 1024)}KB). Routing direct to R2.`);
+        const presignRes = await fetch("/api/upload/presign", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            fileName: file.name,
+            fileType: processedFile.type,
+            prefix: type,
+          }),
+        });
+
+        if (!presignRes.ok) {
+          let err = "Failed to get direct upload URL";
+          try { err = (await presignRes.json()).error || err; } catch {}
+          throw new Error(err);
+        }
+
+        const { uploadUrl, publicUrl } = await presignRes.json();
+        const putRes = await fetch(uploadUrl, {
+          method: "PUT",
+          headers: { "Content-Type": processedFile.type },
+          body: processedFile,
+        });
+
+        if (!putRes.ok) throw new Error("Direct upload to storage failed");
+        
+        const isLastInBatch = !batch || batch.current === batch.total;
+        if (isLastInBatch) {
+          setUploading((prev) => prev ? { ...prev, stage: "done" } : null);
+          await new Promise((r) => setTimeout(r, 800));
+        }
+        showToast("Image uploaded");
+        return String(publicUrl);
+      }
+
+      // Step 3: Safe to send to Vercel for WebP conversion
       const formData = new FormData();
       // Explicitly pass file.name so that if processedFile is a Blob, it gets sent with a filename
       // Otherwise Next.js/Safari might treat it as a string field instead of a File object.
