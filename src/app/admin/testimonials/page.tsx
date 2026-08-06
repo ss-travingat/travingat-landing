@@ -86,7 +86,7 @@ export default function AdminTestimonialsPage() {
       });
 
       const formData = new FormData();
-      formData.append("file", compressedFile);
+      formData.append("file", compressedFile, file.name);
       formData.append("prefix", "testimonials");
 
       const uploadRes = await fetch("/api/upload/presign", {

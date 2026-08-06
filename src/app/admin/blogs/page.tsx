@@ -108,7 +108,7 @@ export default function AdminBlogsPage() {
       });
 
       const formData = new FormData();
-      formData.append("file", compressedFile);
+      formData.append("file", compressedFile, file.name);
       formData.append("prefix", "blogs");
 
       const uploadRes = await fetch("/api/upload/presign", {

@@ -1088,9 +1088,10 @@ export default function AdminProfilesPage() {
 
       setUploading((prev) => prev ? { ...prev, stage: "uploading" } : null);
 
-      // Step 2: Send the heavily compressed file to the server for final transcoding to AVIF/WebP
       const formData = new FormData();
-      formData.append("file", processedFile);
+      // Explicitly pass file.name so that if processedFile is a Blob, it gets sent with a filename
+      // Otherwise Next.js/Safari might treat it as a string field instead of a File object.
+      formData.append("file", processedFile, file.name);
       formData.append("prefix", type);
 
       const uploadRes = await fetch("/api/profiles/upload", {
