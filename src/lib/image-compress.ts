@@ -1,4 +1,5 @@
 import "server-only";
+import sharp from "sharp";
 
 interface CompressResult {
   buffer: Buffer;
@@ -42,10 +43,7 @@ export async function compressImage(
     return { buffer: fileBuffer, contentType: mimeType, ext };
   }
 
-  // Dynamic import so that a missing/incompatible sharp native binary only
-  // fails inside this function (caught by callers) rather than crashing the
-  // entire route module at load time.
-  const sharp = (await import("sharp")).default;
+
 
   const resized = sharp(fileBuffer)
     // Auto-rotate based on EXIF orientation, then strip all metadata
