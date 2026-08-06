@@ -321,185 +321,7 @@ async function convertToNativeAvifFallback(file: File): Promise<Blob | null> {
   }
 }
 
-async function compressImageViaCanvas(file: File): Promise<Blob | null> {
-    let imgSource: ImageBitmap | HTMLImageElement;
-    let width = 0;
-    let height = 0;
 
-    try {
-      imgSource = await createImageBitmap(file);
-      width = imgSource.width;
-      height = imgSource.height;
-    } catch {
-      // Fallback for Safari and other browsers where createImageBitmap fails
-      const img = new window.Image();
-      img.src = URL.createObjectURL(file);
-      await new Promise((resolve, reject) => {
-        img.onload = resolve;
-        img.onerror = reject;
-      });
-      imgSource = img;
-      width = img.width;
-      height = img.height;
-    }
-
-    try {
-      const TARGET_SIZE = 350 * 1024; // 350KB target
-      const maxEdge = Math.min(Math.max(width, height), 2560);
-      let avifQuality = 0.55;
-      let webpQuality = 0.82;
-      let blob: Blob | null = null;
-      let attempts = 0;
-
-      // Calculate dimensions once
-      const longEdge = Math.max(width, height);
-      const scale = maxEdge / Math.max(longEdge, 1);
-      const w = Math.max(1, Math.round(width * scale));
-      const h = Math.max(1, Math.round(height * scale));
-      const canvas = document.createElement("canvas");
-      canvas.width = w;
-      canvas.height = h;
-      const ctx = canvas.getContext("2d");
-      if (!ctx) return null;
-      ctx.drawImage(imgSource, 0, 0, w, h);
-
-      while (attempts < 5) {
-        // Try AVIF encoding first
-        blob = await new Promise<Blob | null>((resolve) => {
-          canvas.toBlob((b) => resolve(b), "image/avif", avifQuality);
-        });
-
-        // If the browser doesn't support AVIF encoding (e.g. Safari), it falls back to PNG silently.
-        // We detect this and explicitly request WebP instead.
-        if (blob && blob.type !== "image/avif") {
-          blob = await new Promise<Blob | null>((resolve) => {
-            canvas.toBlob((b) => resolve(b), "image/webp", webpQuality);
-          });
-        }
-
-        // Safari versions prior to 16.4 do not support WebP encoding in canvas either, falling back to PNG again.
-        // If it falls back to PNG, the file size balloons. In this case, we MUST fallback to JPEG encoding.
-        if (blob && blob.type === "image/png") {
-          blob = await new Promise<Blob | null>((resolve) => {
-            canvas.toBlob((b) => resolve(b), "image/jpeg", webpQuality);
-          });
-        }
-
-        // Stop if we hit our budget or if the file actually became larger than the original 
-        // (to prevent recursive destruction for no gain)
-        if (blob && (blob.size <= TARGET_SIZE || blob.size > file.size)) {
-          break;
-        }
-
-        // If it's still too large, aggressively reduce quality for the next iteration
-        avifQuality = Math.max(0.1, avifQuality - 0.1);
-        webpQuality = Math.max(0.2, webpQuality - 0.15);
-        attempts++;
-      }
-
-      return blob;
-    } finally {
-      if ('close' in imgSource) {
-        imgSource.close();
-      }
-    }
-}
-
-async function uploadImageWithServerFallback(file: File, prefix: string): Promise<string | null> {
-  const uploadDirectOriginal = async (): Promise<string> => {
-    // Compress to AVIF/WebP in the browser before direct upload so we never
-    // send an uncompressed original to R2.
-    let uploadBlob: Blob = file;
-    let uploadType = file.type;
-    try {
-      const compressed = await compressImageViaCanvas(file);
-      if (compressed && compressed.size < file.size * 0.98) {
-        uploadBlob = compressed;
-        uploadType = compressed.type;
-      }
-    } catch {
-      // keep original
-    }
-
-    const presignRes = await fetch("/api/profiles/upload", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        fileType: uploadType,
-        prefix,
-      }),
-    });
-
-    if (!presignRes.ok) {
-      let msg = "Failed to get direct upload URL";
-      try {
-        const errData = await presignRes.json();
-        msg = errData.error || msg;
-      } catch {
-        // ignore parse failures
-      }
-      throw new Error(msg);
-    }
-
-    const { uploadUrl, publicUrl } = await presignRes.json();
-    const putRes = await fetch(uploadUrl, {
-      method: "PUT",
-      headers: { "Content-Type": uploadType },
-      body: uploadBlob,
-    });
-
-    if (!putRes.ok) {
-      throw new Error("Direct upload to storage failed");
-    }
-
-    return String(publicUrl || "");
-  };
-
-  // 1. Try client-side direct upload first. This allows Safari to natively 
-  // convert HEIC images to WebP via canvas, avoiding backend sharp failures.
-  try {
-    const directUrl = await uploadDirectOriginal();
-    if (directUrl) return directUrl;
-  } catch (e) {
-    // Fall back to server if direct upload fails
-  }
-
-  // 2. Server fallback for environments where canvas compression or direct R2 PUT fails.
-  const formData = new FormData();
-  formData.append("file", file);
-  formData.append("prefix", prefix);
-
-  const res = await fetch("/api/profiles/upload", {
-    method: "POST",
-    body: formData,
-  });
-
-  if (!res.ok) {
-    let msg = "Server-side upload failed";
-    try {
-      const errData = await res.json();
-      msg = errData.error || msg;
-    } catch {}
-    throw new Error(msg);
-  }
-
-  const data = await res.json();
-  const returnedUrl = String(data?.url || "");
-  const returnedContentType = String(data?.contentType || "").toLowerCase();
-
-  if (!returnedUrl) {
-    throw new Error("Server returned an empty upload URL");
-  }
-
-  const isSupportedImageUrl = /\.(avif|webp|jpe?g|png|heic|heif)($|\?)/i.test(returnedUrl);
-  const isImageContentType = returnedContentType.startsWith("image/");
-
-  if (!isSupportedImageUrl && !isImageContentType) {
-    throw new Error("Server returned an unsupported image format");
-  }
-
-  return returnedUrl;
-}
 
 const emptyForm: Omit<Profile, "id"> = {
   name: "",
@@ -1086,19 +908,28 @@ export default function AdminProfilesPage() {
 
       // Skip client-side destruction if the image is already small.
       if (file.size > 500 * 1024) {
-        const compressedBlob = await compressImageViaCanvas(file);
-        if (compressedBlob) {
-          // Only reject the compressed blob if it's massively larger (e.g. 2x) or if it's the exact same format but larger.
-          const isSameFormat = compressedBlob.type === file.type;
-          const isMassivelyLarger = compressedBlob.size > file.size * 2;
+        try {
+          const compressedFile = await imageCompression(file, {
+            maxSizeMB: 0.35, // 350KB
+            maxWidthOrHeight: 2560,
+            useWebWorker: false,
+          });
           
-          if (!isMassivelyLarger && !(isSameFormat && compressedBlob.size > file.size)) {
-            processedFile = compressedBlob;
-            const originalKb = Math.round(file.size / 1024);
-            const convertedKb = Math.round(compressedBlob.size / 1024);
-            const extName = processedFile.type === "image/avif" ? "AVIF" : processedFile.type === "image/webp" ? "WebP" : "JPEG";
-            console.info(`[profiles-upload] ${file.name}: ${originalKb}KB → ${convertedKb}KB (${extName}, ${Math.round((1 - compressedBlob.size / file.size) * 100)}% reduction)`);
+          if (compressedFile) {
+            // Only reject the compressed blob if it's massively larger (e.g. 2x) or if it's the exact same format but larger.
+            const isSameFormat = compressedFile.type === file.type;
+            const isMassivelyLarger = compressedFile.size > file.size * 2;
+            
+            if (!isMassivelyLarger && !(isSameFormat && compressedFile.size > file.size)) {
+              processedFile = compressedFile;
+              const originalKb = Math.round(file.size / 1024);
+              const convertedKb = Math.round(compressedFile.size / 1024);
+              const extName = processedFile.type === "image/avif" ? "AVIF" : processedFile.type === "image/webp" ? "WebP" : "JPEG";
+              console.info(`[profiles-upload] ${file.name}: ${originalKb}KB → ${convertedKb}KB (${extName}, ${Math.round((1 - compressedFile.size / file.size) * 100)}% reduction)`);
+            }
           }
+        } catch (e) {
+          console.warn("Client-side compression failed, falling back to original file:", e);
         }
       } else {
         console.info(`[profiles-upload] ${file.name} is ${Math.round(file.size / 1024)}KB. Bypassing client-side compression.`);
