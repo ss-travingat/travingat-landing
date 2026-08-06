@@ -1,5 +1,4 @@
 import "server-only";
-import sharp from "sharp";
 
 interface CompressResult {
   buffer: Buffer;
@@ -12,7 +11,7 @@ interface CompressResult {
  * Compress an image buffer before uploading to R2.
  *
  * Strategy:
- * - Converts all raster images (JPEG, PNG, WEBP, TIFF, etc.) to AVIF with
+ * - Converts all raster images (JPEG, PNG, WEBP, TIFF, etc.) to WebP with
  *   optimized lossy compression for best size-to-quality ratio.
  * - SVG and GIF files are returned as-is (SVGs are already tiny; GIFs may be
  *   animated and sharp would flatten them).
@@ -43,7 +42,9 @@ export async function compressImage(
     return { buffer: fileBuffer, contentType: mimeType, ext };
   }
 
-
+  // Dynamic import — Next.js needs serverExternalPackages: ["sharp"] in
+  // next.config.ts so Vercel bundles the native binary correctly.
+  const sharp = (await import("sharp")).default;
 
   const resized = sharp(fileBuffer)
     // Auto-rotate based on EXIF orientation, then strip all metadata
