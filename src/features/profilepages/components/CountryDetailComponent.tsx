@@ -537,7 +537,12 @@ export default function CountryDetailComponent({
                                   <button
                                     type="button"
                                     role="menuitem"
-                                    onClick={(event) => { event.preventDefault(); event.stopPropagation(); setOpenContextMenuId(null); }}
+                                    onClick={(event) => { 
+                                      event.preventDefault(); 
+                                      event.stopPropagation(); 
+                                      showComingSoonToast("featureLaunch");
+                                      setOpenContextMenuId(null); 
+                                    }}
                                     className="flex w-full items-center gap-3 text-[15px] font-medium tracking-[-0.3px] text-white hover:text-[#d4d4d4] transition-colors"
                                   >
                                     <span className="material-symbols-rounded text-[22px]">block</span>

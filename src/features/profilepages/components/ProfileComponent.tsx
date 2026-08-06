@@ -262,7 +262,13 @@ export function ContextMenu({
               onClick={(event) => {
                 event.preventDefault();
                 event.stopPropagation();
-                handleView();
+                const lowerLabel = viewLabel.toLowerCase();
+                if (lowerLabel !== "view country" && lowerLabel !== "view collection") {
+                  showComingSoonToast("featureLaunch");
+                  onClose();
+                } else {
+                  handleView();
+                }
               }}
               disabled={!viewHref}
               className={`flex w-full items-center gap-3 text-[14px] font-normal text-white transition ${viewHref ? "hover:text-[#d4d4d4]" : "opacity-50 cursor-not-allowed"
@@ -288,7 +294,8 @@ export function ContextMenu({
             onClick={(event) => {
               event.preventDefault();
               event.stopPropagation();
-              handleShare();
+              showComingSoonToast("featureLaunch");
+              onClose();
             }}
             className="flex w-full items-center gap-3 text-[14px] font-normal text-white hover:text-[#d4d4d4] transition-colors"
           >
@@ -302,8 +309,8 @@ export function ContextMenu({
             onClick={(event) => {
               event.preventDefault();
               event.stopPropagation();
-              setIsWaitlistOpen(true);
               showComingSoonToast("featureLaunch");
+              onClose();
             }}
             className="flex w-full items-center gap-3 text-[14px] font-normal text-white hover:text-[#d4d4d4] transition-colors"
           >
@@ -317,6 +324,7 @@ export function ContextMenu({
             onClick={(event) => {
               event.preventDefault();
               event.stopPropagation();
+              showComingSoonToast("featureLaunch");
               onClose();
             }}
             className="flex w-full items-center gap-3 text-[14px] font-normal text-white hover:text-[#d4d4d4] transition-colors"
@@ -338,167 +346,6 @@ export function ContextMenu({
   );
 }
 
-const SHARE_ICON_ASSETS = {
-  whatsapp: "/images/share-icons/whatsapp.svg",
-  messenger: "/images/share-icons/messenger.svg",
-  facebook: "/images/share-icons/facebook.svg",
-  instagram: "/images/share-icons/instagram.svg",
-  x: "/images/share-icons/x.svg",
-} as const;
-
-function ShareIcon({
-  type,
-  className = "h-10 w-10",
-}: {
-  type: "whatsapp" | "messenger" | "facebook" | "instagram" | "x";
-  className?: string;
-}) {
-  return (
-    <img
-      src={SHARE_ICON_ASSETS[type]}
-      alt=""
-      aria-hidden="true"
-      className={className}
-    />
-  );
-}
-
-function ShareCard({
-  data,
-  onClose,
-}: {
-  data: ShareCardData;
-  onClose: () => void;
-}) {
-  const [isLinkCopied, setIsLinkCopied] = useState(false);
-  const avatarSrc = toLandingAssetUrl(data.ownerAvatar);
-  const flagSrc = toFlagAssetPath(data.flagCode);
-  const imageClassName = data.kind === "media"
-    ? "w-50 aspect-[200/194]"
-    : "w-full max-w-84 aspect-[336/262]";
-
-  const handleSocialShare = (platform: string) => {
-    const text = `Check out ${data.title} by ${data.ownerName} on Travingat`;
-    const url = data.shareUrl;
-
-    switch (platform) {
-      case "whatsapp":
-        window.open(`https://wa.me/?text=${encodeURIComponent(`${text}\n${url}`)}`, "_blank");
-        break;
-      case "messenger":
-        window.open(`https://www.facebook.com/dialog/send?app_id=YOUR_APP_ID&link=${encodeURIComponent(url)}&redirect_uri=${encodeURIComponent(window.location.origin)}`, "_blank");
-        break;
-      case "facebook":
-        window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, "_blank");
-        break;
-      case "instagram":
-        // Instagram doesn't support direct sharing from web, redirect to Instagram profile
-        window.open(`https://instagram.com`, "_blank");
-        break;
-      case "x":
-        window.open(`https://x.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, "_blank");
-        break;
-    }
-  };
-
-  const handleCopyLink = () => {
-    navigator.clipboard.writeText(data.shareUrl).catch(() => { });
-    setIsLinkCopied(true);
-    window.setTimeout(() => setIsLinkCopied(false), 1800);
-  };
-
-  return (
-    <div
-      className="fixed inset-0 z-[110] flex items-start justify-center bg-black/90 px-4 py-10"
-      onClick={onClose}
-    >
-      <div
-        className="w-full max-w-100 rounded-2xl border border-black-300 bg-black-800 p-8 shadow-[20px_20px_10px_rgba(0,0,0,0.25)]"
-        onClick={(event) => {
-          event.preventDefault();
-          event.stopPropagation();
-        }}
-      >
-        <div className="flex flex-col items-center gap-8">
-          <div className="flex flex-col items-center gap-6 w-full">
-            <div className="flex flex-col items-center pb-8">
-              <div className={`relative overflow-hidden rounded-2xl bg-black-700 ${imageClassName}`}>
-                <img
-                  src={toLandingAssetUrl(data.imageUrl)}
-                  alt={data.title}
-                  loading="lazy"
-                  decoding="async"
-                  className="h-full w-full object-cover"
-                />
-              </div>
-              <div className="relative z-10 -mt-7 h-15 w-15 overflow-hidden rounded-xl border-2 border-[#111] shadow-[8px_8px_12px_rgba(0,0,0,0.25)]">
-                <img
-                  src={toLandingAssetUrl(avatarSrc)}
-                  alt="Profile avatar"
-                  loading="lazy"
-                  decoding="async"
-                  className="h-full w-full object-cover"
-                />
-              </div>
-            </div>
-
-            <div className="flex items-center justify-center gap-2 text-center w-full">
-              <p className="ds-font-display text-[24px] leading-8 tracking-[-0.5px] text-white font-medium">
-                {data.title}
-              </p>
-              {flagSrc ? (
-                <img
-                  src={flagSrc}
-                  alt=""
-                  className="h-4.5 w-7 rounded-xs object-cover shadow-[1.68px_1.68px_0.84px_rgba(0,0,0,0.18)]"
-                />
-              ) : null}
-            </div>
-
-            <div className="flex flex-col items-center gap-1 text-center w-full">
-              <p className="text-[16px] leading-6 tracking-[-0.096px] text-white font-medium">{data.ownerName}</p>
-              <p className="text-[14px] leading-5 tracking-[-0.084px] text-white-400">{data.ownerHandle}</p>
-            </div>
-          </div>
-
-          <div className="flex items-center justify-center gap-3 w-full">
-            {(
-              [
-                { type: "whatsapp" },
-                { type: "messenger" },
-                { type: "facebook" },
-                { type: "instagram" },
-                { type: "x" },
-              ] as const
-            ).map((item) => (
-              <button
-                key={item.type}
-                type="button"
-                onClick={() => handleSocialShare(item.type)}
-                className="flex-1 aspect-square rounded-xl bg-black-300 p-2.5 grid place-items-center hover:bg-black-200 transition"
-                aria-label={`Share via ${item.type}`}
-              >
-                <ShareIcon type={item.type} />
-              </button>
-            ))}
-          </div>
-
-          <button
-            type="button"
-            onClick={handleCopyLink}
-            className={`w-full flex items-center justify-center rounded-full px-4 py-3 text-[14px] font-medium tracking-[-0.084px] transition-all duration-200 ${isLinkCopied ? "bg-black text-white" : "bg-white text-black hover:bg-[#ececec]"
-              }`}
-          >
-            <span className={isLinkCopied ? "inline-flex items-center gap-2 animate-pulse" : "inline-flex items-center gap-2"}>
-              <span className="material-symbols-rounded text-[18px]">{isLinkCopied ? "link" : "content_copy"}</span>
-              <span>{isLinkCopied ? "Link copied" : "Copy Link"}</span>
-            </span>
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
 
 function PhotoCarouselModal({
   items,
@@ -1001,7 +848,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
   }, [activeTab]);
   const [showFollowModal, setShowFollowModal] = useState(false);  // Local states for photo carousels on the cards
   const [openContextMenuId, setOpenContextMenuId] = useState<string | null>(null);
-  const [shareCardData, setShareCardData] = useState<ShareCardData | null>(null);
+
   const [carouselIndex, setCarouselIndex] = useState<number | null>(null);
   const [carouselItems, setCarouselItems] = useState<MediaItem[]>([]);
   const contextMenuRef = useRef<HTMLDivElement>(null);
@@ -1120,18 +967,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
     };
   }, [openContextMenuId]);
 
-  useEffect(() => {
-    if (!shareCardData) return;
 
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        setShareCardData(null);
-      }
-    };
-
-    document.addEventListener("keydown", onKeyDown);
-    return () => document.removeEventListener("keydown", onKeyDown);
-  }, [shareCardData]);
 
   const displayName = profile.name;
   const handle = profile.handle.startsWith("@") ? profile.handle : `@${profile.handle}`;
@@ -1347,7 +1183,6 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
 
   const closeAllOverlays = () => {
     setOpenContextMenuId(null);
-    setShareCardData(null);
   };
 
   useEffect(() => {
@@ -1448,7 +1283,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
   };
 
   const openShareCard = (data: ShareCardData) => {
-    setShareCardData(data);
+    showComingSoonToast("featureLaunch");
     setOpenContextMenuId(null);
   };
 
@@ -1804,8 +1639,20 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
           {/* Desktop: pill tabs with text */}
           <div 
             id="profile-desktop-tabs" 
-            className={`hidden min-[1200px]:flex items-center justify-center gap-2 flex-wrap min-[1200px]:mt-[48px] min-[1440px]:mt-[64px] sticky z-40 bg-black py-4 -mx-4 px-4 lg:-mx-8 lg:px-8 xl:-mx-10 xl:px-10 transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] top-[120px] [.header-hidden_&]:top-0`}
+            className={`hidden min-[1200px]:flex items-center justify-center gap-2 flex-wrap min-[1200px]:mt-[48px] min-[1440px]:mt-[64px] sticky z-40 py-6 -mx-4 px-4 lg:-mx-8 lg:px-8 xl:-mx-10 xl:px-10 transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] top-[120px] [.header-hidden_&]:top-0`}
           >
+            {/* Background gradient and progressive blur */}
+            <div 
+              className="absolute inset-0 pointer-events-none"
+              style={{
+                zIndex: -1,
+                background: 'linear-gradient(180deg, rgba(0, 0, 0, 0.60) 0%, rgba(0, 0, 0, 0.00) 100%)',
+                backdropFilter: 'blur(12px)',
+                WebkitBackdropFilter: 'blur(12px)',
+                maskImage: 'linear-gradient(to bottom, black 0%, transparent 100%)',
+                WebkitMaskImage: 'linear-gradient(to bottom, black 0%, transparent 100%)'
+              }}
+            />
             <button
               onClick={() => handleTabChange("all")}
               className={`rounded-full px-6 py-2 text-[16px] leading-6 tracking-[-0.096px] transition ${activeTab === "all"
@@ -2343,12 +2190,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
         </div>
       )}
 
-      {shareCardData && (
-        <ShareCard
-          data={shareCardData}
-          onClose={() => setShareCardData(null)}
-        />
-      )}
+
 
       {carouselIndex !== null && activeCarouselItem ? (
         <PhotoCarouselModal
@@ -2358,18 +2200,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
           onNext={goToNextCarouselItem}
           onPrev={goToPrevCarouselItem}
           onSelectIndex={setCarouselIndex}
-          onShareClick={() => {
-            setShareCardData({
-              kind: "media",
-              title: "Photo",
-              imageUrl: activeCarouselItem.fileUrl,
-              shareUrl: window.location.href,
-              flagCode: displayCountryFlagCode,
-              ownerName: shareOwnerName,
-              ownerHandle: shareOwnerHandle,
-              ownerAvatar: shareOwnerAvatar,
-            });
-          }}
+          onShareClick={() => showComingSoonToast("featureLaunch")}
           profileName={shareOwnerName}
           profileHandle={shareOwnerHandle}
           profileAvatar={shareOwnerAvatar}

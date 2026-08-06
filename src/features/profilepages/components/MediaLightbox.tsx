@@ -139,8 +139,7 @@ export function MediaLightbox({
                     <button
                       type="button"
                       onClick={(e) => {
-                        if (onShareClick) onShareClick();
-                        else showComingSoonToast("featureLaunch");
+                        showComingSoonToast("featureLaunch");
                       }}
                       className="flex h-9 w-9 items-center justify-center rounded-full bg-black/40 backdrop-blur-sm text-white transition hover:bg-black/60"
                       aria-label="Share"
@@ -149,6 +148,7 @@ export function MediaLightbox({
                     </button>
                     <button
                       type="button"
+                      onClick={() => showComingSoonToast("featureLaunch")}
                       className="flex h-9 w-9 items-center justify-center rounded-full bg-black/40 backdrop-blur-sm text-white transition hover:bg-black/60"
                       aria-label="More options"
                     >

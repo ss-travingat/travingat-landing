@@ -100,10 +100,10 @@ export default function LandingHeader({
                 setIsScrolled(false)
             }
 
-            if (currentScrollY > lastScrollY && currentScrollY > 100) {
+            if (currentScrollY > 100) {
                 setHidden(true)
                 document.body.classList.add("header-hidden")
-            } else if (currentScrollY < lastScrollY) {
+            } else if (currentScrollY <= 10) {
                 setHidden(false)
                 document.body.classList.remove("header-hidden")
             }
