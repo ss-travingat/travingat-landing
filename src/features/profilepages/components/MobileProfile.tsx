@@ -205,6 +205,9 @@ export function MobileHero({
   flagOverflowCount,
 }: MobileHeroProps) {
   const { showComingSoonToast } = useMobileComingSoon();
+  const [openTooltipIndex, setOpenTooltipIndex] = useState<number | null>(null);
+  const [openBioTooltip, setOpenBioTooltip] = useState(false);
+  
   return (
     <section id="profile-mobile-hero" className="min-[1200px]:hidden space-y-[12px] flex flex-col items-center w-full">
       <div className="flex flex-col items-center gap-[20px] rounded-[24px] w-full relative">
@@ -235,13 +238,32 @@ export function MobileHero({
         <div className="flex flex-col items-center gap-[8px] w-full min-[810px]:max-w-[400px] min-[810px]:mx-auto">
           <div className="flex items-center justify-center gap-1.5 text-[#696969] text-[14px] leading-[20px] tracking-[-0.5px] font-[family-name:var(--font-inter-google)] font-normal">
             {profileFlagSrc ? (
-              <img
-                src={profileFlagSrc}
-                alt={`${basedIn} flag`}
-                className="h-[10px] w-[15px] rounded-[2px] object-cover"
-                loading="lazy"
-                decoding="async"
-              />
+              <TooltipProvider delayDuration={100}>
+                <Tooltip 
+                  content={basedIn} 
+                  theme="light" 
+                  side="top"
+                  open={openBioTooltip}
+                  onOpenChange={setOpenBioTooltip}
+                >
+                  <button 
+                    type="button" 
+                    className="focus:outline-none flex items-center justify-center" 
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setOpenBioTooltip(!openBioTooltip);
+                    }}
+                  >
+                    <img
+                      src={profileFlagSrc}
+                      alt={`${basedIn} flag`}
+                      className="h-[10px] w-[15px] rounded-[2px] object-cover cursor-pointer"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  </button>
+                </Tooltip>
+              </TooltipProvider>
             ) : (
               <span>{profileFlagCode}</span>
             )}
@@ -256,14 +278,30 @@ export function MobileHero({
             {headerFlagCodes.map((code, index) => {
               const countryName = getCountryName(code);
               return (
-                <Tooltip key={`${code}-${index}`} content={countryName} theme="light" side="top">
-                  <img
-                    src={toFlagAssetPath(code) || ""}
-                    alt={`${countryName} flag`}
-                    className="h-[17px] w-[26px] rounded-[2px] object-cover shrink-0 cursor-pointer"
-                    loading="lazy"
-                    decoding="async"
-                  />
+                <Tooltip 
+                  key={`${code}-${index}`} 
+                  content={countryName} 
+                  theme="light" 
+                  side="top"
+                  open={openTooltipIndex === index}
+                  onOpenChange={(isOpen) => setOpenTooltipIndex(isOpen ? index : null)}
+                >
+                  <button 
+                    type="button" 
+                    className="focus:outline-none shrink-0" 
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setOpenTooltipIndex(openTooltipIndex === index ? null : index);
+                    }}
+                  >
+                    <img
+                      src={toFlagAssetPath(code) || ""}
+                      alt={`${countryName} flag`}
+                      className="h-[17px] w-[26px] rounded-[2px] object-cover cursor-pointer"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  </button>
                 </Tooltip>
               );
             })}
