@@ -1,5 +1,7 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
+import { Tooltip, TooltipProvider } from "@/components/ui/Tooltip";
+import { getCountryName } from "@/lib/countries";
 import Link from "next/link";
 import { toLandingAssetUrl } from "@/lib/landing-assets";
 import { type SampleProfile } from "../data/profile-data";
@@ -250,16 +252,22 @@ export function MobileHero({
         </div>
 
         <div className="flex flex-wrap items-start justify-center gap-[4px] px-[6px] w-full min-[810px]:max-w-[400px] min-[810px]:mx-auto">
-          {headerFlagCodes.map((code, index) => (
-            <img
-              key={`${code}-${index}`}
-              src={toFlagAssetPath(code) || ""}
-              alt={`${code} flag`}
-              className="h-[17px] w-[26px] rounded-[2px] object-cover shrink-0"
-              loading="lazy"
-              decoding="async"
-            />
-          ))}
+          <TooltipProvider delayDuration={100}>
+            {headerFlagCodes.map((code, index) => {
+              const countryName = getCountryName(code);
+              return (
+                <Tooltip key={`${code}-${index}`} content={countryName} theme="light" side="top">
+                  <img
+                    src={toFlagAssetPath(code) || ""}
+                    alt={`${countryName} flag`}
+                    className="h-[17px] w-[26px] rounded-[2px] object-cover shrink-0 cursor-pointer"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </Tooltip>
+              );
+            })}
+          </TooltipProvider>
           {flagOverflowCount > 0 && (
             <div className="flex h-[17px] w-[26px] shrink-0 items-center justify-center overflow-hidden rounded-[2px] bg-white">
               <span className="font-medium text-violet-600 text-[10px] text-center tracking-[-0.408px] whitespace-nowrap">

@@ -17,6 +17,8 @@ import LoadedImage from "@/components/ui/LoadedImage";
 import { MasonryImageGrid } from "@/components/ui/MasonryImageGrid";
 import type { MasonryItemWithDimensions } from "@/hooks/useMasonryAdvanced";
 import { useMobileComingSoon } from "@/components/ui/MobileComingSoonToast";
+import { Tooltip, TooltipProvider } from "@/components/ui/Tooltip";
+import { getCountryName } from "@/lib/countries";
 
 /* eslint-disable @next/next/no-img-element */
 
@@ -1522,16 +1524,22 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                 </div>
 
                 <div className="flex w-full flex-wrap content-start items-start gap-1.5 lg:gap-2 xl:w-[480px] xl:gap-[8px]">
-                  {headerFlagCodes.map((code, index) => (
-                    <img
-                      key={`${code}-${index}`}
-                      src={toFlagAssetPath(code) || ""}
-                      alt={`${code} flag`}
-                      className="h-3 w-[18px] lg:h-4 lg:w-6 xl:h-5 xl:w-[30px] rounded-xs object-cover shrink-0"
-                      loading="lazy"
-                      decoding="async"
-                    />
-                  ))}
+                  <TooltipProvider delayDuration={100}>
+                    {headerFlagCodes.map((code, index) => {
+                      const countryName = getCountryName(code);
+                      return (
+                        <Tooltip key={`${code}-${index}`} content={countryName} theme="light" side="top">
+                          <img
+                            src={toFlagAssetPath(code) || ""}
+                            alt={`${countryName} flag`}
+                            className="h-3 w-[18px] lg:h-4 lg:w-6 xl:h-5 xl:w-[30px] rounded-xs object-cover shrink-0 cursor-pointer"
+                            loading="lazy"
+                            decoding="async"
+                          />
+                        </Tooltip>
+                      );
+                    })}
+                  </TooltipProvider>
                   {flagOverflowCount > 0 && (
                     <div className="flex h-3 w-[18px] lg:h-4 lg:w-6 xl:h-5 xl:w-[30px] shrink-0 items-center justify-center overflow-hidden rounded-xs bg-white">
                       <span className="font-medium text-violet-600 text-[8px] lg:text-[10px] xl:text-[12px] text-center tracking-[-0.408px] whitespace-nowrap">
