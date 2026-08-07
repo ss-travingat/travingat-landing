@@ -1,11 +1,6 @@
-<svg width="513" height="342" viewBox="0 0 513 342" fill="none" xmlns="http://www.w3.org/2000/svg">
-<g clip-path="url(#clip0_974_6445)">
-<path d="M0 0H513V342H0V0Z" fill="white"/>
-<path d="M0 0H513V127.6H0V0ZM0 214.4H513V342H0V214.4Z" fill="#A2001D"/>
-</g>
-<defs>
-<clipPath id="clip0_974_6445">
-<rect width="513" height="342" fill="white"/>
-</clipPath>
-</defs>
+<svg xmlns="http://www.w3.org/2000/svg" id="flag-icons-lv" viewBox="0 0 640 480">
+  <g fill-rule="evenodd">
+    <path fill="#fff" d="M0 0h640v480H0z"/>
+    <path fill="#981e32" d="M0 0h640v192H0zm0 288h640v192H0z"/>
+  </g>
 </svg>

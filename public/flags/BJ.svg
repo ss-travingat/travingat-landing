@@ -1,12 +1,14 @@
-<svg width="513" height="342" viewBox="0 0 513 342" fill="none" xmlns="http://www.w3.org/2000/svg">
-<g clip-path="url(#clip0_974_7203)">
-<path d="M0 0H513V342H0V0Z" fill="#008751"/>
-<path d="M196.666 0H513V171H196.666V0Z" fill="#FCD116"/>
-<path d="M196.666 170.667H513V341.667H196.666V170.667Z" fill="#E8112D"/>
-</g>
-<defs>
-<clipPath id="clip0_974_7203">
-<rect width="513" height="342" fill="white"/>
-</clipPath>
-</defs>
+<svg xmlns="http://www.w3.org/2000/svg" id="flag-icons-bj" viewBox="0 0 640 480">
+  <defs>
+    <clipPath id="bj-a">
+      <path fill="gray" d="M67.6-154h666v666h-666z"/>
+    </clipPath>
+  </defs>
+  <g clip-path="url(#bj-a)" transform="matrix(.961 0 0 .7207 -65 111)">
+    <g fill-rule="evenodd" stroke-width="1pt">
+      <path fill="#319400" d="M0-154h333v666H0z"/>
+      <path fill="#ffd600" d="M333-154h666v333H333z"/>
+      <path fill="#de2110" d="M333 179h666v333H333z"/>
+    </g>
+  </g>
 </svg>

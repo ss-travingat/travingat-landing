@@ -1,13 +1,16 @@
-<svg width="513" height="342" viewBox="0 0 513 342" fill="none" xmlns="http://www.w3.org/2000/svg">
-<g clip-path="url(#clip0_974_5971)">
-<path d="M0 0.00390625H513V341.997H0V0.00390625Z" fill="#FFDA44"/>
-<path d="M0 0.00390625H513V114.001H0V0.00390625ZM0 227.999H513V341.997H0V227.999Z" fill="#6DA544"/>
-<path d="M256.5 171.006L0 342.002V-0.00195312L256.5 171.006Z" fill="#D80027"/>
-<path d="M302.639 141.26L310.021 163.979H333.91L314.584 178.022L321.965 200.74L302.639 186.698L283.314 200.74L290.695 178.022L271.369 163.979H295.258L302.639 141.26ZM376.987 141.26L384.368 163.979H408.257L388.931 178.022L396.313 200.74L376.987 186.698L357.661 200.74L365.043 178.022L345.717 163.979H369.606L376.987 141.26Z" fill="black"/>
-</g>
-<defs>
-<clipPath id="clip0_974_5971">
-<rect width="513" height="342" fill="white"/>
-</clipPath>
-</defs>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" id="flag-icons-st" viewBox="0 0 640 480">
+  <path fill="#12ad2b" d="M0 0h640v480H0z"/>
+  <path fill="#ffce00" d="M0 137.1h640V343H0z"/>
+  <path fill="#d21034" d="M0 0v480l240-240"/>
+  <g id="st-c" transform="translate(351.6 240)scale(.34286)">
+    <g id="st-b">
+      <path id="st-a" fill="#000001" d="M0-200V0h100" transform="rotate(18 0 -200)"/>
+      <use xlink:href="#st-a" width="100%" height="100%" transform="scale(-1 1)"/>
+    </g>
+    <use xlink:href="#st-b" width="100%" height="100%" transform="rotate(72)"/>
+    <use xlink:href="#st-b" width="100%" height="100%" transform="rotate(144)"/>
+    <use xlink:href="#st-b" width="100%" height="100%" transform="rotate(-144)"/>
+    <use xlink:href="#st-b" width="100%" height="100%" transform="rotate(-72)"/>
+  </g>
+  <use xlink:href="#st-c" width="100%" height="100%" x="700" transform="translate(-523.2)"/>
 </svg>

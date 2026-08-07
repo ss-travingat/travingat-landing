@@ -9,6 +9,8 @@ import { sampleProfiles, type SampleProfile } from "../data/profile-data";
 import { ContextMenu } from "./ProfileComponent";
 import { MediaLightbox } from "./MediaLightbox";
 import { MoreOptionsButton } from "@/components/ui/MoreOptionsButton";
+import { Tooltip, TooltipProvider } from "@/components/ui/Tooltip";
+import { COUNTRY_LIST } from "@/lib/countries";
 import LoadedImage from "@/components/ui/LoadedImage";
 import { useMobileComingSoon } from "@/components/ui/MobileComingSoonToast";
 
@@ -269,11 +271,19 @@ export default function CollectionDetailComponent({
         <div className="flex flex-col items-center gap-[20px] w-full max-w-[600px]">
           <div className="flex flex-col items-center gap-[24px]">
             <div className="flex items-center gap-[8px] justify-center">
-              {headerCountryCodes.map((code) => (
-                <div key={code} className="h-[24px] w-[34px] overflow-hidden rounded-[3px] shadow-sm">
-                   <img src={`/flags/${code.toUpperCase()}.svg`} className="w-full h-full object-cover" alt={code} />
-                </div>
-              ))}
+              {headerCountryCodes.map((code) => {
+                const countryEntry = COUNTRY_LIST.find((c) => c.code.toLowerCase() === code.toLowerCase());
+                const countryName = countryEntry ? countryEntry.name : code;
+                return (
+                  <TooltipProvider key={code} delayDuration={100}>
+                    <Tooltip content={countryName} theme="light" side="top">
+                      <div className="h-[24px] w-[34px] overflow-hidden rounded-[3px] shadow-sm cursor-pointer">
+                        <img src={`/flags/${code.toUpperCase()}.svg`} className="w-full h-full object-cover" alt={countryName} />
+                      </div>
+                    </Tooltip>
+                  </TooltipProvider>
+                );
+              })}
             </div>
             <h1 className="ds-font-display text-[52px] leading-[60px] tracking-[-1px] font-bold text-white text-center">
               {title}

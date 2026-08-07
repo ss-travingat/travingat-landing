@@ -74,12 +74,12 @@ export function MobileComingSoonProvider({ children }: { children: React.ReactNo
               {activeType === "desktopOnly" ? (
                 <div className="bg-[#252525] flex items-center justify-center p-[5.5px] rounded-[9px] shrink-0 size-[48px] overflow-hidden">
                   <div className="relative size-[37px] shrink-0 flex items-center justify-center">
-                    <img src="/icons/laptop.png" alt="Desktop Only" className="scale-[1.25] object-contain" />
+                    <img src="/icons/toast-laptop.png" alt="Desktop Only" className="scale-[1.25] object-contain" />
                   </div>
                 </div>
               ) : (
                 <div className="bg-[#252525] flex items-center justify-center p-[5.5px] md:p-[7px] rounded-[9px] md:rounded-[12px] shrink-0 size-[48px] md:size-[64px]">
-                  <img src="/icons/logo-3d.png" alt="Feature Launch" className="w-full h-full object-contain" />
+                  <img src="/icons/toast-launch.png" alt="Feature Launch" className="w-full h-full object-contain" />
                 </div>
               )}
               
@@ -87,7 +87,7 @@ export function MobileComingSoonProvider({ children }: { children: React.ReactNo
                 <p 
                   className={`[word-break:break-word] relative shrink-0 text-white w-full ${activeType === "desktopOnly" ? "text-[14px] leading-[20px] tracking-[-0.084px]" : "text-[14px] md:text-[18px] leading-[20px] md:leading-[26px] tracking-[-0.084px] md:tracking-[-0.198px]"}`}
                   style={{
-                    fontFamily: "var(--font-inter-google), var(--font-sans-css), sans-serif",
+                    fontFamily: "var(--font-sans-css), sans-serif",
                     fontWeight: 400
                   }}
                 >

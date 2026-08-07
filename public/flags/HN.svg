@@ -1,11 +1,18 @@
-<svg width="513" height="342" viewBox="0 0 513 342" fill="none" xmlns="http://www.w3.org/2000/svg">
-<g clip-path="url(#clip0_974_6690)">
-<path d="M0 0H513V342H0V0Z" fill="white"/>
-<path d="M0 0H513V114H0V0ZM0 228H513V342H0V228ZM203.5 117.9L210.2 134.5L227.8 135.5L213.8 146.4L218.5 164.1L203.5 154.2L188.5 164.1L193.2 146.4L179.2 135.5L196.8 134.5L203.5 117.9ZM308.5 117.9L315.2 134.5L332.8 135.5L318.8 146.4L323.5 164.1L308.5 154.2L293.5 164.1L298.2 146.4L284.2 135.5L301.8 134.5L308.5 117.9ZM256 147.6L262.7 164.2L280.3 165.2L266.3 176.1L271 193.8L256 183.9L241 193.8L245.7 176.1L231.7 165.2L249.3 164.2L256 147.6ZM203.5 177.3L210.2 193.9L227.8 194.9L213.8 205.8L218.5 223.4L203.5 213.5L188.5 223.4L193.2 205.8L179.2 194.9L196.8 193.9L203.5 177.3ZM308.5 177.3L315.2 193.9L332.8 194.9L318.8 205.8L323.5 223.4L308.5 213.5L293.5 223.4L298.2 205.8L284.2 194.9L301.8 193.9L308.5 177.3Z" fill="#338AF3"/>
-</g>
-<defs>
-<clipPath id="clip0_974_6690">
-<rect width="513" height="342" fill="white"/>
-</clipPath>
-</defs>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" id="flag-icons-hn" viewBox="0 0 640 480">
+  <path fill="#18c3df" d="M0 0h640v480H0z"/>
+  <path fill="#fff" d="M0 160h640v160H0z"/>
+  <g id="hn-c" fill="#18c3df" transform="translate(320 240)scale(26.66665)">
+    <g id="hn-b">
+      <path id="hn-a" d="m-.3 0 .5.1L0-1z"/>
+      <use xlink:href="#hn-a" width="100%" height="100%" transform="scale(-1 1)"/>
+    </g>
+    <use xlink:href="#hn-b" width="100%" height="100%" transform="rotate(72)"/>
+    <use xlink:href="#hn-b" width="100%" height="100%" transform="rotate(-72)"/>
+    <use xlink:href="#hn-b" width="100%" height="100%" transform="rotate(144)"/>
+    <use xlink:href="#hn-b" width="100%" height="100%" transform="rotate(-144)"/>
+  </g>
+  <use xlink:href="#hn-c" width="100%" height="100%" transform="translate(133.3 -42.7)"/>
+  <use xlink:href="#hn-c" width="100%" height="100%" transform="translate(133.3 37.3)"/>
+  <use xlink:href="#hn-c" width="100%" height="100%" transform="translate(-133.3 -42.7)"/>
+  <use xlink:href="#hn-c" width="100%" height="100%" transform="translate(-133.3 37.3)"/>
 </svg>

@@ -726,20 +726,22 @@ function JsMasonryGrid({
 
             {/* Flag badge (visible after image loads) */}
             {displayCountryCode && isLoaded ? (
-              <div className="absolute top-3 right-3 z-20 transition-opacity duration-200 opacity-100 min-[1200px]:opacity-0 min-[1200px]:group-hover:opacity-100 pointer-events-auto group/flag">
-                <div className="flex items-center drop-shadow-md cursor-pointer">
-                  <img
-                    src={toFlagAssetPath(displayCountryCode)}
-                    alt={displayCountryCode}
-                    className="h-3.5 w-5 rounded-xs object-cover"
-                  />
-                </div>
-                <div className="absolute bottom-full right-1/2 translate-x-1/2 mb-2.5 flex flex-col items-center opacity-0 transition-all duration-200 group-hover/flag:opacity-100 pointer-events-none origin-bottom scale-95 group-hover/flag:scale-100 drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]">
-                  <div className="whitespace-nowrap rounded-xl bg-white px-3.5 py-1.5 text-[15px] font-medium tracking-tight text-black">
-                    {COUNTRY_LIST_LOOKUP[displayCountryCode.toUpperCase()] || displayCountryCode}
-                  </div>
-                  <div className="-mt-1.5 h-3 w-3 rotate-45 bg-white rounded-xs" />
-                </div>
+              <div className="absolute top-3 right-3 z-20 transition-opacity duration-200 opacity-100 min-[1200px]:opacity-0 min-[1200px]:group-hover:opacity-100 pointer-events-auto">
+                <TooltipProvider delayDuration={100}>
+                  <Tooltip 
+                    content={COUNTRY_LIST_LOOKUP[displayCountryCode.toUpperCase()] || displayCountryCode} 
+                    theme="light" 
+                    side="top"
+                  >
+                    <div className="flex items-center drop-shadow-md cursor-pointer">
+                      <img
+                        src={toFlagAssetPath(displayCountryCode)}
+                        alt={displayCountryCode}
+                        className="h-3.5 w-5 rounded-xs object-cover"
+                      />
+                    </div>
+                  </Tooltip>
+                </TooltipProvider>
               </div>
             ) : null}
 
@@ -1627,7 +1629,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
           {/* Desktop: pill tabs with text */}
           <div 
             id="profile-desktop-tabs" 
-            className={`hidden min-[1200px]:flex items-center justify-center gap-2 flex-wrap min-[1200px]:mt-[48px] min-[1440px]:mt-[64px] sticky z-40 py-6 -mx-4 px-4 lg:-mx-8 lg:px-8 xl:-mx-10 xl:px-10 transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] top-[120px] [.header-hidden_&]:top-0`}
+            className={`hidden min-[1200px]:flex items-center justify-center gap-2 flex-wrap min-[1200px]:mt-[48px] min-[1440px]:mt-[64px] sticky z-header py-6 -mx-4 px-4 lg:-mx-8 lg:px-8 xl:-mx-10 xl:px-10 transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] top-[120px] [.header-hidden_&]:top-0`}
           >
             {/* Background gradient and progressive blur */}
             <div 

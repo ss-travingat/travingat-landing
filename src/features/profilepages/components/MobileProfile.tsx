@@ -236,7 +236,7 @@ export function MobileHero({
         </div>
 
         <div className="flex flex-col items-center gap-[8px] w-full min-[810px]:max-w-[400px] min-[810px]:mx-auto">
-          <div className="flex items-center justify-center gap-1.5 text-[#696969] text-[14px] leading-[20px] tracking-[-0.5px] font-[family-name:var(--font-inter-google)] font-normal">
+          <div className="flex items-center justify-center gap-1.5 text-[#696969] text-[14px] leading-[20px] tracking-[-0.5px] font-sans font-normal">
             {profileFlagSrc ? (
               <TooltipProvider delayDuration={100}>
                 <Tooltip 
@@ -270,7 +270,7 @@ export function MobileHero({
             <span>{basedIn}</span>
           </div>
           <h1 className="text-white text-[20px] leading-[24px] tracking-[-0.41px] font-semibold text-center w-full">{displayName}</h1>
-          <p className="text-[#a8a8a8] text-[14px] leading-[20px] tracking-[-0.5px] text-center w-full font-[family-name:var(--font-inter-google)] font-normal">{handle}</p>
+          <p className="text-[#a8a8a8] text-[14px] leading-[20px] tracking-[-0.5px] text-center w-full font-sans font-normal">{handle}</p>
         </div>
 
         <div className="flex flex-wrap items-start justify-center gap-[4px] px-[6px] w-full min-[810px]:max-w-[400px] min-[810px]:mx-auto">
@@ -408,7 +408,7 @@ export function MobileTabs({ activeTab, setActiveTab, swipeOffset = 0 }: MobileT
   const isDragging = swipeOffset !== 0;
 
   return (
-    <div id="profile-mobile-tabs" className="flex min-[1200px]:hidden flex-col w-[calc(100%+16px)] -mx-[8px] border-b border-[#252525] sticky top-[72px] z-40 bg-black">
+    <div id="profile-mobile-tabs" className="flex min-[1200px]:hidden flex-col w-[calc(100%+16px)] -mx-[8px] border-b border-[#252525] sticky top-[72px] z-header bg-black">
       <div className="flex items-center w-full">
         {mobileTabs.map((tab) => (
           <button
@@ -445,7 +445,7 @@ export interface MobileActionBarProps {
 
 export function MobileActionBar({ onFollowClick }: MobileActionBarProps) {
   return (
-    <div className="md:hidden fixed left-1/2 -translate-x-1/2 bottom-[4px] z-40 rounded-full backdrop-blur-[6px] bg-[rgba(255,255,255,0.12)] border border-[rgba(255,255,255,0.1)] px-[9px] py-[8px] shadow-[0px_12px_12px_0px_rgba(0,0,0,0.12)] flex items-center overflow-clip w-[calc(100%-20px)] max-w-[600px] opacity-0">
+    <div className="md:hidden fixed left-1/2 -translate-x-1/2 bottom-[4px] z-header rounded-full backdrop-blur-[6px] bg-[rgba(255,255,255,0.12)] border border-[rgba(255,255,255,0.1)] px-[9px] py-[8px] shadow-[0px_12px_12px_0px_rgba(0,0,0,0.12)] flex items-center overflow-clip w-[calc(100%-20px)] max-w-[600px] opacity-0">
       <div className="flex gap-[8px] items-center w-full">
         <button
           onClick={onFollowClick}

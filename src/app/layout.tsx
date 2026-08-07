@@ -90,6 +90,8 @@ const interGoogle = Inter({
   display: "swap",
 });
 
+
+
 export const metadata: Metadata = {
   title: "Travingat - Travel Portfolio for Explorers",
   description: "Build your travel portfolio and organize every journey in one place.",

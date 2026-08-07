@@ -1,12 +1,9 @@
-<svg width="513" height="342" viewBox="0 0 513 342" fill="none" xmlns="http://www.w3.org/2000/svg">
-<g clip-path="url(#clip0_974_6813)">
-<path d="M0 0H513V342H0V0Z" fill="white"/>
-<path d="M308 0H204V118.7H0V222.7H204V342H308V222.7H513V118.7H308V0Z" fill="#D80027"/>
-<path d="M368.6 188L394.6 205.3V136L368.6 153.3H273.3V58.1L290.6 32.1H221.4L238.7 58.1V153.3H143.4L117.4 136V205.3L143.4 188H238.7V283.2L221.4 309.2H290.6L273.3 283.2V188H368.6Z" fill="#FFDA44"/>
-</g>
-<defs>
-<clipPath id="clip0_974_6813">
-<rect width="513" height="342" fill="white"/>
-</clipPath>
-</defs>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" id="flag-icons-gg" viewBox="0 0 640 480">
+  <path fill="#fff" d="M0 0h640v480H0z"/>
+  <path fill="#e8112d" d="M256 0h128v480H256z"/>
+  <path fill="#e8112d" d="M0 176h640v128H0z"/>
+  <path id="gg-a" fill="#f9dd16" d="m110 286.7 23.3-23.4h210v-46.6h-210L110 193.3z"/>
+  <use xlink:href="#gg-a" width="36" height="24" transform="rotate(90 320 240)"/>
+  <use xlink:href="#gg-a" width="36" height="24" transform="rotate(-90 320 240)"/>
+  <use xlink:href="#gg-a" width="36" height="24" transform="rotate(180 320 240)"/>
 </svg>

@@ -1,6 +1,13 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 
+/* ── Z-Index Layers ── */
+@utility z-header { z-index: 100; }
+@utility z-dropdown { z-index: 500; }
+@utility z-tooltip { z-index: 1000; }
+@utility z-modal { z-index: 2000; }
+@utility z-toast { z-index: 3000; }
+
 @theme {
   /* ── Font Families ── */
   --font-sans: var(--font-inter, "Inter"), "Inter", "Segoe UI", sans-serif;
@@ -585,4 +592,22 @@ body {
   letter-spacing: -0.02em;
   white-space: nowrap;
   animation: loader-fade-in 600ms ease-out 300ms both;
+}
+
+/* Safari anti-fix to match Chrome rendering and bypass Safari's var() comma parsing bug */
+@supports (background: -webkit-named-image(i)) {
+  .trv-nav-link,
+  .trv-cta-desktop,
+  .trv-mobile-link,
+  .trv-cta-mobile {
+    font-family: var(--font-inter) !important;
+  }
+  .trv-nav-link {
+    letter-spacing: 0.3px !important;
+    font-weight: 450 !important;
+  }
+  .trv-cta-desktop {
+    letter-spacing: 0.3px !important;
+    font-weight: 550 !important;
+  }
 }

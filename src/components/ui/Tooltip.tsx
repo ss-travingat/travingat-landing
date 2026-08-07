@@ -6,12 +6,12 @@ import { clsx } from "clsx";
 import { forwardRef, type ComponentPropsWithoutRef, type ReactNode } from "react";
 
 const tooltipContentVariants = cva(
-  "relative z-50 rounded-lg font-sans text-[0.75rem] leading-[1rem] font-medium shadow-[0_0.75rem_1rem_rgba(16,24,40,0.08),0_0.25rem_0.375rem_rgba(16,24,40,0.03)] animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
+  "relative z-tooltip rounded-lg font-sans text-[0.75rem] leading-[1rem] font-medium shadow-[0_0.75rem_1rem_rgba(16,24,40,0.08),0_0.25rem_0.375rem_rgba(16,24,40,0.03)] animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
   {
     variants: {
       theme: {
-        light: "bg-white text-gray-700",
-        dark: "bg-gray-950 text-white",
+        light: "bg-white text-[#161616]",
+        dark: "bg-[#161616] text-white",
       },
     },
     defaultVariants: {
@@ -74,7 +74,12 @@ const TooltipContent = forwardRef<
             </p>
           </>
         ) : (
-          children
+          <span className={clsx(
+            "text-[12px] font-medium leading-[16px]",
+            theme === "light" ? "text-[#161616]" : "text-white"
+          )}>
+            {children}
+          </span>
         )}
         <TooltipPrimitive.Arrow
           className={clsx(

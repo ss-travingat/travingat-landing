@@ -1,11 +1,11 @@
-<svg width="513" height="342" viewBox="0 0 513 342" fill="none" xmlns="http://www.w3.org/2000/svg">
-<g clip-path="url(#clip0_974_5990)">
-<path d="M0 -0.00195312H513V342.002H0V-0.00195312Z" fill="#338AF3"/>
-<path d="M256.5 72.0806L279.207 141.965H352.688L293.24 185.155L315.948 255.04L256.5 211.849L197.052 255.04L219.76 185.155L160.312 141.965H233.793L256.5 72.0806Z" fill="white"/>
-</g>
-<defs>
-<clipPath id="clip0_974_5990">
-<rect width="513" height="342" fill="white"/>
-</clipPath>
-</defs>
+<svg xmlns="http://www.w3.org/2000/svg" id="flag-icons-so" viewBox="0 0 640 480">
+  <defs>
+    <clipPath id="so-a">
+      <path fill-opacity=".7" d="M-85.3 0h682.6v512H-85.3z"/>
+    </clipPath>
+  </defs>
+  <g fill-rule="evenodd" clip-path="url(#so-a)" transform="translate(80)scale(.9375)">
+    <path fill="#40a6ff" d="M-128 0h768v512h-768z"/>
+    <path fill="#fff" d="M336.5 381.2 254 327.7l-82.1 54 30.5-87.7-82-54.2L222 239l31.4-87.5 32.1 87.3 101.4.1-81.5 54.7z"/>
+  </g>
 </svg>

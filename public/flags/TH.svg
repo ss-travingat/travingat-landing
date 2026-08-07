@@ -1,12 +1,7 @@
-<svg width="513" height="342" viewBox="0 0 513 342" fill="none" xmlns="http://www.w3.org/2000/svg">
-<g clip-path="url(#clip0_974_5881)">
-<path d="M0 0.000976562H513V341.994H0V0.000976562Z" fill="white"/>
-<path d="M0 108.935H513V233.059H0V108.935Z" fill="#0052B4"/>
-<path d="M0 0.000976562H513V54.6295H0V0.000976562ZM0 287.37H513V341.999H0V287.37Z" fill="#D80027"/>
-</g>
-<defs>
-<clipPath id="clip0_974_5881">
-<rect width="513" height="342" fill="white"/>
-</clipPath>
-</defs>
+<svg xmlns="http://www.w3.org/2000/svg" id="flag-icons-th" viewBox="0 0 640 480">
+  <g fill-rule="evenodd">
+    <path fill="#f4f5f8" d="M0 0h640v480H0z"/>
+    <path fill="#2d2a4a" d="M0 162.5h640v160H0z"/>
+    <path fill="#a51931" d="M0 0h640v82.5H0zm0 400h640v80H0z"/>
+  </g>
 </svg>
