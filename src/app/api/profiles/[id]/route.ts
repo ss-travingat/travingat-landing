@@ -40,7 +40,25 @@ async function writeProfiles(profiles: Profile[]): Promise<void> {
 }
 
 function normalizeProfile(profile: Profile): Profile {
-  const calculatedCountries = profile.visitedCountryCodes?.length || 0;
+  const visitedSet = new Set<string>();
+  if (profile.visitedCountryCodes) {
+    profile.visitedCountryCodes.forEach((code) => visitedSet.add(code.toUpperCase()));
+  }
+  if (profile.countryImages) {
+    profile.countryImages.forEach((ci) => {
+      if (ci.countryCode) visitedSet.add(ci.countryCode.toUpperCase());
+    });
+  }
+  if (profile.collectionImages) {
+    profile.collectionImages.forEach((ci) => {
+      if (ci.countryCodes) {
+        ci.countryCodes.forEach((code) => visitedSet.add(code.toUpperCase()));
+      }
+    });
+  }
+  
+  const unifiedVisitedCountryCodes = Array.from(visitedSet);
+  const calculatedCountries = unifiedVisitedCountryCodes.length;
   const calculatedCollections = profile.collectionImages?.length || 0;
   const galleryCount = profile.images?.gallery?.length || 0;
   const countryMediaCount = (profile.countryImages || []).reduce((sum, c) => sum + (c.images?.length || 0), 0);
@@ -61,6 +79,7 @@ function normalizeProfile(profile: Profile): Profile {
       avatar: toLandingAssetUrl(resolveImageAsset(profile.images.avatar)),
       gallery: profile.images.gallery.map((g) => toLandingAssetUrl(resolveImageAsset(g))),
     },
+    visitedCountryCodes: unifiedVisitedCountryCodes,
     aboutImages: (profile.aboutImages ?? []).map(resolveImageAsset).map(toLandingAssetUrl),
   };
 }
@@ -125,7 +144,7 @@ export async function PUT(
       : profiles[index].collectionImages;
     const updatedGallery = body.images?.gallery ?? profiles[index].images.gallery;
 
-    profiles[index] = {
+    profiles[index] = normalizeProfile({
       ...profiles[index],
       name: body.name ?? profiles[index].name,
       handle: body.handle ?? profiles[index].handle,
@@ -134,7 +153,7 @@ export async function PUT(
       flagCode: body.flagCode ?? profiles[index].flagCode,
       homelandFlagCode: body.homelandFlagCode ?? profiles[index].homelandFlagCode,
       currentlyInFlagCode: body.currentlyInFlagCode ?? profiles[index].currentlyInFlagCode,
-      countries: (updatedVisitedCountryCodes || []).length,
+      countries: (updatedVisitedCountryCodes || []).length, // This will be overwritten by normalizeProfile
       media: (updatedGallery || []).length +
              (updatedCountryImages || []).reduce((sum: number, c: any) => sum + (c.images?.length || 0), 0) +
              (updatedCollectionImages || []).reduce((sum: number, c: any) => sum + (c.images?.length || 0), 0),
@@ -160,7 +179,7 @@ export async function PUT(
       visitedCountryCodes: updatedVisitedCountryCodes,
       countryImages: updatedCountryImages,
       collectionImages: updatedCollectionImages,
-    };
+    });
 
     await writeProfiles(profiles);
 
@@ -171,7 +190,7 @@ export async function PUT(
     revalidatePath("/featured-profiles");
     revalidatePath("/");
 
-    return NextResponse.json(normalizeProfile(profiles[index]));
+    return NextResponse.json(profiles[index]);
   } catch (err) {
     console.error("Failed to update profile:", err);
     return NextResponse.json({ error: "Failed to update profile" }, { status: 500 });

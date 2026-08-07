@@ -39,7 +39,25 @@ async function writeProfiles(profiles: Profile[]): Promise<void> {
 }
 
 function normalizeProfile(profile: Profile): Profile {
-  const calculatedCountries = profile.visitedCountryCodes?.length || 0;
+  const visitedSet = new Set<string>();
+  if (profile.visitedCountryCodes) {
+    profile.visitedCountryCodes.forEach((code) => visitedSet.add(code.toUpperCase()));
+  }
+  if (profile.countryImages) {
+    profile.countryImages.forEach((ci) => {
+      if (ci.countryCode) visitedSet.add(ci.countryCode.toUpperCase());
+    });
+  }
+  if (profile.collectionImages) {
+    profile.collectionImages.forEach((ci) => {
+      if (ci.countryCodes) {
+        ci.countryCodes.forEach((code) => visitedSet.add(code.toUpperCase()));
+      }
+    });
+  }
+  
+  const unifiedVisitedCountryCodes = Array.from(visitedSet);
+  const calculatedCountries = unifiedVisitedCountryCodes.length;
   const calculatedCollections = profile.collectionImages?.length || 0;
   const galleryCount = profile.images?.gallery?.length || 0;
   const countryMediaCount = (profile.countryImages || []).reduce((sum, c) => sum + (c.images?.length || 0), 0);
@@ -60,6 +78,7 @@ function normalizeProfile(profile: Profile): Profile {
       avatar: toLandingAssetUrl(resolveImageAsset(profile.images.avatar)),
       gallery: profile.images.gallery.map((g) => toLandingAssetUrl(resolveImageAsset(g))),
     },
+    visitedCountryCodes: unifiedVisitedCountryCodes,
     aboutImages: (profile.aboutImages ?? []).map(resolveImageAsset).map(toLandingAssetUrl),
   };
 }

@@ -6,7 +6,7 @@ import { toLandingAssetUrl } from "@/lib/landing-assets";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
-import imageCompression from "browser-image-compression";
+import { compressImageClient } from "@/lib/client-image-compress";
 
 interface Testimonial {
   id: string;
@@ -79,11 +79,8 @@ export default function AdminTestimonialsPage() {
 
     try {
       showToast("Compressing image...");
-      const compressedFile = await imageCompression(file, {
-        maxSizeMB: 4,
-        maxWidthOrHeight: 2048,
-        useWebWorker: false,
-      });
+      const { blob: finalBlob } = await compressImageClient(file, 2048, 0.82);
+      const compressedFile = new File([finalBlob], `testimonial-${Date.now()}.webp`, { type: "image/webp" });
 
       const formData = new FormData();
       formData.append("file", compressedFile, file.name);

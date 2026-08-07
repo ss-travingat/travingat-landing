@@ -7,8 +7,7 @@ import { toLandingAssetUrl } from "@/lib/landing-assets";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
-import imageCompression from "browser-image-compression";
-import { encode as encodeWebP } from "@jsquash/webp";
+import { compressImageClient } from "@/lib/client-image-compress";
 
 interface CountryImage {
   countryCode: string;
@@ -754,103 +753,8 @@ export default function AdminProfilesPage() {
     }
 
     setUploading({ field: type, stage: "processing", idx, current: batch?.current, total: batch?.total });
-
     try {
-      // ── Step 1: Compress with browser-image-compression ──
-      // This library works reliably on both Chrome and Safari.
-      // It outputs the same format as the input (JPEG→JPEG, PNG→PNG).
-      let compressedFile: File | Blob = file;
-
-      if (file.size > 500 * 1024) {
-        try {
-          compressedFile = await imageCompression(file, {
-            maxSizeMB: 0.35, // 350KB target
-            maxWidthOrHeight: 2560,
-            useWebWorker: false,
-          });
-          const originalKb = Math.round(file.size / 1024);
-          const compressedKb = Math.round(compressedFile.size / 1024);
-          console.info(`[profiles-upload] Step 1 — Compressed: ${file.name}: ${originalKb}KB → ${compressedKb}KB (${Math.round((1 - compressedFile.size / file.size) * 100)}% reduction)`);
-        } catch (e) {
-          console.warn("[profiles-upload] browser-image-compression failed, using original:", e);
-        }
-      } else {
-        console.info(`[profiles-upload] ${file.name} is ${Math.round(file.size / 1024)}KB — skipping compression.`);
-      }
-
-      // ── Step 2: Convert to WebP in the browser ──
-      // Strategy: Use canvas.toBlob("image/webp"). If the browser doesn't
-      // support WebP encoding (old Safari), keep the compressed JPEG.
-      let finalBlob: Blob = compressedFile;
-      let finalContentType = compressedFile.type || file.type;
-
-      try {
-        const img = new window.Image();
-        const objectUrl = URL.createObjectURL(compressedFile);
-        
-        await new Promise<void>((resolve, reject) => {
-          img.onload = () => resolve();
-          img.onerror = () => reject(new Error("Failed to load image for WebP conversion"));
-          img.src = objectUrl;
-        });
-
-        const canvas = document.createElement("canvas");
-        canvas.width = img.naturalWidth;
-        canvas.height = img.naturalHeight;
-        const ctx = canvas.getContext("2d");
-
-        if (ctx) {
-          ctx.drawImage(img, 0, 0);
-
-          // First, quick feature-detect: can this browser encode WebP at all?
-          const testCanvas = document.createElement("canvas");
-          testCanvas.width = 1;
-          testCanvas.height = 1;
-          const supportsWebP = testCanvas.toDataURL("image/webp").startsWith("data:image/webp");
-          console.info(`[profiles-upload] Step 2 — Browser WebP encoding support: ${supportsWebP}`);
-
-          if (supportsWebP) {
-            const webpBlob = await new Promise<Blob | null>((resolve) => {
-              canvas.toBlob((b) => resolve(b), "image/webp", 0.82);
-            });
-
-            console.info(`[profiles-upload] Step 2 — toBlob result: type="${webpBlob?.type}", size=${webpBlob?.size}`);
-
-            if (webpBlob && webpBlob.size > 0 && webpBlob.type === "image/webp") {
-              finalBlob = webpBlob;
-              finalContentType = "image/webp";
-              console.info(`[profiles-upload] Step 2 ✅ Native converted to WebP: ${Math.round(webpBlob.size / 1024)}KB`);
-            } else if (webpBlob && webpBlob.size > 0) {
-              const header = new Uint8Array(await webpBlob.slice(0, 12).arrayBuffer());
-              const riff = String.fromCharCode(header[0], header[1], header[2], header[3]);
-              const webp = String.fromCharCode(header[8], header[9], header[10], header[11]);
-              
-              if (riff === "RIFF" && webp === "WEBP") {
-                finalBlob = new Blob([webpBlob], { type: "image/webp" });
-                finalContentType = "image/webp";
-                console.info(`[profiles-upload] Step 2 ✅ Native WebP detected via header (${Math.round(webpBlob.size / 1024)}KB)`);
-              } else {
-                console.warn(`[profiles-upload] Step 2 — Not WebP. Got type="${webpBlob.type}". Keeping compressed ${finalContentType}.`);
-              }
-            }
-          } else {
-            console.warn("[profiles-upload] Step 2 — Browser does not support native WebP encoding. Using WASM fallback...");
-            try {
-              const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-              const webpArrayBuffer = await encodeWebP(imageData, { quality: 82 });
-              finalBlob = new Blob([webpArrayBuffer], { type: "image/webp" });
-              finalContentType = "image/webp";
-              console.info(`[profiles-upload] Step 2 ✅ WASM converted to WebP: ${Math.round(finalBlob.size / 1024)}KB`);
-            } catch (wasmError) {
-               console.error("[profiles-upload] WASM WebP encoding failed, keeping original format:", wasmError);
-            }
-          }
-        }
-
-        URL.revokeObjectURL(objectUrl);
-      } catch (e) {
-        console.warn("[profiles-upload] Step 2 — WebP conversion error, keeping compressed format:", e);
-      }
+      const { blob: finalBlob, contentType: finalContentType } = await compressImageClient(file, 2560, 0.82);
 
       // ── Step 3: Upload directly to R2 via presigned URL ──
       // No server-side processing needed. The file is already compressed + WebP.
