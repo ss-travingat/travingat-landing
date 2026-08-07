@@ -68,7 +68,7 @@ export function MobileComingSoonProvider({ children }: { children: React.ReactNo
           />
 
           {/* Toast container */}
-          <div className={`fixed ${activeType === "desktopOnly" ? "top-[79px] max-w-[344px]" : "top-[79px] md:top-[44px] max-w-[344px] md:max-w-[400px]"} left-1/2 -translate-x-1/2 z-[100] w-[344px] pointer-events-none transition-all duration-500 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`}>
+          <div className={`fixed ${activeType === "desktopOnly" ? "top-[79px] max-w-[344px]" : "top-[79px] md:top-[44px] max-w-[344px] md:max-w-[400px]"} left-1/2 -translate-x-1/2 z-[100] w-[344px] ${activeType === "desktopOnly" ? "" : "md:w-[400px]"} pointer-events-none transition-all duration-500 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`}>
             <div className={`bg-[#161616] pointer-events-auto border border-[#2a2a2a] border-solid drop-shadow-[20px_20px_10px_rgba(0,0,0,0.25)] flex items-center justify-center relative w-full ${activeType === "desktopOnly" ? "gap-[12px] pl-[12px] pr-[16px] py-[12px] rounded-[12px]" : "gap-[12px] md:gap-[16px] pl-[12px] pr-[16px] py-[12px] md:p-[16px] rounded-[12px] md:rounded-[20px]"}`}>
               
               {activeType === "desktopOnly" ? (
@@ -78,7 +78,9 @@ export function MobileComingSoonProvider({ children }: { children: React.ReactNo
                   </div>
                 </div>
               ) : (
-                <img src="/icons/logo-3d.png" alt="Feature Launch" className="size-[48px] md:size-[64px] shrink-0" />
+                <div className="bg-[#252525] flex items-center justify-center p-[5.5px] md:p-[7px] rounded-[9px] md:rounded-[12px] shrink-0 size-[48px] md:size-[64px]">
+                  <img src="/icons/logo-3d.png" alt="Feature Launch" className="w-full h-full object-contain" />
+                </div>
               )}
               
               <div className="flex flex-[1_0_0] flex-col items-start min-w-px relative">

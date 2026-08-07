@@ -806,10 +806,17 @@ export default function AdminProfilesPage() {
 
   const saveFormState = async (newForm: typeof form) => {
     if (!editing) return;
+    const cleanCountryImages = newForm.countryImages.filter(c => c.images.length > 0);
+    const cleanCollectionImages = newForm.collectionImages.filter(c => c.images.length > 0);
     const computedMedia =
-      newForm.countryImages.reduce((sum, c) => sum + c.images.length, 0) +
-      newForm.collectionImages.reduce((sum, c) => sum + c.images.length, 0);
-    const payload = { ...newForm, media: computedMedia };
+      cleanCountryImages.reduce((sum, c) => sum + c.images.length, 0) +
+      cleanCollectionImages.reduce((sum, c) => sum + c.images.length, 0);
+    const payload = { 
+      ...newForm, 
+      countryImages: cleanCountryImages,
+      collectionImages: cleanCollectionImages,
+      media: computedMedia 
+    };
     try {
       const res = await fetch(`/api/profiles/${editing.id}`, {
         method: "PUT",
@@ -846,10 +853,17 @@ export default function AdminProfilesPage() {
 
     setSaving(true);
     try {
+      const cleanCountryImages = form.countryImages.filter(c => c.images.length > 0);
+      const cleanCollectionImages = form.collectionImages.filter(c => c.images.length > 0);
       const computedMedia =
-        form.countryImages.reduce((sum, c) => sum + c.images.length, 0) +
-        form.collectionImages.reduce((sum, c) => sum + c.images.length, 0);
-      const payload = { ...form, media: computedMedia };
+        cleanCountryImages.reduce((sum, c) => sum + c.images.length, 0) +
+        cleanCollectionImages.reduce((sum, c) => sum + c.images.length, 0);
+      const payload = { 
+        ...form, 
+        countryImages: cleanCountryImages,
+        collectionImages: cleanCollectionImages,
+        media: computedMedia 
+      };
       let res: Response;
       if (editing) {
         res = await fetch(`/api/profiles/${editing.id}`, {

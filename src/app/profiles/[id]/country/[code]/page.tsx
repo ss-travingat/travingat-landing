@@ -59,13 +59,13 @@ export default async function CountryDetailPage({
     profile.homelandFlagCode?.toUpperCase() === code.toUpperCase() ||
     profile.currentlyInFlagCode?.toUpperCase() === code.toUpperCase();
 
-  const images = countryEntry?.images.length
+  const images = countryEntry
     ? countryEntry.images
     : isKnownFallbackCountry
     ? profile.images.gallery
     : null;
 
-  if (!images || images.length === 0) {
+  if (!images) {
     notFound();
   }
 

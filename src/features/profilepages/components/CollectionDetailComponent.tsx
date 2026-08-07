@@ -360,54 +360,110 @@ export default function CollectionDetailComponent({
               <p className="text-[#a8a8a8] text-[16px]">No media in this category yet.</p>
             </div>
           ) : (
-            <div className="columns-2 sm:columns-3 xl:columns-4 gap-[6px] md:gap-[20px]">
-              {items.map(({ url: imgUrl, globalIndex }) => {
-                const isVideo = isVideoAsset(imgUrl);
-                return (
-                  <div
-                    key={globalIndex}
-                    className="group mb-[8px] md:mb-[20px] w-full break-inside-avoid relative [-webkit-column-break-inside:avoid] inline-block"
-                  >
-                    <div
-                      className="relative rounded-2xl overflow-hidden bg-[#151515] cursor-pointer"
-                      onClick={(e) => {
-                        if (window.innerWidth < 811) {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          showComingSoonToast();
-                        } else {
-                          setLightboxIndex(globalIndex);
-                        }
-                      }}
-                    >
-                      {isVideo ? (
-                        <>
-                          <video
-                            src={toLandingAssetUrl(imgUrl)}
-                            muted
-                            playsInline
-                            loop
-                            preload="metadata"
-                            className="w-full h-auto block pointer-events-none"
-                          />
-                          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
-                            <span className="text-white text-3xl drop-shadow-lg">▶</span>
+            <div className="w-full">
+              {/* Desktop: 4 explicit flex columns — matches Figma layout */}
+              <div className="hidden lg:flex gap-[20px] items-start">
+                {[0, 1, 2, 3].map((colIdx) => (
+                  <div key={colIdx} className="flex-1 min-w-0 flex flex-col gap-[20px]">
+                    {items
+                      .filter((_, i) => i % 4 === colIdx)
+                      .map(({ url: imgUrl, globalIndex }) => {
+                        const isVideo = isVideoAsset(imgUrl);
+                        return (
+                          <div key={globalIndex} className="group relative">
+                            <div
+                              className="relative rounded-2xl overflow-hidden bg-[#151515] cursor-pointer"
+                              onClick={(e) => {
+                                if (window.innerWidth < 811) {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  showComingSoonToast();
+                                } else {
+                                  setLightboxIndex(globalIndex);
+                                }
+                              }}
+                            >
+                              {isVideo ? (
+                                <>
+                                  <video
+                                    src={toLandingAssetUrl(imgUrl)}
+                                    muted
+                                    playsInline
+                                    loop
+                                    preload="metadata"
+                                    className="w-full h-auto block pointer-events-none"
+                                  />
+                                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
+                                    <span className="text-white text-3xl drop-shadow-lg">▶</span>
+                                  </div>
+                                </>
+                              ) : (
+                                <LoadedImage
+                                  src={toLandingAssetUrl(imgUrl)}
+                                  alt={`${title} photo ${globalIndex + 1}`}
+                                  className="w-full h-auto block"
+                                  containerClassName="w-full"
+                                  skeletonClassName="w-full aspect-[3/4]"
+                                />
+                              )}
+                              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-200 pointer-events-none" />
+                            </div>
                           </div>
-                        </>
-                      ) : (
-                        <LoadedImage
-                          src={toLandingAssetUrl(imgUrl)}
-                          alt={`${title} photo ${globalIndex + 1}`}
-                          className="w-full h-auto block"
-                          containerClassName="w-full"
-                          skeletonClassName="w-full aspect-[3/4]"
-                        />
-                      )}
-                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-200 pointer-events-none" />
-                    </div>
+                        );
+                      })}
                   </div>
-                );
-              })}
+                ))}
+              </div>
+              {/* Mobile/tablet: CSS columns */}
+              <div className="lg:hidden columns-2 sm:columns-3 gap-[6px] md:gap-[20px] w-full">
+                {items.map(({ url: imgUrl, globalIndex }) => {
+                  const isVideo = isVideoAsset(imgUrl);
+                  return (
+                    <div
+                      key={globalIndex}
+                      className="group mb-[8px] md:mb-[20px] w-full break-inside-avoid relative [-webkit-column-break-inside:avoid] inline-block"
+                    >
+                      <div
+                        className="relative rounded-2xl overflow-hidden bg-[#151515] cursor-pointer"
+                        onClick={(e) => {
+                          if (window.innerWidth < 811) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            showComingSoonToast();
+                          } else {
+                            setLightboxIndex(globalIndex);
+                          }
+                        }}
+                      >
+                        {isVideo ? (
+                          <>
+                            <video
+                              src={toLandingAssetUrl(imgUrl)}
+                              muted
+                              playsInline
+                              loop
+                              preload="metadata"
+                              className="w-full h-auto block pointer-events-none"
+                            />
+                            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
+                              <span className="text-white text-3xl drop-shadow-lg">▶</span>
+                            </div>
+                          </>
+                        ) : (
+                          <LoadedImage
+                            src={toLandingAssetUrl(imgUrl)}
+                            alt={`${title} photo ${globalIndex + 1}`}
+                            className="w-full h-auto block"
+                            containerClassName="w-full"
+                            skeletonClassName="w-full aspect-[3/4]"
+                          />
+                        )}
+                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-200 pointer-events-none" />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           )}
         </div>

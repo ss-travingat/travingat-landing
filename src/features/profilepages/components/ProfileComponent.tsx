@@ -1365,33 +1365,8 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
       });
     }
 
-    const titles = profile.interests.length > 0 ? profile.interests : ["Travel moments"];
-    const count = Math.min(4, Math.max(1, Math.min(titles.length, allMediaItems.length || 1)));
-
-    return Array.from({ length: count }).map((_, index) => {
-      const thumbnailItem = allMediaItems.length > 0 ? allMediaItems[index % allMediaItems.length] : null;
-      const photoFallbacks = allMediaItems.filter((item) => !item.isVideo).map((item) => item.fileUrl);
-      const defaultFallbacks = photoFallbacks.length > 0
-        ? photoFallbacks
-        : allMediaItems.map((item) => item.fileUrl);
-      const previewImages = defaultFallbacks.length > 0
-        ? Array.from({ length: Math.min(5, defaultFallbacks.length) }, (_, imageIndex) => {
-          return defaultFallbacks[(index + imageIndex) % defaultFallbacks.length];
-        })
-        : [(typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url)];
-
-      return {
-        id: `${profile.id}-collection-${index}`,
-        title: titles[index % titles.length],
-        description: profile.bio,
-        createdLabel: getDeterministicCreatedLabel(index),
-        thumbnailUrl: thumbnailItem ? thumbnailItem.fileUrl : (typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url),
-        previewImages,
-        countries: fallbackVisibleCountries,
-        countryOverflowCount: fallbackOverflowCount,
-      };
-    });
-  }, [allMediaItems, countryCards, profile.bio, profile.images.cover, profile.id, profile.interests, profile.collectionImages]);
+    return [];
+  }, [countryCards, profile.bio, profile.images.cover, profile.id, profile.collectionImages]);
 
   const aboutPhotos = useMemo(() => {
     return (profile.aboutImages ?? [])
@@ -1452,6 +1427,11 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
     Boolean(profile.homeland) ||
     Boolean(profile.currentlyIn);
 
+  const fixedProfile = {
+    ...profile,
+    collections: collectionCards.length,
+  };
+
   return (
     <>
       <div
@@ -1468,7 +1448,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
 
         <main className="w-full max-w-[1728px] pb-[4px] md:pb-20 flex flex-col gap-[12px] min-[1200px]:gap-0">
           <MobileHero
-            profile={profile}
+            profile={fixedProfile}
             displayName={displayName}
             handle={handle}
             basedIn={basedIn}
@@ -1585,7 +1565,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                       />
                     </div>
                     <div className="flex flex-col gap-0.5 xl:gap-1">
-                      <p className="ds-font-display text-[16px] lg:text-[20px] xl:text-[24px] leading-tight xl:leading-[32px] tracking-[-0.5px] text-white font-semibold">{profile.collections}</p>
+                      <p className="ds-font-display text-[16px] lg:text-[20px] xl:text-[24px] leading-tight xl:leading-[32px] tracking-[-0.5px] text-white font-semibold">{fixedProfile.collections}</p>
                       <p className="text-[10px] lg:text-[12px] xl:text-[14px] leading-tight xl:leading-[20px] tracking-[-0.084px] text-white-400 font-normal">Collections</p>
                     </div>
                   </div>

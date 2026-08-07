@@ -59,11 +59,12 @@ function normalizeProfile(profile: Profile): Profile {
   
   const unifiedVisitedCountryCodes = Array.from(visitedSet);
   const calculatedCountries = unifiedVisitedCountryCodes.length;
-  const calculatedCollections = profile.collectionImages?.length || 0;
   const galleryCount = profile.images?.gallery?.length || 0;
   const countryMediaCount = (profile.countryImages || []).reduce((sum, c) => sum + (c.images?.length || 0), 0);
   const collectionMediaCount = (profile.collectionImages || []).reduce((sum, c) => sum + (c.images?.length || 0), 0);
   const calculatedMedia = galleryCount + countryMediaCount + collectionMediaCount;
+
+  const calculatedCollections = profile.collectionImages?.length || 0;
 
   function resolveImageAsset(img: any) {
     return typeof img === "string" ? img : img?.url ?? "";

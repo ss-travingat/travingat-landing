@@ -50,7 +50,7 @@ export default async function CollectionDetailPage({
   const idx = parseInt(index, 10);
   const collectionEntry = profile.collectionImages?.[idx];
 
-  if (!collectionEntry || collectionEntry.images.length === 0) {
+  if (!collectionEntry) {
     notFound();
   }
 
