@@ -398,9 +398,9 @@ export default function LandingHeader({
                     padding: 12px 32px;
                     font-family: var(--font-inter-google, "Inter", sans-serif);
                     font-size: 16px;
-                    font-weight: 500;
+                    font-weight: 500 !important;
                     line-height: 19.2px;
-                    letter-spacing: 0px;
+                    letter-spacing: -0.2px !important;
                     transition: background-color 0.4s cubic-bezier(0.44, 0, 0.56, 1), color 0.4s cubic-bezier(0.44, 0, 0.56, 1);
                     box-sizing: border-box;
                     white-space: nowrap;
@@ -555,9 +555,9 @@ export default function LandingHeader({
                         color: rgb(0, 0, 0);
                         font-family: var(--font-inter-google, "Inter", sans-serif);
                         font-size: 16px !important;
-                        font-weight: 500;
+                        font-weight: 500 !important;
                         line-height: 19.2px;
-                        letter-spacing: 0px;
+                        letter-spacing: -0.2px !important;
                         transition: background-color 0.4s cubic-bezier(0.44, 0, 0.56, 1), color 0.4s cubic-bezier(0.44, 0, 0.56, 1);
                     }
 
