@@ -162,24 +162,24 @@ function PhotoLightbox({
           </div>
 
           {/* Country + description */}
-          <div className="flex flex-col gap-4">
-            <div className="flex items-center gap-3">
+          <div className="flex flex-col gap-[8px]">
+            <div className="flex items-center gap-[12px]">
               {countryFlagSrc ? (
-                <img src={countryFlagSrc} alt="" className="h-[18px] w-[26px] rounded-[3px] object-cover shadow-sm" />
+                <img src={countryFlagSrc} alt="" className="h-[21px] w-[32px] rounded-[3.27px] object-cover shadow-sm" />
               ) : null}
-              <p className="text-[22px] font-semibold tracking-[-0.5px] text-[#ededed]">
+              <p className="text-[24px] font-semibold tracking-[-0.5px] text-white leading-[32px]">
                 {countryName}
               </p>
             </div>
             {description ? (
-              <p className="text-[15px] leading-[1.6] tracking-[-0.3px] text-[#a0a0a0]">{description}</p>
+              <p className="text-[16px] leading-[24px] tracking-[-0.096px] font-normal text-[#dcdcdc] whitespace-pre-wrap">{description}</p>
             ) : null}
           </div>
 
           {/* Divider + quote */}
           {quote ? (
             <div className="border-t border-[#222] pt-6">
-              <p className="text-[15px] leading-[1.6] tracking-[-0.3px] text-[#a0a0a0]">{quote}</p>
+              <p className="text-[16px] leading-[24px] tracking-[-0.096px] font-normal text-[#dcdcdc] whitespace-pre-wrap">{quote}</p>
             </div>
           ) : null}
         </aside>
