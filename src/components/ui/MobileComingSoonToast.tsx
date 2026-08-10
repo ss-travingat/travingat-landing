@@ -72,15 +72,9 @@ export function MobileComingSoonProvider({ children }: { children: React.ReactNo
             <div className={`bg-[#161616] pointer-events-auto border border-[#2a2a2a] border-solid drop-shadow-[20px_20px_10px_rgba(0,0,0,0.25)] flex items-center justify-center relative w-full ${activeType === "desktopOnly" ? "gap-[12px] pl-[12px] pr-[16px] py-[12px] rounded-[12px]" : "gap-[12px] md:gap-[16px] pl-[12px] pr-[16px] py-[12px] md:p-[16px] rounded-[12px] md:rounded-[20px]"}`}>
               
               {activeType === "desktopOnly" ? (
-                <div className="bg-[#252525] flex items-center justify-center p-[5.5px] rounded-[9px] shrink-0 size-[48px] overflow-hidden">
-                  <div className="relative size-[37px] shrink-0 flex items-center justify-center">
-                    <img src="/icons/toast-laptop.png" alt="Desktop Only" className="scale-[1.25] object-contain" />
-                  </div>
-                </div>
+                <img src="/icons/toast-laptop.png" alt="Desktop Only" className="shrink-0 size-[48px] object-contain rounded-[9px]" />
               ) : (
-                <div className="bg-[#252525] flex items-center justify-center p-[5.5px] md:p-[7px] rounded-[9px] md:rounded-[12px] shrink-0 size-[48px] md:size-[64px]">
-                  <img src="/icons/toast-launch.png" alt="Feature Launch" className="w-full h-full object-contain" />
-                </div>
+                <img src="/icons/toast-launch.png" alt="Feature Launch" className="shrink-0 size-[48px] md:size-[64px] object-contain rounded-[9px] md:rounded-[12px]" />
               )}
               
               <div className="flex flex-[1_0_0] flex-col items-start min-w-px relative">
@@ -97,7 +91,7 @@ export function MobileComingSoonProvider({ children }: { children: React.ReactNo
                     </>
                   ) : (
                     <>
-                      This feature will be available at launch.{" "}
+                      This feature will be available at<br className="md:hidden" /> launch.{" "}
                       <button 
                         type="button"
                         className="text-[#1fbcfe] hover:text-[#60a5fa] transition-colors bg-transparent border-none p-0 cursor-pointer font-normal text-[14px] md:text-[18px]" 
