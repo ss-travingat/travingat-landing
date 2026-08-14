@@ -1,12 +1,14 @@
 import nodemailer from 'nodemailer';
 
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: process.env.SMTP_EMAIL,
-    pass: process.env.SMTP_PASSWORD,
-  },
-});
+function getTransporter() {
+  return nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: process.env.SMTP_EMAIL,
+      pass: process.env.SMTP_PASSWORD,
+    },
+  });
+}
 
 export const sendOtpEmail = async (email: string, otp: string) => {
   // If no real SMTP config is provided, we can just log it for development
@@ -122,7 +124,7 @@ export const sendOtpEmail = async (email: string, otp: string) => {
   `;
 
   try {
-    await transporter.sendMail({
+    await getTransporter().sendMail({
       from: `"Travingat" <${process.env.SMTP_EMAIL}>`,
       to: email,
       subject: 'Your Travingat Verification Code',
