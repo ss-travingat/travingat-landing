@@ -160,6 +160,8 @@ const EmailVerificationForm = ({ onVerified, initialSessionUser, source }: Props
                 {otp.map((digit, index) => (
                   <input
                     key={index}
+                    id={`otp-input-${index}`}
+                    name={`otp-input-${index}`}
                     ref={(el) => {
                       inputRefs.current[index] = el;
                     }}
@@ -395,6 +397,8 @@ const EmailVerificationForm = ({ onVerified, initialSessionUser, source }: Props
           <div className={styles.emailLabel}>Verify your email to apply</div>
           <div className={styles.emailInputContainer}>
             <input
+              id="email-input"
+              name="email"
               type="email"
               placeholder="e.g. james@email.com"
               className={styles.emailInput}
