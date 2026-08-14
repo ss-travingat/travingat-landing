@@ -111,10 +111,14 @@ export async function sendConfirmationEmail(email: string, token: string) {
 
   const html = buildConfirmationEmail(email, token);
 
+  const confirmUrl = `${process.env.NEXT_PUBLIC_BASE_URL?.replace(/\/$/, "") ?? "https://travingat.com"}/waitlist/confirm?token=${encodeURIComponent(token)}`;
+
   await getTransporter().sendMail({
     from: `"Team Travingat" <${process.env.SMTP_EMAIL}>`,
+    replyTo: process.env.SMTP_EMAIL,
     to: email,
     subject: "Confirm your spot on Travingat",
+    text: `Hey! You're one step away from joining Travingat. Click the following link to confirm your spot: ${confirmUrl}`,
     html,
   });
 }

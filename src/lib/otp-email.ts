@@ -126,6 +126,7 @@ export const sendOtpEmail = async (email: string, otp: string) => {
   try {
     await getTransporter().sendMail({
       from: `"Travingat" <${process.env.SMTP_EMAIL}>`,
+      replyTo: process.env.SMTP_EMAIL,
       to: email,
       subject: 'Your Travingat Verification Code',
       text: `Your verification code is: ${otp}. It will expire in 10 minutes.`,
