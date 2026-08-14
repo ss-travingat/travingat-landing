@@ -1,10 +1,15 @@
 import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
-import { Inter } from "next/font/google";
+import { Inter, Antonio } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
 import LandingLayout from "@landing/components/layout/LandingLayout";
 import { MobileComingSoonProvider } from "@/components/ui/MobileComingSoonToast";
+const antonio = Antonio({
+  subsets: ["latin"],
+  variable: "--font-antonio",
+  display: "swap",
+});
 
 const inter = localFont({
   src: [
@@ -125,17 +130,19 @@ export default function RootLayout({
           rel="preload"
           href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap"
           as="style"
+          crossOrigin="anonymous"
         />
         <link
           rel="stylesheet"
           href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap"
           media="print"
+          crossOrigin="anonymous"
         />
         <Script id="material-icons-swap" strategy="afterInteractive">
           {`document.querySelector('link[href*="Material+Symbols"][media="print"]').media='all'`}
         </Script>
       </head>
-      <body className={`${inter.variable} ${interDisplay.variable} ${logoFont.variable} ${openSauceTwo.variable} ${interGoogle.variable}`}>
+      <body className={`${inter.variable} ${interDisplay.variable} ${logoFont.variable} ${openSauceTwo.variable} ${interGoogle.variable} ${antonio.variable}`}>
         <MobileComingSoonProvider>
           <LandingLayout>{children}</LandingLayout>
         </MobileComingSoonProvider>

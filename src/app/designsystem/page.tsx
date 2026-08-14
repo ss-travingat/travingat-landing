@@ -18,6 +18,7 @@ import { Textarea } from "@/components/ui/Textarea";
 import { WaitlistPopup } from "@/components/ui/WaitlistPopup";
 import { WaitlistBar } from "@/components/ui/waitlistbar";
 import { Badge } from "@/components/ui/Badge";
+import FramerFrontend from "@/components/getfeatured/FramerFrontend";
 
 export default function DesignSystemPage() {
   const [isWaitlistOpen, setIsWaitlistOpen] = useState(false);
@@ -175,6 +176,13 @@ export default function DesignSystemPage() {
                     Open Waitlist Popup
                   </Button>
                 </div>
+              </div>
+            </div>
+
+            <div className="rounded-2xl border border-[#1c212c] bg-[#0b0d13] p-6 lg:col-span-2">
+              <h3 className="ds-font-display mb-4 text-[26px] font-semibold text-white">Get Featured (Framer Component)</h3>
+              <div className="flex justify-center bg-black p-8 rounded-xl overflow-hidden border border-[#252525]">
+                <FramerFrontend />
               </div>
             </div>
           </div>

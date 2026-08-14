@@ -18,11 +18,11 @@ function requireEnv(name: string): string {
   return value;
 }
 
-function getR2Client(): { client: S3Client; bucketName: string } {
-  const accountId = requireEnv("R2_ACCOUNT_ID");
+function getR2Client(bucketOverride?: string, accountIdOverride?: string): { client: S3Client; bucketName: string } {
+  const accountId = accountIdOverride || requireEnv("R2_ACCOUNT_ID");
   const accessKeyId = requireEnv("R2_ACCESS_KEY_ID");
   const secretAccessKey = requireEnv("R2_SECRET_ACCESS_KEY");
-  const bucketName = requireEnv("R2_BUCKET_NAME");
+  const bucketName = bucketOverride || requireEnv("R2_BUCKET_NAME");
 
   const client = new S3Client({
     region: "auto",
@@ -104,6 +104,24 @@ export async function generatePresignedUrl(params: {
     uploadUrl,
     publicUrl: `${cdnBase}/${cleanSuffix}`,
   };
+}
+
+/**
+ * Generate a presigned URL for direct upload to R2 explorercard bucket from the browser.
+ */
+export async function uploadExplorerCardAsset(params: {
+  fileBuffer: Buffer;
+  fileName: string;
+  contentType?: string;
+  userId: string;
+}): Promise<{ key: string; url: string }> {
+  const { fileBuffer, fileName, contentType, userId } = params;
+  const cleanName = fileName.replace(/^[\/]+/, "");
+  return uploadLandingAsset({
+    fileBuffer,
+    keySuffix: `explorercard/users/${userId}/${cleanName}`,
+    contentType,
+  });
 }
 
 /**

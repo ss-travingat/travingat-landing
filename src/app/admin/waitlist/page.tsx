@@ -16,6 +16,10 @@ type WaitlistEntry = {
   confirmed: boolean;
   confirmed_at: string | null;
   created_at: string;
+  source: string;
+  explorer_card_status: string;
+  countries_count: number | null;
+  card_style: string | null;
 };
 
 type Filter = "all" | "confirmed" | "unconfirmed";
@@ -123,7 +127,7 @@ export default function AdminWaitlistPage() {
                 variant="ghost"
                 className={`h-10 px-4 rounded-lg text-sm font-medium transition-colors capitalize ${
                   filter === f
-                    ? "bg-white text-black"
+                    ? "bg-white !text-black"
                     : "bg-[#141414] text-white/50 border border-white/10 hover:text-white"
                 }`}
               >
@@ -147,6 +151,10 @@ export default function AdminWaitlistPage() {
                 <tr className="border-b border-white/10 bg-[#141414]">
                   <th className="px-4 py-3 text-xs font-medium text-white/40">#</th>
                   <th className="px-4 py-3 text-xs font-medium text-white/40">Email</th>
+                  <th className="px-4 py-3 text-xs font-medium text-white/40">Source</th>
+                  <th className="px-4 py-3 text-xs font-medium text-white/40">Explorer card</th>
+                  <th className="px-4 py-3 text-xs font-medium text-white/40">Countries</th>
+                  <th className="px-4 py-3 text-xs font-medium text-white/40">Card style</th>
                   <th className="px-4 py-3 text-xs font-medium text-white/40">Status</th>
                   <th className="px-4 py-3 text-xs font-medium text-white/40">Device</th>
                   <th className="px-4 py-3 text-xs font-medium text-white/40">Browser</th>
@@ -162,6 +170,20 @@ export default function AdminWaitlistPage() {
                   >
                     <td className="px-4 py-3 text-white/20">{i + 1}</td>
                     <td className="px-4 py-3 text-white font-medium">{entry.email}</td>
+                    <td className="px-4 py-3">
+                      <span className="inline-flex items-center bg-white/5 text-white/70 text-[10px] uppercase font-medium px-2 py-0.5 rounded border border-white/10 tracking-wider">
+                        {entry.source || "Waitlist"}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 text-white/60 capitalize">
+                      {entry.explorer_card_status || "Not created"}
+                    </td>
+                    <td className="px-4 py-3 text-white/60">
+                      {entry.countries_count ?? "--"}
+                    </td>
+                    <td className="px-4 py-3 text-white/60 capitalize">
+                      {entry.card_style || "--"}
+                    </td>
                     <td className="px-4 py-3">
                       {entry.confirmed ? (
                         <span className="inline-flex items-center gap-1.5 bg-[#0e1c12] border border-[#163d22] text-[#4ade80] text-xs font-medium px-2.5 py-1 rounded-full">

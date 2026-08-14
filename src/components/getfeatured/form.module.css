@@ -1,0 +1,499 @@
+.form {
+  height: 678px;
+  position: relative;
+  border-radius: 20px;
+  background-color: #111;
+  overflow: hidden;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px;
+  box-sizing: border-box;
+  text-align: center;
+  font-size: 24px;
+  color: #fff;
+  font-family: var(--font-sans);
+}
+
+.emailFieldParent {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 32px;
+  box-sizing: border-box;
+  gap: 24px;
+  max-width: 100%;
+}
+
+.emailField {
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.icon {
+  width: 100px;
+  height: 100px;
+  position: relative;
+  border-radius: 16.81px;
+  object-fit: cover;
+}
+
+.emailLabel {
+  align-self: stretch;
+  position: relative;
+  letter-spacing: -0.5px;
+  line-height: 32px;
+  font-weight: 500;
+}
+
+.emailInputContainer {
+  display: flex;
+  padding: 12px 16px;
+  justify-content: center;
+  align-items: center;
+  align-self: stretch;
+}
+
+.emailInput {
+  text-align: center;
+  background-color: transparent;
+  color: #fff;
+  outline: none;
+  letter-spacing: -0.5px;
+  line-height: 32px;
+  font-family: var(--font-sans);
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.emailInput::placeholder {
+  color: #2a2a2a;
+}
+
+.buttonText {
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  text-align: left;
+  font-size: 14px;
+  color: #ecf0ff;
+  font-family: var(--font-secondary);
+}
+
+.button {
+  align-self: stretch;
+  border-radius: 999px;
+  background-color: #c0caff;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 16px;
+  color: #ECF0FF;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  line-height: 20px;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  transition: all 0.2s ease;
+}
+
+.buttonActive {
+  background-color: #5A45F9;
+  color: #FFF;
+}
+
+.emailLabel2 {
+  align-self: stretch;
+  position: relative;
+  letter-spacing: -0.01em;
+  line-height: 20px;
+  color: #7c7c7c;
+  text-align: center;
+}
+
+.otpFieldParent {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 32px;
+  box-sizing: border-box;
+  gap: 32px;
+  max-width: 100%;
+  border-radius: 12px;
+}
+
+.otpInner {
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+}
+
+.otpHeader {
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.submittedEmail {
+  align-self: stretch;
+  text-align: center;
+  color: #7C7C7C;
+  font-size: 14px;
+  font-family: var(--font-secondary);
+  font-weight: 400;
+  line-height: 20px;
+  word-wrap: break-word;
+}
+
+.otpInputsContainer {
+  height: 60px;
+  display: inline-flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.otpInput {
+  width: 62px;
+  align-self: stretch;
+  padding: 12px 16px;
+  background-color: #000;
+  border-radius: 10px;
+  border: 1px solid #252525;
+  color: #fff;
+  text-align: center;
+  font-size: 24px;
+  font-family: var(--font-sans);
+  box-sizing: border-box;
+}
+
+.otpInput:focus {
+  outline: none;
+  border-color: #fff;
+}
+
+.resendCode {
+  text-align: center;
+  color: #7C7C7C;
+  font-size: 14px;
+  font-family: var(--font-secondary);
+  font-weight: 400;
+  line-height: 20px;
+  cursor: pointer;
+}
+
+.resendCode:hover {
+  text-decoration: underline;
+}
+
+.appFormParent {
+  width: 100%;
+  display: inline-flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  padding: 32px;
+  background-color: #111111;
+  overflow: hidden;
+  border-radius: 20px;
+  gap: 20px;
+  box-sizing: border-box;
+}
+
+.fieldContainer {
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.fieldLabel {
+  align-self: stretch;
+  color: white;
+  font-size: 14px;
+  font-family: var(--font-secondary);
+  font-weight: 400;
+  line-height: 20px;
+  word-wrap: break-word;
+  text-align: left;
+}
+
+.inputRow {
+  align-self: stretch;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 10px;
+}
+
+.textInput {
+  flex: 1 1 0;
+  padding: 12px 16px;
+  background-color: black;
+  border-radius: 10px;
+  border: 1px solid #1E1E1E;
+  color: white;
+  font-size: 16px;
+  font-family: var(--font-secondary);
+  font-weight: 400;
+  line-height: 24px;
+  outline: none;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.textInput[type=number]::-webkit-outer-spin-button,
+.textInput[type=number]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.textInput[type=number] {
+  -moz-appearance: textfield;
+}
+
+.textInput::placeholder {
+  color: #525252;
+}
+
+.textInput:focus {
+  border-color: #525252;
+}
+
+.textInput:disabled {
+  color: #525252;
+}
+
+.inputWithButtonWrapper {
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 8px 12px 16px;
+  background-color: black;
+  border-radius: 10px;
+  border: 1px solid #1E1E1E;
+  box-sizing: border-box;
+}
+
+.inputWithButtonWrapper:focus-within {
+  border-color: #525252;
+}
+
+.textInputNoBorder {
+  flex: 1 1 0;
+  background-color: transparent;
+  border: none;
+  color: white;
+  font-size: 16px;
+  font-family: var(--font-secondary);
+  font-weight: 400;
+  line-height: 24px;
+  outline: none;
+  padding: 0;
+}
+
+.textInputNoBorder::placeholder {
+  color: #525252;
+}
+
+.addLinkBtn {
+  padding: 8px;
+  background-color: #1A1A1A;
+  border-radius: 6px;
+  border: 1px solid #353535;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+  color: #3D3D3D;
+  font-size: 12px;
+  font-family: var(--font-secondary);
+  font-weight: 500;
+  line-height: 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.addLinkBtnActive {
+  color: #161616;
+  background-color: white;
+}
+
+.selectWrapper {
+  position: relative;
+  flex: 1 1 0;
+  display: flex;
+}
+
+.selectInput {
+  width: 100%;
+  appearance: none;
+  padding: 12px 40px 12px 16px;
+  background-color: black;
+  border-radius: 10px;
+  border: 1px solid #1E1E1E;
+  color: white;
+  font-size: 16px;
+  font-family: var(--font-secondary);
+  font-weight: 400;
+  line-height: 24px;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.selectInput:invalid {
+  color: #525252;
+}
+
+.selectIcon {
+  width: 24px;
+  height: 24px;
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  transition: transform 0.2s ease;
+}
+
+.selectIconOpen {
+  transform: translateY(-50%) rotate(180deg);
+}
+
+.submitAppBtn {
+  align-self: stretch;
+  padding: 10px 18px;
+  background-color: #C0CAFF;
+  border-radius: 999px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #ECF0FF;
+  font-size: 16px;
+  font-family: var(--font-secondary);
+  font-weight: 500;
+  line-height: 24px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.submitAppBtnActive {
+  background-color: #5A45F9;
+  color: white;
+}
+
+.addedLinkBadge {
+  width: 100%;
+  padding: 6px 6px 6px 10px;
+  background-color: #1E1E1E;
+  border-radius: 8px;
+  border: 1px solid #252525;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 12px;
+  box-sizing: border-box;
+}
+
+.addedLinkText {
+  flex: 1 1 0;
+  color: white;
+  font-size: 14px;
+  font-family: var(--font-secondary);
+  font-weight: 400;
+  line-height: 20px;
+  word-wrap: break-word;
+  text-align: left;
+}
+
+.addedLinkRemoveBtn {
+  padding: 6px;
+  background-color: #404040;
+  border-radius: 99px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.addedLinkRemoveBtn:hover {
+  background-color: #525252;
+}
+
+.appFooterText {
+  align-self: stretch;
+  text-align: center;
+  color: white;
+  font-size: 14px;
+  font-family: var(--font-secondary);
+  font-weight: 400;
+  line-height: 20px;
+}
+
+
+.dropdownMenu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  max-height: 200px;
+  overflow-y: auto;
+  background-color: #1a1a1a;
+  border-radius: 10px;
+  border: 1px solid #1E1E1E;
+  margin-top: 4px;
+  z-index: 10;
+  padding: 8px 0;
+}
+
+.dropdownItem {
+  padding: 10px 16px;
+  color: white;
+  font-size: 16px;
+  font-family: var(--font-secondary);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.dropdownItem:hover {
+  background-color: #353535;
+}
+
+.dropdownItemSelected {
+  background-color: #5A45F9;
+}
+
+@media (max-width: 1200px) {
+  .icon {
+    display: none;
+  }
+  .emailLabel {
+    font-size: 20px;
+    line-height: 28px;
+  }
+}
+

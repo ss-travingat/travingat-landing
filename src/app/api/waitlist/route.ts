@@ -63,6 +63,7 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     const email = String(body?.email ?? "").trim().toLowerCase();
+    const source = String(body?.source ?? "Waitlist").trim();
 
     if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       return jsonResponse({ error: "Invalid email" }, { status: 400 });
@@ -137,13 +138,14 @@ export async function POST(req: NextRequest) {
             device = ${device},
             country = ${country || "Unknown"},
             city = ${city || "Unknown"},
-            ip = ${ip}
+            ip = ${ip},
+            source = ${source}
         WHERE id = ${entry.id}
       `;
     } else {
       await sql`
-        INSERT INTO waitlist (email, browser, device, country, city, ip, confirmed, confirmation_token, token_expires_at)
-        VALUES (${email}, ${browser}, ${device}, ${country || "Unknown"}, ${city || "Unknown"}, ${ip}, FALSE, ${token}, NOW() + INTERVAL '24 hours')
+        INSERT INTO waitlist (email, browser, device, country, city, ip, confirmed, confirmation_token, token_expires_at, source)
+        VALUES (${email}, ${browser}, ${device}, ${country || "Unknown"}, ${city || "Unknown"}, ${ip}, FALSE, ${token}, NOW() + INTERVAL '24 hours', ${source})
       `;
     }
 
@@ -169,7 +171,7 @@ export async function GET(req: NextRequest) {
 
     const sql = getDb();
     const rows = await sql`
-      SELECT id, email, browser, device, country, city, ip, confirmed, confirmed_at, created_at
+      SELECT id, email, browser, device, country, city, ip, confirmed, confirmed_at, created_at, source, explorer_card_status, countries_count, card_style
       FROM waitlist
       ORDER BY created_at DESC
     `;
