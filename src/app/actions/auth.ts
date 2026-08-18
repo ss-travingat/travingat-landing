@@ -249,7 +249,8 @@ export async function submitApplicationAction(email: string, data: {
 
     await sql`
       UPDATE waitlist
-      SET get_featured_status = 'Created'
+      SET get_featured_status = 'Created',
+          countries_count = ${data.visitedCount}
       WHERE email = ${email}
     `;
       

@@ -13,8 +13,8 @@ export async function OPTIONS() {
 
 export async function POST(req: Request) {
   try {
-    const { email, otp } = await req.json();
-    const res = await verifyOtpAction(email, otp);
+    const { email, otp, source } = await req.json();
+    const res = await verifyOtpAction(email, otp, source);
     return NextResponse.json(res, { headers: corsHeaders });
   } catch (error) {
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500, headers: corsHeaders });
