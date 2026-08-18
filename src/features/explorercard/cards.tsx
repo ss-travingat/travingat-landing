@@ -98,9 +98,9 @@ export function ClassicCard({ form, sampleFlags, visitedArray }: CardProps) {
 
         {/* Call to action container */}
         <div className="flex w-full shrink-0 items-center justify-center">
-          <p className="whitespace-nowrap text-[14px] font-medium leading-[20px] tracking-[-0.084px] text-[#7c7c7c] underline decoration-wavy underline-offset-2">
+          <a href="/edit/explorercard" className="whitespace-nowrap text-[14px] font-medium leading-[20px] tracking-[-0.084px] text-[#7c7c7c] hover:text-white transition-colors underline decoration-wavy underline-offset-2">
             Join me on Travingat
-          </p>
+          </a>
         </div>
       </div>
     </div>
@@ -115,7 +115,7 @@ export function MinimalCard({ form, sampleFlags, visitedArray }: CardProps) {
     >
       {/* Country badge at top */}
       <div className="flex w-full shrink-0 items-start justify-center relative">
-        <svg preserveAspectRatio="none" overflow="visible" className="h-[24px] w-[24px] shrink-0" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <svg preserveAspectRatio="none" overflow="visible" className="h-[24px] w-[24px] shrink-0 -mr-[1px]" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M24 0H0L0.533106 0.0283589C13.3936 0.712479 23.5897 11.1279 24 24V0Z" fill="#1E1E1E"/>
         </svg>
         <div className="relative z-10 flex h-[32px] items-center justify-center gap-[6px] rounded-b-[12px] bg-[#1e1e1e] px-[12px]">
@@ -128,7 +128,7 @@ export function MinimalCard({ form, sampleFlags, visitedArray }: CardProps) {
             {form.country || "Your country"}
           </p>
         </div>
-        <svg preserveAspectRatio="none" overflow="visible" className="h-[24px] w-[24px] shrink-0 scale-x-[-1]" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <svg preserveAspectRatio="none" overflow="visible" className="h-[24px] w-[24px] shrink-0 scale-x-[-1] -ml-[1px]" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M24 0H0L0.533106 0.0283589C13.3936 0.712479 23.5897 11.1279 24 24V0Z" fill="#1E1E1E"/>
         </svg>
       </div>
@@ -206,9 +206,9 @@ export function MinimalCard({ form, sampleFlags, visitedArray }: CardProps) {
       </div>
 
       <div className="flex w-full shrink-0 items-center justify-center">
-        <p className="whitespace-nowrap text-[14px] font-medium leading-[20px] tracking-[-0.084px] text-[#7c7c7c] underline decoration-wavy underline-offset-2">
+        <a href="/edit/explorercard" className="whitespace-nowrap text-[14px] font-medium leading-[20px] tracking-[-0.084px] text-[#7c7c7c] hover:text-white transition-colors underline decoration-wavy underline-offset-2">
           Join me on Travingat
-        </p>
+        </a>
       </div>
     </div>
   );
@@ -218,17 +218,17 @@ export function AdventureCard({ form, sampleFlags, visitedArray }: CardProps) {
   return (
     <div
       id="adventure-card"
-      className="flex w-[382px] min-h-[616px] shrink-0 flex-col items-center gap-[20px] rounded-[24px] border border-[#252525] bg-[#0c0c0c] px-[8px] pb-[24px] pt-[8px]"
+      className="flex w-[382px] shrink-0 flex-col items-center gap-[20px] rounded-[24px] border border-[#252525] bg-[#0c0c0c] px-[8px] pb-[24px] pt-[8px] mb-[24px]"
     >
       {/* Main Image Container */}
-      <div className="relative flex w-full flex-[1_0_0] min-h-[524px] flex-col items-center justify-end overflow-hidden rounded-[16px] bg-[#1a1a1a]">
+      <div className="relative flex w-full h-[528px] shrink-0 flex-col items-center justify-end overflow-hidden rounded-[16px] bg-[#0c0c0c]">
         
         {/* Notch Overlay */}
         <div className="absolute top-0 z-20 flex w-full shrink-0 items-start justify-center">
-          <svg preserveAspectRatio="none" overflow="visible" className="h-[24px] w-[24px] shrink-0" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <svg preserveAspectRatio="none" overflow="visible" className="h-[24px] w-[24px] shrink-0 -mr-[1px]" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M24 0H0L0.533106 0.0283589C13.3936 0.712479 23.5897 11.1279 24 24V0Z" fill="#0c0c0c"/>
           </svg>
-          <div className="flex h-[32px] items-center justify-center gap-[6px] rounded-b-[12px] bg-[#0c0c0c] px-[12px]">
+          <div className="relative z-10 flex h-[32px] items-center justify-center gap-[6px] rounded-b-[12px] bg-[#0c0c0c] px-[12px]">
             <div className="h-[9px] w-[14px] shrink-0 overflow-hidden rounded-[2px] bg-[#161616]">
                {form.country && sampleFlags[form.country] && (
                  <span className={`fi fi-${sampleFlags[form.country].toLowerCase()} !block !h-full !w-full !bg-cover !bg-center !text-[0px]`} title={form.country} />
@@ -238,7 +238,7 @@ export function AdventureCard({ form, sampleFlags, visitedArray }: CardProps) {
               {form.country || "Your country"}
             </p>
           </div>
-          <svg preserveAspectRatio="none" overflow="visible" className="h-[24px] w-[24px] shrink-0 scale-x-[-1]" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <svg preserveAspectRatio="none" overflow="visible" className="h-[24px] w-[24px] shrink-0 scale-x-[-1] -ml-[1px]" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M24 0H0L0.533106 0.0283589C13.3936 0.712479 23.5897 11.1279 24 24V0Z" fill="#0c0c0c"/>
           </svg>
         </div>
@@ -259,8 +259,12 @@ export function AdventureCard({ form, sampleFlags, visitedArray }: CardProps) {
           
           {/* Blurred Background Layer with Gradient Mask */}
           <div 
-            className="absolute inset-0 z-0 bg-linear-to-b from-black/0 to-black/50 backdrop-blur-[12px]" 
+            className="absolute z-0 bg-linear-to-b from-black/0 to-black/50 backdrop-blur-[12px]" 
             style={{ 
+              top: 0,
+              bottom: '-32px',
+              left: '-32px',
+              right: '-32px',
               WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 80px)',
               maskImage: 'linear-gradient(to bottom, transparent 0%, black 80px)'
             }}
@@ -311,9 +315,9 @@ export function AdventureCard({ form, sampleFlags, visitedArray }: CardProps) {
       </div>
 
       <div className="flex w-full shrink-0 items-center justify-center">
-        <p className="whitespace-nowrap text-[14px] font-medium leading-[20px] tracking-[-0.084px] text-[#7c7c7c] underline decoration-wavy underline-offset-2">
+        <a href="/edit/explorercard" className="whitespace-nowrap text-[14px] font-medium leading-[20px] tracking-[-0.084px] text-[#7c7c7c] hover:text-white transition-colors underline decoration-wavy underline-offset-2">
           Join me on Travingat
-        </p>
+        </a>
       </div>
     </div>
   );

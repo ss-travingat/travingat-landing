@@ -11,6 +11,7 @@ import TooltipShowcase from "@/components/designsystem/TooltipShowcase";
 import BadgeShowcase from "@/components/designsystem/BadgeShowcase";
 import FoundingExplorer from "@/components/ui/FoundingExplorerBadge";
 import MoreOptionsButtonShowcase from "@/components/designsystem/MoreOptionsButtonShowcase";
+import { buildOtpEmail } from "@/emails/otp-template";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Text } from "@/components/ui/Text";
@@ -19,6 +20,7 @@ import { WaitlistPopup } from "@/components/ui/WaitlistPopup";
 import { WaitlistBar } from "@/components/ui/waitlistbar";
 import { Badge } from "@/components/ui/Badge";
 import FramerFrontend from "@/components/getfeatured/FramerFrontend";
+import { buildCardAndInviteEmail } from "@/emails/cardninvite-template";
 
 export default function DesignSystemPage() {
   const [isWaitlistOpen, setIsWaitlistOpen] = useState(false);
@@ -185,6 +187,32 @@ export default function DesignSystemPage() {
                 <FramerFrontend />
               </div>
             </div>
+
+            <div className="rounded-2xl border border-[#1c212c] bg-[#0b0d13] p-6 lg:col-span-2">
+              <h3 className="ds-font-display mb-4 text-[26px] font-semibold text-white">Email Templates</h3>
+              <div className="space-y-8">
+                <div>
+                  <p className="ds-font-body mb-3 text-[13px] font-semibold uppercase tracking-[0.12em] text-[#7e889c]">Card & Invite HTML Email Preview</p>
+                  <div className="flex justify-center bg-white p-8 rounded-xl overflow-hidden border border-[#252525]">
+                    <div 
+                      className="w-full max-w-[600px] shadow-sm border border-gray-200"
+                      dangerouslySetInnerHTML={{ __html: buildCardAndInviteEmail("Jane Doe", "https://www.travingat.com/explorercard") }}
+                    />
+                  </div>
+                </div>
+                
+                <div>
+                  <p className="ds-font-body mb-3 text-[13px] font-semibold uppercase tracking-[0.12em] text-[#7e889c]">OTP Verification HTML Email Preview</p>
+                  <div className="flex justify-center bg-white p-8 rounded-xl overflow-hidden border border-[#252525]">
+                    <div 
+                      className="w-full max-w-[600px] shadow-sm border border-gray-200"
+                      dangerouslySetInnerHTML={{ __html: buildOtpEmail("1234") }}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
           </div>
         </div>
       </section>

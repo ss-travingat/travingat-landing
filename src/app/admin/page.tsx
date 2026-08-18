@@ -197,6 +197,27 @@ export default function AdminPage() {
               </span>
             </div>
           </Link>
+
+          {/* Archive Card */}
+          <Link
+            href="/admin/archive"
+            className="group bg-[#141414] border border-white/10 hover:border-[#5A45F9]/50 rounded-2xl p-7 transition-all hover:shadow-[0_0_30px_rgba(90,69,249,0.1)]"
+          >
+            <div className="w-12 h-12 rounded-xl bg-[#5A45F9]/10 flex items-center justify-center text-2xl mb-5">
+              🗑️
+            </div>
+            <h3 className="text-[20px] font-semibold mb-1.5 group-hover:text-[#5A45F9] transition-colors">
+              Archive
+            </h3>
+            <p className="text-white/40 text-sm leading-relaxed mb-4">
+              View deleted users from across the platform. Records are kept for 30 days before being purged.
+            </p>
+            <div className="flex items-center justify-end">
+              <span className="text-[#5A45F9] text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity">
+                Manage →
+              </span>
+            </div>
+          </Link>
         </div>
       </div>
     </div>

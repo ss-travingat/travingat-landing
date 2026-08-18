@@ -125,7 +125,7 @@ export function MobileProfileNavbar({ profile }: { profile?: any }) {
 
   return (
     <>
-      <div id="profile-mobile-navbar" ref={menuRef} className="fixed top-0 left-0 w-full z-[100] flex flex-col pointer-events-none">
+      <div id="profile-mobile-navbar" ref={menuRef} className="fixed top-0 left-0 w-full z-[120] flex flex-col pointer-events-none">
         <div className={`flex items-center justify-between px-[28px] pt-[20px] pb-[16px] pointer-events-auto transition-colors duration-300 ${(isScrolled || menuOpen) ? "bg-black shadow-[0_2px_0_0_#000]" : "bg-gradient-to-b from-black/50 to-transparent"}`}>
           {isScrolled && profile ? (
             <div className="flex items-center gap-2">
@@ -153,7 +153,7 @@ export function MobileProfileNavbar({ profile }: { profile?: any }) {
       {/* Fixed Full-Screen Mobile Overlay Menu */}
       <div
         ref={fullScreenMenuRef}
-        className={`fixed inset-0 z-[90] min-[1200px]:hidden bg-black/95 backdrop-blur-xl transition-all duration-300 ease-in-out flex flex-col justify-start items-center px-6 pt-[100px] pb-10 ${menuOpen
+        className={`fixed inset-0 z-[110] min-[1200px]:hidden bg-black/95 backdrop-blur-xl transition-all duration-300 ease-in-out flex flex-col justify-start items-center px-6 pt-[100px] pb-10 ${menuOpen
             ? "opacity-100 pointer-events-auto translate-y-0"
             : "opacity-0 pointer-events-none -translate-y-4"
           }`}

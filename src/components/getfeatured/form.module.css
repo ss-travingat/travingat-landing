@@ -488,9 +488,6 @@
 }
 
 @media (max-width: 1200px) {
-  .icon {
-    display: none;
-  }
   .emailLabel {
     font-size: 20px;
     line-height: 28px;

@@ -43,20 +43,44 @@ async function verifyAdminSessionTokenEdge(token: string) {
 }
 
 export default async function proxy(req: NextRequest) {
+  const requestHeaders = new Headers(req.headers);
+  
+  if (process.env.NODE_ENV === 'development') {
+    const xForwardedHost = requestHeaders.get('x-forwarded-host');
+    const origin = requestHeaders.get('origin');
+    
+    if (xForwardedHost && (xForwardedHost.includes('devtunnels.ms') || xForwardedHost.includes('app.github.dev'))) {
+      if (origin) {
+        try {
+          const originUrl = new URL(origin);
+          requestHeaders.set('x-forwarded-host', originUrl.host);
+        } catch (e) {}
+      }
+    }
+  }
+
   const url = req.nextUrl;
 
   const isWaitlistApi = url.pathname === '/api/waitlist';
+  const isExplorerCardApi = url.pathname === '/api/explorercard';
+  const isAuthApi = url.pathname.startsWith('/api/auth');
+  const isViewExplorerCard = url.pathname.startsWith('/view/explorercard');
+  const isPublicResourceApi = 
+    url.pathname.startsWith('/api/blogs') ||
+    url.pathname.startsWith('/api/profiles') ||
+    url.pathname.startsWith('/api/testimonials') ||
+    url.pathname.startsWith('/api/upload');
+
   const isLoginPage = url.pathname === '/admin/login';
   const isAdminLoginApi =
     url.pathname.startsWith('/api/admin/login') ||
     url.pathname.startsWith('/api/cms/login');
-  const isAdminApiRoute =
-    url.pathname.startsWith('/api/admin') ||
-    url.pathname.startsWith('/api/cms');
+  const isJoinExplorerCard = url.pathname.startsWith('/join/explorercard');
+  const isEditExplorerCard = url.pathname.startsWith('/edit/explorercard');
 
-  // Allow the public waitlist API and login routes without auth.
-  if (isWaitlistApi || isLoginPage || isAdminLoginApi) {
-    return NextResponse.next();
+  // Allow the public APIs and login routes without auth.
+  if (isWaitlistApi || isExplorerCardApi || isViewExplorerCard || isJoinExplorerCard || isEditExplorerCard || isAuthApi || isPublicResourceApi || isLoginPage || isAdminLoginApi) {
+    return NextResponse.next({ request: { headers: requestHeaders } });
   }
 
   // Require auth for every other route.
@@ -67,7 +91,7 @@ export default async function proxy(req: NextRequest) {
     : false;
 
   if (isAuthenticated) {
-    return NextResponse.next();
+    return NextResponse.next({ request: { headers: requestHeaders } });
   }
 
   if (url.pathname.startsWith('/api/')) {

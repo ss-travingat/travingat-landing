@@ -2,10 +2,10 @@
 
 import { getDb } from '@/lib/db';
 import { sendOtpEmail } from '@/lib/otp-email';
-import { cookies } from 'next/headers';
+import { cookies, headers } from 'next/headers';
 import { createUserSessionToken, getUserSessionCookieName, getUserSessionMaxAgeSeconds } from '@/lib/user-session';
 
-export async function requestOtpAction(email: string) {
+export async function requestOtpAction(email: string, _userAgentHint?: string) {
   try {
     const sql = getDb();
     // Check if user exists and is completed
@@ -23,17 +23,28 @@ export async function requestOtpAction(email: string) {
       }
     }
 
+    // Read User-Agent directly from the incoming request headers (works in server actions via next/headers)
+    const reqHeaders = await headers();
+    const userAgent = reqHeaders.get('user-agent') ?? '';
+
     // Generate 4 digit OTP
     const otp = Math.floor(1000 + Math.random() * 9000).toString();
     const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
 
-    // Store OTP
-    // Delete existing OTPs for this email first to prevent clutter
+    // Store OTP with user_agent for device tracking on verification
     await sql`DELETE FROM otps WHERE email = ${email}`;
-    await sql`
-      INSERT INTO otps (email, otp, expires_at)
-      VALUES (${email}, ${otp}, ${expiresAt})
-    `;
+    try {
+      await sql`
+        INSERT INTO otps (email, otp, expires_at, user_agent)
+        VALUES (${email}, ${otp}, ${expiresAt}, ${userAgent})
+      `;
+    } catch {
+      // Fallback if user_agent column doesn't exist yet
+      await sql`
+        INSERT INTO otps (email, otp, expires_at)
+        VALUES (${email}, ${otp}, ${expiresAt})
+      `;
+    }
 
     // Send OTP
     await sendOtpEmail(email, otp);
@@ -43,6 +54,23 @@ export async function requestOtpAction(email: string) {
     console.error('Error requesting OTP:', error);
     return { error: 'An unexpected error occurred. Please try again later.' };
   }
+}
+
+function parseDevice(ua: string): string {
+  if (!ua) return 'Unknown';
+  if (/iPad|tablet/i.test(ua)) return 'tablet';
+  if (/Mobile|iPhone|Android.*Mobile/i.test(ua)) return 'mobile';
+  return 'desktop';
+}
+
+function parseBrowser(ua: string): string {
+  if (!ua) return 'Unknown';
+  if (/Edg\//i.test(ua)) return 'Edge';
+  if (/OPR\//i.test(ua) || /Opera/i.test(ua)) return 'Opera';
+  if (/Chrome\//i.test(ua)) return 'Chrome';
+  if (/Safari\//i.test(ua) && !/Chrome/i.test(ua)) return 'Safari';
+  if (/Firefox\//i.test(ua)) return 'Firefox';
+  return 'Other';
 }
 
 export async function verifyOtpAction(email: string, otp: string, source?: string) {
@@ -79,8 +107,48 @@ export async function verifyOtpAction(email: string, otp: string, source?: strin
       user = existingUsers[0];
     }
     
+    // Extract device info from the stored user_agent in the OTP record
+    const ua = otpRecord.user_agent ?? '';
+    const browser = parseBrowser(ua);
+    const device = parseDevice(ua);
+
+    // Get IP and geolocation from request headers (available in server actions via next/headers)
+    const reqHeaders = await headers();
+    const ip =
+      reqHeaders.get('x-forwarded-for')?.split(',')[0]?.trim() ??
+      reqHeaders.get('x-real-ip') ??
+      '0.0.0.0';
+
+    let country = reqHeaders.get('x-vercel-ip-country') ?? '';
+    let city = reqHeaders.get('x-vercel-ip-city') ?? '';
+
+    if (city) {
+      try { city = decodeURIComponent(city); } catch { /* ignore */ }
+    }
+    if (country) {
+      try {
+        const displayName = new Intl.DisplayNames(['en'], { type: 'region' }).of(country);
+        country = displayName ?? country;
+      } catch { /* keep iso code */ }
+    }
+
+    if (!country) {
+      try {
+        const isLocal = !ip || ip === '0.0.0.0' || ip === '127.0.0.1' || ip === '::1' || ip.startsWith('192.168.') || ip.startsWith('10.');
+        const geoUrl = isLocal
+          ? 'http://ip-api.com/json/?fields=country,city'
+          : `http://ip-api.com/json/${ip}?fields=country,city`;
+        const geoRes = await fetch(geoUrl, { signal: AbortSignal.timeout(3000) });
+        if (geoRes.ok) {
+          const geo = await geoRes.json();
+          country = geo.country ?? '';
+          city = geo.city ?? '';
+        }
+      } catch { /* geolocation is best-effort */ }
+    }
+
     // Set user session cookie
-    const existingWaitlist = await sql`SELECT id FROM waitlist WHERE email = ${email} LIMIT 1`;
+    const existingWaitlist = await sql`SELECT id, device FROM waitlist WHERE email = ${email} LIMIT 1`;
     const waitlistSource = source || 'Waitlist';
     if (existingWaitlist.length > 0) {
       await sql`
@@ -88,6 +156,11 @@ export async function verifyOtpAction(email: string, otp: string, source?: strin
         SET confirmed = TRUE, 
             confirmed_at = COALESCE(confirmed_at, NOW()),
             source = ${waitlistSource},
+            browser = CASE WHEN browser = 'Unknown' OR browser IS NULL THEN ${browser} ELSE browser END,
+            device = CASE WHEN device = 'Unknown' OR device IS NULL THEN ${device} ELSE device END,
+            country = CASE WHEN country = 'Unknown' OR country IS NULL THEN ${country || 'Unknown'} ELSE country END,
+            city = CASE WHEN city = 'Unknown' OR city IS NULL THEN ${city || 'Unknown'} ELSE city END,
+            ip = CASE WHEN ip = '0.0.0.0' OR ip IS NULL THEN ${ip} ELSE ip END,
             explorer_card_status = CASE 
                 WHEN explorer_card_status = 'Created' THEN 'Created' 
                 WHEN ${waitlistSource}::text = 'Explorer Card' THEN 'incomplete' 
@@ -96,9 +169,10 @@ export async function verifyOtpAction(email: string, otp: string, source?: strin
         WHERE id = ${existingWaitlist[0].id}
       `;
     } else {
+      const confirmationToken = crypto.randomUUID();
       await sql`
         INSERT INTO waitlist (email, confirmed, confirmed_at, source, created_at, browser, device, country, city, ip, confirmation_token, explorer_card_status)
-        VALUES (${email}, TRUE, NOW(), ${waitlistSource}, NOW(), 'Unknown', 'Unknown', 'Unknown', 'Unknown', '0.0.0.0', 'otp-verified', CASE WHEN ${waitlistSource}::text = 'Explorer Card' THEN 'incomplete' ELSE 'Not created' END)
+        VALUES (${email}, TRUE, NOW(), ${waitlistSource}, NOW(), ${browser}, ${device}, ${country || 'Unknown'}, ${city || 'Unknown'}, ${ip}, ${confirmationToken}, CASE WHEN ${waitlistSource}::text = 'Explorer Card' THEN 'incomplete' ELSE 'Not created' END)
       `;
     }
     
@@ -116,10 +190,13 @@ export async function verifyOtpAction(email: string, otp: string, source?: strin
       maxAge: getUserSessionMaxAgeSeconds(),
     });
     
-    return { success: true, user };
+    const explorerCards = await sql`SELECT * FROM explorer_cards WHERE user_id = ${user.id} LIMIT 1`;
+    const explorerCard = explorerCards.length > 0 ? explorerCards[0] : null;
+    
+    return { success: true, user, explorerCard };
   } catch (error) {
     console.error('Error verifying OTP:', error);
-    return { error: 'Failed to create user account. Please try again.' };
+    return { error: 'Failed: ' + (error instanceof Error ? error.message : String(error)) };
   }
 }
 

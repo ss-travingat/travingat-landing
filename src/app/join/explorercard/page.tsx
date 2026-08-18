@@ -1,13 +1,18 @@
 import ExplorerCardPage from "@/features/explorercard/expcard-page";
 import { Metadata } from "next";
 import { getSessionUser } from "@/lib/user-session";
+import { redirect } from "next/navigation";
 
 export const metadata: Metadata = {
-  title: "Travingat - Explorer Card",
-  description: "Create and share your travel explorer card",
+  title: "Travingat - Join Explorer Card",
+  description: "Join and create your travel explorer card",
 };
 
 export default async function Page() {
   const sessionUser = await getSessionUser();
-  return <ExplorerCardPage initialSessionUser={sessionUser} />;
+  if (sessionUser) {
+    redirect("/edit/explorercard");
+  }
+
+  return <ExplorerCardPage />;
 }

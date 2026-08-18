@@ -106,7 +106,11 @@ export default function AdminUsersPage() {
     setProcessingUserID(user.id);
     setError("");
     try {
-      const res = await fetch(`/api/admin/users/${user.id}`, { method: "DELETE" });
+      const res = await fetch(`/api/admin/users/${user.id}`, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(user)
+      });
       const data = await res.json();
       if (!res.ok) {
         setError(data.error || "Failed to delete account");

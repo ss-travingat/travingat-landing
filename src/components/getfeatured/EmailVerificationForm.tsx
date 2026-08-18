@@ -15,7 +15,7 @@ const countryOptions = Object.entries(countries)
   .sort((a, b) => a.name.localeCompare(b.name));
 
 interface Props {
-  onVerified?: (email: string, user?: any) => void;
+  onVerified?: (email: string, user?: any, explorerCard?: any) => void;
   initialSessionUser?: any;
   source?: string;
 }
@@ -34,6 +34,7 @@ const EmailVerificationForm = ({ onVerified, initialSessionUser, source }: Props
   const [visitedCount, setVisitedCount] = useState(initialSessionUser?.visited_count?.toString() || '');
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (initialSessionUser) {
@@ -59,7 +60,9 @@ const EmailVerificationForm = ({ onVerified, initialSessionUser, source }: Props
   const handleSendCode = async () => {
     if (isValidEmail) {
       setIsLoading(true);
-      const res = await requestOtpAction(email);
+      setError(null);
+      const ua = typeof navigator !== 'undefined' ? navigator.userAgent : '';
+      const res = await requestOtpAction(email, ua);
       setIsLoading(false);
       
       if (res.error) {
@@ -74,7 +77,9 @@ const EmailVerificationForm = ({ onVerified, initialSessionUser, source }: Props
   const handleResendCode = async () => {
     if (isValidEmail) {
       setIsLoading(true);
-      const res = await requestOtpAction(email);
+      setError(null);
+      const ua = typeof navigator !== 'undefined' ? navigator.userAgent : '';
+      const res = await requestOtpAction(email, ua);
       setIsLoading(false);
       
       if (res.error) {
@@ -88,17 +93,18 @@ const EmailVerificationForm = ({ onVerified, initialSessionUser, source }: Props
 
   const handleVerifyOtp = async () => {
     setIsLoading(true);
+    setError(null);
     const otpString = otp.join('');
     const res = await verifyOtpAction(email, otpString, source);
     setIsLoading(false);
     
     if (res.error) {
-      alert(res.error);
+      setError(res.error);
       return;
     }
     
     if (onVerified) {
-      onVerified(email, res.user);
+      onVerified(email, res.user, res.explorerCard);
     } else {
       setStep('application');
     }
@@ -119,6 +125,7 @@ const EmailVerificationForm = ({ onVerified, initialSessionUser, source }: Props
   };
 
   const handleOtpChange = (index: number, value: string) => {
+    setError(null);
     const digits = value.replace(/\D/g, '');
     if (!digits && value) return; // ignore non-digits
 
@@ -166,6 +173,8 @@ const EmailVerificationForm = ({ onVerified, initialSessionUser, source }: Props
                       inputRefs.current[index] = el;
                     }}
                     type="text"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
                     maxLength={2} // Using 2 so overtyping produces a new character
                     value={digit}
                     onChange={(e) => handleOtpChange(index, e.target.value)}
@@ -180,6 +189,11 @@ const EmailVerificationForm = ({ onVerified, initialSessionUser, source }: Props
               <button onClick={handleVerifyOtp} disabled={isLoading} className={`${styles.button} ${!isLoading ? styles.buttonActive : ''}`}>
                 {isLoading ? 'Verifying...' : 'Verify email'}
               </button>
+              {error && (
+                <div style={{ color: '#ef4444', fontSize: '14px', textAlign: 'center', marginTop: '8px' }}>
+                  {error}
+                </div>
+              )}
               <div className={styles.resendCode} onClick={handleResendCode} style={{ cursor: isLoading ? 'default' : 'pointer', opacity: isLoading ? 0.5 : 1 }}>
                 Resend code
               </div>
@@ -394,7 +408,7 @@ const EmailVerificationForm = ({ onVerified, initialSessionUser, source }: Props
       <div className={styles.emailFieldParent}>
         <div className={styles.emailField}>
           <Image className={styles.icon} width={100} height={100} sizes="100vw" alt="Email Icon" src={`${process.env.NEXT_PUBLIC_LANDING_ASSETS_CDN_BASE}/get-featured/mail-icon.webp`} />
-          <div className={styles.emailLabel}>Verify your email to apply</div>
+          <div className={styles.emailLabel}>Enter your email</div>
           <div className={styles.emailInputContainer}>
             <input
               id="email-input"

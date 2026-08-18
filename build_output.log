@@ -1,0 +1,93 @@
+$ node scripts/sync-inter-display-fonts.mjs
+[fonts:sync] Copied 18 font file(s) to public/inter-display.
+$ next build
+▲ Next.js 16.1.6 (Turbopack)
+- Environments: .env.local
+- Experiments (use with caution):
+  · serverActions
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 4.9s
+  Running TypeScript ...
+  Collecting page data using 9 workers ...
+  Generating static pages using 9 workers (0/48) ...
+  Generating static pages using 9 workers (12/48) 
+  Generating static pages using 9 workers (24/48) 
+  Generating static pages using 9 workers (36/48) 
+✓ Generating static pages using 9 workers (48/48) in 2.1s
+  Finalizing page optimization ...
+
+Route (app)                               Revalidate  Expire
+┌ ○ /
+├ ○ /_not-found
+├ ○ /admin
+├ ○ /admin/archive
+├ ○ /admin/blogs
+├ ○ /admin/login
+├ ○ /admin/profiles
+├ ○ /admin/testimonials
+├ ○ /admin/users
+├ ○ /admin/waitlist
+├ ƒ /api/admin/archive
+├ ƒ /api/admin/archive/[id]
+├ ƒ /api/admin/login
+├ ƒ /api/admin/session
+├ ƒ /api/admin/users
+├ ƒ /api/admin/users/[id]
+├ ƒ /api/admin/waitlist/[id]
+├ ƒ /api/auth/logout-user
+├ ƒ /api/auth/request-otp
+├ ƒ /api/auth/submit-application
+├ ƒ /api/auth/verify-otp
+├ ƒ /api/blogs
+├ ƒ /api/blogs/[id]
+├ ƒ /api/blogs/upload
+├ ƒ /api/cms/login
+├ ƒ /api/cms/session
+├ ƒ /api/explorercard
+├ ƒ /api/profiles
+├ ƒ /api/profiles/[id]
+├ ƒ /api/profiles/orphans
+├ ƒ /api/profiles/process-large-image
+├ ƒ /api/profiles/upload
+├ ƒ /api/testimonials
+├ ƒ /api/testimonials/[id]
+├ ƒ /api/testimonials/upload
+├ ƒ /api/upload/presign
+├ ƒ /api/waitlist
+├ ○ /blog
+├ ƒ /blog/[slug]
+├ ○ /designsystem
+├ ƒ /edit/explorercard
+├ ○ /featured-profiles
+├ ƒ /getfeatured
+├ ƒ /join/explorercard
+├ ƒ /newprofiles
+├ ○ /pricing
+├ ● /profiles/[id]                                1m      1y
+│ ├ /profiles/robert.wando                        1m      1y
+│ ├ /profiles/liam.explorer                       1m      1y
+│ ├ /profiles/Mayasafari                          1m      1y
+│ └ /profiles/mayachrome                          1m      1y
+├ ● /profiles/[id]/collection/[index]             1m      1y
+│ ├ /profiles/robert.wando/collection/0           1m      1y
+│ ├ /profiles/liam.explorer/collection/0          1m      1y
+│ ├ /profiles/Mayasafari/collection/0             1m      1y
+│ └ /profiles/mayachrome/collection/0             1m      1y
+├ ● /profiles/[id]/country/[code]                 1m      1y
+│ ├ /profiles/robert.wando/country/AR             1m      1y
+│ ├ /profiles/liam.explorer/country/BS            1m      1y
+│ ├ /profiles/Mayasafari/country/AU               1m      1y
+│ └ [+3 more paths]
+├ ○ /templates
+├ ƒ /view/explorercard/[id]
+├ ƒ /waitlist/confirm
+└ ƒ /waitlist/confirmed
+
+
+ƒ Proxy (Middleware)
+
+○  (Static)   prerendered as static content
+●  (SSG)      prerendered as static HTML (uses generateStaticParams)
+ƒ  (Dynamic)  server-rendered on demand
+

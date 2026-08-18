@@ -171,9 +171,12 @@ export async function GET(req: NextRequest) {
 
     const sql = getDb();
     const rows = await sql`
-      SELECT id, email, browser, device, country, city, ip, confirmed, confirmed_at, created_at, source, explorer_card_status, countries_count, card_style
-      FROM waitlist
-      ORDER BY created_at DESC
+      SELECT 
+        w.id, w.email, w.browser, w.device, w.country, w.city, w.ip, w.confirmed, w.confirmed_at, w.created_at, w.source, w.explorer_card_status, w.countries_count, w.card_style,
+        u.id as user_uuid
+      FROM waitlist w
+      LEFT JOIN users u ON w.email = u.email
+      ORDER BY w.created_at DESC
     `;
 
     const countResult = await sql`SELECT COUNT(*)::int as total FROM waitlist`;

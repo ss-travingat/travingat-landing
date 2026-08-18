@@ -1,7 +1,7 @@
 import crypto from "crypto";
 
 const SESSION_COOKIE_NAME = "travingat_user_session";
-const SESSION_TTL_SECONDS = 30 * 24 * 60 * 60; // 30 days
+const SESSION_TTL_SECONDS = 60 * 60; // 1 hour
 
 function getSessionSecret() {
   return process.env.USER_SESSION_SECRET || "change-this-user-session-secret";

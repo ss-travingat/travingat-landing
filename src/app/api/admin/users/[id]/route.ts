@@ -49,7 +49,7 @@ export async function PATCH(req: Request, context: { params: Promise<{ id: strin
   }
 }
 
-export async function DELETE(_req: Request, context: { params: Promise<{ id: string }> }) {
+export async function DELETE(req: Request, context: { params: Promise<{ id: string }> }) {
   if (!(await ensureAdminSession())) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
@@ -60,17 +60,42 @@ export async function DELETE(_req: Request, context: { params: Promise<{ id: str
   }
 
   const { id } = await context.params;
+  const body = await req.json().catch(() => null);
+
+  if (!body) {
+    return NextResponse.json({ error: "missing user data in request body" }, { status: 400 });
+  }
 
   try {
+    const { getDb } = await import("@/lib/db");
+    const sql = getDb();
+    
+    // Archive the user in Neon DB before hard-deleting
+    await sql`
+      INSERT INTO archived_users (original_id, email, source, data)
+      VALUES (${id}, ${body.email || 'unknown'}, 'main', ${JSON.stringify(body)}::jsonb)
+    `;
+
+    if (body.email) {
+      // Clean up any associated waitlist/explorer card data in the local DB
+      await sql`DELETE FROM explorer_cards WHERE email = ${body.email}`;
+      await sql`DELETE FROM users WHERE email = ${body.email}`;
+      await sql`DELETE FROM waitlist WHERE email = ${body.email}`;
+      await sql`DELETE FROM otps WHERE email = ${body.email}`;
+    }
+
     const res = await fetch(`${API_URL}/api/admin/users/${id}`, {
       method: "DELETE",
       headers: {
         "X-Admin-Key": adminKey,
       },
     });
+    
+    // If the backend fails to delete, we don't rollback the archive, it's fine, it acts as a backup.
     const data = await res.json();
     return NextResponse.json(data, { status: res.status });
-  } catch {
-    return NextResponse.json({ error: "backend unavailable" }, { status: 502 });
+  } catch (error) {
+    console.error("Failed to delete user:", error);
+    return NextResponse.json({ error: "backend unavailable or database error" }, { status: 502 });
   }
 }

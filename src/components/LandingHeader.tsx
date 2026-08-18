@@ -256,7 +256,7 @@ export default function LandingHeader({
                 }
 
                 .trv-shell.is-open {
-                    height: 528px;
+                    height: 100dvh;
                     background: rgb(0, 0, 0);
                 }
 
@@ -365,7 +365,7 @@ export default function LandingHeader({
                     align-items: center;
                     justify-content: flex-start;
                     gap: 24px;
-                    padding: 0;
+                    padding: 64px 0 0 0;
                     margin: 0;
                     box-sizing: border-box;
                 }

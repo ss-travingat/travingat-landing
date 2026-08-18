@@ -14,7 +14,8 @@ export async function OPTIONS() {
 export async function POST(req: Request) {
   try {
     const { email } = await req.json();
-    const res = await requestOtpAction(email);
+    const userAgent = req.headers.get('user-agent') ?? '';
+    const res = await requestOtpAction(email, userAgent);
     return NextResponse.json(res, { headers: corsHeaders });
   } catch (error) {
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500, headers: corsHeaders });

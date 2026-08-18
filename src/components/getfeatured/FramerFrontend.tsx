@@ -142,6 +142,8 @@ const EmailVerificationForm = ({ source }: { source?: string }) => {
                       inputRefs.current[index] = el;
                     }}
                     type="text"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
                     maxLength={2} // Using 2 so overtyping produces a new character
                     value={digit}
                     onChange={(e) => handleOtpChange(index, e.target.value)}
