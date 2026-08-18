@@ -18,6 +18,7 @@ type WaitlistEntry = {
   created_at: string;
   source: string;
   explorer_card_status: string;
+  get_featured_status: string;
   countries_count: number | null;
   card_style: string | null;
   user_uuid?: string;
@@ -30,6 +31,8 @@ export default function AdminWaitlistPage() {
   const [total, setTotal] = useState(0);
   const [confirmedCount, setConfirmedCount] = useState(0);
   const [unconfirmedCount, setUnconfirmedCount] = useState(0);
+  const [explorerCardCount, setExplorerCardCount] = useState(0);
+  const [getFeaturedCount, setGetFeaturedCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<Filter>("all");
@@ -43,6 +46,8 @@ export default function AdminWaitlistPage() {
         setTotal(data.total ?? 0);
         setConfirmedCount(data.confirmed ?? 0);
         setUnconfirmedCount(data.unconfirmed ?? 0);
+        setExplorerCardCount(data.explorerCardCount ?? 0);
+        setGetFeaturedCount(data.getFeaturedCount ?? 0);
       })
       .catch(() => {})
       .finally(() => setLoading(false));
@@ -90,7 +95,7 @@ export default function AdminWaitlistPage() {
 
       <div className="max-w-5xl mx-auto px-6 py-8">
         {/* Stats row */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 mb-8">
           <div className="bg-[#141414] border border-white/10 rounded-xl p-5">
             <p className="text-[28px] font-bold text-white">{total}</p>
             <p className="text-xs text-white/40 mt-1">Total signups</p>
@@ -108,6 +113,14 @@ export default function AdminWaitlistPage() {
               {total > 0 ? Math.round((confirmedCount / total) * 100) : 0}%
             </p>
             <p className="text-xs text-white/40 mt-1">Confirm rate</p>
+          </div>
+          <div className="bg-[#141414] border border-[#163d22]/60 rounded-xl p-5">
+            <p className="text-[28px] font-bold text-[#4ade80]">{explorerCardCount}</p>
+            <p className="text-xs text-white/40 mt-1">Explorer card</p>
+          </div>
+          <div className="bg-[#141414] border border-[#163d22]/60 rounded-xl p-5">
+            <p className="text-[28px] font-bold text-[#4ade80]">{getFeaturedCount}</p>
+            <p className="text-xs text-white/40 mt-1">Get featured</p>
           </div>
         </div>
 
@@ -163,6 +176,7 @@ export default function AdminWaitlistPage() {
                   <th className="px-4 py-3 text-xs font-medium text-white/40">Email</th>
                   <th className="px-4 py-3 text-xs font-medium text-white/40">Source</th>
                   <th className="px-4 py-3 text-xs font-medium text-white/40">Explorer card</th>
+                  <th className="px-4 py-3 text-xs font-medium text-white/40">Get featured</th>
                   <th className="px-4 py-3 text-xs font-medium text-white/40">Countries</th>
                   <th className="px-4 py-3 text-xs font-medium text-white/40">Card style</th>
                   <th className="px-4 py-3 text-xs font-medium text-white/40">Status</th>
@@ -190,6 +204,9 @@ export default function AdminWaitlistPage() {
                     </td>
                     <td className="px-4 py-3 text-white/60 capitalize">
                       {entry.explorer_card_status || "Not created"}
+                    </td>
+                    <td className="px-4 py-3 text-white/60 capitalize">
+                      {entry.get_featured_status || "Not created"}
                     </td>
                     <td className="px-4 py-3 text-white/60">
                       {entry.countries_count ?? "--"}

@@ -148,6 +148,12 @@ export async function POST(req: NextRequest) {
         VALUES (${email}, ${browser}, ${device}, ${country || "Unknown"}, ${city || "Unknown"}, ${ip}, FALSE, ${token}, NOW() + INTERVAL '24 hours', ${source})
       `;
     }
+    
+    // Also create user account if it doesn't exist
+    const existingUser = await sql`SELECT id FROM users WHERE email = ${email} LIMIT 1`;
+    if (existingUser.length === 0) {
+      await sql`INSERT INTO users (email) VALUES (${email})`;
+    }
 
     try {
       await sendConfirmationEmail(email, token);
@@ -172,7 +178,7 @@ export async function GET(req: NextRequest) {
     const sql = getDb();
     const rows = await sql`
       SELECT 
-        w.id, w.email, w.browser, w.device, w.country, w.city, w.ip, w.confirmed, w.confirmed_at, w.created_at, w.source, w.explorer_card_status, w.countries_count, w.card_style,
+        w.id, w.email, w.browser, w.device, w.country, w.city, w.ip, w.confirmed, w.confirmed_at, w.created_at, w.source, w.explorer_card_status, w.get_featured_status, w.countries_count, w.card_style,
         u.id as user_uuid
       FROM waitlist w
       LEFT JOIN users u ON w.email = u.email
@@ -181,15 +187,21 @@ export async function GET(req: NextRequest) {
 
     const countResult = await sql`SELECT COUNT(*)::int as total FROM waitlist`;
     const confirmedResult = await sql`SELECT COUNT(*)::int as confirmed FROM waitlist WHERE confirmed = TRUE`;
+    const explorerCardCreatedResult = await sql`SELECT COUNT(*)::int as count FROM waitlist WHERE explorer_card_status = 'Created'`;
+    const getFeaturedCreatedResult = await sql`SELECT COUNT(*)::int as count FROM waitlist WHERE get_featured_status = 'Created'`;
 
     const total: number = countResult[0]?.total ?? 0;
     const confirmedCount: number = confirmedResult[0]?.confirmed ?? 0;
+    const explorerCardCount: number = explorerCardCreatedResult[0]?.count ?? 0;
+    const getFeaturedCount: number = getFeaturedCreatedResult[0]?.count ?? 0;
 
     return jsonResponse({
       entries: rows,
       total,
       confirmed: confirmedCount,
       unconfirmed: total - confirmedCount,
+      explorerCardCount,
+      getFeaturedCount
     });
   } catch (err) {
     console.error("Waitlist fetch error:", err);

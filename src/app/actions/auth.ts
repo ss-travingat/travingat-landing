@@ -165,14 +165,21 @@ export async function verifyOtpAction(email: string, otp: string, source?: strin
                 WHEN explorer_card_status = 'Created' THEN 'Created' 
                 WHEN ${waitlistSource}::text = 'Explorer Card' THEN 'incomplete' 
                 ELSE explorer_card_status 
+            END,
+            get_featured_status = CASE 
+                WHEN get_featured_status = 'Created' THEN 'Created' 
+                WHEN ${waitlistSource}::text = 'Get Featured' THEN 'incomplete' 
+                ELSE get_featured_status 
             END
         WHERE id = ${existingWaitlist[0].id}
       `;
     } else {
       const confirmationToken = crypto.randomUUID();
       await sql`
-        INSERT INTO waitlist (email, confirmed, confirmed_at, source, created_at, browser, device, country, city, ip, confirmation_token, explorer_card_status)
-        VALUES (${email}, TRUE, NOW(), ${waitlistSource}, NOW(), ${browser}, ${device}, ${country || 'Unknown'}, ${city || 'Unknown'}, ${ip}, ${confirmationToken}, CASE WHEN ${waitlistSource}::text = 'Explorer Card' THEN 'incomplete' ELSE 'Not created' END)
+        INSERT INTO waitlist (email, confirmed, confirmed_at, source, created_at, browser, device, country, city, ip, confirmation_token, explorer_card_status, get_featured_status)
+        VALUES (${email}, TRUE, NOW(), ${waitlistSource}, NOW(), ${browser}, ${device}, ${country || 'Unknown'}, ${city || 'Unknown'}, ${ip}, ${confirmationToken}, 
+                CASE WHEN ${waitlistSource}::text = 'Explorer Card' THEN 'incomplete' ELSE 'Not created' END,
+                CASE WHEN ${waitlistSource}::text = 'Get Featured' THEN 'incomplete' ELSE 'Not created' END)
       `;
     }
     
@@ -237,6 +244,12 @@ export async function submitApplicationAction(email: string, data: {
         country = ${data.country},
         visited_count = ${data.visitedCount},
         links = ${data.links}
+      WHERE email = ${email}
+    `;
+
+    await sql`
+      UPDATE waitlist
+      SET get_featured_status = 'Created'
       WHERE email = ${email}
     `;
       
