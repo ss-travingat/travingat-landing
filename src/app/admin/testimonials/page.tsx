@@ -194,7 +194,7 @@ export default function AdminTestimonialsPage() {
       )}
 
       {/* Header */}
-      <header className="border-b border-white/10 px-6 py-4 flex items-center justify-between sticky top-0 bg-[#0a0a0a]/95 backdrop-blur-sm z-40">
+      <header className="border-b border-white/10 px-6 py-4 flex items-center justify-between sticky top-0 bg-[#0a0a0a]/95 backdrop-blur-sm z-50">
         <div className="flex items-center gap-3">
           <a
             href="/admin"

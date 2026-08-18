@@ -76,7 +76,7 @@ export default function AdminWaitlistPage() {
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white">
-      <header className="border-b border-white/10 px-6 py-4 flex items-center justify-between sticky top-0 bg-[#0a0a0a]/95 backdrop-blur-sm z-40">
+      <header className="border-b border-white/10 px-6 py-4 flex items-center justify-between sticky top-0 bg-[#0a0a0a]/95 backdrop-blur-sm z-50">
         <div className="flex items-center gap-3">
           <Link href="/admin" className="text-white/40 hover:text-white text-sm transition-colors">
             ← Back
@@ -262,7 +262,7 @@ export default function AdminWaitlistPage() {
                               className="fixed inset-0 z-40" 
                               onClick={() => setOpenDropdownId(null)}
                             />
-                            <div className="absolute right-0 top-full mt-1 w-32 bg-[#1a1c22] border border-white/10 rounded-lg shadow-xl z-50 overflow-hidden text-left py-1">
+                            <div className="absolute right-0 top-full mt-1 w-32 bg-[#1a1c22] border border-white/10 rounded-lg shadow-xl z-40 overflow-hidden text-left py-1">
                               {entry.explorer_card_status?.toLowerCase() === "created" && entry.user_uuid && (
                                 <a 
                                   href={`/view/explorercard/${entry.user_uuid}?style=${entry.card_style?.toLowerCase() || 'adventure'}`}

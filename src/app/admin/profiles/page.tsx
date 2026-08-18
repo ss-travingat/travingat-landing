@@ -139,7 +139,7 @@ function CountrySelect({
         )}
       </button>
       {open && (
-        <div className="absolute z-50 mt-1 w-full bg-black-700 border border-white/10 rounded-lg shadow-xl max-h-60 overflow-hidden">
+        <div className="absolute z-40 mt-1 w-full bg-black-700 border border-white/10 rounded-lg shadow-xl max-h-60 overflow-hidden">
           <div className="p-2 border-b border-white/10">
             <Input
               type="text"
@@ -259,7 +259,7 @@ function MultiCountrySelect({
         )}
       </button>
       {open && (
-        <div className="absolute z-50 mt-1 w-full bg-black-700 border border-white/10 rounded-lg shadow-xl max-h-72 overflow-hidden">
+        <div className="absolute z-40 mt-1 w-full bg-black-700 border border-white/10 rounded-lg shadow-xl max-h-72 overflow-hidden">
           <div className="p-2 border-b border-white/10">
             <Input
               type="text"
@@ -1064,7 +1064,7 @@ export default function AdminProfilesPage() {
       )}
 
       {/* Header */}
-      <header className="sticky top-0 z-40 border-b border-white/10 bg-[#0a0a0a]/90 backdrop-blur-xl">
+      <header className="sticky top-0 z-50 border-b border-white/10 bg-[#0a0a0a]/90 backdrop-blur-xl">
         <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3 min-w-0">
             <a

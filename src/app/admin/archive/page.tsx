@@ -85,7 +85,7 @@ export default function AdminArchivePage() {
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white">
-      <header className="border-b border-white/10 px-6 py-4 flex items-center justify-between sticky top-0 bg-[#0a0a0a]/95 backdrop-blur-sm z-40">
+      <header className="border-b border-white/10 px-6 py-4 flex items-center justify-between sticky top-0 bg-[#0a0a0a]/95 backdrop-blur-sm z-50">
         <h1 className="text-lg font-semibold">Admin Dashboard - Archive</h1>
         <div className="flex items-center gap-4">
           <Link href="/admin" className="text-white/40 hover:text-white text-sm transition-colors">
