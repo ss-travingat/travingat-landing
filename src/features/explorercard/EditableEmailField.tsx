@@ -23,20 +23,21 @@ export function EditableEmailField({ email, onVerified }: EditableEmailFieldProp
       setIsEditing(false);
       return;
     }
-    
+
     if (!isValidEmail) return;
+
 
 
     setIsLoading(true);
     setError(null);
     const res = await requestOtpAction(draftEmail);
     setIsLoading(false);
-    
+
     if (res?.error) {
       setError(res.error);
       return;
     }
-    
+
     setIsVerifying(true);
   };
 
@@ -46,12 +47,12 @@ export function EditableEmailField({ email, onVerified }: EditableEmailFieldProp
     const otpString = otp.join('');
     const res = await verifyOtpAction(draftEmail, otpString, 'Explorer Card');
     setIsLoading(false);
-    
+
     if (res?.error) {
       setError(res.error);
       return;
     }
-    
+
     onVerified(draftEmail);
     setIsEditing(false);
     setIsVerifying(false);
@@ -116,13 +117,13 @@ export function EditableEmailField({ email, onVerified }: EditableEmailFieldProp
             </button>
           ) : (
             <div className="flex items-center gap-[8px] shrink-0">
-              <button 
-                type="button" 
-                onClick={() => { 
+              <button
+                type="button"
+                onClick={() => {
                   if (isVerifying) setIsVerifying(false);
                   else { setIsEditing(false); setDraftEmail(email); }
-                }} 
-                disabled={isLoading} 
+                }}
+                disabled={isLoading}
                 className="text-[#525252] hover:text-white transition-colors cursor-pointer disabled:opacity-50"
               >
                 <svg className="h-[20px] w-[20px]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -132,10 +133,10 @@ export function EditableEmailField({ email, onVerified }: EditableEmailFieldProp
               {!isVerifying && (
                 <button type="button" onClick={handleSaveClick} disabled={isLoading || !isValidEmail} className="text-white transition-colors cursor-pointer disabled:opacity-50">
                   {isLoading ? (
-                     <svg className="h-[20px] w-[20px] animate-spin" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                     </svg>
+                    <svg className="h-[20px] w-[20px] animate-spin" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
                   ) : (
                     <svg className="h-[20px] w-[20px]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
@@ -156,8 +157,6 @@ export function EditableEmailField({ email, onVerified }: EditableEmailFieldProp
                   key={index}
                   ref={(el) => { inputRefs.current[index] = el; }}
                   type="text"
-                  inputMode="numeric"
-                  pattern="[0-9]*"
                   maxLength={2}
                   value={digit}
                   onChange={(e) => handleOtpChange(index, e.target.value)}
