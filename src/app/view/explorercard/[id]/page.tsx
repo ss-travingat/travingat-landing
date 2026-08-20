@@ -100,28 +100,6 @@ export default async function SharedExplorerCardPage({
     }
   }
 
-  const features = [
-    {
-      icon: "🌍",
-      title: "Show where you've been",
-      desc: "Bring your travels together in a card that feels uniquely yours."
-    },
-    {
-      icon: "🔗",
-      title: "One link for everywhere",
-      desc: "Use one simple link across social media, messages, and anywhere online."
-    },
-    {
-      icon: "🧑‍🎨",
-      title: "Keep it up to date",
-      desc: "Update your photo, countries, and details anytime with your private edit link."
-    },
-    {
-      icon: "🚀",
-      title: "Ready for what's next",
-      desc: "When Travingat launches, connect your card to your full travel profile."
-    }
-  ];
 
   return (
     <main className="min-h-screen bg-black flex flex-col lg:flex-row items-center justify-center gap-6 lg:gap-[80px] pt-[40px] pb-[80px] lg:py-[120px] px-6 lg:px-12 w-full overflow-hidden max-w-[1400px] mx-auto">
@@ -136,18 +114,6 @@ export default async function SharedExplorerCardPage({
           <span className="capitalize">{form.fullName}</span>'s Explorer Card
         </h1>
 
-        {/* Feature Cards Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 lg:gap-6 w-full mb-12 lg:mb-0 order-2 lg:order-3">
-          {features.map((f, i) => (
-            <div key={i} className="bg-[#111] p-6 lg:p-8 rounded-[24px] flex flex-row sm:flex-col gap-5 lg:gap-4 items-center sm:items-start text-left">
-              <div className="text-[44px] lg:text-[48px] leading-none shrink-0">{f.icon}</div>
-              <div className="flex flex-col gap-1 lg:gap-2">
-                <h3 className="text-[18px] lg:text-[20px] font-medium text-white tracking-[-0.5px] ds-font-display leading-tight">{f.title}</h3>
-                <p className="text-[14px] text-[#989898] leading-[22px]">{f.desc}</p>
-              </div>
-            </div>
-          ))}
-        </div>
 
         {/* CTA Container */}
         <div className="flex flex-col items-center lg:items-start w-full order-3 lg:order-2 mb-0 lg:mb-12 mt-4 lg:mt-0">

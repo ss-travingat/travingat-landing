@@ -26,7 +26,7 @@ type WaitlistEntry = {
 
 type Filter = "all" | "confirmed" | "unconfirmed";
 
-export default function AdminWaitlistPage() {
+export function WaitlistTab() {
   const [entries, setEntries] = useState<WaitlistEntry[]>([]);
   const [total, setTotal] = useState(0);
   const [confirmedCount, setConfirmedCount] = useState(0);
@@ -37,6 +37,23 @@ export default function AdminWaitlistPage() {
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<Filter>("all");
   const [openDropdownId, setOpenDropdownId] = useState<number | null>(null);
+  
+  const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
+  const [advancedFilters, setAdvancedFilters] = useState({
+    source: "",
+    explorer_card_status: "",
+    get_featured_status: "",
+    device: "",
+    browser: "",
+    country: ""
+  });
+
+  const uniqueSources = Array.from(new Set(entries.map((e) => e.source || "Waitlist")));
+  const uniqueDevices = Array.from(new Set(entries.map((e) => e.device)));
+  const uniqueBrowsers = Array.from(new Set(entries.map((e) => e.browser)));
+  const uniqueCountries = Array.from(new Set(entries.map((e) => e.country))).filter(Boolean);
+
+  const activeFiltersCount = Object.values(advancedFilters).filter(v => v !== "").length;
 
   useEffect(() => {
     fetch("/api/waitlist", { cache: "no-store" })
@@ -65,7 +82,19 @@ export default function AdminWaitlistPage() {
       (filter === "confirmed" && e.confirmed) ||
       (filter === "unconfirmed" && !e.confirmed);
 
-    return matchesSearch && matchesFilter;
+    const matchesAdvanced = 
+      (!advancedFilters.source || (e.source || "Waitlist") === advancedFilters.source) &&
+      (!advancedFilters.explorer_card_status || 
+        (advancedFilters.explorer_card_status === 'Created' && e.explorer_card_status === 'Created') || 
+        (advancedFilters.explorer_card_status === 'Not created' && e.explorer_card_status !== 'Created')) &&
+      (!advancedFilters.get_featured_status || 
+        (advancedFilters.get_featured_status === 'Created' && e.get_featured_status === 'Created') || 
+        (advancedFilters.get_featured_status === 'Not created' && e.get_featured_status !== 'Created')) &&
+      (!advancedFilters.device || e.device === advancedFilters.device) &&
+      (!advancedFilters.browser || e.browser === advancedFilters.browser) &&
+      (!advancedFilters.country || e.country === advancedFilters.country);
+
+    return matchesSearch && matchesFilter && matchesAdvanced;
   });
 
   const deviceIcon = (device: string) => {
@@ -80,18 +109,7 @@ export default function AdminWaitlistPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-white">
-      <header className="border-b border-white/10 px-6 py-4 flex items-center justify-between sticky top-0 bg-[#0a0a0a]/95 backdrop-blur-sm z-50">
-        <div className="flex items-center gap-3">
-          <Link href="/admin" className="text-white/40 hover:text-white text-sm transition-colors">
-            ← Back
-          </Link>
-          <h1 className="text-lg font-semibold">Waitlist</h1>
-          <span className="text-xs text-white/30 bg-white/5 rounded-full px-2.5 py-0.5">
-            {total} signups
-          </span>
-        </div>
-      </header>
+    <div className="flex-1 w-full relative">
 
       <div className="max-w-5xl mx-auto px-6 py-8">
         {/* Stats row */}
@@ -150,6 +168,24 @@ export default function AdminWaitlistPage() {
               </Button>
             ))}
             <div className="w-px h-6 bg-white/10 mx-1" />
+            
+            <button
+              onClick={() => setIsFilterModalOpen(true)}
+              className={`h-10 px-4 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 border ${
+                activeFiltersCount > 0 
+                  ? "bg-[#163d22] text-[#4ade80] border-[#4ade80]/30" 
+                  : "bg-[#141414] text-white/50 border-white/10 hover:text-white hover:border-white/30"
+              }`}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+              Filter
+              {activeFiltersCount > 0 && (
+                <span className="flex h-4 w-4 items-center justify-center rounded-full bg-[#4ade80] text-[10px] font-bold text-[#0a0a0a]">
+                  {activeFiltersCount}
+                </span>
+              )}
+            </button>
+
             <Link
               href="/admin/archive"
               className="h-10 px-4 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 bg-[#141414] text-white/50 border border-white/10 hover:text-white hover:border-white/30"
@@ -168,11 +204,11 @@ export default function AdminWaitlistPage() {
             {search || filter !== "all" ? "No matches found." : "No waitlist signups yet."}
           </div>
         ) : (
-          <div className="overflow-x-auto rounded-xl border border-white/10">
+          <div className={`overflow-x-auto rounded-xl border border-white/10 transition-all ${openDropdownId !== null ? 'pb-40' : ''}`}>
             <table className="w-full text-left text-sm">
               <thead>
                 <tr className="border-b border-white/10 bg-[#141414]">
-                  <th className="px-4 py-3 text-xs font-medium text-white/40 sticky left-0 bg-[#141414] z-10 border-r border-white/5">#</th>
+                  <th className="px-4 py-3 text-xs font-medium text-white/40 sticky left-0 bg-[#141414] z-20 border-r border-white/5">#</th>
                   <th className="px-4 py-3 text-xs font-medium text-white/40">Email</th>
                   <th className="px-4 py-3 text-xs font-medium text-white/40">Source</th>
                   <th className="px-4 py-3 text-xs font-medium text-white/40">Explorer card</th>
@@ -263,7 +299,7 @@ export default function AdminWaitlistPage() {
                         year: "numeric",
                       })}
                     </td>
-                    <td className="px-4 py-3 text-right relative">
+                    <td className={`px-4 py-3 text-right relative ${openDropdownId === entry.id ? 'z-[100]' : ''}`}>
                       <div className="relative inline-block">
                         <button 
                           className="text-white/40 hover:text-white transition-colors p-1"
@@ -276,10 +312,10 @@ export default function AdminWaitlistPage() {
                         {openDropdownId === entry.id && (
                           <>
                             <div 
-                              className="fixed inset-0 z-40" 
+                              className="fixed inset-0 z-[90]" 
                               onClick={() => setOpenDropdownId(null)}
                             />
-                            <div className="absolute right-0 top-full mt-1 w-32 bg-[#1a1c22] border border-white/10 rounded-lg shadow-xl z-40 overflow-hidden text-left py-1">
+                            <div className="absolute right-0 top-full mt-1 w-32 bg-[#1a1c22] border border-white/10 rounded-lg shadow-xl z-[100] overflow-hidden text-left py-1">
                               {entry.explorer_card_status?.toLowerCase() === "created" && entry.user_uuid && (
                                 <a 
                                   href={`/view/explorercard/${entry.user_uuid}?style=${entry.card_style?.toLowerCase() || 'adventure'}`}
@@ -324,6 +360,116 @@ export default function AdminWaitlistPage() {
           </div>
         )}
       </div>
+      {isFilterModalOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setIsFilterModalOpen(false)} />
+          <div className="bg-[#141414] border border-white/10 rounded-xl w-full max-w-lg p-6 relative z-10 shadow-2xl">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-lg font-semibold text-white">Advanced Filters</h2>
+              <button onClick={() => setIsFilterModalOpen(false)} className="text-white/40 hover:text-white">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+              </button>
+            </div>
+            
+            <div className="grid grid-cols-2 gap-5">
+              {/* Source */}
+              <div>
+                <label className="block text-xs font-medium text-white/50 mb-1.5">Source</label>
+                <select 
+                  className="w-full bg-[#0a0a0a] border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white focus:border-[#5A45F9]/50 focus:outline-none"
+                  value={advancedFilters.source}
+                  onChange={e => setAdvancedFilters({...advancedFilters, source: e.target.value})}
+                >
+                  <option value="">All Sources</option>
+                  {uniqueSources.map(s => <option key={s} value={s}>{s}</option>)}
+                </select>
+              </div>
+              
+              {/* Explorer Card Status */}
+              <div>
+                <label className="block text-xs font-medium text-white/50 mb-1.5">Explorer Card</label>
+                <select 
+                  className="w-full bg-[#0a0a0a] border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white focus:border-[#5A45F9]/50 focus:outline-none"
+                  value={advancedFilters.explorer_card_status}
+                  onChange={e => setAdvancedFilters({...advancedFilters, explorer_card_status: e.target.value})}
+                >
+                  <option value="">All</option>
+                  <option value="Created">Created</option>
+                  <option value="Not created">Not created</option>
+                </select>
+              </div>
+              
+              {/* Get Featured Status */}
+              <div>
+                <label className="block text-xs font-medium text-white/50 mb-1.5">Get Featured</label>
+                <select 
+                  className="w-full bg-[#0a0a0a] border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white focus:border-[#5A45F9]/50 focus:outline-none"
+                  value={advancedFilters.get_featured_status}
+                  onChange={e => setAdvancedFilters({...advancedFilters, get_featured_status: e.target.value})}
+                >
+                  <option value="">All</option>
+                  <option value="Created">Created</option>
+                  <option value="Not created">Not created</option>
+                </select>
+              </div>
+
+              {/* Device */}
+              <div>
+                <label className="block text-xs font-medium text-white/50 mb-1.5">Device</label>
+                <select 
+                  className="w-full bg-[#0a0a0a] border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white focus:border-[#5A45F9]/50 focus:outline-none"
+                  value={advancedFilters.device}
+                  onChange={e => setAdvancedFilters({...advancedFilters, device: e.target.value})}
+                >
+                  <option value="">All Devices</option>
+                  {uniqueDevices.map(s => <option key={s} value={s} className="capitalize">{s}</option>)}
+                </select>
+              </div>
+
+              {/* Browser */}
+              <div>
+                <label className="block text-xs font-medium text-white/50 mb-1.5">Browser</label>
+                <select 
+                  className="w-full bg-[#0a0a0a] border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white focus:border-[#5A45F9]/50 focus:outline-none"
+                  value={advancedFilters.browser}
+                  onChange={e => setAdvancedFilters({...advancedFilters, browser: e.target.value})}
+                >
+                  <option value="">All Browsers</option>
+                  {uniqueBrowsers.map(s => <option key={s} value={s}>{s}</option>)}
+                </select>
+              </div>
+
+              {/* Country */}
+              <div>
+                <label className="block text-xs font-medium text-white/50 mb-1.5">Country</label>
+                <select 
+                  className="w-full bg-[#0a0a0a] border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white focus:border-[#5A45F9]/50 focus:outline-none"
+                  value={advancedFilters.country}
+                  onChange={e => setAdvancedFilters({...advancedFilters, country: e.target.value})}
+                >
+                  <option value="">All Countries</option>
+                  {uniqueCountries.map(s => <option key={s} value={s}>{s}</option>)}
+                </select>
+              </div>
+            </div>
+
+            <div className="mt-8 flex justify-end gap-3">
+              <button 
+                onClick={() => setAdvancedFilters({ source: "", explorer_card_status: "", get_featured_status: "", device: "", browser: "", country: "" })}
+                className="px-4 py-2 rounded-lg text-sm font-medium bg-[#1a1a1a] border border-white/10 text-white hover:bg-[#222] transition-colors"
+              >
+                Clear all
+              </button>
+              <button 
+                onClick={() => setIsFilterModalOpen(false)}
+                className="px-4 py-2 rounded-lg text-sm font-medium bg-white text-black hover:bg-white/90 transition-colors"
+              >
+                Apply Filters
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

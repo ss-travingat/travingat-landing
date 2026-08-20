@@ -8,20 +8,7 @@ import { createUserSessionToken, getUserSessionCookieName, getUserSessionMaxAgeS
 export async function requestOtpAction(email: string, _userAgentHint?: string) {
   try {
     const sql = getDb();
-    // Check if user exists and is completed
-    const existingUsers = await sql`
-      SELECT * FROM users WHERE email = ${email} LIMIT 1
-    `;
-    
-    if (existingUsers.length > 0) {
-      const user = existingUsers[0];
-      // A user is 'completed' if they have name, country, and links populated.
-      // We check visited_countries length to act as visitedCount
-      const isCompleted = user.first_name && user.last_name && user.country && user.links && user.links.length > 0;
-      if (isCompleted) {
-        return { error: 'An account with this email already exists. Please log in.' };
-      }
-    }
+
 
     // Read User-Agent directly from the incoming request headers (works in server actions via next/headers)
     const reqHeaders = await headers();
@@ -155,7 +142,7 @@ export async function verifyOtpAction(email: string, otp: string, source?: strin
         UPDATE waitlist 
         SET confirmed = TRUE, 
             confirmed_at = COALESCE(confirmed_at, NOW()),
-            source = ${waitlistSource},
+            source = CASE WHEN source = 'Waitlist' THEN ${waitlistSource} ELSE source END,
             browser = CASE WHEN browser = 'Unknown' OR browser IS NULL THEN ${browser} ELSE browser END,
             device = CASE WHEN device = 'Unknown' OR device IS NULL THEN ${device} ELSE device END,
             country = CASE WHEN country = 'Unknown' OR country IS NULL THEN ${country || 'Unknown'} ELSE country END,
