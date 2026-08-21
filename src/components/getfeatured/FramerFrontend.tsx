@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useRef } from 'react';
-import { countries } from 'https://esm.sh/countries-list';
+import { countries } from 'countries-list';
 
 const countryOptions = Object.entries(countries)
   .map(([code, data]) => ({
