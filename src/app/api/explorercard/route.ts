@@ -138,8 +138,9 @@ export async function POST(req: Request) {
       coverPublicUrl
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error creating explorer card user:", error);
+    require('fs').writeFileSync('/tmp/travingat_error.log', String(error?.stack || error));
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }

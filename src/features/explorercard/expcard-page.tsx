@@ -184,6 +184,12 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
   function handleFile(e: React.ChangeEvent<HTMLInputElement>, key: "coverImage" | "profileImage") {
     const file = e.target.files && e.target.files[0];
     if (!file) return;
+
+    if (file.size > 20 * 1024 * 1024) {
+      alert("Only an image under 20 MB can be uploaded.");
+      e.target.value = "";
+      return;
+    }
     
     if (key === "profileImage") setProfileFile(file);
     if (key === "coverImage") setCoverFile(file);
@@ -214,17 +220,45 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
     setIsSubmitting(true);
 
     try {
-      // 1. Hit API to create user & get presigned URLs
+      let finalProfileUrl = form.profileImage;
+      if (profileFile) {
+        const presignRes = await fetch("/api/upload/presign", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ fileName: profileFile.name, fileType: profileFile.type, prefix: "explorercard/users" }),
+        });
+        const presignData = await presignRes.json();
+        if (presignData.error) throw new Error(presignData.error);
+        await fetch(presignData.uploadUrl, { method: "PUT", headers: { "Content-Type": profileFile.type }, body: profileFile });
+        finalProfileUrl = presignData.publicUrl;
+      }
+      
+      let finalCoverUrl = form.coverImage;
+      if (coverFile) {
+        const presignRes = await fetch("/api/upload/presign", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ fileName: coverFile.name, fileType: coverFile.type, prefix: "explorercard/users" }),
+        });
+        const presignData = await presignRes.json();
+        if (presignData.error) throw new Error(presignData.error);
+        await fetch(presignData.uploadUrl, { method: "PUT", headers: { "Content-Type": coverFile.type }, body: coverFile });
+        finalCoverUrl = presignData.publicUrl;
+      }
+
+      // 1. Hit API to create user
       const formData = new FormData();
       formData.append("firstName", form.firstName);
       formData.append("lastName", form.lastName);
       formData.append("email", form.email);
       formData.append("country", form.country);
       formData.append("visitedCountries", JSON.stringify(visited));
-      if (profileFile) formData.append("profileImage", profileFile);
-      if (coverFile) formData.append("coverImage", coverFile);
-      if (form.profileImage) formData.append("existingProfileImage", form.profileImage);
-      if (form.coverImage) formData.append("existingCoverImage", form.coverImage);
+      if (finalProfileUrl && !finalProfileUrl.startsWith('data:')) {
+        formData.append("existingProfileImage", finalProfileUrl);
+      }
+      if (finalCoverUrl && !finalCoverUrl.startsWith('data:')) {
+        formData.append("existingCoverImage", finalCoverUrl);
+      }
       formData.append("cardStyle", tab);
 
       const res = await fetch("/api/explorercard", {
@@ -241,8 +275,8 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
 
       setForm((s) => ({
         ...s,
-        profileImage: data.profilePublicUrl || s.profileImage,
-        coverImage: data.coverPublicUrl || s.coverImage,
+        profileImage: finalProfileUrl,
+        coverImage: finalCoverUrl,
       }));
 
       setCreatedUserId(data.userId);
@@ -259,23 +293,50 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
   async function handleSaveAndLogout() {
     setIsSubmitting(true);
     try {
+      let finalProfileUrl = form.profileImage;
+      if (profileFile) {
+        const presignRes = await fetch("/api/upload/presign", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ fileName: profileFile.name, fileType: profileFile.type, prefix: "explorercard/users" }),
+        });
+        const presignData = await presignRes.json();
+        if (presignData.error) throw new Error(presignData.error);
+        await fetch(presignData.uploadUrl, { method: "PUT", headers: { "Content-Type": profileFile.type }, body: profileFile });
+        finalProfileUrl = presignData.publicUrl;
+      }
+      
+      let finalCoverUrl = form.coverImage;
+      if (coverFile) {
+        const presignRes = await fetch("/api/upload/presign", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ fileName: coverFile.name, fileType: coverFile.type, prefix: "explorercard/users" }),
+        });
+        const presignData = await presignRes.json();
+        if (presignData.error) throw new Error(presignData.error);
+        await fetch(presignData.uploadUrl, { method: "PUT", headers: { "Content-Type": coverFile.type }, body: coverFile });
+        finalCoverUrl = presignData.publicUrl;
+      }
+
       const formData = new FormData();
       formData.append("firstName", form.firstName);
       formData.append("lastName", form.lastName);
       formData.append("email", form.email);
       formData.append("country", form.country);
       formData.append("visitedCountries", JSON.stringify(visited));
-      if (profileFile) formData.append("profileImage", profileFile);
-      if (coverFile) formData.append("coverImage", coverFile);
-      if (form.profileImage) formData.append("existingProfileImage", form.profileImage);
-      if (form.coverImage) formData.append("existingCoverImage", form.coverImage);
+      if (finalProfileUrl && !finalProfileUrl.startsWith('data:')) {
+        formData.append("existingProfileImage", finalProfileUrl);
+      }
+      if (finalCoverUrl && !finalCoverUrl.startsWith('data:')) {
+        formData.append("existingCoverImage", finalCoverUrl);
+      }
       formData.append("cardStyle", tab);
 
       await fetch("/api/explorercard", {
         method: "POST",
         body: formData,
       });
-
 
     } catch (err) {
       console.error("Failed to save progress", err);
