@@ -1,4 +1,6 @@
 import React from "react";
+import LoadedImage from "@/components/ui/LoadedImage";
+import { toLandingAssetUrl } from "@/lib/landing-assets";
 
 interface CardProps {
   form: {
@@ -19,7 +21,7 @@ export function ClassicCard({ form, sampleFlags, visitedArray }: CardProps) {
         {/* Background image: 344x226, negative margin to allow avatar overlap */}
         <div className="z-0 -mb-[36px] flex h-[226px] w-[344px] shrink-0 items-center justify-center overflow-hidden rounded-[16px] bg-[#161616]">
           {form.coverImage ? (
-            <img src={form.coverImage} alt="cover" className="h-full w-full object-cover" />
+            <LoadedImage src={toLandingAssetUrl(form.coverImage)} alt="cover" containerClassName="h-full w-full" className="h-full w-full object-cover" />
           ) : (
             <ImagePlaceholderIcon />
           )}
@@ -28,7 +30,7 @@ export function ClassicCard({ form, sampleFlags, visitedArray }: CardProps) {
         {/* Photo Avatar */}
         <div className="relative z-10 h-[80px] w-[80px] shrink-0 overflow-hidden rounded-[16px] border-[4px] border-black bg-[#161616]">
           {form.profileImage ? (
-            <img src={form.profileImage} alt="profile" className="h-full w-full object-cover" />
+            <LoadedImage src={toLandingAssetUrl(form.profileImage)} alt="profile" containerClassName="h-full w-full" className="h-full w-full object-cover" />
           ) : (
             <div className="flex h-full w-full items-center justify-center text-white-600">
               <AvatarPlaceholderIcon />
@@ -45,16 +47,16 @@ export function ClassicCard({ form, sampleFlags, visitedArray }: CardProps) {
           <div className="flex shrink-0 items-center justify-center gap-[6px]">
             {form.country && sampleFlags[form.country] ? (
               <>
-                <div className="h-[10px] w-[14px] shrink-0 overflow-hidden rounded-[2px] bg-[#161616]">
+                <div className="h-[13.333px] w-[20px] aspect-[3/2] shrink-0 overflow-hidden rounded-[2px] bg-[#161616]">
                   <span className={`fi fi-${sampleFlags[form.country].toLowerCase()} !block !h-full !w-full !bg-cover !bg-center !text-[0px]`} title={form.country} />
                 </div>
-                <span className="text-[14px] font-[family-name:var(--font-inter-display)] font-medium leading-[20px] tracking-[-0.084px] text-[#656565]">{form.country}</span>
+                <span className="text-[14px] font-[family-name:var(--font-inter)] font-normal leading-[20px] tracking-[-0.084px] text-[#656565]">{form.country}</span>
               </>
             ) : (
-              <span className="text-[14px] font-[family-name:var(--font-inter-display)] font-medium leading-[20px] tracking-[-0.084px] text-[#656565]">Your country</span>
+              <span className="text-[14px] font-[family-name:var(--font-inter)] font-normal leading-[20px] tracking-[-0.084px] text-[#656565]">Your country</span>
             )}
           </div>
-          <h3 className="w-full text-center text-[28px] font-[family-name:var(--font-inter-display)] font-semibold leading-[36px] tracking-[-0.1px] text-white">
+          <h3 className="w-full text-center text-[20px] font-[family-name:var(--font-inter-display)] font-semibold leading-[28px] tracking-[-0.1px] text-white">
             {form.fullName || "Your full name"}
           </h3>
         </div>
@@ -67,7 +69,7 @@ export function ClassicCard({ form, sampleFlags, visitedArray }: CardProps) {
                 <div
                   key={c}
                   title={c}
-                  className="h-[13.333px] w-[20px] shrink-0 overflow-hidden rounded-[2px] bg-[#161616]"
+                  className="h-[13.333px] w-[20px] aspect-[3/2] shrink-0 overflow-hidden rounded-[2px] bg-[#161616]"
                 >
                   <span className={`fi fi-${sampleFlags[c].toLowerCase()} !block !h-full !w-full !bg-cover !bg-center !text-[0px]`} title={c} />
                 </div>
@@ -88,7 +90,7 @@ export function ClassicCard({ form, sampleFlags, visitedArray }: CardProps) {
 
         {/* Countries explored container */}
         <div className="flex w-full shrink-0 flex-col items-center gap-[12px]">
-          <p className="text-[32px] font-[family-name:var(--font-inter-display)] font-medium leading-[40px] tracking-[-0.5px] text-white">
+          <p className="text-[32px] font-[family-name:var(--font-inter-display)] font-normal leading-[40px] tracking-[-0.5px] text-white">
             {visitedArray.length} Countries
           </p>
           <p className="pl-[24px] bg-linear-to-l from-[#3c3c3c] to-[#242424] bg-clip-text text-[32px] font-[family-name:var(--font-antonio)] font-bold leading-[40px] tracking-[24px] text-transparent uppercase">
@@ -119,7 +121,7 @@ export function MinimalCard({ form, sampleFlags, visitedArray }: CardProps) {
           <path d="M24 0H0L0.533106 0.0283589C13.3936 0.712479 23.5897 11.1279 24 24V0Z" fill="#1E1E1E"/>
         </svg>
         <div className="relative z-10 flex h-[32px] items-center justify-center gap-[6px] rounded-b-[12px] bg-[#1e1e1e] px-[12px]">
-          <div className="h-[9px] w-[14px] shrink-0 overflow-hidden rounded-[2px] bg-[#161616]">
+          <div className="h-[13.333px] w-[20px] aspect-[3/2] shrink-0 overflow-hidden rounded-[2px] bg-[#161616]">
              {form.country && sampleFlags[form.country] && (
                <span className={`fi fi-${sampleFlags[form.country].toLowerCase()} !block !h-full !w-full !bg-cover !bg-center !text-[0px]`} title={form.country} />
              )}
@@ -136,30 +138,30 @@ export function MinimalCard({ form, sampleFlags, visitedArray }: CardProps) {
       {/* Main content container */}
       <div className="flex w-full shrink-0 flex-col items-center gap-[8px]">
         {/* Profile Container: side-by-side */}
-        <div className="flex w-full h-[224px] shrink-0 items-center gap-[8px]">
+        <div className="grid grid-cols-2 w-full h-[224px] shrink-0 gap-[8px]">
           {/* Profile image (acts like cover image here) */}
-          <div className="relative flex h-full flex-[1_0_0] items-center justify-center overflow-hidden rounded-[16px] bg-[#1a1a1a]">
+          <div className="relative flex h-full w-full items-center justify-center overflow-hidden rounded-[16px] bg-[#1a1a1a]">
             {form.coverImage ? (
-              <img src={form.coverImage} alt="cover" className="h-full w-full object-cover" />
+              <LoadedImage src={toLandingAssetUrl(form.coverImage)} alt="cover" containerClassName="h-full w-full" className="h-full w-full object-cover" />
             ) : (
               <ImagePlaceholderIcon />
             )}
           </div>
           
           {/* Profile info */}
-          <div className="flex h-full flex-[1_0_0] flex-col items-start justify-end gap-[12px] rounded-[16px] bg-[#111111] p-[16px]">
+          <div className="flex h-full w-full flex-col items-start justify-end gap-[12px] rounded-[16px] bg-[#111111] p-[16px]">
             <div className="relative h-[36px] w-[36px] shrink-0 overflow-hidden rounded-[10px] bg-[#2a2a2a]">
               {form.profileImage ? (
-                <img src={form.profileImage} alt="profile" className="h-full w-full object-cover" />
+                <LoadedImage src={toLandingAssetUrl(form.profileImage)} alt="profile" containerClassName="h-full w-full" className="h-full w-full object-cover" />
               ) : (
                  <div className="absolute inset-0 flex items-center justify-center"><AvatarPlaceholderIcon /></div>
               )}
             </div>
-            <p className="w-[min-content] min-w-full break-words text-[24px] font-[family-name:var(--font-inter-display)] font-semibold leading-[32px] tracking-[-0.5px] text-white">
+            <p className="w-[min-content] min-w-full break-words text-[20px] font-[family-name:var(--font-inter-display)] font-semibold leading-[28px] tracking-[-0.1px] text-white">
               {form.fullName || "Your full name"}
             </p>
             <div className="flex w-full shrink-0 items-center gap-[6px]">
-              <div className="h-[10px] w-[15px] shrink-0 overflow-hidden rounded-[2px] bg-[#161616]">
+              <div className="h-[13.333px] w-[20px] aspect-[3/2] shrink-0 overflow-hidden rounded-[2px] bg-[#161616]">
                 {form.country && sampleFlags[form.country] && (
                   <span className={`fi fi-${sampleFlags[form.country].toLowerCase()} !block !h-full !w-full !bg-cover !bg-center !text-[0px]`} title={form.country} />
                 )}
@@ -186,7 +188,7 @@ export function MinimalCard({ form, sampleFlags, visitedArray }: CardProps) {
              {visitedArray.length > 0 ? (
                <>
                  {visitedArray.slice(0, 35).map((c) => (
-                    <div key={c} title={c} className="h-[18px] w-[26px] shrink-0 overflow-hidden rounded-[2px] bg-[#161616]">
+                    <div key={c} title={c} className="h-[13.333px] w-[20px] aspect-[3/2] shrink-0 overflow-hidden rounded-[2px] bg-[#161616]">
                       <span className={`fi fi-${sampleFlags[c].toLowerCase()} !block !h-full !w-full !bg-cover !bg-center !text-[0px]`} title={c} />
                     </div>
                  ))}
@@ -229,7 +231,7 @@ export function AdventureCard({ form, sampleFlags, visitedArray }: CardProps) {
             <path d="M24 0H0L0.533106 0.0283589C13.3936 0.712479 23.5897 11.1279 24 24V0Z" fill="#0c0c0c"/>
           </svg>
           <div className="relative z-10 flex h-[32px] items-center justify-center gap-[6px] rounded-b-[12px] bg-[#0c0c0c] px-[12px]">
-            <div className="h-[9px] w-[14px] shrink-0 overflow-hidden rounded-[2px] bg-[#161616]">
+            <div className="h-[13.333px] w-[20px] aspect-[3/2] shrink-0 overflow-hidden rounded-[2px] bg-[#161616]">
                {form.country && sampleFlags[form.country] && (
                  <span className={`fi fi-${sampleFlags[form.country].toLowerCase()} !block !h-full !w-full !bg-cover !bg-center !text-[0px]`} title={form.country} />
                )}
@@ -246,7 +248,7 @@ export function AdventureCard({ form, sampleFlags, visitedArray }: CardProps) {
         {/* Cover Image Background */}
         <div className="absolute inset-0 z-0">
           {form.coverImage ? (
-            <img src={form.coverImage} alt="cover" className="h-full w-full object-cover" />
+            <LoadedImage src={toLandingAssetUrl(form.coverImage)} alt="cover" containerClassName="h-full w-full" className="h-full w-full object-cover" />
           ) : (
             <div className="flex h-full w-full items-center justify-center">
                <ImagePlaceholderIcon />
@@ -273,14 +275,14 @@ export function AdventureCard({ form, sampleFlags, visitedArray }: CardProps) {
           {/* Profile Picture */}
           <div className="relative z-10 mb-[16px] h-[64px] w-[64px] shrink-0 overflow-hidden rounded-[16px] border-[3px] border-white bg-[#2a2a2a] shadow-lg">
             {form.profileImage ? (
-              <img src={form.profileImage} alt="profile" className="h-full w-full object-cover" />
+              <LoadedImage src={toLandingAssetUrl(form.profileImage)} alt="profile" containerClassName="h-full w-full" className="h-full w-full object-cover" />
             ) : (
               <div className="absolute inset-0 flex items-center justify-center"><AvatarPlaceholderIcon /></div>
             )}
           </div>
 
           {/* Name */}
-          <p className="relative z-10 mb-[8px] w-full break-words px-4 text-center text-[32px] font-[family-name:var(--font-inter-display)] font-bold leading-[40px] tracking-[-0.5px] text-white">
+          <p className="relative z-10 mb-[8px] w-full break-words px-4 text-center text-[24px] font-[family-name:var(--font-inter-display)] font-semibold leading-[32px] tracking-[-0.5px] text-white">
             {form.fullName || "Your full name"}
           </p>
 
@@ -294,7 +296,7 @@ export function AdventureCard({ form, sampleFlags, visitedArray }: CardProps) {
             {visitedArray.length > 0 ? (
               <>
                 {visitedArray.slice(0, 35).map((c) => (
-                  <div key={c} title={c} className="h-[18px] w-[26px] shrink-0 overflow-hidden rounded-[2px] bg-[#161616]">
+                  <div key={c} title={c} className="h-[13.333px] w-[20px] aspect-[3/2] shrink-0 overflow-hidden rounded-[2px] bg-[#161616]">
                     <span className={`fi fi-${sampleFlags[c].toLowerCase()} !block !h-full !w-full !bg-cover !bg-center !text-[0px]`} title={c} />
                   </div>
                 ))}
@@ -325,19 +327,21 @@ export function AdventureCard({ form, sampleFlags, visitedArray }: CardProps) {
 
 export function ImagePlaceholderIcon() {
   return (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="text-white-700">
-      <rect x="3" y="3" width="18" height="18" rx="3" stroke="currentColor" strokeWidth="1.5" />
-      <circle cx="8.5" cy="8.5" r="1.5" stroke="currentColor" strokeWidth="1.5" />
-      <path d="M21 15l-5-5L5 21" stroke="currentColor" strokeWidth="1.5" />
-    </svg>
+    <span className="material-symbols-rounded text-[#E3E3E3] text-[32px]">add_photo_alternate</span>
   );
 }
 
 export function AvatarPlaceholderIcon() {
   return (
-    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" className="text-white-700">
-      <circle cx="12" cy="8" r="4" stroke="currentColor" strokeWidth="1.5" />
-      <path d="M4 20c0-4 3.5-6 8-6s8 2 8 6" stroke="currentColor" strokeWidth="1.5" />
-    </svg>
+    <div className="relative shrink-0 size-[48px]">
+      <div className="absolute left-0 shadow-[1.09px_1.09px_2.18px_0px_rgba(0,0,0,0.24)] size-[48px] top-0 rounded-[12px]">
+        <div className="absolute inset-0 opacity-50 overflow-hidden pointer-events-none rounded-[12px]">
+          <img alt="Placeholder avatar" className="absolute left-[-19.7%] max-w-none size-[139.33%] top-[-15.74%]" src="/images/avatar-placeholder.png" />
+        </div>
+      </div>
+      <div className="absolute left-[31.09px] size-[16px] top-[32.73px] bg-black rounded-full p-[2px] flex items-center justify-center">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/></svg>
+      </div>
+    </div>
   );
 }

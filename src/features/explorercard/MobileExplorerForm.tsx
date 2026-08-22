@@ -152,7 +152,7 @@ export function MobileExplorerForm({
                       value={form.email}
                       disabled
                       placeholder="Email"
-                      className="w-full bg-transparent text-[16px] text-[#525252] outline-none"
+                      className="w-full bg-transparent font-sans font-normal text-[16px] leading-[24px] tracking-[-0.096px] text-[#525252] outline-none"
                     />
                   </div>
                 </div>
@@ -164,12 +164,7 @@ export function MobileExplorerForm({
                     {form.profileImage ? (
                       <img src={form.profileImage} alt="profile" className="h-full w-full object-cover" />
                     ) : (
-                      <div className="relative size-[48px]">
                         <AvatarPlaceholderIcon />
-                        <div className="absolute bottom-[-4px] right-[-4px] bg-black rounded-full p-[2px]">
-                           <svg width="16" height="16" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/></svg>
-                        </div>
-                      </div>
                     )}
                     <input type="file" accept="image/*" onChange={(e) => { handleFile(e, "profileImage"); setErrors(prev => ({ ...prev, profileImage: '' })); }} className="absolute inset-0 opacity-0 cursor-pointer" />
                   </div>
@@ -204,7 +199,7 @@ export function MobileExplorerForm({
                         value={form.firstName}
                         onChange={(e) => { handleChange(e); setErrors(prev => ({ ...prev, firstName: '' })); }}
                         placeholder="First name"
-                        className="w-full bg-transparent text-[16px] text-white outline-none placeholder:text-[#525252]"
+                        className="w-full bg-transparent font-sans font-normal text-[16px] leading-[24px] tracking-[-0.096px] text-white outline-none placeholder:text-[#525252]"
                       />
                     </div>
                     <ErrorMsg field="firstName" />
@@ -216,7 +211,7 @@ export function MobileExplorerForm({
                         value={form.lastName}
                         onChange={(e) => { handleChange(e); setErrors(prev => ({ ...prev, lastName: '' })); }}
                         placeholder="Last name"
-                        className="w-full bg-transparent text-[16px] text-white outline-none placeholder:text-[#525252]"
+                        className="w-full bg-transparent font-sans font-normal text-[16px] leading-[24px] tracking-[-0.096px] text-white outline-none placeholder:text-[#525252]"
                       />
                     </div>
                     <ErrorMsg field="lastName" />
@@ -229,7 +224,7 @@ export function MobileExplorerForm({
                   <div className="relative w-full">
                     <div className={`flex w-full items-center gap-[8px] rounded-[10px] border bg-black px-[16px] py-[12px] ${errors.country ? 'border-red-500' : 'border-[#1e1e1e]'}`}>
                       {sampleFlags[form.country] && (
-                        <span className={`fi fi-${sampleFlags[form.country].toLowerCase()} h-[12px] w-[18px] shrink-0 rounded-[2px] inline-block`} />
+                        <span className={`fi fi-${sampleFlags[form.country].toLowerCase()} h-[13.333px] w-[20px] aspect-[3/2] shrink-0 rounded-[2px] inline-block bg-cover bg-center`} />
                       )}
                       <input
                         value={form.country}
@@ -241,7 +236,7 @@ export function MobileExplorerForm({
                         onFocus={() => setFromOpen(true)}
                         onBlur={() => setTimeout(() => setFromOpen(false), 200)}
                         placeholder="Select country"
-                        className="w-full bg-transparent text-[16px] text-white outline-none placeholder:text-[#525252]"
+                        className="w-full bg-transparent font-sans font-normal text-[16px] leading-[24px] tracking-[-0.096px] text-white outline-none placeholder:text-[#525252]"
                       />
                       <svg className="h-[20px] w-[20px] shrink-0 text-[#525252] pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
                     </div>
@@ -260,7 +255,7 @@ export function MobileExplorerForm({
                             }}
                             className="flex w-full items-center gap-[8px] px-[16px] py-[12px] text-left text-[16px] text-white hover:bg-[#1e1e1e]"
                           >
-                            <span className={`fi fi-${sampleFlags[c].toLowerCase()} h-[12px] w-[18px] rounded-[2px] inline-block`} title={c} />
+                            <span className={`fi fi-${sampleFlags[c].toLowerCase()} h-[13.333px] w-[20px] aspect-[3/2] rounded-[2px] inline-block bg-cover bg-center`} title={c} />
                             <span>{c}</span>
                           </button>
                         ))}
@@ -295,7 +290,7 @@ export function MobileExplorerForm({
                         key={c}
                         className="flex items-center justify-center rounded-[4px] bg-[#1e1e1e] px-[4px] py-[2px]"
                       >
-                        <span className={`fi fi-${sampleFlags[c]?.toLowerCase()} h-[10px] w-[14px] overflow-clip rounded-[1px]`} title={c} />
+                        <span className={`fi fi-${sampleFlags[c]?.toLowerCase()} h-[13.333px] w-[20px] aspect-[3/2] overflow-clip rounded-[1px] bg-cover bg-center`} title={c} />
                       </div>
                     ))}
                     {visited.length > 5 && (
@@ -312,7 +307,7 @@ export function MobileExplorerForm({
                         key={c}
                         className="flex items-center gap-[4px] rounded-[6px] bg-[#1e1e1e] px-[6px] py-[4px]"
                       >
-                        <span className={`fi fi-${sampleFlags[c]?.toLowerCase()} h-[9.333px] w-[14px] overflow-clip rounded-[1px]`} title={c} />
+                        <span className={`fi fi-${sampleFlags[c]?.toLowerCase()} h-[13.333px] w-[20px] aspect-[3/2] overflow-clip rounded-[1px] bg-cover bg-center`} title={c} />
                         <span className="text-[12px] text-white font-medium">{sampleFlags[c]}</span>
                       </div>
                     ))}
@@ -345,7 +340,7 @@ export function MobileExplorerForm({
                     value={countryQuery}
                     onChange={(e) => setCountryQuery(e.target.value)}
                     placeholder="Search countries"
-                    className="w-full bg-transparent py-[12px] pl-[44px] pr-4 text-[16px] text-white outline-none placeholder:text-[#525252]"
+                    className="w-full bg-transparent py-[12px] pl-[44px] pr-4 font-sans font-normal text-[16px] leading-[24px] tracking-[-0.096px] text-white outline-none placeholder:text-[#525252]"
                   />
                 </div>
               </div>
@@ -370,7 +365,7 @@ export function MobileExplorerForm({
                         ) : (
                           <div className="h-[24px] w-[24px] rounded-[8px] border border-[#404040] bg-transparent" />
                         )}
-                        <span className={`fi fi-${sampleFlags[c].toLowerCase()} h-[14px] w-[20px] rounded-[2px] inline-block`} title={c} />
+                        <span className={`fi fi-${sampleFlags[c].toLowerCase()} h-[13.333px] w-[20px] aspect-[3/2] rounded-[2px] inline-block bg-cover bg-center`} title={c} />
                         <span className="text-[16px] text-white">{c}</span>
                       </div>
                       <span className="text-[14px] text-[#525252]">{sampleFlags[c]}</span>
@@ -398,7 +393,7 @@ export function MobileExplorerForm({
             <button
               type="submit"
               disabled={isSubmitting}
-              className="flex-1 rounded-full bg-[#c0caff] text-black px-[24px] h-[48px] text-[16px] font-medium transition hover:opacity-90 disabled:opacity-50"
+              className="flex-1 rounded-full bg-[#c0caff] text-black px-[24px] h-[48px] font-sans text-[16px] font-medium leading-[24px] tracking-[-0.176px] transition hover:opacity-90 disabled:opacity-50"
             >
               {isSubmitting ? "Processing..." : step === 3 ? "Create" : "Next"}
             </button>

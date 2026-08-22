@@ -63,7 +63,7 @@ export function DesktopExplorerForm({
                 value={form.email}
                 disabled
                 placeholder="Email"
-                className="w-full bg-transparent text-[16px] text-[#525252] outline-none"
+                className="w-full bg-transparent font-sans font-normal text-[16px] leading-[24px] tracking-[-0.096px] text-[#525252] outline-none"
               />
             </div>
           </div>
@@ -106,7 +106,7 @@ export function DesktopExplorerForm({
                   value={form.firstName}
                   onChange={(e) => { handleChange(e); setErrors(s => ({ ...s, firstName: '' })); }}
                   placeholder="First name"
-                  className="w-full bg-transparent text-[16px] text-white outline-none placeholder:text-[#525252]"
+                  className="w-full bg-transparent font-sans font-normal text-[16px] leading-[24px] tracking-[-0.096px] text-white outline-none placeholder:text-[#525252]"
                 />
               </div>
               <ErrorMsg field="firstName" />
@@ -118,7 +118,7 @@ export function DesktopExplorerForm({
                   value={form.lastName}
                   onChange={(e) => { handleChange(e); setErrors(s => ({ ...s, lastName: '' })); }}
                   placeholder="Last name"
-                  className="w-full bg-transparent text-[16px] text-white outline-none placeholder:text-[#525252]"
+                  className="w-full bg-transparent font-sans font-normal text-[16px] leading-[24px] tracking-[-0.096px] text-white outline-none placeholder:text-[#525252]"
                 />
               </div>
               <ErrorMsg field="lastName" />
@@ -130,7 +130,7 @@ export function DesktopExplorerForm({
           <div className="relative w-full flex flex-col">
             <div className={`flex w-full items-center gap-[8px] rounded-[10px] bg-black border px-[16px] py-[12px] ${errors.country ? 'border-red-500' : 'border-[#1e1e1e]'}`}>
               {sampleFlags[form.country] && (
-                 <span className={`fi fi-${sampleFlags[form.country].toLowerCase()} h-[12px] w-[18px] shrink-0 rounded-[2px] inline-block`} />
+                 <span className={`fi fi-${sampleFlags[form.country].toLowerCase()} h-[13.333px] w-[20px] aspect-[3/2] shrink-0 rounded-[2px] inline-block bg-cover bg-center`} />
               )}
               <input
                 value={form.country}
@@ -142,7 +142,7 @@ export function DesktopExplorerForm({
                 onFocus={() => setFromOpen(true)}
                 onBlur={() => setTimeout(() => setFromOpen(false), 200)}
                 placeholder="Select country"
-                className="w-full bg-transparent text-[16px] text-white outline-none placeholder:text-[#525252]"
+                className="w-full bg-transparent font-sans font-normal text-[16px] leading-[24px] tracking-[-0.096px] text-white outline-none placeholder:text-[#525252]"
               />
               <svg className="h-[24px] w-[24px] shrink-0 text-[#525252] pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
             </div>
@@ -162,7 +162,7 @@ export function DesktopExplorerForm({
                     }}
                     className="flex w-full items-center gap-[8px] px-[12px] py-[8px] text-left text-[14px] text-white hover:bg-[#1e1e1e]"
                   >
-                    <span className={`fi fi-${sampleFlags[c].toLowerCase()} h-[12px] w-[18px] rounded-[2px] inline-block`} title={c} />
+                    <span className={`fi fi-${sampleFlags[c].toLowerCase()} h-[13.333px] w-[20px] aspect-[3/2] shrink-0 rounded-[2px] inline-block bg-cover bg-center`} title={c} />
                     <span>{c}</span>
                   </button>
                 ))}
@@ -192,7 +192,7 @@ export function DesktopExplorerForm({
                   key={c}
                   className="flex items-center justify-center rounded-[4px] bg-[#1e1e1e] px-[4px] py-[2px]"
                 >
-                  <span className={`fi fi-${sampleFlags[c].toLowerCase()} h-[10px] w-[14px] overflow-clip rounded-[1px]`} title={c} />
+                  <span className={`fi fi-${sampleFlags[c].toLowerCase()} h-[13.333px] w-[20px] aspect-[3/2] shrink-0 overflow-clip rounded-[1px] bg-cover bg-center`} title={c} />
                 </div>
               ))}
               {visited.length > 5 && (
@@ -210,7 +210,7 @@ export function DesktopExplorerForm({
                   key={c}
                   className="flex items-center gap-[4px] rounded-[6px] bg-[#1e1e1e] px-[6px] py-[2px]"
                 >
-                  <span className={`fi fi-${sampleFlags[c].toLowerCase()} h-[9.333px] w-[14px] overflow-clip rounded-[1px]`} title={c} />
+                  <span className={`fi fi-${sampleFlags[c].toLowerCase()} h-[13.333px] w-[20px] aspect-[3/2] shrink-0 overflow-clip rounded-[1px] bg-cover bg-center`} title={c} />
                   <span className="text-[12px] text-white">{sampleFlags[c]}</span>
                   <button
                     type="button"
@@ -236,7 +236,7 @@ export function DesktopExplorerForm({
                 onFocus={() => setVisitedOpen(true)}
                 onBlur={() => setTimeout(() => setVisitedOpen(false), 200)}
                 placeholder="Search countries"
-                className="w-full bg-transparent py-[12px] pl-[56px] pr-4 text-[16px] text-white outline-none placeholder:text-[#525252]"
+                className="w-full bg-transparent py-[12px] pl-[56px] pr-4 font-sans font-normal text-[16px] leading-[24px] tracking-[-0.096px] text-white outline-none placeholder:text-[#525252]"
               />
             </div>
             {visitedOpen && countryMatches.length > 0 && (
@@ -259,7 +259,7 @@ export function DesktopExplorerForm({
                         ) : (
                           <div className="h-[24px] w-[24px] rounded-[8px] border border-[#464646] bg-[#161616]" />
                         )}
-                        <span className={`fi fi-${sampleFlags[c].toLowerCase()} h-[13.333px] w-[20px] rounded-[2px] inline-block`} title={c} />
+                        <span className={`fi fi-${sampleFlags[c].toLowerCase()} h-[13.333px] w-[20px] aspect-[3/2] shrink-0 rounded-[2px] inline-block bg-cover bg-center`} title={c} />
                         <span className="text-[16px] text-white tracking-[-0.096px]">{c}</span>
                       </div>
                       <span className="text-[16px] text-[#656565] tracking-[-0.096px]">{sampleFlags[c]}</span>
@@ -276,7 +276,7 @@ export function DesktopExplorerForm({
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full rounded-[100px] bg-[#533df6] px-[24px] py-[12px] text-[14px] font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
+            className="w-full rounded-[100px] bg-[#533df6] px-[24px] py-[12px] font-sans text-[16px] font-medium leading-[24px] tracking-[-0.176px] text-[#ecf0ff] transition-opacity hover:opacity-90 disabled:opacity-50"
           >
             {isSubmitting ? "Creating..." : "Create explorer card"}
           </button>

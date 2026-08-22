@@ -31,7 +31,13 @@ export default function LoadedImage({
   const imgRef = useRef<HTMLImageElement | null>(null);
 
   // Add a query param on retries to bypass broken browser cache for the failed image
-  const currentSrc = retryCount > 0 ? `${src}${src.includes("?") ? "&" : "?"}retry=${retryCount}` : src;
+  let currentSrc = retryCount > 0 && !src.startsWith("blob:") && !src.startsWith("data:") 
+    ? `${src}${src.includes("?") ? "&" : "?"}retry=${retryCount}` 
+    : src;
+
+  if (currentSrc.startsWith("http")) {
+    currentSrc = `/api/proxy-image?url=${encodeURIComponent(currentSrc)}`;
+  }
 
   const handleLoad = () => {
     if (maxLoadTimeoutRef.current) clearTimeout(maxLoadTimeoutRef.current);

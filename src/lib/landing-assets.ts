@@ -22,7 +22,7 @@ export function getLandingAssetsCdnBase(): string {
 
 export function toLandingAssetUrl(assetPath: string): string {
   if (!assetPath) return assetPath;
-  if (/^https?:\/\//i.test(assetPath)) return assetPath;
+  if (/^https?:\/\//i.test(assetPath) || /^blob:/i.test(assetPath) || /^data:/i.test(assetPath)) return assetPath;
 
   const normalizedInput = assetPath.replace(/^\/+/, "");
   const assetPathWithFolder = isBareMediaFile(normalizedInput)

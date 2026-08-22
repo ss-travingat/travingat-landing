@@ -125,7 +125,6 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
 
     try {
       return await htmlToImage.toPng(node, { 
-        cacheBust: true, 
         pixelRatio: 2,
         width: node.offsetWidth,
         height: node.offsetHeight,
@@ -670,7 +669,7 @@ return (
             <img src="/icons/travingat-logo.svg?v=newlogo" alt="Travingat" className="h-[24px] w-auto brightness-0 invert" />
           </div>
           <div className="flex-[2] flex justify-center">
-            <h2 className="text-[16px] lg:text-[18px] font-medium text-white tracking-[-0.5px]">Create explorer card</h2>
+            <h2 className="text-center font-display text-[28px] font-medium leading-[36px] tracking-[-0.5px] text-white">Create explorer card</h2>
           </div>
           <div className="flex-1 flex justify-end">
             <button onClick={handleSaveAndLogout} disabled={isSubmitting} className="w-10 h-10 flex items-center justify-center rounded-[12px] bg-[#1a1a1a] border border-[#2a2a2a] hover:bg-[#222] transition-colors disabled:opacity-50">
@@ -770,8 +769,8 @@ return (
 
 export function Field({ label, hint, children }: { label: string; hint?: string; children: React.ReactNode }) {
   return (
-    <label className="flex w-full flex-col gap-[8px] text-[14px] text-white tracking-[-0.084px]">
-      <span>{label}</span>
+    <label className="flex w-full flex-col gap-[10px] text-[14px] font-sans font-normal leading-[20px] tracking-[-0.084px] text-white">
+      <span className="w-full">{label}</span>
       {children}
       {hint && <span className="text-[12px] text-[#7c7c7c]">{hint}</span>}
     </label>
