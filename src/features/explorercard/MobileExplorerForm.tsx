@@ -164,9 +164,16 @@ export function MobileExplorerForm({
                     {form.profileImage ? (
                       <img src={form.profileImage} alt="profile" className="h-full w-full object-cover" />
                     ) : (
-                        <AvatarPlaceholderIcon />
+                      <div className="relative w-[48px] h-[48px]">
+                        <AvatarPlaceholderIcon className="w-full h-full object-cover" />
+                        <div className="absolute left-[30px] w-[11px] h-[11px] top-[31.7px] pointer-events-none z-0">
+                          <div className="absolute inset-[0_-16.67%_-33.33%_-16.67%]">
+                            <img alt="" className="block max-w-none w-full h-full" src="/icons/Add user button.png" />
+                          </div>
+                        </div>
+                      </div>
                     )}
-                    <input type="file" accept="image/*" onChange={(e) => { handleFile(e, "profileImage"); setErrors(prev => ({ ...prev, profileImage: '' })); }} className="absolute inset-0 opacity-0 cursor-pointer" />
+                    <input type="file" accept="image/*" onChange={(e) => { handleFile(e, "profileImage"); setErrors(prev => ({ ...prev, profileImage: '' })); }} className="absolute inset-0 opacity-0 cursor-pointer z-10" />
                   </div>
                   <ErrorMsg field="profileImage" />
                 </Field>

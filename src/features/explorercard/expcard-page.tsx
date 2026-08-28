@@ -11,10 +11,12 @@ import { DesktopExplorerForm } from "./DesktopExplorerForm";
 import { MobileExplorerForm } from "./MobileExplorerForm";
 
 const sampleFlags: Record<string, string> = {};
-for (const [code, name] of Object.entries(countryData)) {
-  if (code.length === 2) {
-    sampleFlags[name] = code.toUpperCase();
-  }
+const sortedEntries = Object.entries(countryData)
+  .filter(([code]) => code.length === 2)
+  .sort((a, b) => a[1].localeCompare(b[1]));
+
+for (const [code, name] of sortedEntries) {
+  sampleFlags[name] = code.toUpperCase();
 }
 
 type Tab = "Classic" | "Minimal" | "Adventure";
