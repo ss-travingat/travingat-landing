@@ -124,10 +124,10 @@ export function MinimalCard({ form, sampleFlags, visitedArray }: CardProps) {
     >
       {/* Country badge at top */}
       <div className="flex w-full shrink-0 items-start justify-center relative">
-        <svg preserveAspectRatio="none" overflow="visible" className="h-[24px] w-[24px] shrink-0 -mr-[1px]" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <svg preserveAspectRatio="none" overflow="visible" className="h-[18px] w-[18px] shrink-0 -mr-[1px]" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M24 0H0L0.533106 0.0283589C13.3936 0.712479 23.5897 11.1279 24 24V0Z" fill="#1E1E1E"/>
         </svg>
-        <div className="relative z-10 flex h-[32px] items-center justify-center gap-[6px] rounded-b-[12px] bg-[#1e1e1e] px-[12px]">
+        <div className="relative z-10 flex h-[28px] items-center justify-center gap-[6px] rounded-b-[10px] bg-[#1e1e1e] px-[12px]">
           <div className="h-[13.333px] w-[20px] aspect-[3/2] shrink-0 overflow-hidden rounded-[2px] bg-[#161616]">
              {form.country && sampleFlags[form.country] && (
                <span className={`fi fi-${sampleFlags[form.country].toLowerCase()} !block !h-full !w-full !bg-cover !bg-center !text-[0px]`} title={form.country} />
@@ -137,7 +137,7 @@ export function MinimalCard({ form, sampleFlags, visitedArray }: CardProps) {
             {form.country || "Your country"}
           </p>
         </div>
-        <svg preserveAspectRatio="none" overflow="visible" className="h-[24px] w-[24px] shrink-0 scale-x-[-1] -ml-[1px]" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <svg preserveAspectRatio="none" overflow="visible" className="h-[18px] w-[18px] shrink-0 scale-x-[-1] -ml-[1px]" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M24 0H0L0.533106 0.0283589C13.3936 0.712479 23.5897 11.1279 24 24V0Z" fill="#1E1E1E"/>
         </svg>
       </div>
@@ -231,15 +231,14 @@ export function AdventureCard({ form, sampleFlags, visitedArray }: CardProps) {
       {/* Main Image Container */}
       <div 
         className="relative flex w-[344px] h-[528px] shrink-0 flex-col items-center justify-end overflow-hidden rounded-[16px] bg-[#161616] isolate"
-        style={{ WebkitMaskImage: '-webkit-radial-gradient(white, black)' }}
       >
         
         {/* Notch Overlay */}
         <div className="absolute top-0 left-0 right-0 z-30 flex w-full shrink-0 items-start justify-center">
-          <svg preserveAspectRatio="none" overflow="visible" className="h-[24px] w-[24px] shrink-0 -mr-[1px]" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <svg preserveAspectRatio="none" overflow="visible" className="h-[18px] w-[18px] shrink-0 -mr-[1px]" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M24 0H0L0.533106 0.0283589C13.3936 0.712479 23.5897 11.1279 24 24V0Z" fill="#000000"/>
           </svg>
-          <div className="relative z-10 flex h-[32px] items-center justify-center gap-[6px] rounded-b-[12px] bg-black px-[12px]">
+          <div className="relative z-10 flex h-[28px] items-center justify-center gap-[6px] rounded-b-[10px] bg-black px-[12px]">
             <div className="h-[13.333px] w-[20px] aspect-[3/2] shrink-0 overflow-hidden rounded-[2px] bg-[#161616]">
                {form.country && sampleFlags[form.country] ? (
                  <span className={`fi fi-${sampleFlags[form.country].toLowerCase()} !block !h-full !w-full !bg-cover !bg-center !text-[0px]`} title={form.country} />
@@ -251,7 +250,7 @@ export function AdventureCard({ form, sampleFlags, visitedArray }: CardProps) {
               {form.country || <span className="text-[#656565]">Your country</span>}
             </p>
           </div>
-          <svg preserveAspectRatio="none" overflow="visible" className="h-[24px] w-[24px] shrink-0 scale-x-[-1] -ml-[1px]" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <svg preserveAspectRatio="none" overflow="visible" className="h-[18px] w-[18px] shrink-0 scale-x-[-1] -ml-[1px]" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M24 0H0L0.533106 0.0283589C13.3936 0.712479 23.5897 11.1279 24 24V0Z" fill="#000000"/>
           </svg>
         </div>
