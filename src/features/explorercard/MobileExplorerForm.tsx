@@ -24,6 +24,8 @@ interface MobileExplorerFormProps {
   removeCountry: (c: string) => void;
   isEditMode: boolean;
   hasChanged: boolean;
+  isCreated?: boolean;
+  hasChanges?: boolean;
 }
 
 export function MobileExplorerForm({

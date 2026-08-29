@@ -150,7 +150,7 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
 
     try {
       return await domToPng(node, { 
-        pixelRatio: 2,
+        scale: 2,
         width: node.offsetWidth,
         height: node.offsetHeight,
       });
