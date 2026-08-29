@@ -501,7 +501,7 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
           </div>
 
           {/* Tab Bar */}
-          <div className="w-full max-w-[321px] lg:max-w-none bg-[#111] border border-[#2a2a2a] rounded-[999px] p-[4px] flex items-center">
+          <div className={`w-full max-w-[321px] ${tab === 'Minimal' ? 'lg:max-w-[382px]' : 'lg:max-w-[360px]'} bg-[#111] border border-[#2a2a2a] rounded-[999px] p-[4px] flex items-center transition-all duration-300`}>
             {(["Classic", "Minimal", "Adventure"] as Tab[]).map((t) => (
               <button
                 key={t}

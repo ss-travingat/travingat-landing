@@ -52,8 +52,8 @@ export function CountryNotch({ form, sampleFlags, fill = "#000000", emptyBg = "b
         <path d="M34 0H0L15.8765 0.44712C25.5527 0.719623 33.4182 8.33753 34 18V0Z" fill={fill}/>
       </svg>
       {/* Center Rectangle */}
-      <div className="relative z-10 flex min-w-[134px] h-[27px] items-start justify-center rounded-b-[12px] px-[12px] pointer-events-auto" style={{ backgroundColor: fill }}>
-        <div className="flex items-center gap-[6px] mt-[4px] h-[14px]">
+      <div className="relative z-10 flex min-w-[134px] h-[27px] items-start justify-center rounded-b-[12px] px-[12px] pt-[2px] pointer-events-auto" style={{ backgroundColor: fill }}>
+        <div className="flex items-center justify-center gap-[6px]">
           <div className="h-[9px] w-[14px] shrink-0 overflow-hidden rounded-[2px] bg-[#161616]">
              {form.country && sampleFlags[form.country] ? (
                <span className={`fi fi-${sampleFlags[form.country].toLowerCase()} !block !h-full !w-full !bg-cover !bg-center !text-[0px]`} title={form.country} />
@@ -74,6 +74,42 @@ export function CountryNotch({ form, sampleFlags, fill = "#000000", emptyBg = "b
   );
 }
 
+export function MinimalCountryNotch({ form, sampleFlags, wrapperClassName = "" }: { form: any, sampleFlags: any, wrapperClassName?: string }) {
+  return (
+    <div className={`flex items-start justify-center pointer-events-none ${wrapperClassName}`}>
+      <div className="relative flex h-[32px] w-[182px] items-start justify-center pt-[8px] pointer-events-auto">
+        <div className="absolute inset-0 z-0 pointer-events-none">
+          <svg width="182" height="32" viewBox="0 0 182 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <g clipPath="url(#clip0_444_18)">
+              <path d="M24 0H0L0.533106 0.0283589C13.3936 0.712479 23.5897 11.1279 24 24V0Z" fill="#1E1E1E"/>
+              <path d="M24 0H158V20C158 26.6274 152.627 32 146 32H36C29.3726 32 24 26.6274 24 20V0Z" fill="#1E1E1E"/>
+              <path d="M158 0H182L181.467 0.0283589C168.606 0.712479 158.41 11.1279 158 24V0Z" fill="#1E1E1E"/>
+            </g>
+            <defs>
+              <clipPath id="clip0_444_18">
+                <rect width="182" height="32" fill="white"/>
+              </clipPath>
+            </defs>
+          </svg>
+        </div>
+        
+        <div className="relative z-10 flex items-center justify-center gap-[6px]">
+          <div className="h-[9px] w-[14px] shrink-0 overflow-hidden rounded-[2px] bg-[#161616]">
+             {form.country && sampleFlags[form.country] ? (
+               <span className={`fi fi-${sampleFlags[form.country].toLowerCase()} !block !h-full !w-full !bg-cover !bg-center !text-[0px]`} title={form.country} />
+             ) : (
+               <div className="h-full w-full rounded-[2px] bg-[#2a2a2a]" />
+             )}
+          </div>
+          <p className="whitespace-nowrap text-[14px] font-[family-name:var(--font-inter)] font-normal leading-[14px] tracking-[-0.084px] text-white">
+            {form.country || <span className="text-[#656565]">Your country</span>}
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function ClassicCard({ form, sampleFlags, visitedArray, isPreview }: CardProps) {
   return (
     <div className="flex w-[360px] flex-col items-center rounded-[24px] border border-[#252525] bg-black px-2 pb-[24px] pt-2">
@@ -87,7 +123,7 @@ export function ClassicCard({ form, sampleFlags, visitedArray, isPreview }: Card
             <ImagePlaceholderIcon />
           )}
           {isPreview && <PreviewWatermark />}
-          <LogoWatermark />
+          {!isPreview && <LogoWatermark />}
         </div>
 
         {/* Photo Avatar */}
@@ -186,7 +222,7 @@ export function MinimalCard({ form, sampleFlags, visitedArray, isPreview }: Card
       className="flex w-[382px] shrink-0 flex-col items-center gap-[20px] rounded-[24px] border border-[#252525] bg-black px-[8px] pb-[24px] pt-0"
     >
       {/* Country badge at top */}
-      <CountryNotch form={form} sampleFlags={sampleFlags} fill="#111111" emptyBg="bg-[#2a2a2a]" wrapperClassName="w-full shrink-0 relative" />
+      <MinimalCountryNotch form={form} sampleFlags={sampleFlags} wrapperClassName="w-full shrink-0 relative" />
 
       {/* Main content container */}
       <div className="flex w-full shrink-0 flex-col items-center gap-[8px]">
@@ -200,7 +236,7 @@ export function MinimalCard({ form, sampleFlags, visitedArray, isPreview }: Card
               <ImagePlaceholderIcon />
             )}
             {isPreview && <PreviewWatermark />}
-            <LogoWatermark />
+            {!isPreview && <LogoWatermark />}
           </div>
           
           {/* Profile info */}
@@ -295,7 +331,7 @@ export function AdventureCard({ form, sampleFlags, visitedArray, isPreview }: Ca
           )}
         </div>
         {isPreview && <PreviewWatermark />}
-        <LogoWatermark className="top-[174px]" />
+        {!isPreview && <LogoWatermark className="top-[174px]" />}
 
         {/* Content at Bottom with Gradient & Blur */}
         <div className="relative z-20 mt-auto flex w-full flex-col items-center pb-[24px] px-[8px]">
