@@ -24,6 +24,10 @@ interface DesktopExplorerFormProps {
   removeCountry: (c: string) => void;
   errors: Record<string, string>;
   setErrors: React.Dispatch<React.SetStateAction<Record<string, string>>>;
+  isEditMode: boolean;
+  hasChanged: boolean;
+  isCreated?: boolean;
+  hasChanges?: boolean;
 }
 
 export function DesktopExplorerForm({
@@ -46,6 +50,10 @@ export function DesktopExplorerForm({
   removeCountry,
   errors,
   setErrors,
+  isEditMode,
+  hasChanged,
+  isCreated,
+  hasChanges,
 }: DesktopExplorerFormProps) {
   const [isVisitedExpanded, setIsVisitedExpanded] = React.useState(false);
   const ErrorMsg = ({ field }: { field: string }) => errors[field] ? <p className="mt-1 text-[12px] text-red-500 font-medium">{errors[field]}</p> : null;
@@ -282,10 +290,10 @@ export function DesktopExplorerForm({
         <div className="p-8 pt-4 bg-[#111] shrink-0 w-full mt-auto border-t border-[#1e1e1e]">
           <button
             type="submit"
-            disabled={isSubmitting}
+            disabled={isSubmitting || (isCreated ? !hasChanges : (isEditMode && !hasChanged))}
             className="w-full rounded-[100px] bg-[#533df6] px-[24px] py-[12px] font-sans text-[16px] font-medium leading-[24px] tracking-[-0.176px] text-[#ecf0ff] transition-opacity hover:opacity-90 disabled:opacity-50"
           >
-            {isSubmitting ? "Creating..." : "Create explorer card"}
+            {isSubmitting ? (isCreated ? "Updating..." : "Creating...") : (isCreated ? "Update Explorer Card" : (isEditMode ? "Update explorer card" : "Create explorer card"))}
           </button>
         </div>
       </form>

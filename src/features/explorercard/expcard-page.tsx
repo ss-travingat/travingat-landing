@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useState, useEffect, useRef, useCallback, Suspense } from "react";
-import { useRouter, usePathname } from "next/navigation";
-import * as htmlToImage from "html-to-image";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
+import { domToPng } from "modern-screenshot";
 import { ClassicCard, MinimalCard, AdventureCard, ImagePlaceholderIcon, AvatarPlaceholderIcon } from "./cards";
 import EmailVerificationForm from "@/components/getfeatured/EmailVerificationForm";
 
@@ -24,6 +24,8 @@ type Tab = "Classic" | "Minimal" | "Adventure";
 export default function Home({ initialSessionUser, initialExplorerCard }: { initialSessionUser?: any, initialExplorerCard?: any } = {}) {
   const router = useRouter();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const isEditMode = searchParams?.get('edit') === 'true' || !!initialExplorerCard;
   const [sessionUser, setSessionUser] = useState<any>(initialSessionUser);
   const [form, setForm] = useState({
     firstName: initialExplorerCard?.name?.split(' ')[0] || initialSessionUser?.first_name || "",
@@ -58,10 +60,21 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
     initVisited = [];
   }
 
+  const [initialForm] = useState({
+    firstName: initialExplorerCard?.name?.split(' ')[0] || initialSessionUser?.first_name || "",
+    lastName: initialExplorerCard?.name?.split(' ').slice(1).join(' ') || initialSessionUser?.last_name || "",
+    email: initialSessionUser?.email || "",
+    country: initialExplorerCard?.country || initialSessionUser?.country || "",
+    coverImage: initialExplorerCard?.cover_image_url || initialSessionUser?.cover_image_url || "",
+    profileImage: initialExplorerCard?.profile_image_url || initialSessionUser?.profile_image_url || "",
+  });
+  const [initialVisited] = useState<string[]>(initVisited);
+
   const [visited, setVisited] = useState<string[]>(initVisited);
   const [countryQuery, setCountryQuery] = useState("");
   const [visitedOpen, setVisitedOpen] = useState(false);
-  const [isCreated, setIsCreated] = useState(!!initialExplorerCard?.card_created);
+  const isSuccessPageRoute = pathname === "/explorercard";
+  const [isCreated, setIsCreated] = useState(isSuccessPageRoute);
   const [createdUserId, setCreatedUserId] = useState<string | null>(initialSessionUser?.id || null);
   const initialStyle = initialExplorerCard?.card_style;
   const isValidTab = ["Classic", "Minimal", "Adventure"].includes(initialStyle);
@@ -79,6 +92,16 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
 
   // Verification State
   const [isVerified, setIsVerified] = useState(!!initialSessionUser);
+
+  const hasChanged = 
+    form.firstName !== initialForm.firstName ||
+    form.lastName !== initialForm.lastName ||
+    form.country !== initialForm.country ||
+    form.coverImage !== initialForm.coverImage ||
+    form.profileImage !== initialForm.profileImage ||
+    profileFile !== null ||
+    coverFile !== null ||
+    JSON.stringify(visited) !== JSON.stringify(initialVisited);
 
   const classicRef = useRef<HTMLDivElement>(null);
   const minimalRef = useRef<HTMLDivElement>(null);
@@ -126,7 +149,7 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
     const node = ref.current.firstElementChild as HTMLElement;
 
     try {
-      return await htmlToImage.toPng(node, { 
+      return await domToPng(node, { 
         pixelRatio: 2,
         width: node.offsetWidth,
         height: node.offsetHeight,
@@ -183,15 +206,18 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
   }
 
   function handleFile(e: React.ChangeEvent<HTMLInputElement>, key: "coverImage" | "profileImage") {
-    const file = e.target.files && e.target.files[0];
-    if (!file) return;
+    const originalFile = e.target.files?.[0];
+    if (!originalFile) return;
 
-    if (file.size > 20 * 1024 * 1024) {
+    if (originalFile.size > 20 * 1024 * 1024) {
       alert("Only an image under 20 MB can be uploaded.");
       e.target.value = "";
       return;
     }
-    
+
+    // Ensure unique filenames to prevent S3 overwrites if the user uploads files with the same name
+    const file = new File([originalFile], `${key}-${Date.now()}-${originalFile.name}`, { type: originalFile.type });
+
     if (key === "profileImage") setProfileFile(file);
     if (key === "coverImage") setCoverFile(file);
     
@@ -281,7 +307,7 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
       }));
 
       setCreatedUserId(data.userId);
-      setIsCreated(true);
+      router.push('/explorercard');
 
     } catch (err) {
       console.error(err);
@@ -350,6 +376,20 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
     }
   }
 
+  async function handleCrossClick() {
+    if (isEditMode && !hasChanged) {
+      router.push('/explorercard');
+    } else if (!isEditMode && !hasChanged) {
+      try {
+        await fetch('/api/auth/logout-user', { method: 'POST' });
+      } catch (e) {}
+      window.location.href = '/join/explorercard';
+    } else {
+      // If there are unsaved changes, or user specifically clicks save and logout
+      handleSaveAndLogout();
+    }
+  }
+
   const countryMatches = Object.keys(sampleFlags).filter(
     (c) => c.toLowerCase().includes(countryQuery.toLowerCase())
   );
@@ -372,8 +412,9 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
         {/* Header */}
         <div className="w-full flex lg:flex-row flex-col items-center lg:items-center justify-center lg:py-[40px] max-w-[1062px]">
           <div className="flex flex-col items-center gap-[6px] lg:gap-[12px] text-center w-full lg:w-[482px] mb-[20px] lg:mb-0">
-            <h2 className="hidden lg:block text-[32px] font-medium leading-[40px] tracking-[-0.5px] ds-font-display">Your explorer card is ready</h2>
-            <h2 className="lg:hidden text-[24px] font-medium tracking-[-0.5px] ds-font-display">Your explorer card</h2>
+            <h2 className="text-[24px] md:text-[32px] font-semibold tracking-[-0.5px] text-white">
+              {isCreated ? "Edit Your Explorer Card" : "Create Your Explorer Card"}
+            </h2>
             <p className="hidden lg:block text-[14px] text-[#989898]">We've emailed you a private edit link if you ever need to update your card.</p>
             <p className="lg:hidden text-[14px] text-[#7c7c7c]">Your edit link is in your email</p>
           </div>
@@ -386,7 +427,7 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
             <h3 className="text-[24px] text-white tracking-[-0.5px]">Explorer card</h3>
             <div className="flex items-center gap-[24px]">
               <div className="flex items-center gap-[16px]">
-                <button onClick={() => setIsCreated(false)} className="text-[14px] font-medium text-white hover:text-white/80">Edit</button>
+                <button onClick={() => router.push('/edit/explorercard')} className="text-[14px] font-medium text-white hover:text-white/80">Edit</button>
                 <div className="w-[1px] h-[12px] bg-[#333]" />
                 <div className="relative" ref={downloadRef}>
                   <button onClick={() => setIsDownloadModalOpen(!isDownloadModalOpen)} className="text-[14px] font-medium text-white hover:text-white/80">Download</button>
@@ -501,7 +542,7 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
           </div>
 
           {/* Tab Bar */}
-          <div className={`w-full max-w-[321px] ${tab === 'Minimal' ? 'lg:max-w-[382px]' : 'lg:max-w-[360px]'} bg-[#111] border border-[#2a2a2a] rounded-[999px] p-[4px] flex items-center transition-all duration-300`}>
+          <div className={`w-[360px] ${tab === 'Minimal' ? 'lg:w-[382px]' : 'lg:w-[360px]'} bg-[#111] border border-[#2a2a2a] rounded-[999px] p-[4px] flex items-center transition-all duration-300`}>
             {(["Classic", "Minimal", "Adventure"] as Tab[]).map((t) => (
               <button
                 key={t}
@@ -515,24 +556,22 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
             ))}
           </div>
 
-          {/* Card Rendering */}
           <div className="relative flex items-center justify-center shrink-0 mt-[12px] overflow-hidden pb-[16px]">
-            <div ref={classicRef} className={tab === "Classic" ? "relative" : "absolute opacity-0 pointer-events-none z-[-1]"}>
+            <div ref={classicRef} className={tab === "Classic" ? "relative" : "absolute top-[-9999px] left-[-9999px] pointer-events-none"}>
               <ClassicCard form={{...form, fullName: `${form.firstName} ${form.lastName}`.trim()}} sampleFlags={sampleFlags} visitedArray={visitedArray} />
             </div>
-            <div ref={minimalRef} className={tab === "Minimal" ? "relative" : "absolute opacity-0 pointer-events-none z-[-1]"}>
+            <div ref={minimalRef} className={tab === "Minimal" ? "relative" : "absolute top-[-9999px] left-[-9999px] pointer-events-none"}>
               <MinimalCard form={{...form, fullName: `${form.firstName} ${form.lastName}`.trim()}} sampleFlags={sampleFlags} visitedArray={visitedArray} />
             </div>
-            <div ref={adventureRef} className={tab === "Adventure" ? "relative" : "absolute opacity-0 pointer-events-none z-[-1]"}>
+            <div ref={adventureRef} className={tab === "Adventure" ? "relative" : "absolute top-[-9999px] left-[-9999px] pointer-events-none"}>
               <AdventureCard form={{...form, fullName: `${form.firstName} ${form.lastName}`.trim()}} sampleFlags={sampleFlags} visitedArray={visitedArray} />
             </div>
           </div>
         </div>
 
-        {/* Mobile Bottom Actions */}
         <div className="fixed lg:hidden bottom-0 left-0 right-0 pt-[24px] pb-[40px] px-[16px] bg-gradient-to-b from-transparent to-black/60 backdrop-blur-[2px] flex justify-center z-50">
           <div className="w-full max-w-[337px] flex gap-[6px] items-center justify-end relative">
-            <button onClick={() => setIsCreated(false)} className="bg-[#1a1a1a] border border-[#353535] px-[18px] py-[10px] rounded-full text-white text-[16px] font-medium tracking-[-0.096px] shrink-0">
+            <button onClick={() => router.push('/edit/explorercard')} className="bg-[#1a1a1a] border border-[#353535] px-[18px] py-[10px] rounded-full text-white text-[16px] font-medium tracking-[-0.096px] shrink-0">
               Edit
             </button>
             
@@ -671,10 +710,12 @@ return (
             <img src="/icons/travingat-logo.svg?v=newlogo" alt="Travingat" className="h-[24px] w-auto brightness-0 invert" />
           </div>
           <div className="flex-[2] flex justify-center">
-            <h2 className="text-center font-display text-[28px] font-medium leading-[36px] tracking-[-0.5px] text-white">Create explorer card</h2>
+            <h2 className="text-center font-display text-[28px] font-medium leading-[36px] tracking-[-0.5px] text-white">
+              {isEditMode ? "Edit Your Explorer Card" : "Create Your Explorer Card"}
+            </h2>
           </div>
           <div className="flex-1 flex justify-end">
-            <button onClick={handleSaveAndLogout} disabled={isSubmitting} className="w-10 h-10 flex items-center justify-center rounded-[12px] bg-[#1a1a1a] border border-[#2a2a2a] hover:bg-[#222] transition-colors disabled:opacity-50">
+            <button onClick={handleCrossClick} disabled={isSubmitting} className="w-10 h-10 flex items-center justify-center rounded-[12px] bg-[#1a1a1a] border border-[#2a2a2a] hover:bg-[#222] transition-colors disabled:opacity-50">
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M13 1L1 13M1 1L13 13" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
@@ -707,6 +748,8 @@ return (
             removeCountry={removeCountry}
             errors={errors}
             setErrors={setErrors}
+            isEditMode={isEditMode}
+            hasChanged={hasChanged}
           />
           <div className="flex flex-col items-center w-full max-w-[1148px] h-[calc(100vh-160px)] max-h-[860px] overflow-y-auto lg:bg-[#111] lg:rounded-[20px] lg:p-[24px] lg:px-[32px] custom-scrollbar">
             <style dangerouslySetInnerHTML={{__html: `.custom-scrollbar::-webkit-scrollbar { display: none; }`}} />
@@ -762,6 +805,8 @@ return (
           countryMatches={countryMatches}
           addCountry={addCountry}
           removeCountry={removeCountry}
+          isEditMode={isEditMode}
+          hasChanged={hasChanged}
         />
       </div>
       </div>

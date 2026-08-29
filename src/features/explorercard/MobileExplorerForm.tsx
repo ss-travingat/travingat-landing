@@ -22,6 +22,8 @@ interface MobileExplorerFormProps {
   countryMatches: string[];
   addCountry: (c: string) => void;
   removeCountry: (c: string) => void;
+  isEditMode: boolean;
+  hasChanged: boolean;
 }
 
 export function MobileExplorerForm({
@@ -42,6 +44,10 @@ export function MobileExplorerForm({
   countryMatches,
   addCountry,
   removeCountry,
+  isEditMode,
+  hasChanged,
+  isCreated,
+  hasChanges,
 }: MobileExplorerFormProps) {
   const [isVisitedExpanded, setIsVisitedExpanded] = React.useState(false);
   const [step, setStep] = useState(1);
@@ -399,10 +405,10 @@ export function MobileExplorerForm({
             )}
             <button
               type="submit"
-              disabled={isSubmitting}
-              className="flex-1 rounded-full bg-[#c0caff] text-black px-[24px] h-[48px] font-sans text-[16px] font-medium leading-[24px] tracking-[-0.176px] transition hover:opacity-90 disabled:opacity-50"
+              disabled={isSubmitting || (step === 3 && (isCreated ? !hasChanges : (isEditMode && !hasChanged)))}
+              className="mt-6 flex h-[48px] w-[184px] items-center justify-center rounded-[99px] bg-white text-[16px] font-medium text-black hover:bg-white/90 disabled:opacity-50 transition-colors"
             >
-              {isSubmitting ? "Processing..." : step === 3 ? "Create" : "Next"}
+              {isSubmitting ? "Processing..." : step === 3 ? (isCreated ? "Update" : (isEditMode ? "Update" : "Create")) : "Next"}
             </button>
           </div>
         </div>

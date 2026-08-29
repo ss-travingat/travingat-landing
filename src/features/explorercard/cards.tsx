@@ -52,7 +52,7 @@ export function CountryNotch({ form, sampleFlags, fill = "#000000", emptyBg = "b
         <path d="M34 0H0L15.8765 0.44712C25.5527 0.719623 33.4182 8.33753 34 18V0Z" fill={fill}/>
       </svg>
       {/* Center Rectangle */}
-      <div className="relative z-10 flex min-w-[134px] h-[27px] items-start justify-center rounded-b-[12px] px-[12px] pt-[2px] pointer-events-auto" style={{ backgroundColor: fill }}>
+      <div className="relative z-10 flex min-w-[134px] h-[27px] items-center justify-center rounded-b-[12px] px-[12px] pointer-events-auto" style={{ backgroundColor: fill }}>
         <div className="flex items-center justify-center gap-[6px]">
           <div className="h-[9px] w-[14px] shrink-0 overflow-hidden rounded-[2px] bg-[#161616]">
              {form.country && sampleFlags[form.country] ? (
@@ -77,7 +77,7 @@ export function CountryNotch({ form, sampleFlags, fill = "#000000", emptyBg = "b
 export function MinimalCountryNotch({ form, sampleFlags, wrapperClassName = "" }: { form: any, sampleFlags: any, wrapperClassName?: string }) {
   return (
     <div className={`flex items-start justify-center pointer-events-none ${wrapperClassName}`}>
-      <div className="relative flex h-[32px] w-[182px] items-start justify-center pt-[8px] pointer-events-auto">
+      <div className="relative flex h-[32px] w-[182px] items-center justify-center pointer-events-auto">
         <div className="absolute inset-0 z-0 pointer-events-none">
           <svg width="182" height="32" viewBox="0 0 182 32" fill="none" xmlns="http://www.w3.org/2000/svg">
             <g clipPath="url(#clip0_444_18)">
@@ -118,7 +118,7 @@ export function ClassicCard({ form, sampleFlags, visitedArray, isPreview }: Card
         {/* Background image: 344x226, negative margin to allow avatar overlap */}
         <div className="relative z-0 -mb-[36px] flex h-[226px] w-[344px] shrink-0 items-center justify-center overflow-hidden rounded-[16px] bg-[#161616]">
           {form.coverImage ? (
-            <LoadedImage src={toLandingAssetUrl(form.coverImage)} alt="cover" containerClassName="h-full w-full" className="h-full w-full object-cover" />
+            <LoadedImage priority src={toLandingAssetUrl(form.coverImage)} alt="cover" containerClassName="h-full w-full" className="h-full w-full object-cover" />
           ) : (
             <ImagePlaceholderIcon />
           )}
@@ -129,7 +129,7 @@ export function ClassicCard({ form, sampleFlags, visitedArray, isPreview }: Card
         {/* Photo Avatar */}
         <div className="relative z-10 h-[80px] w-[80px] shrink-0 overflow-hidden rounded-[16px] border-[4px] border-black bg-[#161616]">
           {form.profileImage ? (
-            <LoadedImage src={toLandingAssetUrl(form.profileImage)} alt="profile" containerClassName="h-full w-full" className="h-full w-full object-cover" />
+            <LoadedImage priority src={toLandingAssetUrl(form.profileImage)} alt="profile" containerClassName="h-full w-full" className="h-full w-full object-cover" />
           ) : (
             <div className="flex h-full w-full items-center justify-center text-white-600">
               <div className="relative w-[48px] h-[48px]">
@@ -231,7 +231,7 @@ export function MinimalCard({ form, sampleFlags, visitedArray, isPreview }: Card
           {/* Profile image (acts like cover image here) */}
           <div className="relative flex h-full w-full items-center justify-center overflow-hidden rounded-[16px] bg-[#1a1a1a]">
             {form.coverImage ? (
-              <LoadedImage src={toLandingAssetUrl(form.coverImage)} alt="cover" containerClassName="h-full w-full" className="h-full w-full object-cover" />
+              <LoadedImage priority src={toLandingAssetUrl(form.coverImage)} alt="cover" containerClassName="h-full w-full" className="h-full w-full object-cover" />
             ) : (
               <ImagePlaceholderIcon />
             )}
@@ -243,7 +243,7 @@ export function MinimalCard({ form, sampleFlags, visitedArray, isPreview }: Card
           <div className="flex h-full w-full flex-col items-start justify-end gap-[12px] rounded-[16px] bg-[#111111] p-[16px]">
             <div className="relative h-[36px] w-[36px] shrink-0 overflow-hidden rounded-[10px] bg-[#2a2a2a]">
               {form.profileImage ? (
-                <LoadedImage src={toLandingAssetUrl(form.profileImage)} alt="profile" containerClassName="h-full w-full" className="h-full w-full object-cover" />
+                <LoadedImage priority src={toLandingAssetUrl(form.profileImage)} alt="profile" containerClassName="h-full w-full" className="h-full w-full object-cover" />
               ) : (
                 <div className="relative h-[36px] w-[36px]">
                   <AvatarPlaceholderIcon className="h-full w-full object-cover" />
@@ -323,7 +323,7 @@ export function AdventureCard({ form, sampleFlags, visitedArray, isPreview }: Ca
         {/* Cover Image Background */}
         <div className="absolute inset-0 z-0">
           {form.coverImage ? (
-            <LoadedImage src={toLandingAssetUrl(form.coverImage)} alt="cover" containerClassName="h-full w-full" className="h-full w-full object-cover" />
+            <LoadedImage priority src={toLandingAssetUrl(form.coverImage)} alt="cover" containerClassName="h-full w-full" className="h-full w-full object-cover" />
           ) : (
             <div className="absolute top-[127px] left-1/2 -translate-x-1/2 flex items-center justify-center pointer-events-none">
                <span className="material-symbols-rounded text-[#E3E3E3] text-[40px]">add_photo_alternate</span>
@@ -348,7 +348,7 @@ export function AdventureCard({ form, sampleFlags, visitedArray, isPreview }: Ca
           {/* Profile Picture */}
           <div className="relative z-10 mb-[12px] flex h-[56px] w-[56px] shrink-0 items-center justify-center overflow-hidden rounded-[16px] border-[3px] border-white bg-[#2a2a2a] shadow-[0_4px_16px_rgba(0,0,0,0.35)]">
             {form.profileImage ? (
-              <LoadedImage src={toLandingAssetUrl(form.profileImage)} alt="profile" containerClassName="h-full w-full" className="h-full w-full object-cover" />
+              <LoadedImage priority src={toLandingAssetUrl(form.profileImage)} alt="profile" containerClassName="h-full w-full" className="h-full w-full object-cover" />
             ) : (
               <div className="relative h-[36px] w-[36px]">
                 <AvatarPlaceholderIcon className="h-full w-full object-cover" />
