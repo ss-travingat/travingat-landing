@@ -730,13 +730,13 @@ return (
             </div>
             <div className="relative flex items-center justify-center shrink-0 pb-[16px]">
               <div className={tab === "Classic" ? "relative" : "absolute opacity-0 pointer-events-none z-[-1]"}>
-                <ClassicCard form={{...form, fullName: `${form.firstName} ${form.lastName}`.trim()}} sampleFlags={sampleFlags} visitedArray={visitedArray} />
+                <ClassicCard isPreview={true} form={{...form, fullName: `${form.firstName} ${form.lastName}`.trim()}} sampleFlags={sampleFlags} visitedArray={visitedArray} />
               </div>
               <div className={tab === "Minimal" ? "relative" : "absolute opacity-0 pointer-events-none z-[-1]"}>
-                <MinimalCard form={{...form, fullName: `${form.firstName} ${form.lastName}`.trim()}} sampleFlags={sampleFlags} visitedArray={visitedArray} />
+                <MinimalCard isPreview={true} form={{...form, fullName: `${form.firstName} ${form.lastName}`.trim()}} sampleFlags={sampleFlags} visitedArray={visitedArray} />
               </div>
               <div className={tab === "Adventure" ? "relative" : "absolute opacity-0 pointer-events-none z-[-1]"}>
-                <AdventureCard form={{...form, fullName: `${form.firstName} ${form.lastName}`.trim()}} sampleFlags={sampleFlags} visitedArray={visitedArray} />
+                <AdventureCard isPreview={true} form={{...form, fullName: `${form.firstName} ${form.lastName}`.trim()}} sampleFlags={sampleFlags} visitedArray={visitedArray} />
               </div>
             </div>
           </div>

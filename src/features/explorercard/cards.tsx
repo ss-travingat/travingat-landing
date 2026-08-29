@@ -11,20 +11,83 @@ interface CardProps {
   };
   sampleFlags: Record<string, string>;
   visitedArray: string[];
+  isPreview?: boolean;
 }
 
-export function ClassicCard({ form, sampleFlags, visitedArray }: CardProps) {
+export function LogoWatermark({ className = "bottom-[24px]" }: { className?: string }) {
+  return (
+    <div 
+      className={`absolute pointer-events-none select-none z-[40] left-[16px] ${className}`}
+      style={{
+        transformOrigin: "left top",
+        transform: "rotate(-90deg)"
+      }}
+    >
+      <span 
+        className="whitespace-nowrap inline-block"
+        style={{
+          fontFamily: 'var(--font-logo, Righteous)',
+          fontSize: '23.14px',
+          fontStyle: 'normal',
+          fontWeight: 400,
+          lineHeight: 'normal',
+          letterSpacing: '-0.339px',
+          backgroundImage: 'linear-gradient(270deg, rgba(255, 255, 255, 0.10) 0%, #FFF 100%)',
+          WebkitBackgroundClip: 'text',
+          backgroundClip: 'text',
+          WebkitTextFillColor: 'transparent',
+        }}
+      >
+        Travingat
+      </span>
+    </div>
+  );
+}
+
+export function CountryNotch({ form, sampleFlags, fill = "#000000", emptyBg = "bg-[#2a2a2a]", wrapperClassName = "" }: { form: any, sampleFlags: any, fill?: string, emptyBg?: string, wrapperClassName?: string }) {
+  return (
+    <div className={`flex items-start justify-center pointer-events-none ${wrapperClassName}`}>
+      {/* Left Curve */}
+      <svg width="34" height="18" viewBox="0 0 34 18" fill="none" xmlns="http://www.w3.org/2000/svg" className="shrink-0 relative z-20">
+        <path d="M34 0H0L15.8765 0.44712C25.5527 0.719623 33.4182 8.33753 34 18V0Z" fill={fill}/>
+      </svg>
+      {/* Center Rectangle */}
+      <div className="relative z-10 flex min-w-[134px] h-[27px] items-start justify-center rounded-b-[12px] px-[12px] pointer-events-auto" style={{ backgroundColor: fill }}>
+        <div className="flex items-center gap-[6px] mt-[4px] h-[14px]">
+          <div className="h-[9px] w-[14px] shrink-0 overflow-hidden rounded-[2px] bg-[#161616]">
+             {form.country && sampleFlags[form.country] ? (
+               <span className={`fi fi-${sampleFlags[form.country].toLowerCase()} !block !h-full !w-full !bg-cover !bg-center !text-[0px]`} title={form.country} />
+             ) : (
+               <div className={`h-full w-full rounded-[2px] ${emptyBg}`} />
+             )}
+          </div>
+          <p className="whitespace-nowrap text-[14px] font-[family-name:var(--font-inter)] font-normal leading-[14px] tracking-[-0.084px] text-white">
+            {form.country || <span className="text-[#656565]">Your country</span>}
+          </p>
+        </div>
+      </div>
+      {/* Right Curve */}
+      <svg width="34" height="18" viewBox="0 0 34 18" fill="none" xmlns="http://www.w3.org/2000/svg" className="shrink-0 relative z-20">
+        <path d="M0 0H34L18.1235 0.44712C8.44727 0.719623 0.581831 8.33753 0 18V0Z" fill={fill}/>
+      </svg>
+    </div>
+  );
+}
+
+export function ClassicCard({ form, sampleFlags, visitedArray, isPreview }: CardProps) {
   return (
     <div className="flex w-[360px] flex-col items-center rounded-[24px] border border-[#252525] bg-black px-2 pb-[24px] pt-2">
       {/* Profile section */}
       <div className="flex w-full shrink-0 flex-col items-center">
         {/* Background image: 344x226, negative margin to allow avatar overlap */}
-        <div className="z-0 -mb-[36px] flex h-[226px] w-[344px] shrink-0 items-center justify-center overflow-hidden rounded-[16px] bg-[#161616]">
+        <div className="relative z-0 -mb-[36px] flex h-[226px] w-[344px] shrink-0 items-center justify-center overflow-hidden rounded-[16px] bg-[#161616]">
           {form.coverImage ? (
             <LoadedImage src={toLandingAssetUrl(form.coverImage)} alt="cover" containerClassName="h-full w-full" className="h-full w-full object-cover" />
           ) : (
             <ImagePlaceholderIcon />
           )}
+          {isPreview && <PreviewWatermark />}
+          <LogoWatermark />
         </div>
 
         {/* Photo Avatar */}
@@ -116,31 +179,14 @@ export function ClassicCard({ form, sampleFlags, visitedArray }: CardProps) {
   );
 }
 
-export function MinimalCard({ form, sampleFlags, visitedArray }: CardProps) {
+export function MinimalCard({ form, sampleFlags, visitedArray, isPreview }: CardProps) {
   return (
     <div
       id="minimal-card"
       className="flex w-[382px] shrink-0 flex-col items-center gap-[20px] rounded-[24px] border border-[#252525] bg-black px-[8px] pb-[24px] pt-0"
     >
       {/* Country badge at top */}
-      <div className="flex w-full shrink-0 items-start justify-center relative">
-        <svg preserveAspectRatio="none" overflow="visible" className="h-[18px] w-[18px] shrink-0 -mr-[1px]" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M24 0H0L0.533106 0.0283589C13.3936 0.712479 23.5897 11.1279 24 24V0Z" fill="#1E1E1E"/>
-        </svg>
-        <div className="relative z-10 flex h-[28px] items-center justify-center gap-[6px] rounded-b-[10px] bg-[#1e1e1e] px-[12px]">
-          <div className="h-[13.333px] w-[20px] aspect-[3/2] shrink-0 overflow-hidden rounded-[2px] bg-[#161616]">
-             {form.country && sampleFlags[form.country] && (
-               <span className={`fi fi-${sampleFlags[form.country].toLowerCase()} !block !h-full !w-full !bg-cover !bg-center !text-[0px]`} title={form.country} />
-             )}
-          </div>
-          <p className="whitespace-nowrap text-[14px] font-normal leading-[20px] tracking-[-0.084px] text-white">
-            {form.country || "Your country"}
-          </p>
-        </div>
-        <svg preserveAspectRatio="none" overflow="visible" className="h-[18px] w-[18px] shrink-0 scale-x-[-1] -ml-[1px]" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M24 0H0L0.533106 0.0283589C13.3936 0.712479 23.5897 11.1279 24 24V0Z" fill="#1E1E1E"/>
-        </svg>
-      </div>
+      <CountryNotch form={form} sampleFlags={sampleFlags} fill="#111111" emptyBg="bg-[#2a2a2a]" wrapperClassName="w-full shrink-0 relative" />
 
       {/* Main content container */}
       <div className="flex w-full shrink-0 flex-col items-center gap-[8px]">
@@ -153,6 +199,8 @@ export function MinimalCard({ form, sampleFlags, visitedArray }: CardProps) {
             ) : (
               <ImagePlaceholderIcon />
             )}
+            {isPreview && <PreviewWatermark />}
+            <LogoWatermark />
           </div>
           
           {/* Profile info */}
@@ -222,7 +270,7 @@ export function MinimalCard({ form, sampleFlags, visitedArray }: CardProps) {
   );
 }
 
-export function AdventureCard({ form, sampleFlags, visitedArray }: CardProps) {
+export function AdventureCard({ form, sampleFlags, visitedArray, isPreview }: CardProps) {
   return (
     <div
       id="adventure-card"
@@ -234,26 +282,7 @@ export function AdventureCard({ form, sampleFlags, visitedArray }: CardProps) {
       >
         
         {/* Notch Overlay */}
-        <div className="absolute top-0 left-0 right-0 z-30 flex w-full shrink-0 items-start justify-center">
-          <svg preserveAspectRatio="none" overflow="visible" className="h-[18px] w-[18px] shrink-0 -mr-[1px]" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M24 0H0L0.533106 0.0283589C13.3936 0.712479 23.5897 11.1279 24 24V0Z" fill="#000000"/>
-          </svg>
-          <div className="relative z-10 flex h-[28px] items-center justify-center gap-[6px] rounded-b-[10px] bg-black px-[12px]">
-            <div className="h-[13.333px] w-[20px] aspect-[3/2] shrink-0 overflow-hidden rounded-[2px] bg-[#161616]">
-               {form.country && sampleFlags[form.country] ? (
-                 <span className={`fi fi-${sampleFlags[form.country].toLowerCase()} !block !h-full !w-full !bg-cover !bg-center !text-[0px]`} title={form.country} />
-               ) : (
-                 <div className="h-full w-full rounded-[2px] bg-[#2a2a2a]" />
-               )}
-            </div>
-            <p className="whitespace-nowrap text-[14px] font-normal leading-[20px] tracking-[-0.084px] text-white">
-              {form.country || <span className="text-[#656565]">Your country</span>}
-            </p>
-          </div>
-          <svg preserveAspectRatio="none" overflow="visible" className="h-[18px] w-[18px] shrink-0 scale-x-[-1] -ml-[1px]" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M24 0H0L0.533106 0.0283589C13.3936 0.712479 23.5897 11.1279 24 24V0Z" fill="#000000"/>
-          </svg>
-        </div>
+        <CountryNotch form={form} sampleFlags={sampleFlags} fill="#000000" wrapperClassName="absolute top-0 left-0 right-0 z-30 w-full shrink-0" />
 
         {/* Cover Image Background */}
         <div className="absolute inset-0 z-0">
@@ -265,6 +294,8 @@ export function AdventureCard({ form, sampleFlags, visitedArray }: CardProps) {
             </div>
           )}
         </div>
+        {isPreview && <PreviewWatermark />}
+        <LogoWatermark className="top-[174px]" />
 
         {/* Content at Bottom with Gradient & Blur */}
         <div className="relative z-20 mt-auto flex w-full flex-col items-center pb-[24px] px-[8px]">
@@ -349,5 +380,82 @@ export function ImagePlaceholderIcon() {
 export function AvatarPlaceholderIcon({ className }: { className?: string }) {
   return (
     <img src="/icons/placeholder.png" alt="Placeholder avatar" className={className || "w-[60px] h-[60px] shrink-0 aspect-square object-cover"} />
+  );
+}
+
+export function PreviewWatermark() {
+  const containerRef = React.useRef<HTMLDivElement>(null);
+  const [tampered, setTampered] = React.useState(false);
+
+  React.useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+
+    const checkTamper = () => {
+      if (!el || !document.body.contains(el)) {
+        setTampered(true);
+        return;
+      }
+      const styles = window.getComputedStyle(el);
+      if (
+        styles.display === "none" ||
+        styles.opacity === "0" ||
+        styles.visibility === "hidden"
+      ) {
+        setTampered(true);
+      }
+      
+      const span = el.querySelector('span');
+      if (span) {
+        const spanStyles = window.getComputedStyle(span);
+        if (
+          spanStyles.display === "none" ||
+          spanStyles.opacity === "0" ||
+          spanStyles.visibility === "hidden" ||
+          spanStyles.color === "rgba(0, 0, 0, 0)" ||
+          spanStyles.color === "transparent" ||
+          spanStyles.fontSize === "0px"
+        ) {
+          setTampered(true);
+        }
+      }
+    };
+
+    const observer = new MutationObserver(() => checkTamper());
+    observer.observe(document.body, { childList: true, subtree: true, attributes: true });
+    
+    const interval = setInterval(checkTamper, 1000);
+
+    return () => {
+      observer.disconnect();
+      clearInterval(interval);
+    };
+  }, []);
+
+  if (tampered) {
+    return (
+      <div className="absolute inset-0 z-[999999] bg-black flex items-center justify-center p-4 text-center rounded-[16px]">
+        <span className="text-white text-lg font-bold">Preview watermark removed. Please reload.</span>
+      </div>
+    );
+  }
+
+  return (
+    <div 
+      ref={containerRef}
+      className="absolute inset-0 z-[99] flex items-center justify-center pointer-events-none select-none mix-blend-plus-lighter"
+    >
+      <span style={{
+        color: 'rgba(255, 255, 255, 0.50)',
+        fontFamily: 'var(--font-inter-display, "Inter Display")',
+        fontSize: 'var(--Heading-H4-Bold-Size, 32px)',
+        fontStyle: 'normal',
+        fontWeight: 700,
+        lineHeight: 'var(--Heading-H4-Bold-Line-Height, 40px)',
+        letterSpacing: '-0.5px'
+      }}>
+        PREVIEW
+      </span>
+    </div>
   );
 }
