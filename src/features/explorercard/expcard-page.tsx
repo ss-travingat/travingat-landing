@@ -2,7 +2,8 @@
 
 import React, { useState, useEffect, useRef, useCallback, Suspense } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
-import { domToPng } from "modern-screenshot";
+import { domToJpeg } from "modern-screenshot";
+import { compressImageClient } from "@/lib/client-image-compress";
 import { ClassicCard, MinimalCard, AdventureCard, ImagePlaceholderIcon, AvatarPlaceholderIcon } from "./cards";
 import EmailVerificationForm from "@/components/getfeatured/EmailVerificationForm";
 
@@ -149,8 +150,9 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
     const node = ref.current.firstElementChild as HTMLElement;
 
     try {
-      return await domToPng(node, { 
+      return await domToJpeg(node, { 
         scale: 2,
+        quality: 0.9,
         width: node.offsetWidth,
         height: node.offsetHeight,
       });
@@ -167,7 +169,7 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
       return;
     }
     const link = document.createElement("a");
-    link.download = `explorer-card-${style.toLowerCase()}.png`;
+    link.download = `explorer-card-${style.toLowerCase()}.jpg`;
     link.href = dataUrl;
     link.click();
   }, [getStyleDataUrl]);
@@ -181,7 +183,7 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
       const dataUrl = await getStyleDataUrl(style);
       if (dataUrl) {
         const base64Data = dataUrl.split(",")[1];
-        zip.file(`explorer-card-${style.toLowerCase()}.png`, base64Data, { base64: true });
+        zip.file(`explorer-card-${style.toLowerCase()}.jpg`, base64Data, { base64: true });
         hasFiles = true;
       }
     }
@@ -205,7 +207,7 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
     setForm((s) => ({ ...s, [name]: value }));
   }
 
-  function handleFile(e: React.ChangeEvent<HTMLInputElement>, key: "coverImage" | "profileImage") {
+  async function handleFile(e: React.ChangeEvent<HTMLInputElement>, key: "coverImage" | "profileImage") {
     const originalFile = e.target.files?.[0];
     if (!originalFile) return;
 
@@ -215,15 +217,25 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
       return;
     }
 
-    // Ensure unique filenames to prevent S3 overwrites if the user uploads files with the same name
-    const file = new File([originalFile], `${key}-${Date.now()}-${originalFile.name}`, { type: originalFile.type });
+    try {
+      const { blob, contentType } = await compressImageClient(originalFile, 2560, 0.80);
+      
+      // Ensure unique filenames to prevent S3 overwrites if the user uploads files with the same name
+      const ext = contentType === "image/webp" ? "webp" : "jpg";
+      const baseName = originalFile.name.replace(/\.[^/.]+$/, "");
+      const file = new File([blob], `${key}-${Date.now()}-${baseName}.${ext}`, { type: contentType });
 
-    if (key === "profileImage") setProfileFile(file);
-    if (key === "coverImage") setCoverFile(file);
-    
-    const reader = new FileReader();
-    reader.onload = () => setForm((s) => ({ ...s, [key]: String(reader.result) }));
-    reader.readAsDataURL(file);
+      if (key === "profileImage") setProfileFile(file);
+      if (key === "coverImage") setCoverFile(file);
+      
+      const reader = new FileReader();
+      reader.onload = () => setForm((s) => ({ ...s, [key]: String(reader.result) }));
+      reader.readAsDataURL(file);
+    } catch (err) {
+      console.error("Image compression failed", err);
+      alert("Failed to compress image. Please try again.");
+      e.target.value = "";
+    }
   }
 
   async function handleCreate(e?: React.FormEvent) {
@@ -442,7 +454,7 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
                         </div>
                         <div className="flex flex-col">
                           <span className="text-[14px] text-white">Classic</span>
-                          <span className="text-[12px] text-[#656565]">PNG</span>
+                          <span className="text-[12px] text-[#656565]">JPEG</span>
                         </div>
                       </button>
                       
@@ -452,7 +464,7 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
                         </div>
                         <div className="flex flex-col">
                           <span className="text-[14px] text-white">Minimal</span>
-                          <span className="text-[12px] text-[#656565]">PNG</span>
+                          <span className="text-[12px] text-[#656565]">JPEG</span>
                         </div>
                       </button>
                       
@@ -462,7 +474,7 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
                         </div>
                         <div className="flex flex-col">
                           <span className="text-[14px] text-white">Adventure</span>
-                          <span className="text-[12px] text-[#656565]">PNG</span>
+                          <span className="text-[12px] text-[#656565]">JPEG</span>
                         </div>
                       </button>
                       
@@ -592,7 +604,7 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
                     </div>
                     <div className="flex flex-col">
                       <span className="text-[14px] text-white">Classic</span>
-                      <span className="text-[12px] text-[#656565]">PNG</span>
+                      <span className="text-[12px] text-[#656565]">JPEG</span>
                     </div>
                   </button>
                   <button onClick={() => { handleDownloadStyle("Minimal"); setIsDownloadModalOpen(false); }} className="flex items-center gap-[12px] w-full text-left">
@@ -601,7 +613,7 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
                     </div>
                     <div className="flex flex-col">
                       <span className="text-[14px] text-white">Minimal</span>
-                      <span className="text-[12px] text-[#656565]">PNG</span>
+                      <span className="text-[12px] text-[#656565]">JPEG</span>
                     </div>
                   </button>
                   <button onClick={() => { handleDownloadStyle("Adventure"); setIsDownloadModalOpen(false); }} className="flex items-center gap-[12px] w-full text-left">
@@ -610,7 +622,7 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
                     </div>
                     <div className="flex flex-col">
                       <span className="text-[14px] text-white">Adventure</span>
-                      <span className="text-[12px] text-[#656565]">PNG</span>
+                      <span className="text-[12px] text-[#656565]">JPEG</span>
                     </div>
                   </button>
                   <div className="w-full h-[1px] bg-[#1e1e1e]"/>
