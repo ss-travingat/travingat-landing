@@ -436,7 +436,7 @@ const EmailVerificationForm = ({ onVerified, initialSessionUser, source }: Props
             {isLoading ? 'Sending...' : 'Send code'}
           </button>
           <div className={styles.emailLabel2}>
-            We&apos;ll verify your email before continuing your application.
+            We&apos;ll verify your email before creating your explorer card.
           </div>
         </div>
       </div>

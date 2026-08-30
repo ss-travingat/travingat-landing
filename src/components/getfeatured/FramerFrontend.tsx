@@ -429,7 +429,7 @@ const EmailVerificationForm = () => {
             {isLoading ? 'Sending...' : 'Send code'}
           </button>
           <div className={"tf-emailLabel2"}>
-            We&apos;ll verify your email before continuing your application.
+            We&apos;ll verify your email before creating your explorer card.
           </div>
         </div>
       </div>
@@ -446,19 +446,23 @@ export default function FramerFrontend() {
       <style dangerouslySetInnerHTML={{
         __html: `
         .tf-form {
+  height: 563px;
+  width: 420px;
   position: relative;
+  border-radius: 20px;
+  background-color: #111;
+  overflow: hidden;
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  padding: 32px;
   box-sizing: border-box;
   text-align: center;
   font-size: 24px;
   color: #fff;
-  font-family: 'Inter Display', var(--font-sans);
-  width: 100%;
-  gap: 24px;
+  font-family: var(--font-sans);
 }
 
 .tf-emailFieldParent {
@@ -466,6 +470,7 @@ export default function FramerFrontend() {
   display: flex;
   flex-direction: column;
   align-items: center;
+  padding: 0;
   box-sizing: border-box;
   gap: 24px;
   max-width: 100%;
@@ -493,6 +498,7 @@ export default function FramerFrontend() {
   letter-spacing: -0.5px;
   line-height: 32px;
   font-weight: 500;
+  font-family: var(--font-display-css);
   font-size: 24px;
   text-align: center;
 }
@@ -519,8 +525,9 @@ export default function FramerFrontend() {
   border: none;
   letter-spacing: -0.5px;
   line-height: 32px;
+  font-family: var(--font-display-css);
   font-size: 24px;
-  font-family: 'Inter Display', var(--font-sans);
+  font-weight: 400;
   box-sizing: border-box;
   width: 100%;
 }
@@ -584,8 +591,9 @@ export default function FramerFrontend() {
   display: flex;
   flex-direction: column;
   align-items: center;
+  padding: 0;
   box-sizing: border-box;
-  gap: 32px;
+  gap: 24px;
   max-width: 100%;
 }
 
@@ -594,7 +602,7 @@ export default function FramerFrontend() {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 24px;
+  gap: 16px;
 }
 
 .tf-otpHeader {
@@ -610,9 +618,10 @@ export default function FramerFrontend() {
   text-align: center;
   color: #7C7C7C;
   font-size: 14px;
-  font-family: var(--font-secondary);
+  font-family: var(--font-sans);
   font-weight: 400;
   line-height: 20px;
+  letter-spacing: -0.084px;
   word-wrap: break-word;
 }
 
@@ -634,7 +643,9 @@ export default function FramerFrontend() {
   color: #fff;
   text-align: center;
   font-size: 24px;
-  font-family: var(--font-sans);
+  font-family: var(--font-display-css);
+  font-weight: 400;
+  letter-spacing: -0.5px;
   box-sizing: border-box;
 }
 
