@@ -76,7 +76,7 @@ export default function LandingLayout({
   const isProfileRoute = Boolean(pathname?.startsWith("/profiles/"));
   const isExplorerCardRoute = Boolean(pathname?.includes("/explorercard"));
   const isAdminLoginRoute = pathname === "/admin/login";
-  const hideNavbar = pathname?.startsWith("/edit/explorercard");
+  const hideNavbar = pathname?.startsWith("/edit/explorercard") || pathname === "/explorercard" || pathname === "/join/explorercard";
   // Show loader on first mount, hide after hydration + minimum display time
   const [loading, setLoading] = useState(true);
 

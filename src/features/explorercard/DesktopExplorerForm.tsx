@@ -291,7 +291,7 @@ export function DesktopExplorerForm({
           <button
             type="submit"
             disabled={isSubmitting || (isCreated ? !hasChanges : (isEditMode && !hasChanged))}
-            className="w-full rounded-[100px] bg-[#533df6] px-[24px] py-[12px] font-sans text-[16px] font-medium leading-[24px] tracking-[-0.176px] text-[#ecf0ff] transition-opacity hover:opacity-90 disabled:opacity-50"
+            className="w-full rounded-[999px] bg-[#533df6] px-[24px] py-[12px] font-sans text-[16px] font-medium leading-[24px] tracking-[-0.176px] text-[#ecf0ff] transition-all hover:opacity-90 disabled:bg-[#C0CAFF] disabled:opacity-100 disabled:cursor-not-allowed"
           >
             {isSubmitting ? (isCreated ? "Updating..." : "Creating...") : (isCreated ? "Update Explorer Card" : (isEditMode ? "Update explorer card" : "Create explorer card"))}
           </button>

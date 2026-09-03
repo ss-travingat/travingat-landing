@@ -14,32 +14,24 @@ interface CardProps {
   isPreview?: boolean;
 }
 
-export function LogoWatermark({ className = "bottom-[24px]" }: { className?: string }) {
+export function LogoWatermark() {
   return (
-    <div 
-      className={`absolute pointer-events-none select-none z-[40] left-[16px] ${className}`}
-      style={{
-        transformOrigin: "left top",
-        transform: "rotate(-90deg)"
-      }}
-    >
-      <span 
-        className="whitespace-nowrap inline-block"
-        style={{
-          fontFamily: 'var(--font-logo, Righteous)',
-          fontSize: '23.14px',
-          fontStyle: 'normal',
-          fontWeight: 400,
-          lineHeight: 'normal',
-          letterSpacing: '-0.339px',
-          backgroundImage: 'linear-gradient(270deg, rgba(255, 255, 255, 0.10) 0%, #FFF 100%)',
-          WebkitBackgroundClip: 'text',
-          backgroundClip: 'text',
-          WebkitTextFillColor: 'transparent',
-        }}
-      >
-        Travingat
-      </span>
+    <div className="absolute flex h-[100px] w-[29px] items-center justify-center pointer-events-none select-none z-[40]" style={{ left: '5.91px', top: '22.5px' }}>
+      <div className="-rotate-90 flex-none">
+        <div className="flex items-center opacity-40">
+          <p 
+            className="whitespace-nowrap bg-gradient-to-l from-[rgba(255,255,255,0.10)] to-white bg-clip-text text-transparent"
+            style={{
+              fontFamily: 'var(--font-logo, Righteous)',
+              fontSize: '23.14px',
+              fontWeight: 400,
+              letterSpacing: '-0.41px',
+            }}
+          >
+            travingat
+          </p>
+        </div>
+      </div>
     </div>
   );
 }
@@ -48,8 +40,8 @@ export function CountryNotch({ form, sampleFlags, fill = "#000000", emptyBg = "b
   return (
     <div className={`flex items-start justify-center pointer-events-none ${wrapperClassName}`}>
       {/* Left Curve */}
-      <svg width="34" height="18" viewBox="0 0 34 18" fill="none" xmlns="http://www.w3.org/2000/svg" className="shrink-0 relative z-20">
-        <path d="M34 0H0L15.8765 0.44712C25.5527 0.719623 33.4182 8.33753 34 18V0Z" fill={fill}/>
+      <svg width="34" height="18" viewBox="0 0 34 18" fill="none" xmlns="http://www.w3.org/2000/svg" className="shrink-0 relative z-20 overflow-visible">
+        <path d="M35 0H0L15.8765 0.44712C25.5527 0.719623 33.4182 8.33753 34 18H35V0Z" fill={fill}/>
       </svg>
       {/* Center Rectangle */}
       <div className="relative z-10 flex min-w-[134px] h-[27px] items-center justify-center rounded-b-[12px] px-[12px] pointer-events-auto" style={{ backgroundColor: fill }}>
@@ -67,8 +59,8 @@ export function CountryNotch({ form, sampleFlags, fill = "#000000", emptyBg = "b
         </div>
       </div>
       {/* Right Curve */}
-      <svg width="34" height="18" viewBox="0 0 34 18" fill="none" xmlns="http://www.w3.org/2000/svg" className="shrink-0 relative z-20">
-        <path d="M0 0H34L18.1235 0.44712C8.44727 0.719623 0.581831 8.33753 0 18V0Z" fill={fill}/>
+      <svg width="34" height="18" viewBox="0 0 34 18" fill="none" xmlns="http://www.w3.org/2000/svg" className="shrink-0 relative z-20 overflow-visible">
+        <path d="M-1 0H34L18.1235 0.44712C8.44727 0.719623 0.581831 8.33753 0 18H-1V0Z" fill={fill}/>
       </svg>
     </div>
   );
@@ -82,7 +74,7 @@ export function MinimalCountryNotch({ form, sampleFlags, wrapperClassName = "" }
           <svg width="182" height="32" viewBox="0 0 182 32" fill="none" xmlns="http://www.w3.org/2000/svg">
             <g clipPath="url(#clip0_444_18)">
               <path d="M24 0H0L0.533106 0.0283589C13.3936 0.712479 23.5897 11.1279 24 24V0Z" fill="#1E1E1E"/>
-              <path d="M24 0H158V20C158 26.6274 152.627 32 146 32H36C29.3726 32 24 26.6274 24 20V0Z" fill="#1E1E1E"/>
+              <path d="M23 0 H159 V20 H158 C158 26.6274 152.627 32 146 32 H36 C29.3726 32 24 26.6274 24 20 H23 V0 Z" fill="#1E1E1E"/>
               <path d="M158 0H182L181.467 0.0283589C168.606 0.712479 158.41 11.1279 158 24V0Z" fill="#1E1E1E"/>
             </g>
             <defs>
@@ -112,7 +104,7 @@ export function MinimalCountryNotch({ form, sampleFlags, wrapperClassName = "" }
 
 export function ClassicCard({ form, sampleFlags, visitedArray, isPreview }: CardProps) {
   return (
-    <div className="flex w-[360px] flex-col items-center rounded-[24px] border border-[#252525] bg-black px-2 pb-[24px] pt-2">
+    <div className="flex h-[600px] w-[360px] flex-col items-center gap-[20px] rounded-[24px] border border-[#252525] bg-black px-[8px] pb-[24px] pt-[8px]">
       {/* Profile section */}
       <div className="flex w-full shrink-0 flex-col items-center">
         {/* Background image: 344x226, negative margin to allow avatar overlap */}
@@ -132,9 +124,9 @@ export function ClassicCard({ form, sampleFlags, visitedArray, isPreview }: Card
             <LoadedImage priority src={toLandingAssetUrl(form.profileImage)} alt="profile" containerClassName="h-full w-full" className="h-full w-full object-cover" />
           ) : (
             <div className="flex h-full w-full items-center justify-center text-white-600">
-              <div className="relative w-[48px] h-[48px]">
+              <div className="relative w-[60px] h-[60px]">
                 <AvatarPlaceholderIcon className="w-full h-full object-cover" />
-                <div className="absolute left-[30px] w-[11px] h-[11px] top-[31.7px] pointer-events-none z-0">
+                <div className="absolute left-[39px] w-[16px] h-[16px] top-[41px] pointer-events-none z-0">
                   <div className="absolute inset-[0_-16.67%_-33.33%_-16.67%]">
                     <img alt="" className="block max-w-none w-full h-full" src="/icons/Add user button.png" />
                   </div>
@@ -146,7 +138,7 @@ export function ClassicCard({ form, sampleFlags, visitedArray, isPreview }: Card
       </div>
 
       {/* Info section */}
-      <div className="flex w-full shrink-0 flex-col items-center gap-[20px] px-[12px] pt-[20px]">
+      <div className="flex w-full shrink-0 flex-col items-center gap-[20px] px-[12px]">
         {/* Country and name container */}
         <div className="flex w-full shrink-0 flex-col items-center gap-[10px]">
           {/* Country container */}
@@ -168,7 +160,7 @@ export function ClassicCard({ form, sampleFlags, visitedArray, isPreview }: Card
         </div>
 
         {/* FLAGS */}
-        <div className="flex w-[310px] h-[48px] shrink-0 flex-wrap content-center items-center justify-center gap-[4px] mx-auto">
+        <div className="flex w-full shrink-0 flex-wrap items-start justify-center gap-[4px] px-[6px]">
           {visitedArray.length > 0 ? (
             <>
               {visitedArray.slice(0, 35).map((c) => (
@@ -188,7 +180,7 @@ export function ClassicCard({ form, sampleFlags, visitedArray, isPreview }: Card
             </>
           ) : (
             // Placeholder empty flags if none visited
-            Array.from({ length: 8 }).map((_, i) => (
+            Array.from({ length: 9 }).map((_, i) => (
               <div key={i} className="h-[13.333px] w-[20px] shrink-0 overflow-hidden rounded-[2px] bg-[#2a2a2a]" />
             ))
           )}
@@ -205,7 +197,7 @@ export function ClassicCard({ form, sampleFlags, visitedArray, isPreview }: Card
         </div>
 
         {/* Call to action container */}
-        <div className="flex w-full shrink-0 items-center justify-center">
+        <div className="mt-auto flex w-full shrink-0 items-center justify-center">
           <a href="/edit/explorercard" className="whitespace-nowrap text-[14px] font-medium leading-[20px] tracking-[-0.084px] text-[#7c7c7c] hover:text-white transition-colors underline decoration-wavy underline-offset-2">
             Join me on Travingat
           </a>
@@ -219,7 +211,7 @@ export function MinimalCard({ form, sampleFlags, visitedArray, isPreview }: Card
   return (
     <div
       id="minimal-card"
-      className="flex w-[382px] shrink-0 flex-col items-center gap-[20px] rounded-[24px] border border-[#252525] bg-black px-[8px] pb-[24px] pt-0"
+      className="flex h-[600px] w-[360px] shrink-0 flex-col items-center gap-[20px] rounded-[24px] border border-[#252525] bg-black px-[8px] pb-[24px] pt-0"
     >
       {/* Country badge at top */}
       <MinimalCountryNotch form={form} sampleFlags={sampleFlags} wrapperClassName="w-full shrink-0 relative" />
@@ -274,7 +266,7 @@ export function MinimalCard({ form, sampleFlags, visitedArray, isPreview }: Card
              </p>
            </div>
 
-           <div className="flex w-[296px] h-[84px] shrink-0 flex-wrap content-center items-center gap-[4px]">
+           <div className="flex w-full shrink-0 flex-wrap items-start gap-[4px]">
              {visitedArray.length > 0 ? (
                <>
                  {visitedArray.slice(0, 35).map((c) => (
@@ -289,7 +281,7 @@ export function MinimalCard({ form, sampleFlags, visitedArray, isPreview }: Card
                  )}
                </>
              ) : (
-                Array.from({ length: 10 }).map((_, i) => (
+                Array.from({ length: 8 }).map((_, i) => (
                    <div key={i} className="h-[18px] w-[26px] shrink-0 overflow-hidden rounded-[2px] bg-[#2a2a2a]" />
                 ))
              )}
@@ -310,11 +302,11 @@ export function AdventureCard({ form, sampleFlags, visitedArray, isPreview }: Ca
   return (
     <div
       id="adventure-card"
-      className="flex h-[600px] w-[360px] shrink-0 flex-col items-center justify-between rounded-[24px] border border-[#252525] bg-black p-2 pb-[24px]"
+      className="flex h-[600px] w-[360px] shrink-0 flex-col items-center gap-[20px] rounded-[24px] border border-[#252525] bg-black px-[8px] pb-[24px] pt-[8px]"
     >
       {/* Main Image Container */}
       <div 
-        className="relative flex w-[344px] h-[528px] shrink-0 flex-col items-center justify-end overflow-hidden rounded-[16px] bg-[#161616] isolate"
+        className="relative flex w-full h-[528px] shrink-0 flex-col items-center justify-end overflow-hidden rounded-[16px] bg-[#161616] isolate"
       >
         
         {/* Notch Overlay */}
@@ -331,10 +323,10 @@ export function AdventureCard({ form, sampleFlags, visitedArray, isPreview }: Ca
           )}
         </div>
         {isPreview && <PreviewWatermark />}
-        {!isPreview && <LogoWatermark className="top-[174px]" />}
+        {!isPreview && <LogoWatermark />}
 
         {/* Content at Bottom with Gradient & Blur */}
-        <div className="relative z-20 mt-auto flex w-full flex-col items-center pb-[24px] px-[8px]">
+        <div className="relative z-20 mt-auto flex w-full flex-col items-center gap-[16px] pb-[32px] px-[8px]">
           
           {/* Blurred Background Layer with Progressive Gradient Mask */}
           <div 
@@ -346,13 +338,13 @@ export function AdventureCard({ form, sampleFlags, visitedArray, isPreview }: Ca
           />
 
           {/* Profile Picture */}
-          <div className="relative z-10 mb-[12px] flex h-[56px] w-[56px] shrink-0 items-center justify-center overflow-hidden rounded-[16px] border-[3px] border-white bg-[#2a2a2a] shadow-[0_4px_16px_rgba(0,0,0,0.35)]">
+          <div className="relative z-10 flex h-[48px] w-[48px] shrink-0 items-center justify-center overflow-hidden rounded-[12px] border-[3px] border-white bg-[#2a2a2a] shadow-[0_4px_16px_rgba(0,0,0,0.35)]">
             {form.profileImage ? (
               <LoadedImage priority src={toLandingAssetUrl(form.profileImage)} alt="profile" containerClassName="h-full w-full" className="h-full w-full object-cover" />
             ) : (
-              <div className="relative h-[36px] w-[36px]">
+              <div className="relative flex h-[32px] w-[32px] shrink-0 items-center justify-center">
                 <AvatarPlaceholderIcon className="h-full w-full object-cover" />
-                <div className="absolute left-[22.5px] top-[23.7px] z-0 h-[8.25px] w-[8.25px] pointer-events-none">
+                <div className="absolute left-[20.7px] top-[21.8px] z-0 h-[8.7px] w-[8.7px] pointer-events-none">
                   <div className="absolute inset-[0_-16.67%_-33.33%_-16.67%]">
                     <img alt="" className="block h-full w-full max-w-none" src="/icons/Add user button.png" />
                   </div>
@@ -362,19 +354,20 @@ export function AdventureCard({ form, sampleFlags, visitedArray, isPreview }: Ca
           </div>
 
           {/* Text Container: Name & Countries Explored */}
-          <div className="relative z-10 flex w-full flex-col items-center gap-[4px] mb-[16px]">
-            <h3 className="w-full break-words px-2 text-center text-[28px] font-bold font-[family-name:var(--font-inter-display)] leading-[36px] tracking-[-0.5px] text-white">
-              {form.fullName || "Your full name"}
-            </h3>
+          <div className="relative z-10 flex w-full flex-col items-center gap-[24px]">
+            <div className="relative z-10 flex w-full flex-col items-center gap-[4px]">
+              <h3 className="w-full break-words px-2 text-center text-[28px] font-bold font-[family-name:var(--font-inter-display)] leading-[36px] tracking-[-0.5px] text-white">
+                {form.fullName || "Your full name"}
+              </h3>
 
-            <p className="whitespace-nowrap text-center text-[16px] font-[family-name:var(--font-inter)] font-normal leading-[24px] tracking-[-0.096px] text-white/90">
-              {visitedArray.length} Countries explored
-            </p>
-          </div>
+              <p className="whitespace-nowrap text-center text-[16px] font-[family-name:var(--font-inter)] font-medium leading-[24px] tracking-[-0.096px] text-white">
+                {visitedArray.length} Countries explored
+              </p>
+            </div>
 
-          {/* Flags */}
-          <div className="relative z-10 flex h-[48px] w-[308px] shrink-0 flex-wrap content-center justify-center gap-[4px] gap-y-[4px]">
-            {visitedArray.length > 0 ? (
+            {/* Flags */}
+            <div className="relative z-10 flex w-full shrink-0 flex-wrap items-start justify-center gap-[4px] px-[6px]">
+              {visitedArray.length > 0 ? (
               <>
                 {visitedArray.slice(0, 35).map((c) => (
                   <div key={c} title={c} className="h-[13.333px] w-[20px] aspect-[3/2] shrink-0 overflow-hidden rounded-[2px] bg-[#161616]">
@@ -392,13 +385,13 @@ export function AdventureCard({ form, sampleFlags, visitedArray, isPreview }: Ca
                   <div key={i} className="h-[13.333px] w-[20px] shrink-0 overflow-hidden rounded-[2px] bg-white/20" />
                ))
             )}
+           </div>
           </div>
-
         </div>
       </div>
 
       {/* Call to Action Container */}
-      <div className="flex w-full shrink-0 items-center justify-center">
+      <div className="mt-auto flex w-full shrink-0 items-center justify-center">
         <a href="/edit/explorercard" className="whitespace-nowrap text-[14px] font-medium leading-[20px] tracking-[-0.084px] text-[#7c7c7c] hover:text-white transition-colors underline decoration-wavy underline-offset-2">
           Join me on Travingat
         </a>
