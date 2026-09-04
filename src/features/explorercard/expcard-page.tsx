@@ -429,7 +429,7 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
     return (
       <div className="flex flex-col min-h-[100dvh] w-full bg-black relative">
         <header className="flex w-full justify-center pt-[40px] pb-4 bg-black shrink-0 relative z-[100]">
-          <div className="flex w-full max-w-[1600px] px-4 lg:px-[64px] items-center justify-between">
+          <div className="flex w-full px-4 lg:px-[64px] items-center justify-between">
             <div className="flex-1 flex items-center">
               <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M16.9955 15.3319L17.1236 17.0972L15.3583 16.9692L15.2289 15.2026L16.9955 15.3319Z" fill="white"/>
@@ -739,7 +739,7 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
     return (
       <div className="flex flex-col min-h-[100dvh] w-full bg-black relative">
         <header className="flex w-full justify-center pt-[40px] pb-4 bg-black shrink-0 relative z-[100]">
-          <div className="flex w-full max-w-[1600px] px-4 lg:px-[64px] items-center justify-between">
+          <div className="flex w-full px-4 lg:px-[64px] items-center justify-between">
             <div className="flex-1 flex items-center">
               <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M16.9955 15.3319L17.1236 17.0972L15.3583 16.9692L15.2289 15.2026L16.9955 15.3319Z" fill="white"/>
@@ -785,7 +785,7 @@ return (
     <div className="flex flex-col min-h-[100dvh] lg:h-[100dvh] lg:overflow-hidden w-full bg-black relative">
       {pathname?.startsWith("/edit/explorercard") && (
         <header className="flex w-full justify-center pt-[40px] pb-4 bg-black shrink-0 relative z-[100]">
-          <div className="flex w-full max-w-[1600px] px-4 lg:px-[64px] items-center justify-between">
+          <div className="flex w-full px-4 lg:px-[64px] items-center justify-between">
             <div className="flex-1 flex items-center">
               <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M16.9955 15.3319L17.1236 17.0972L15.3583 16.9692L15.2289 15.2026L16.9955 15.3319Z" fill="white"/>

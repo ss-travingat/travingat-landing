@@ -58,9 +58,9 @@ export function DesktopExplorerForm({
   const [isVisitedExpanded, setIsVisitedExpanded] = React.useState(false);
   const ErrorMsg = ({ field }: { field: string }) => errors[field] ? <p className="mt-1 text-[12px] text-red-500 font-medium">{errors[field]}</p> : null;
   return (
-    <aside className="hidden lg:block relative w-full lg:w-[420px] shrink-0 h-[calc(100vh-160px)] max-h-[860px] overflow-hidden rounded-[20px] bg-black-900 border border-transparent">
+    <aside className="hidden lg:block relative w-full lg:w-[420px] shrink-0 h-[calc(100vh-160px)] max-h-[860px] overflow-hidden rounded-[20px] bg-[#111]">
       <form onSubmit={handleCreate} className="flex h-full flex-col w-full relative bg-[#111]">
-        <div className="flex-1 overflow-y-auto pt-[40px] px-8 pb-4 flex flex-col items-start gap-6" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+        <div className="flex-1 overflow-y-auto p-[32px] pb-4 flex flex-col items-start gap-[24px]" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
           <style dangerouslySetInnerHTML={{__html: `div::-webkit-scrollbar { display: none; }`}} />
         
         <Field label="Email">
@@ -287,7 +287,7 @@ export function DesktopExplorerForm({
         </div>
         </div>
 
-        <div className="p-8 pt-4 bg-[#111] shrink-0 w-full mt-auto border-t border-[#1e1e1e]">
+        <div className="p-[24px] bg-[#111] shrink-0 w-full mt-auto border-t border-[#1e1e1e]">
           <button
             type="submit"
             disabled={isSubmitting || (isCreated ? !hasChanges : (isEditMode && !hasChanged))}
