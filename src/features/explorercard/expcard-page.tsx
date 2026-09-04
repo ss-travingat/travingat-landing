@@ -83,6 +83,7 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
   const [tab, setTab] = useState<Tab>(defaultTab as Tab);
   const [fromOpen, setFromOpen] = useState(false);
   const [isDownloadModalOpen, setIsDownloadModalOpen] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [shareStyle, setShareStyle] = useState<Tab | null>(null);
   
@@ -155,6 +156,7 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
         quality: 0.9,
         width: node.offsetWidth,
         height: node.offsetHeight,
+        fetch: { bypassingCache: false }
       });
     } catch (err) {
       console.error("Oops, something went wrong!", err);
@@ -163,40 +165,56 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
   }, []);
 
   const handleDownloadStyle = useCallback(async (style: Tab) => {
-    const dataUrl = await getStyleDataUrl(style);
-    if (!dataUrl) {
-      alert("Failed to download image.");
-      return;
+    setIsDownloading(true);
+    try {
+      const dataUrl = await getStyleDataUrl(style);
+      if (!dataUrl) {
+        alert("Failed to download image.");
+        return;
+      }
+      const link = document.createElement("a");
+      link.download = `explorer-card-${style.toLowerCase()}.png`;
+      link.href = dataUrl;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } finally {
+      setIsDownloading(false);
+      setIsDownloadModalOpen(false);
     }
-    const link = document.createElement("a");
-    link.download = `explorer-card-${style.toLowerCase()}.png`;
-    link.href = dataUrl;
-    link.click();
   }, [getStyleDataUrl]);
 
   const downloadAllStyles = useCallback(async () => {
-    const JSZip = (await import("jszip")).default;
-    const zip = new JSZip();
-    let hasFiles = false;
+    setIsDownloading(true);
+    try {
+      const JSZip = (await import("jszip")).default;
+      const zip = new JSZip();
+      let hasFiles = false;
 
-    for (const style of ["Classic", "Minimal", "Adventure"] as Tab[]) {
-      const dataUrl = await getStyleDataUrl(style);
-      if (dataUrl) {
-        const base64Data = dataUrl.split(",")[1];
-        zip.file(`explorer-card-${style.toLowerCase()}.png`, base64Data, { base64: true });
-        hasFiles = true;
+      for (const style of ["Classic", "Minimal", "Adventure"] as Tab[]) {
+        const dataUrl = await getStyleDataUrl(style);
+        if (dataUrl) {
+          const base64Data = dataUrl.split(",")[1];
+          zip.file(`explorer-card-${style.toLowerCase()}.png`, base64Data, { base64: true });
+          hasFiles = true;
+        }
       }
-    }
 
-    if (hasFiles) {
-      const content = await zip.generateAsync({ type: "blob" });
-      const link = document.createElement("a");
-      link.href = URL.createObjectURL(content);
-      link.download = "explorer-cards.zip";
-      link.click();
-      URL.revokeObjectURL(link.href);
-    } else {
-      alert("Failed to generate zip file.");
+      if (hasFiles) {
+        const content = await zip.generateAsync({ type: "blob" });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(content);
+        link.download = "explorer-cards.zip";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(link.href);
+      } else {
+        alert("Failed to generate zip file.");
+      }
+    } finally {
+      setIsDownloading(false);
+      setIsDownloadModalOpen(false);
     }
   }, [getStyleDataUrl]);
 
@@ -473,47 +491,56 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
                     <div className="absolute right-0 top-[100%] mt-2 w-[240px] bg-[#161616] border border-[#1e1e1e] rounded-[16px] p-[20px] pr-[32px] shadow-[20px_20px_10px_rgba(0,0,0,0.25)] flex flex-col gap-[20px] z-50">
                       <p className="text-[20px] font-medium text-center text-white tracking-[-0.5px]">Download</p>
                       
-                      <button onClick={() => { handleDownloadStyle("Classic"); setIsDownloadModalOpen(false); }} className="flex items-center gap-[12px] w-full text-left group">
-                        <div className="w-[40px] h-[40px] rounded-[8px] bg-[#1e1e1e] flex items-center justify-center shrink-0">
-                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" /></svg>
+                      {isDownloading ? (
+                        <div className="flex flex-col items-center justify-center py-8 gap-3">
+                          <div className="w-8 h-8 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
+                          <p className="text-[14px] text-[#A6A6A6] font-medium">Generating image...</p>
                         </div>
-                        <div className="flex flex-col">
-                          <span className="text-[14px] text-white">Classic</span>
-                          <span className="text-[12px] text-[#656565]">PNG</span>
-                        </div>
-                      </button>
-                      
-                      <button onClick={() => { handleDownloadStyle("Minimal"); setIsDownloadModalOpen(false); }} className="flex items-center gap-[12px] w-full text-left group">
-                        <div className="w-[40px] h-[40px] rounded-[8px] bg-[#1e1e1e] flex items-center justify-center shrink-0">
-                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" /></svg>
-                        </div>
-                        <div className="flex flex-col">
-                          <span className="text-[14px] text-white">Minimal</span>
-                          <span className="text-[12px] text-[#656565]">PNG</span>
-                        </div>
-                      </button>
-                      
-                      <button onClick={() => { handleDownloadStyle("Adventure"); setIsDownloadModalOpen(false); }} className="flex items-center gap-[12px] w-full text-left group">
-                        <div className="w-[40px] h-[40px] rounded-[8px] bg-[#1e1e1e] flex items-center justify-center shrink-0">
-                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" /></svg>
-                        </div>
-                        <div className="flex flex-col">
-                          <span className="text-[14px] text-white">Adventure</span>
-                          <span className="text-[12px] text-[#656565]">PNG</span>
-                        </div>
-                      </button>
-                      
-                      <div className="w-full h-[1px] bg-[#1e1e1e]"></div>
-                      
-                      <button onClick={() => { downloadAllStyles(); setIsDownloadModalOpen(false); }} className="flex items-center gap-[12px] w-full text-left group">
-                        <div className="w-[40px] h-[40px] rounded-[8px] bg-[#1e1e1e] flex items-center justify-center shrink-0">
-                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
-                        </div>
-                        <div className="flex flex-col">
-                          <span className="text-[14px] text-white">All 3 styles</span>
-                          <span className="text-[12px] text-[#656565]">Classic, Minimal, & Adventure</span>
-                        </div>
-                      </button>
+                      ) : (
+                        <>
+                          <button onClick={() => { handleDownloadStyle("Classic"); }} className="flex items-center gap-[12px] w-full text-left group">
+                            <div className="w-[40px] h-[40px] rounded-[8px] bg-[#1e1e1e] flex items-center justify-center shrink-0">
+                              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" /></svg>
+                            </div>
+                            <div className="flex flex-col">
+                              <span className="text-[14px] text-white">Classic</span>
+                              <span className="text-[12px] text-[#656565]">PNG</span>
+                            </div>
+                          </button>
+                          
+                          <button onClick={() => { handleDownloadStyle("Minimal"); }} className="flex items-center gap-[12px] w-full text-left group">
+                            <div className="w-[40px] h-[40px] rounded-[8px] bg-[#1e1e1e] flex items-center justify-center shrink-0">
+                              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" /></svg>
+                            </div>
+                            <div className="flex flex-col">
+                              <span className="text-[14px] text-white">Minimal</span>
+                              <span className="text-[12px] text-[#656565]">PNG</span>
+                            </div>
+                          </button>
+                          
+                          <button onClick={() => { handleDownloadStyle("Adventure"); }} className="flex items-center gap-[12px] w-full text-left group">
+                            <div className="w-[40px] h-[40px] rounded-[8px] bg-[#1e1e1e] flex items-center justify-center shrink-0">
+                              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" /></svg>
+                            </div>
+                            <div className="flex flex-col">
+                              <span className="text-[14px] text-white">Adventure</span>
+                              <span className="text-[12px] text-[#656565]">PNG</span>
+                            </div>
+                          </button>
+                          
+                          <div className="w-full h-[1px] bg-[#1e1e1e]"/>
+                          
+                          <button onClick={() => { downloadAllStyles(); }} className="flex items-center gap-[12px] w-full text-left group">
+                            <div className="w-[40px] h-[40px] rounded-[8px] bg-[#1e1e1e] flex items-center justify-center shrink-0">
+                              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" /></svg>
+                            </div>
+                            <div className="flex flex-col">
+                              <span className="text-[14px] text-white">Download All</span>
+                              <span className="text-[12px] text-[#656565]">ZIP Archive</span>
+                            </div>
+                          </button>
+                        </>
+                      )}
                     </div>
                   )}
                 </div>
@@ -632,43 +659,53 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
               {isDownloadModalOpen && (
                 <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-4 w-[240px] bg-[#161616] border border-[#1e1e1e] rounded-[16px] p-[20px] shadow-lg flex flex-col gap-[20px] z-50">
                   <p className="text-[20px] font-medium text-center text-white">Download</p>
-                  <button onClick={() => { handleDownloadStyle("Classic"); setIsDownloadModalOpen(false); }} className="flex items-center gap-[12px] w-full text-left">
-                    <div className="w-[40px] h-[40px] rounded-[8px] bg-[#1e1e1e] flex items-center justify-center shrink-0">
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" /></svg>
+                  
+                  {isDownloading ? (
+                    <div className="flex flex-col items-center justify-center py-8 gap-3">
+                      <div className="w-8 h-8 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
+                      <p className="text-[14px] text-[#A6A6A6] font-medium">Generating image...</p>
                     </div>
-                    <div className="flex flex-col">
-                      <span className="text-[14px] text-white">Classic</span>
-                      <span className="text-[12px] text-[#656565]">PNG</span>
-                    </div>
-                  </button>
-                  <button onClick={() => { handleDownloadStyle("Minimal"); setIsDownloadModalOpen(false); }} className="flex items-center gap-[12px] w-full text-left">
-                    <div className="w-[40px] h-[40px] rounded-[8px] bg-[#1e1e1e] flex items-center justify-center shrink-0">
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" /></svg>
-                    </div>
-                    <div className="flex flex-col">
-                      <span className="text-[14px] text-white">Minimal</span>
-                      <span className="text-[12px] text-[#656565]">PNG</span>
-                    </div>
-                  </button>
-                  <button onClick={() => { handleDownloadStyle("Adventure"); setIsDownloadModalOpen(false); }} className="flex items-center gap-[12px] w-full text-left">
-                    <div className="w-[40px] h-[40px] rounded-[8px] bg-[#1e1e1e] flex items-center justify-center shrink-0">
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" /></svg>
-                    </div>
-                    <div className="flex flex-col">
-                      <span className="text-[14px] text-white">Adventure</span>
-                      <span className="text-[12px] text-[#656565]">PNG</span>
-                    </div>
-                  </button>
-                  <div className="w-full h-[1px] bg-[#1e1e1e]"/>
-                  <button onClick={() => { downloadAllStyles(); setIsDownloadModalOpen(false); }} className="flex items-center gap-[12px] w-full text-left">
-                    <div className="w-[40px] h-[40px] rounded-[8px] bg-[#1e1e1e] flex items-center justify-center shrink-0">
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
-                    </div>
-                    <div className="flex flex-col">
-                      <span className="text-[14px] text-white">All 3 styles</span>
-                      <span className="text-[12px] text-[#656565]">Classic, Minimal & Adventure</span>
-                    </div>
-                  </button>
+                  ) : (
+                    <>
+                      <button onClick={() => { handleDownloadStyle("Classic"); }} className="flex items-center gap-[12px] w-full text-left">
+                        <div className="w-[40px] h-[40px] rounded-[8px] bg-[#1e1e1e] flex items-center justify-center shrink-0">
+                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" /></svg>
+                        </div>
+                        <div className="flex flex-col">
+                          <span className="text-[14px] text-white">Classic</span>
+                          <span className="text-[12px] text-[#656565]">PNG</span>
+                        </div>
+                      </button>
+                      <button onClick={() => { handleDownloadStyle("Minimal"); }} className="flex items-center gap-[12px] w-full text-left">
+                        <div className="w-[40px] h-[40px] rounded-[8px] bg-[#1e1e1e] flex items-center justify-center shrink-0">
+                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" /></svg>
+                        </div>
+                        <div className="flex flex-col">
+                          <span className="text-[14px] text-white">Minimal</span>
+                          <span className="text-[12px] text-[#656565]">PNG</span>
+                        </div>
+                      </button>
+                      <button onClick={() => { handleDownloadStyle("Adventure"); }} className="flex items-center gap-[12px] w-full text-left">
+                        <div className="w-[40px] h-[40px] rounded-[8px] bg-[#1e1e1e] flex items-center justify-center shrink-0">
+                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" /></svg>
+                        </div>
+                        <div className="flex flex-col">
+                          <span className="text-[14px] text-white">Adventure</span>
+                          <span className="text-[12px] text-[#656565]">PNG</span>
+                        </div>
+                      </button>
+                      <div className="w-full h-[1px] bg-[#1e1e1e]"/>
+                      <button onClick={() => { downloadAllStyles(); }} className="flex items-center gap-[12px] w-full text-left">
+                        <div className="w-[40px] h-[40px] rounded-[8px] bg-[#1e1e1e] flex items-center justify-center shrink-0">
+                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" /></svg>
+                        </div>
+                        <div className="flex flex-col">
+                          <span className="text-[14px] text-white">Download All</span>
+                          <span className="text-[12px] text-[#656565]">ZIP Archive</span>
+                        </div>
+                      </button>
+                    </>
+                  )}
                 </div>
               )}
             </div>
