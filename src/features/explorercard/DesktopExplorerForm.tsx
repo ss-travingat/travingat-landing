@@ -60,7 +60,7 @@ export function DesktopExplorerForm({
   return (
     <aside className="hidden lg:block relative w-full lg:w-[420px] shrink-0 h-[calc(100vh-160px)] max-h-[860px] overflow-hidden rounded-[20px] bg-black-900 border border-transparent">
       <form onSubmit={handleCreate} className="flex h-full flex-col w-full relative bg-[#111]">
-        <div className="flex-1 overflow-y-auto p-8 pb-4 flex flex-col items-start gap-6" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+        <div className="flex-1 overflow-y-auto pt-[40px] px-8 pb-4 flex flex-col items-start gap-6" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
           <style dangerouslySetInnerHTML={{__html: `div::-webkit-scrollbar { display: none; }`}} />
         
         <Field label="Email">

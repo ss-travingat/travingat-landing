@@ -41,26 +41,26 @@ export function CountryNotch({ form, sampleFlags, fill = "#000000", emptyBg = "b
     <div className={`flex items-start justify-center pointer-events-none ${wrapperClassName}`}>
       {/* Left Curve */}
       <svg width="34" height="18" viewBox="0 0 34 18" fill="none" xmlns="http://www.w3.org/2000/svg" className="shrink-0 relative z-20 overflow-visible">
-        <path d="M35 0H0L15.8765 0.44712C25.5527 0.719623 33.4182 8.33753 34 18H35V0Z" fill={fill}/>
+        <path d="M35 0H0L15.8765 0.44712C25.5527 0.719623 33.4182 8.33753 34 18H35V0Z" fill={fill} />
       </svg>
-      {/* Center Rectangle */}
-      <div className="relative z-10 flex min-w-[134px] h-[27px] items-center justify-center rounded-b-[12px] px-[12px] pointer-events-auto" style={{ backgroundColor: fill }}>
-        <div className="flex items-center justify-center gap-[6px]">
+      {/* Center Rectangle - Exact Figma Layout: padding: 1px 12px 6px 12px, plus 1px for anti-aliasing bleed fix */}
+      <div className="relative z-10 flex items-center justify-center rounded-b-[12px] pt-[2px] pb-[6px] px-[12px] pointer-events-auto" style={{ backgroundColor: fill }}>
+        <div className="flex items-center justify-center gap-[6px] -translate-y-[2.8px]">
           <div className="h-[9px] w-[14px] shrink-0 overflow-hidden rounded-[2px] bg-[#161616]">
-             {form.country && sampleFlags[form.country] ? (
-               <span className={`fi fi-${sampleFlags[form.country].toLowerCase()} !block !h-full !w-full !bg-cover !bg-center !text-[0px]`} title={form.country} />
-             ) : (
-               <div className={`h-full w-full rounded-[2px] ${emptyBg}`} />
-             )}
+            {form.country && sampleFlags[form.country] ? (
+              <span className={`fi fi-${sampleFlags[form.country].toLowerCase()} !block !h-full !w-full !bg-cover !bg-center !text-[0px]`} title={form.country} />
+            ) : (
+              <div className={`h-full w-full rounded-[2px] ${emptyBg}`} />
+            )}
           </div>
-          <p className="whitespace-nowrap text-[14px] font-[family-name:var(--font-inter)] font-normal leading-[14px] tracking-[-0.084px] text-white">
+          <p className="whitespace-nowrap text-[14px] font-[family-name:var(--font-inter)] font-normal leading-[20px] tracking-[-0.084px] text-white">
             {form.country || <span className="text-[#656565]">Your country</span>}
           </p>
         </div>
       </div>
       {/* Right Curve */}
       <svg width="34" height="18" viewBox="0 0 34 18" fill="none" xmlns="http://www.w3.org/2000/svg" className="shrink-0 relative z-20 overflow-visible">
-        <path d="M-1 0H34L18.1235 0.44712C8.44727 0.719623 0.581831 8.33753 0 18H-1V0Z" fill={fill}/>
+        <path d="M-1 0H34L18.1235 0.44712C8.44727 0.719623 0.581831 8.33753 0 18H-1V0Z" fill={fill} />
       </svg>
     </div>
   );
@@ -214,7 +214,7 @@ export function MinimalCard({ form, sampleFlags, visitedArray, isPreview }: Card
       className="flex h-[600px] w-[360px] shrink-0 flex-col items-center gap-[20px] rounded-[24px] border border-[#252525] bg-black px-[8px] pb-[24px] pt-0"
     >
       {/* Country badge at top */}
-      <MinimalCountryNotch form={form} sampleFlags={sampleFlags} wrapperClassName="w-full shrink-0 relative" />
+      <MinimalCountryNotch form={form} sampleFlags={sampleFlags} wrapperClassName="w-full shrink-0 relative -mt-[1px] z-30" />
 
       {/* Main content container */}
       <div className="flex w-full shrink-0 flex-col items-center gap-[8px]">
@@ -309,8 +309,8 @@ export function AdventureCard({ form, sampleFlags, visitedArray, isPreview }: Ca
         className="relative flex w-full h-[528px] shrink-0 flex-col items-center justify-end overflow-hidden rounded-[16px] bg-[#161616] isolate"
       >
         
-        {/* Notch Overlay */}
-        <CountryNotch form={form} sampleFlags={sampleFlags} fill="#000000" wrapperClassName="absolute top-0 left-0 right-0 z-30 w-full shrink-0" />
+        {/* Notch Overlay - Negative top coordinate to overlap any hairline background bleed from anti-aliasing */}
+        <CountryNotch form={form} sampleFlags={sampleFlags} fill="#000000" wrapperClassName="absolute -top-[1px] left-0 right-0 z-30 w-full shrink-0" />
 
         {/* Cover Image Background */}
         <div className="absolute inset-0 z-0">

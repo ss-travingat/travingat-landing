@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef, useCallback, Suspense } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
-import { domToJpeg } from "modern-screenshot";
+import { domToPng } from "modern-screenshot";
 import { compressImageClient } from "@/lib/client-image-compress";
 import { ClassicCard, MinimalCard, AdventureCard, ImagePlaceholderIcon, AvatarPlaceholderIcon } from "./cards";
 import EmailVerificationForm from "@/components/getfeatured/EmailVerificationForm";
@@ -150,7 +150,7 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
     const node = ref.current.firstElementChild as HTMLElement;
 
     try {
-      return await domToJpeg(node, { 
+      return await domToPng(node, { 
         scale: 2,
         quality: 0.9,
         width: node.offsetWidth,
@@ -169,7 +169,7 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
       return;
     }
     const link = document.createElement("a");
-    link.download = `explorer-card-${style.toLowerCase()}.jpg`;
+    link.download = `explorer-card-${style.toLowerCase()}.png`;
     link.href = dataUrl;
     link.click();
   }, [getStyleDataUrl]);
@@ -183,7 +183,7 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
       const dataUrl = await getStyleDataUrl(style);
       if (dataUrl) {
         const base64Data = dataUrl.split(",")[1];
-        zip.file(`explorer-card-${style.toLowerCase()}.jpg`, base64Data, { base64: true });
+        zip.file(`explorer-card-${style.toLowerCase()}.png`, base64Data, { base64: true });
         hasFiles = true;
       }
     }
@@ -427,9 +427,9 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
 
   if (isCreated) {
     return (
-      <div className="flex flex-col min-h-[100dvh] lg:h-[100dvh] lg:overflow-hidden w-full bg-black relative">
-        <header className="flex w-full justify-center pt-[40px] pb-4 bg-black shrink-0 sticky top-0 z-[100]">
-          <div className="flex w-full max-w-[1600px] px-4 lg:px-[40px] items-center justify-between">
+      <div className="flex flex-col min-h-[100dvh] w-full bg-black relative">
+        <header className="flex w-full justify-center pt-[40px] pb-4 bg-black shrink-0 relative z-[100]">
+          <div className="flex w-full max-w-[1600px] px-4 lg:px-[64px] items-center justify-between">
             <div className="flex-1 flex items-center">
               <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M16.9955 15.3319L17.1236 17.0972L15.3583 16.9692L15.2289 15.2026L16.9955 15.3319Z" fill="white"/>
@@ -446,16 +446,16 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
               <p className="lg:hidden text-center font-sans text-[14px] font-normal leading-[20px] tracking-[-0.084px] text-[#989898]">Your edit link is in your email</p>
             </div>
             <div className="flex-1 flex justify-end">
-              <button onClick={handleCreatedCrossClick} className="w-10 h-10 flex items-center justify-center rounded-[12px] bg-[#1a1a1a] border border-[#2a2a2a] hover:bg-[#222] transition-colors">
-                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M13 1L1 13M1 1L13 13" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              <button onClick={handleCreatedCrossClick} className="w-[36px] h-[36px] flex items-center justify-center rounded-[8px] bg-[#111] border border-[#212121] hover:bg-[#222] transition-colors">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M18 6L6 18M6 6L18 18" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
               </button>
             </div>
           </div>
         </header>
 
-        <main className="flex-1 overflow-y-auto flex flex-col items-center px-0 lg:px-6 pb-[100px] lg:pb-12 w-full pt-[24px]">
+        <main className="flex-1 flex flex-col items-center px-0 lg:px-6 pb-[100px] lg:pb-12 w-full pt-[24px]">
 
         {/* Content Container */}
         <div className="w-full max-w-[1062px] lg:bg-[#111] bg-transparent lg:rounded-[20px] lg:p-[24px] lg:px-[32px] flex flex-col items-center gap-[17px] lg:gap-[20px]">
@@ -479,7 +479,7 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
                         </div>
                         <div className="flex flex-col">
                           <span className="text-[14px] text-white">Classic</span>
-                          <span className="text-[12px] text-[#656565]">JPEG</span>
+                          <span className="text-[12px] text-[#656565]">PNG</span>
                         </div>
                       </button>
                       
@@ -489,7 +489,7 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
                         </div>
                         <div className="flex flex-col">
                           <span className="text-[14px] text-white">Minimal</span>
-                          <span className="text-[12px] text-[#656565]">JPEG</span>
+                          <span className="text-[12px] text-[#656565]">PNG</span>
                         </div>
                       </button>
                       
@@ -499,7 +499,7 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
                         </div>
                         <div className="flex flex-col">
                           <span className="text-[14px] text-white">Adventure</span>
-                          <span className="text-[12px] text-[#656565]">JPEG</span>
+                          <span className="text-[12px] text-[#656565]">PNG</span>
                         </div>
                       </button>
                       
@@ -551,8 +551,8 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
                     </div>
 
                     {shareStyle && (
-                      <p className="text-[16px] font-medium text-[#ecf0ff] underline decoration-wavy underline-offset-4 decoration-white/50">
-                        travingat.com/ec/{createdUserId?.split("-")[0] || "123"}
+                      <p className="text-[16px] font-medium text-[#ecf0ff] underline decoration-wavy underline-offset-4 decoration-white/50 text-center break-all">
+                        travingat.com/ec/{createdUserId?.split("-")[0]}-{shareStyle === "Classic" ? "a" : shareStyle === "Minimal" ? "b" : "c"}
                       </p>
                     )}
 
@@ -560,7 +560,9 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
                       <button
                         onClick={() => {
                           if (createdUserId && shareStyle) {
-                            navigator.clipboard.writeText(`${window.location.origin}/view/explorercard/${createdUserId}?style=${shareStyle.toLowerCase()}`);
+                            const shortId = createdUserId.split("-")[0];
+                            const styleSuffix = shareStyle === "Classic" ? "a" : shareStyle === "Minimal" ? "b" : "c";
+                            navigator.clipboard.writeText(`https://travingat.com/ec/${shortId}-${styleSuffix}`);
                             alert(`Link to your ${shareStyle} card copied to clipboard!`);
                           }
                           setIsShareModalOpen(false);
@@ -581,13 +583,17 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
           {/* Tab Bar and Cards Group */}
           <div className="flex flex-col gap-[24px] items-center w-full">
             {/* Tab Bar */}
-            <div className="w-[360px] bg-[#111] border border-[#2a2a2a] rounded-[999px] p-[4px] flex items-center transition-all duration-300">
+            <div className="relative w-[360px] bg-[#111] border border-[#2a2a2a] rounded-[999px] p-[4px] flex items-center">
+              <div 
+                className="absolute top-[4px] bottom-[4px] w-[calc((100%-8px)/3)] bg-[#1e1e1e] rounded-[999px] transition-transform duration-300 ease-in-out"
+                style={{ transform: `translateX(${tab === 'Classic' ? 0 : tab === 'Minimal' ? '100%' : '200%'})` }}
+              />
               {(["Classic", "Minimal", "Adventure"] as Tab[]).map((t) => (
                 <button
                   key={t}
                   onClick={() => setTab(t)}
-                  className={`flex-1 rounded-[999px] py-[8px] text-[14px] transition ${
-                    tab === t ? "bg-[#1e1e1e] text-white" : "text-[#7c7c7c] hover:text-white"
+                  className={`relative z-10 flex-1 rounded-[999px] py-[8px] text-[14px] transition-colors duration-300 ${
+                    tab === t ? "text-white" : "text-[#7c7c7c] hover:text-white"
                   }`}
                 >
                   {t}
@@ -632,7 +638,7 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
                     </div>
                     <div className="flex flex-col">
                       <span className="text-[14px] text-white">Classic</span>
-                      <span className="text-[12px] text-[#656565]">JPEG</span>
+                      <span className="text-[12px] text-[#656565]">PNG</span>
                     </div>
                   </button>
                   <button onClick={() => { handleDownloadStyle("Minimal"); setIsDownloadModalOpen(false); }} className="flex items-center gap-[12px] w-full text-left">
@@ -641,7 +647,7 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
                     </div>
                     <div className="flex flex-col">
                       <span className="text-[14px] text-white">Minimal</span>
-                      <span className="text-[12px] text-[#656565]">JPEG</span>
+                      <span className="text-[12px] text-[#656565]">PNG</span>
                     </div>
                   </button>
                   <button onClick={() => { handleDownloadStyle("Adventure"); setIsDownloadModalOpen(false); }} className="flex items-center gap-[12px] w-full text-left">
@@ -650,7 +656,7 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
                     </div>
                     <div className="flex flex-col">
                       <span className="text-[14px] text-white">Adventure</span>
-                      <span className="text-[12px] text-[#656565]">JPEG</span>
+                      <span className="text-[12px] text-[#656565]">PNG</span>
                     </div>
                   </button>
                   <div className="w-full h-[1px] bg-[#1e1e1e]"/>
@@ -698,14 +704,16 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
                   </div>
                   {shareStyle && (
                     <p className="text-[14px] sm:text-[16px] font-medium text-[#ecf0ff] underline decoration-wavy underline-offset-4 decoration-white/50 text-center break-all w-full">
-                      travingat.com/ec/{createdUserId?.split("-")[0] || "123"}
+                      travingat.com/ec/{createdUserId?.split("-")[0]}-{shareStyle === "Classic" ? "a" : shareStyle === "Minimal" ? "b" : "c"}
                     </p>
                   )}
                   <div className="w-full flex flex-col gap-[16px]">
                     <button
                       onClick={() => {
                         if (createdUserId && shareStyle) {
-                          navigator.clipboard.writeText(`${window.location.origin}/view/explorercard/${createdUserId}?style=${shareStyle.toLowerCase()}`);
+                          const shortId = createdUserId.split("-")[0];
+                          const styleSuffix = shareStyle === "Classic" ? "a" : shareStyle === "Minimal" ? "b" : "c";
+                          navigator.clipboard.writeText(`https://travingat.com/ec/${shortId}-${styleSuffix}`);
                           alert(`Link to your ${shareStyle} card copied to clipboard!`);
                         }
                         setIsShareModalOpen(false);
@@ -729,9 +737,9 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
 
   if (!isVerified) {
     return (
-      <div className="flex flex-col min-h-[100dvh] lg:h-[100dvh] lg:overflow-hidden w-full bg-black relative">
-        <header className="flex w-full justify-center pt-[40px] pb-4 bg-black shrink-0 sticky top-0 z-[100]">
-          <div className="flex w-full max-w-[1600px] px-4 lg:px-[40px] items-center justify-between">
+      <div className="flex flex-col min-h-[100dvh] w-full bg-black relative">
+        <header className="flex w-full justify-center pt-[40px] pb-4 bg-black shrink-0 relative z-[100]">
+          <div className="flex w-full max-w-[1600px] px-4 lg:px-[64px] items-center justify-between">
             <div className="flex-1 flex items-center">
               <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M16.9955 15.3319L17.1236 17.0972L15.3583 16.9692L15.2289 15.2026L16.9955 15.3319Z" fill="white"/>
@@ -746,9 +754,9 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
               </h2>
             </div>
             <div className="flex-1 flex justify-end">
-              <button onClick={() => window.location.href = '/'} className="w-10 h-10 flex items-center justify-center rounded-[12px] bg-[#1a1a1a] border border-[#2a2a2a] hover:bg-[#222] transition-colors">
-                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M13 1L1 13M1 1L13 13" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              <button onClick={() => window.location.href = '/'} className="w-[36px] h-[36px] flex items-center justify-center rounded-[8px] bg-[#111] border border-[#212121] hover:bg-[#222] transition-colors">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M18 6L6 18M6 6L18 18" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
               </button>
             </div>
@@ -776,8 +784,8 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
 return (
     <div className="flex flex-col min-h-[100dvh] lg:h-[100dvh] lg:overflow-hidden w-full bg-black relative">
       {pathname?.startsWith("/edit/explorercard") && (
-        <header className="flex w-full justify-center pt-[40px] pb-4 bg-black shrink-0 sticky top-0 z-[100]">
-          <div className="flex w-full max-w-[1600px] px-4 lg:px-[40px] items-center justify-between">
+        <header className="flex w-full justify-center pt-[40px] pb-4 bg-black shrink-0 relative z-[100]">
+          <div className="flex w-full max-w-[1600px] px-4 lg:px-[64px] items-center justify-between">
             <div className="flex-1 flex items-center">
               <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M16.9955 15.3319L17.1236 17.0972L15.3583 16.9692L15.2289 15.2026L16.9955 15.3319Z" fill="white"/>
@@ -792,9 +800,9 @@ return (
               </h2>
             </div>
             <div className="flex-1 flex justify-end">
-              <button onClick={handleCrossClick} disabled={isSubmitting} className="w-10 h-10 flex items-center justify-center rounded-[12px] bg-[#1a1a1a] border border-[#2a2a2a] hover:bg-[#222] transition-colors disabled:opacity-50">
-                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M13 1L1 13M1 1L13 13" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              <button onClick={handleCrossClick} disabled={isSubmitting} className="w-[36px] h-[36px] flex items-center justify-center rounded-[8px] bg-[#111] border border-[#212121] hover:bg-[#222] transition-colors disabled:opacity-50">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M18 6L6 18M6 6L18 18" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
               </button>
             </div>
@@ -803,7 +811,7 @@ return (
       )}
 
       <div className="flex flex-1 flex-col relative w-full lg:h-[calc(100vh-73px)] lg:overflow-hidden">
-        <div className="hidden lg:flex flex-1 w-full bg-black justify-center items-center py-[40px] lg:overflow-hidden">
+        <div className="hidden lg:flex flex-1 w-full bg-black justify-center items-center pt-[24px] pb-[40px] lg:overflow-hidden">
           <div className="flex w-full max-w-[1600px] h-full items-center justify-center gap-[32px] px-[40px]">
             <DesktopExplorerForm
             form={form}
@@ -829,21 +837,25 @@ return (
             isEditMode={isEditMode}
             hasChanged={hasChanged}
           />
-          <div className="flex flex-col items-center w-full max-w-[1148px] h-[calc(100vh-160px)] max-h-[860px] overflow-y-auto lg:bg-[#111] lg:rounded-[20px] lg:p-[24px] lg:px-[32px] lg:gap-[20px] custom-scrollbar">
+          <div className="flex flex-col items-center w-full max-w-[1116px] h-[calc(100vh-160px)] max-h-[860px] overflow-y-auto lg:bg-[#111] lg:rounded-[20px] lg:pt-[40px] lg:pb-[24px] lg:px-[32px] lg:gap-[20px] custom-scrollbar">
             <style dangerouslySetInnerHTML={{__html: `.custom-scrollbar::-webkit-scrollbar { display: none; }`}} />
             <div className="hidden lg:flex w-full items-center justify-between shrink-0">
               <h3 className="font-display text-[24px] font-normal leading-[32px] tracking-[-0.5px] text-white">Preview</h3>
             </div>
 
             <div className="flex flex-col gap-[24px] items-center w-full">
-              <div className="w-[360px] bg-[#111] border border-[#2a2a2a] rounded-[999px] p-[4px] flex items-center shrink-0 transition-all duration-300">
+              <div className="relative w-[360px] bg-[#111] border border-[#2a2a2a] rounded-[999px] p-[4px] flex items-center shrink-0">
+                <div 
+                  className="absolute top-[4px] bottom-[4px] w-[calc((100%-8px)/3)] bg-[#1e1e1e] rounded-[999px] transition-transform duration-300 ease-in-out"
+                  style={{ transform: `translateX(${tab === 'Classic' ? 0 : tab === 'Minimal' ? '100%' : '200%'})` }}
+                />
                 {(["Classic", "Minimal", "Adventure"] as Tab[]).map((t) => (
                   <button
                     key={t}
                     type="button"
                     onClick={() => setTab(t)}
-                    className={`flex-1 rounded-[999px] py-[8px] text-[14px] transition ${
-                      tab === t ? "bg-[#1e1e1e] text-white" : "text-[#7c7c7c] hover:text-white"
+                    className={`relative z-10 flex-1 rounded-[999px] py-[8px] text-[14px] transition-colors duration-300 ${
+                      tab === t ? "text-white" : "text-[#7c7c7c] hover:text-white"
                     }`}
                   >
                     {t}
