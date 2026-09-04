@@ -69,42 +69,36 @@ export function CountryNotch({ form, sampleFlags, fill = "#000000", emptyBg = "b
 export function MinimalCountryNotch({ form, sampleFlags, wrapperClassName = "" }: { form: any, sampleFlags: any, wrapperClassName?: string }) {
   return (
     <div className={`flex items-start justify-center pointer-events-none ${wrapperClassName}`}>
-      <div className="relative flex h-[32px] w-[182px] items-center justify-center pointer-events-auto">
-        <div className="absolute inset-0 z-0 pointer-events-none">
-          <svg width="182" height="32" viewBox="0 0 182 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <g clipPath="url(#clip0_444_18)">
-              <path d="M24 0H0L0.533106 0.0283589C13.3936 0.712479 23.5897 11.1279 24 24V0Z" fill="#1E1E1E"/>
-              <path d="M23 0 H159 V20 H158 C158 26.6274 152.627 32 146 32 H36 C29.3726 32 24 26.6274 24 20 H23 V0 Z" fill="#1E1E1E"/>
-              <path d="M158 0H182L181.467 0.0283589C168.606 0.712479 158.41 11.1279 158 24V0Z" fill="#1E1E1E"/>
-            </g>
-            <defs>
-              <clipPath id="clip0_444_18">
-                <rect width="182" height="32" fill="white"/>
-              </clipPath>
-            </defs>
-          </svg>
-        </div>
-        
-        <div className="relative z-10 flex items-center justify-center gap-[6px]">
+      {/* Left Curve */}
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="shrink-0 relative z-20 overflow-visible">
+        <path d="M25 0H0L0.533106 0.0283589C13.3936 0.712479 23.5897 11.1279 24 24H25V0Z" fill="#1E1E1E"/>
+      </svg>
+      {/* Center Rectangle */}
+      <div className="relative z-10 flex h-[32px] items-center justify-center rounded-b-[12px] bg-[#1E1E1E] px-[12px] pointer-events-auto">
+        <div className="flex items-center justify-center gap-[6px]">
           <div className="h-[9px] w-[14px] shrink-0 overflow-hidden rounded-[2px] bg-[#161616]">
-             {form.country && sampleFlags[form.country] ? (
-               <span className={`fi fi-${sampleFlags[form.country].toLowerCase()} !block !h-full !w-full !bg-cover !bg-center !text-[0px]`} title={form.country} />
-             ) : (
-               <div className="h-full w-full rounded-[2px] bg-[#2a2a2a]" />
-             )}
+            {form.country && sampleFlags[form.country] ? (
+              <span className={`fi fi-${sampleFlags[form.country].toLowerCase()} !block !h-full !w-full !bg-cover !bg-center !text-[0px]`} title={form.country} />
+            ) : (
+              <div className="h-full w-full rounded-[2px] bg-[#2a2a2a]" />
+            )}
           </div>
-          <p className="whitespace-nowrap text-[14px] font-[family-name:var(--font-inter)] font-normal leading-[14px] tracking-[-0.084px] text-white">
+          <p className="whitespace-nowrap text-[14px] font-[family-name:var(--font-inter)] font-normal leading-[20px] tracking-[-0.084px] text-white">
             {form.country || <span className="text-[#656565]">Your country</span>}
           </p>
         </div>
       </div>
+      {/* Right Curve */}
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="shrink-0 relative z-20 overflow-visible">
+        <path d="M-1 0H24L23.4669 0.0283589C10.6064 0.712479 0.4103 11.1279 0 24H-1V0Z" fill="#1E1E1E"/>
+      </svg>
     </div>
   );
 }
 
 export function ClassicCard({ form, sampleFlags, visitedArray, isPreview }: CardProps) {
   return (
-    <div className="flex h-[600px] w-[360px] flex-col items-center gap-[20px] rounded-[24px] border border-[#252525] bg-black px-[8px] pb-[24px] pt-[8px]">
+    <div className="flex w-[360px] shrink-0 flex-col items-center gap-[20px] rounded-[24px] border border-[#252525] bg-black px-[8px] pb-[24px] pt-[8px]">
       {/* Profile section */}
       <div className="flex w-full shrink-0 flex-col items-center">
         {/* Background image: 344x226, negative margin to allow avatar overlap */}
@@ -114,8 +108,8 @@ export function ClassicCard({ form, sampleFlags, visitedArray, isPreview }: Card
           ) : (
             <ImagePlaceholderIcon />
           )}
-          {isPreview && <PreviewWatermark />}
-          {!isPreview && <LogoWatermark />}
+          {isPreview && form.coverImage && <PreviewWatermark />}
+          {!isPreview && form.coverImage && <LogoWatermark />}
         </div>
 
         {/* Photo Avatar */}
@@ -124,14 +118,7 @@ export function ClassicCard({ form, sampleFlags, visitedArray, isPreview }: Card
             <LoadedImage priority src={toLandingAssetUrl(form.profileImage)} alt="profile" containerClassName="h-full w-full" className="h-full w-full object-cover" />
           ) : (
             <div className="flex h-full w-full items-center justify-center text-white-600">
-              <div className="relative w-[60px] h-[60px]">
-                <AvatarPlaceholderIcon className="w-full h-full object-cover" />
-                <div className="absolute left-[39px] w-[16px] h-[16px] top-[41px] pointer-events-none z-0">
-                  <div className="absolute inset-[0_-16.67%_-33.33%_-16.67%]">
-                    <img alt="" className="block max-w-none w-full h-full" src="/icons/Add user button.png" />
-                  </div>
-                </div>
-              </div>
+              <AvatarPlaceholderIcon />
             </div>
           )}
         </div>
@@ -151,7 +138,10 @@ export function ClassicCard({ form, sampleFlags, visitedArray, isPreview }: Card
                 <span className="text-[14px] font-[family-name:var(--font-inter)] font-normal leading-[20px] tracking-[-0.084px] text-[#656565]">{form.country}</span>
               </>
             ) : (
-              <span className="text-[14px] font-[family-name:var(--font-inter)] font-normal leading-[20px] tracking-[-0.084px] text-[#656565]">Your country</span>
+              <>
+                <div className="h-[13.333px] w-[20px] shrink-0 overflow-hidden rounded-[2px] bg-[#2a2a2a]" />
+                <span className="text-[14px] font-[family-name:var(--font-inter)] font-normal leading-[20px] tracking-[-0.084px] text-[#656565]">Your country</span>
+              </>
             )}
           </div>
           <h3 className="w-full text-center text-[20px] font-[family-name:var(--font-inter-display)] font-semibold leading-[28px] tracking-[-0.1px] text-white">
@@ -160,7 +150,7 @@ export function ClassicCard({ form, sampleFlags, visitedArray, isPreview }: Card
         </div>
 
         {/* FLAGS */}
-        <div className="flex w-full shrink-0 flex-wrap items-start justify-center gap-[4px] px-[6px]">
+        <div className="flex w-full shrink-0 flex-wrap items-start justify-center gap-[4px]">
           {visitedArray.length > 0 ? (
             <>
               {visitedArray.slice(0, 35).map((c) => (
@@ -173,7 +163,7 @@ export function ClassicCard({ form, sampleFlags, visitedArray, isPreview }: Card
                 </div>
               ))}
               {visitedArray.length > 35 && (
-                <div className="flex h-[13.333px] min-w-[20px] shrink-0 items-center justify-center rounded-[2px] bg-[#533df6] px-1 text-[9px] font-semibold text-white">
+                <div className="flex h-[13.333px] w-[20px] shrink-0 items-center justify-center bg-[#533df6] text-[8px] font-bold text-white tracking-[-0.408px] leading-none">
                   +{visitedArray.length - 35}
                 </div>
               )}
@@ -191,8 +181,8 @@ export function ClassicCard({ form, sampleFlags, visitedArray, isPreview }: Card
           <p className="text-[32px] font-[family-name:var(--font-inter-display)] font-normal leading-[40px] tracking-[-0.5px] text-white">
             {visitedArray.length} Countries
           </p>
-          <p className="pl-[24px] bg-linear-to-l from-[#3c3c3c] to-[#242424] bg-clip-text text-[32px] font-[family-name:var(--font-antonio)] font-bold leading-[40px] tracking-[24px] text-transparent uppercase">
-            Explored
+          <p className="bg-gradient-to-l from-[#3c3c3c] to-[#242424] bg-clip-text font-[family-name:var(--font-antonio)] text-[32px] font-bold leading-[40px] tracking-[24px] text-transparent pl-[24px]">
+            EXPLORED
           </p>
         </div>
 
@@ -211,7 +201,7 @@ export function MinimalCard({ form, sampleFlags, visitedArray, isPreview }: Card
   return (
     <div
       id="minimal-card"
-      className="flex h-[600px] w-[360px] shrink-0 flex-col items-center gap-[20px] rounded-[24px] border border-[#252525] bg-black px-[8px] pb-[24px] pt-0"
+      className="flex w-[360px] shrink-0 flex-col items-center gap-[20px] rounded-[24px] border border-[#252525] bg-black px-[8px] pb-[24px] pt-0"
     >
       {/* Country badge at top */}
       <MinimalCountryNotch form={form} sampleFlags={sampleFlags} wrapperClassName="w-full shrink-0 relative -mt-[1px] z-30" />
@@ -227,8 +217,8 @@ export function MinimalCard({ form, sampleFlags, visitedArray, isPreview }: Card
             ) : (
               <ImagePlaceholderIcon />
             )}
-            {isPreview && <PreviewWatermark />}
-            {!isPreview && <LogoWatermark />}
+            {isPreview && form.coverImage && <PreviewWatermark />}
+            {!isPreview && form.coverImage && <LogoWatermark />}
           </div>
           
           {/* Profile info */}
@@ -237,14 +227,7 @@ export function MinimalCard({ form, sampleFlags, visitedArray, isPreview }: Card
               {form.profileImage ? (
                 <LoadedImage priority src={toLandingAssetUrl(form.profileImage)} alt="profile" containerClassName="h-full w-full" className="h-full w-full object-cover" />
               ) : (
-                <div className="relative h-[36px] w-[36px]">
-                  <AvatarPlaceholderIcon className="h-full w-full object-cover" />
-                  <div className="absolute left-[22.5px] top-[23.7px] z-0 h-[8.25px] w-[8.25px] pointer-events-none">
-                    <div className="absolute inset-[0_-16.67%_-33.33%_-16.67%]">
-                      <img alt="" className="block h-full w-full max-w-none" src="/icons/Add user button.png" />
-                    </div>
-                  </div>
-                </div>
+                <AvatarPlaceholderIcon className="h-full w-full object-cover" />
               )}
             </div>
             <div className="flex flex-col text-[24px] font-[family-name:var(--font-inter-display)] font-semibold leading-[32px] tracking-[-0.5px] text-white">
@@ -302,7 +285,7 @@ export function AdventureCard({ form, sampleFlags, visitedArray, isPreview }: Ca
   return (
     <div
       id="adventure-card"
-      className="flex h-[600px] w-[360px] shrink-0 flex-col items-center gap-[20px] rounded-[24px] border border-[#252525] bg-black px-[8px] pb-[24px] pt-[8px]"
+      className="flex w-[360px] shrink-0 flex-col items-center gap-[20px] rounded-[24px] border border-[#252525] bg-black px-[8px] pb-[24px] pt-[8px]"
     >
       {/* Main Image Container */}
       <div 
@@ -322,33 +305,40 @@ export function AdventureCard({ form, sampleFlags, visitedArray, isPreview }: Ca
             </div>
           )}
         </div>
-        {isPreview && <PreviewWatermark />}
-        {!isPreview && <LogoWatermark />}
+        {/* Blurred Layer (Guarantees perfect html-to-image support via duplicated image) */}
+        {form.coverImage && (
+          <div 
+            className="absolute inset-0 z-10 pointer-events-none"
+            style={{ 
+              WebkitMaskImage: 'linear-gradient(to bottom, transparent 45%, black 60%, black 100%)',
+              maskImage: 'linear-gradient(to bottom, transparent 45%, black 60%, black 100%)'
+            }}
+          >
+            <LoadedImage 
+              priority 
+              src={toLandingAssetUrl(form.coverImage)} 
+              alt="cover blur" 
+              containerClassName="h-full w-full" 
+              className="h-full w-full object-cover blur-[16px] scale-[1.05]" 
+            />
+            {/* Dark overlay to make text highly readable over the blur */}
+            <div className="absolute inset-0 bg-black/40" />
+          </div>
+        )}
+        
+        {isPreview && form.coverImage && <PreviewWatermark />}
+        {!isPreview && form.coverImage && <LogoWatermark />}
 
         {/* Content at Bottom with Gradient & Blur */}
         <div className="relative z-20 mt-auto flex w-full flex-col items-center gap-[16px] pb-[32px] px-[8px]">
-          
-          {/* Blurred Background Layer with Progressive Gradient Mask */}
-          <div 
-            className="absolute -inset-x-4 -bottom-4 -top-[48px] z-0 backdrop-blur-[16px] pointer-events-none" 
-            style={{ 
-              WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 48px, black 100%)',
-              maskImage: 'linear-gradient(to bottom, transparent 0%, black 48px, black 100%)'
-            }}
-          />
 
           {/* Profile Picture */}
           <div className="relative z-10 flex h-[48px] w-[48px] shrink-0 items-center justify-center overflow-hidden rounded-[12px] border-[3px] border-white bg-[#2a2a2a] shadow-[0_4px_16px_rgba(0,0,0,0.35)]">
             {form.profileImage ? (
               <LoadedImage priority src={toLandingAssetUrl(form.profileImage)} alt="profile" containerClassName="h-full w-full" className="h-full w-full object-cover" />
             ) : (
-              <div className="relative flex h-[32px] w-[32px] shrink-0 items-center justify-center">
+              <div className="flex h-[32px] w-[32px] shrink-0 items-center justify-center">
                 <AvatarPlaceholderIcon className="h-full w-full object-cover" />
-                <div className="absolute left-[20.7px] top-[21.8px] z-0 h-[8.7px] w-[8.7px] pointer-events-none">
-                  <div className="absolute inset-[0_-16.67%_-33.33%_-16.67%]">
-                    <img alt="" className="block h-full w-full max-w-none" src="/icons/Add user button.png" />
-                  </div>
-                </div>
               </div>
             )}
           </div>
@@ -408,7 +398,7 @@ export function ImagePlaceholderIcon() {
 
 export function AvatarPlaceholderIcon({ className }: { className?: string }) {
   return (
-    <img src="/icons/placeholder.png" alt="Placeholder avatar" className={className || "w-[60px] h-[60px] shrink-0 aspect-square object-cover"} />
+    <img src="/icons/Add%20user.png" alt="Placeholder avatar" className={className || "w-[60px] h-[60px] shrink-0 aspect-square object-cover"} />
   );
 }
 

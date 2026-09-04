@@ -156,7 +156,13 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
         quality: 0.9,
         width: node.offsetWidth,
         height: node.offsetHeight,
-        fetch: { bypassingCache: false }
+        fetch: { bypassingCache: false },
+        filter: (n) => {
+          if (n instanceof HTMLElement && n.classList?.contains('hide-on-download')) {
+            return false;
+          }
+          return true;
+        }
       });
     } catch (err) {
       console.error("Oops, something went wrong!", err);
@@ -488,8 +494,8 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
                   <button onClick={() => setIsDownloadModalOpen(!isDownloadModalOpen)} className="text-[14px] font-medium text-white hover:text-white/80">Download</button>
                   
                   {isDownloadModalOpen && (
-                    <div className="absolute right-0 top-[100%] mt-2 w-[240px] bg-[#161616] border border-[#1e1e1e] rounded-[16px] p-[20px] pr-[32px] shadow-[20px_20px_10px_rgba(0,0,0,0.25)] flex flex-col gap-[20px] z-50">
-                      <p className="text-[20px] font-medium text-center text-white tracking-[-0.5px]">Download</p>
+                    <div className="absolute right-0 top-[100%] mt-2 w-[271px] bg-[#161616] border border-[#1e1e1e] rounded-[16px] p-[20px] pr-[32px] shadow-[20px_20px_10px_rgba(0,0,0,0.25)] flex flex-col gap-[20px] z-50">
+                      <p className="text-[20px] leading-[28px] font-medium text-left text-white tracking-[-0.5px]">Download</p>
                       
                       {isDownloading ? (
                         <div className="flex flex-col items-center justify-center py-8 gap-3">
@@ -503,8 +509,8 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
                               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" /></svg>
                             </div>
                             <div className="flex flex-col">
-                              <span className="text-[14px] text-white">Classic</span>
-                              <span className="text-[12px] text-[#656565]">PNG</span>
+                              <span className="text-[14px] leading-[20px] text-white">Classic</span>
+                              <span className="text-[12px] leading-[16px] text-[#656565]">PNG</span>
                             </div>
                           </button>
                           
@@ -513,8 +519,8 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
                               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" /></svg>
                             </div>
                             <div className="flex flex-col">
-                              <span className="text-[14px] text-white">Minimal</span>
-                              <span className="text-[12px] text-[#656565]">PNG</span>
+                              <span className="text-[14px] leading-[20px] text-white">Minimal</span>
+                              <span className="text-[12px] leading-[16px] text-[#656565]">PNG</span>
                             </div>
                           </button>
                           
@@ -523,8 +529,8 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
                               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" /></svg>
                             </div>
                             <div className="flex flex-col">
-                              <span className="text-[14px] text-white">Adventure</span>
-                              <span className="text-[12px] text-[#656565]">PNG</span>
+                              <span className="text-[14px] leading-[20px] text-white">Adventure</span>
+                              <span className="text-[12px] leading-[16px] text-[#656565]">PNG</span>
                             </div>
                           </button>
                           
@@ -532,11 +538,11 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
                           
                           <button onClick={() => { downloadAllStyles(); }} className="flex items-center gap-[12px] w-full text-left group">
                             <div className="w-[40px] h-[40px] rounded-[8px] bg-[#1e1e1e] flex items-center justify-center shrink-0">
-                              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" /></svg>
+                              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white"><path d="m6 14 1.45-2.9A2 2 0 0 1 9.24 10H20a2 2 0 0 1 1.94 2.5l-1.55 6a2 2 0 0 1-1.94 1.5H4a2 2 0 0 1-2-2V5c0-1.1.9-2 2-2h3.93a2 2 0 0 1 1.66.9l.82 1.2a2 2 0 0 0 1.66.9H18a2 2 0 0 1 2 2v2"/></svg>
                             </div>
                             <div className="flex flex-col">
-                              <span className="text-[14px] text-white">Download All</span>
-                              <span className="text-[12px] text-[#656565]">ZIP Archive</span>
+                              <span className="text-[14px] leading-[20px] text-white">All 3 styles</span>
+                              <span className="text-[12px] leading-[16px] text-[#656565]">Classic, Minimal, & Adventure</span>
                             </div>
                           </button>
                         </>
@@ -556,10 +562,10 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
                 </button>
 
                 {isShareModalOpen && (
-                  <div className="absolute right-0 top-[100%] mt-2 w-[320px] bg-[#161616] border border-[#1e1e1e] rounded-[24px] p-[32px] shadow-[20px_20px_10px_rgba(0,0,0,0.25)] flex flex-col items-center gap-[32px] z-50">
+                  <div className="absolute right-0 top-[100%] mt-2 w-[374px] bg-[#161616] border border-[#1e1e1e] rounded-[24px] p-[32px] shadow-[20px_20px_10px_rgba(0,0,0,0.25)] flex flex-col items-center gap-[32px] z-50">
                     <div className="flex flex-col items-center text-center gap-[7px]">
-                      <h4 className="text-[24px] font-medium text-white tracking-[-0.5px]">Share your card</h4>
-                      <p className="text-[14px] text-white font-normal">Choose the style on your public link.</p>
+                      <h4 className="text-[24px] leading-[32px] font-medium text-white tracking-[-0.5px]">Share your card</h4>
+                      <p className="text-[14px] leading-[20px] text-white font-normal">Choose the style on your public link.</p>
                     </div>
 
                     <div className="flex flex-col gap-[16px] w-full">
@@ -578,20 +584,17 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
                     </div>
 
                     {shareStyle && (
-                      <p className="text-[16px] font-medium text-[#ecf0ff] underline decoration-wavy underline-offset-4 decoration-white/50 text-center break-all">
+                      <p className="text-[16px] leading-[24px] font-medium text-[#ecf0ff] underline decoration-wavy underline-offset-4 decoration-white/50 text-center break-all">
                         travingat.com/ec/{createdUserId?.split("-")[0]}-{shareStyle === "Classic" ? "a" : shareStyle === "Minimal" ? "b" : "c"}
                       </p>
                     )}
 
                     <div className="w-full flex flex-col gap-[16px]">
                       <button
-                        onClick={() => {
-                          if (createdUserId && shareStyle) {
-                            const shortId = createdUserId.split("-")[0];
-                            const styleSuffix = shareStyle === "Classic" ? "a" : shareStyle === "Minimal" ? "b" : "c";
-                            navigator.clipboard.writeText(`https://travingat.com/ec/${shortId}-${styleSuffix}`);
-                            alert(`Link to your ${shareStyle} card copied to clipboard!`);
-                          }
+                        onClick={async () => {
+                          const url = `travingat.com/ec/${createdUserId?.split("-")[0]}-${shareStyle === "Classic" ? "a" : shareStyle === "Minimal" ? "b" : "c"}`;
+                          await navigator.clipboard.writeText(url);
+                          alert("Link copied to clipboard!");
                           setIsShareModalOpen(false);
                         }}
                         disabled={!shareStyle}
@@ -599,7 +602,7 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
                       >
                         Copy link
                       </button>
-                      <p className="text-[14px] text-[#989898] text-center w-full">You can change this anytime.</p>
+                      <p className="text-[14px] leading-[20px] text-[#989898] text-center w-full">You can change this anytime.</p>
                     </div>
                   </div>
                 )}
@@ -657,8 +660,8 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
               </button>
               {/* Download Modal */}
               {isDownloadModalOpen && (
-                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-4 w-[240px] bg-[#161616] border border-[#1e1e1e] rounded-[16px] p-[20px] shadow-lg flex flex-col gap-[20px] z-50">
-                  <p className="text-[20px] font-medium text-center text-white">Download</p>
+                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-4 w-[271px] bg-[#161616] border border-[#1e1e1e] rounded-[16px] p-[20px] pr-[32px] shadow-lg flex flex-col gap-[20px] z-50">
+                  <p className="text-[20px] leading-[28px] font-medium text-left text-white tracking-[-0.5px]">Download</p>
                   
                   {isDownloading ? (
                     <div className="flex flex-col items-center justify-center py-8 gap-3">
@@ -672,8 +675,8 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
                           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" /></svg>
                         </div>
                         <div className="flex flex-col">
-                          <span className="text-[14px] text-white">Classic</span>
-                          <span className="text-[12px] text-[#656565]">PNG</span>
+                          <span className="text-[14px] leading-[20px] text-white">Classic</span>
+                          <span className="text-[12px] leading-[16px] text-[#656565]">PNG</span>
                         </div>
                       </button>
                       <button onClick={() => { handleDownloadStyle("Minimal"); }} className="flex items-center gap-[12px] w-full text-left">
@@ -681,8 +684,8 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
                           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" /></svg>
                         </div>
                         <div className="flex flex-col">
-                          <span className="text-[14px] text-white">Minimal</span>
-                          <span className="text-[12px] text-[#656565]">PNG</span>
+                          <span className="text-[14px] leading-[20px] text-white">Minimal</span>
+                          <span className="text-[12px] leading-[16px] text-[#656565]">PNG</span>
                         </div>
                       </button>
                       <button onClick={() => { handleDownloadStyle("Adventure"); }} className="flex items-center gap-[12px] w-full text-left">
@@ -690,18 +693,18 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
                           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" /></svg>
                         </div>
                         <div className="flex flex-col">
-                          <span className="text-[14px] text-white">Adventure</span>
-                          <span className="text-[12px] text-[#656565]">PNG</span>
+                          <span className="text-[14px] leading-[20px] text-white">Adventure</span>
+                          <span className="text-[12px] leading-[16px] text-[#656565]">PNG</span>
                         </div>
                       </button>
                       <div className="w-full h-[1px] bg-[#1e1e1e]"/>
                       <button onClick={() => { downloadAllStyles(); }} className="flex items-center gap-[12px] w-full text-left">
                         <div className="w-[40px] h-[40px] rounded-[8px] bg-[#1e1e1e] flex items-center justify-center shrink-0">
-                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" /></svg>
+                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white"><path d="m6 14 1.45-2.9A2 2 0 0 1 9.24 10H20a2 2 0 0 1 1.94 2.5l-1.55 6a2 2 0 0 1-1.94 1.5H4a2 2 0 0 1-2-2V5c0-1.1.9-2 2-2h3.93a2 2 0 0 1 1.66.9l.82 1.2a2 2 0 0 0 1.66.9H18a2 2 0 0 1 2 2v2"/></svg>
                         </div>
                         <div className="flex flex-col">
-                          <span className="text-[14px] text-white">Download All</span>
-                          <span className="text-[12px] text-[#656565]">ZIP Archive</span>
+                          <span className="text-[14px] leading-[20px] text-white">All 3 styles</span>
+                          <span className="text-[12px] leading-[16px] text-[#656565]">Classic, Minimal, & Adventure</span>
                         </div>
                       </button>
                     </>
@@ -720,10 +723,10 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
               </button>
               {/* Share Modal */}
               {isShareModalOpen && (
-                <div className="absolute bottom-full right-0 mb-4 w-[280px] sm:w-[320px] bg-[#161616] border border-[#1e1e1e] rounded-[24px] p-[24px] sm:p-[32px] shadow-lg flex flex-col items-center gap-[24px] sm:gap-[32px] z-50">
+                <div className="absolute bottom-full right-0 mb-4 w-[280px] sm:w-[374px] bg-[#161616] border border-[#1e1e1e] rounded-[24px] p-[24px] sm:p-[32px] shadow-lg flex flex-col items-center gap-[24px] sm:gap-[32px] z-50">
                   <div className="flex flex-col items-center text-center gap-[7px]">
-                    <h4 className="text-[20px] sm:text-[24px] font-medium text-white">Share your card</h4>
-                    <p className="text-[14px] text-white">Choose the style on your public link.</p>
+                    <h4 className="text-[20px] sm:text-[24px] leading-[28px] sm:leading-[32px] font-medium text-white">Share your card</h4>
+                    <p className="text-[14px] leading-[20px] text-white">Choose the style on your public link.</p>
                   </div>
                   <div className="flex flex-col gap-[16px] w-full">
                     {(["Classic", "Minimal", "Adventure"] as Tab[]).map((styleOption) => (
@@ -740,19 +743,16 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
                     ))}
                   </div>
                   {shareStyle && (
-                    <p className="text-[14px] sm:text-[16px] font-medium text-[#ecf0ff] underline decoration-wavy underline-offset-4 decoration-white/50 text-center break-all w-full">
+                    <p className="text-[14px] sm:text-[16px] leading-[20px] sm:leading-[24px] font-medium text-[#ecf0ff] underline decoration-wavy underline-offset-4 decoration-white/50 text-center break-all w-full">
                       travingat.com/ec/{createdUserId?.split("-")[0]}-{shareStyle === "Classic" ? "a" : shareStyle === "Minimal" ? "b" : "c"}
                     </p>
                   )}
                   <div className="w-full flex flex-col gap-[16px]">
                     <button
-                      onClick={() => {
-                        if (createdUserId && shareStyle) {
-                          const shortId = createdUserId.split("-")[0];
-                          const styleSuffix = shareStyle === "Classic" ? "a" : shareStyle === "Minimal" ? "b" : "c";
-                          navigator.clipboard.writeText(`https://travingat.com/ec/${shortId}-${styleSuffix}`);
-                          alert(`Link to your ${shareStyle} card copied to clipboard!`);
-                        }
+                      onClick={async () => {
+                        const url = `travingat.com/ec/${createdUserId?.split("-")[0]}-${shareStyle === "Classic" ? "a" : shareStyle === "Minimal" ? "b" : "c"}`;
+                        await navigator.clipboard.writeText(url);
+                        alert("Link copied to clipboard!");
                         setIsShareModalOpen(false);
                       }}
                       disabled={!shareStyle}
@@ -760,7 +760,7 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
                     >
                       Copy link
                     </button>
-                    <p className="text-[14px] text-[#989898] text-center w-full">You can change this anytime.</p>
+                    <p className="text-[14px] leading-[20px] text-[#989898] text-center w-full">You can change this anytime.</p>
                   </div>
                 </div>
               )}
