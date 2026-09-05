@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import { generatePresignedUrl, uploadLandingAsset } from "@/lib/r2-upload";
-import { compressImage } from "@/lib/image-compress";
 import path from "path";
 
 export const dynamic = "force-dynamic";
@@ -45,18 +44,9 @@ export async function POST(request: Request) {
         return NextResponse.json({ error: "Uploaded file is empty" }, { status: 400 });
       }
 
-      let uploadBuffer: Buffer = buffer;
-      let uploadContentType = file.type;
-      let uploadExt = extensionFromMimeType(file.type);
-
-      try {
-        const compressed = await compressImage(buffer, file.type, { maxDimension: 3200 });
-        uploadBuffer = compressed.buffer;
-        uploadContentType = compressed.contentType;
-        uploadExt = compressed.ext;
-      } catch (compressionErr) {
-        console.warn("Upload AVIF/WebP conversion failed; uploading original image:", compressionErr);
-      }
+      const uploadBuffer: Buffer = buffer;
+      const uploadContentType = file.type;
+      const uploadExt = extensionFromMimeType(file.type);
 
       const cleanPrefix = prefix.replace(/^\/+|\/+$/g, "");
       const fileName = `${cleanPrefix}-${Date.now()}${uploadExt}`;
@@ -67,6 +57,19 @@ export async function POST(request: Request) {
         keySuffix,
         contentType: uploadContentType,
       });
+
+      // Trigger Media Engine async optimization
+      try {
+        const urlObj = new URL(uploaded.url);
+        const optimizeKey = urlObj.pathname.substring(1);
+        await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/media-engine/optimize`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ key: optimizeKey, mediaType: "IMAGE" }),
+        });
+      } catch (err) {
+        console.warn("Media engine optimization trigger failed", err);
+      }
 
       return NextResponse.json(
         { publicUrl: uploaded.url, uploadUrl: uploaded.url }, // Backwards compatibility for callers expecting publicUrl

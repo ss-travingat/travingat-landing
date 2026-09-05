@@ -6,7 +6,7 @@ import { toLandingAssetUrl } from "@/lib/landing-assets";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
-import { compressImageClient } from "@/lib/client-image-compress";
+
 
 interface Testimonial {
   id: string;
@@ -78,12 +78,10 @@ export default function AdminTestimonialsPage() {
     }
 
     try {
-      showToast("Compressing image...");
-      const { blob: finalBlob } = await compressImageClient(file, 2048, 0.82);
-      const compressedFile = new File([finalBlob], `testimonial-${Date.now()}.webp`, { type: "image/webp" });
+      showToast("Uploading image...");
 
       const formData = new FormData();
-      formData.append("file", compressedFile, file.name);
+      formData.append("file", file, file.name);
       formData.append("prefix", "testimonials");
 
       const uploadRes = await fetch("/api/upload/presign", {

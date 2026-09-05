@@ -8,7 +8,7 @@ import { COUNTRY_LIST } from "@/lib/countries";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
-import { compressImageClient } from "@/lib/client-image-compress";
+
 
 interface CountryImage {
   countryCode: string;
@@ -585,15 +585,26 @@ export default function AdminProfilesPage() {
       
       const { uploadUrl, publicUrl } = presignData;
 
-      // 2. Upload file directly to R2
-      const uploadRes = await fetch(uploadUrl, {
+      const putRes = await fetch(uploadUrl, {
         method: "PUT",
         headers: { "Content-Type": file.type },
         body: file,
       });
-      if (!uploadRes.ok) {
+      if (!putRes.ok) {
         showToast("Direct upload to R2 failed", true);
         return null;
+      }
+
+      try {
+        const urlObj = new URL(publicUrl);
+        const key = urlObj.pathname.substring(1);
+        await fetch("/api/media-engine/optimize", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ key, mediaType: "VIDEO" }),
+        });
+      } catch (err) {
+        console.warn("Media engine optimization trigger failed", err);
       }
 
       const isLastInBatch = !batch || batch.current === batch.total;
@@ -635,23 +646,13 @@ export default function AdminProfilesPage() {
       return null;
     }
 
-    setUploading({ field: type, stage: "processing", idx, current: batch?.current, total: batch?.total });
+    setUploading({ field: type, stage: "uploading", idx, current: batch?.current, total: batch?.total });
     try {
-      const { blob: finalBlob, contentType: finalContentType } = await compressImageClient(file, 2560, 0.82);
-
-      // ── Step 3: Upload directly to R2 via presigned URL ──
-      // No server-side processing needed. The file is already compressed + WebP.
-      setUploading((prev) => prev ? { ...prev, stage: "uploading" } : null);
-
-      const ext = finalContentType === "image/webp" ? ".webp"
-        : finalContentType === "image/png" ? ".png"
-        : ".jpeg";
-
       const presignRes = await fetch("/api/profiles/upload", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          fileType: finalContentType,
+          fileType: file.type,
           prefix: type,
         }),
       });
@@ -666,13 +667,25 @@ export default function AdminProfilesPage() {
 
       const putRes = await fetch(uploadUrl, {
         method: "PUT",
-        headers: { "Content-Type": finalContentType },
-        body: finalBlob,
+        headers: { "Content-Type": file.type },
+        body: file,
       });
 
       if (!putRes.ok) throw new Error("Upload to storage failed");
 
-      console.info(`[profiles-upload] ✅ Done: ${file.name} → ${publicUrl} (${finalContentType}, ${Math.round(finalBlob.size / 1024)}KB)`);
+      console.info(`[profiles-upload] ✅ Done: ${file.name} → ${publicUrl}`);
+
+      try {
+        const urlObj = new URL(publicUrl);
+        const key = urlObj.pathname.substring(1);
+        await fetch("/api/media-engine/optimize", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ key, mediaType: "IMAGE" }),
+        });
+      } catch (err) {
+        console.warn("Media engine optimization trigger failed", err);
+      }
 
       const isLastInBatch = !batch || batch.current === batch.total;
       if (isLastInBatch) {

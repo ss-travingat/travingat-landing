@@ -3,7 +3,6 @@
 import React, { useState, useEffect, useRef, useCallback, Suspense } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { domToPng } from "modern-screenshot";
-import { compressImageClient } from "@/lib/client-image-compress";
 import { ClassicCard, MinimalCard, AdventureCard, ImagePlaceholderIcon, AvatarPlaceholderIcon } from "./cards";
 import EmailVerificationForm from "@/components/getfeatured/EmailVerificationForm";
 
@@ -242,12 +241,9 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
     }
 
     try {
-      const { blob, contentType } = await compressImageClient(originalFile, 2560, 0.80);
-      
-      // Ensure unique filenames to prevent S3 overwrites if the user uploads files with the same name
-      const ext = contentType === "image/webp" ? "webp" : "jpg";
+      const ext = originalFile.name.split('.').pop() || "jpg";
       const baseName = originalFile.name.replace(/\.[^/.]+$/, "");
-      const file = new File([blob], `${key}-${Date.now()}-${baseName}.${ext}`, { type: contentType });
+      const file = new File([originalFile], `${key}-${Date.now()}-${baseName}.${ext}`, { type: originalFile.type });
 
       if (key === "profileImage") setProfileFile(file);
       if (key === "coverImage") setCoverFile(file);
@@ -256,8 +252,8 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
       reader.onload = () => setForm((s) => ({ ...s, [key]: String(reader.result) }));
       reader.readAsDataURL(file);
     } catch (err) {
-      console.error("Image compression failed", err);
-      alert("Failed to compress image. Please try again.");
+      console.error("File processing failed", err);
+      alert("Failed to process image. Please try again.");
       e.target.value = "";
     }
   }
@@ -294,6 +290,10 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
         if (presignData.error) throw new Error(presignData.error);
         await fetch(presignData.uploadUrl, { method: "PUT", headers: { "Content-Type": profileFile.type }, body: profileFile });
         finalProfileUrl = presignData.publicUrl;
+        try {
+          const key = new URL(finalProfileUrl).pathname.substring(1);
+          await fetch("/api/media-engine/optimize", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ key, mediaType: "IMAGE" }) });
+        } catch (e) {}
       }
       
       let finalCoverUrl = form.coverImage;
@@ -307,6 +307,10 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
         if (presignData.error) throw new Error(presignData.error);
         await fetch(presignData.uploadUrl, { method: "PUT", headers: { "Content-Type": coverFile.type }, body: coverFile });
         finalCoverUrl = presignData.publicUrl;
+        try {
+          const key = new URL(finalCoverUrl).pathname.substring(1);
+          await fetch("/api/media-engine/optimize", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ key, mediaType: "IMAGE" }) });
+        } catch (e) {}
       }
 
       // 1. Hit API to create user
@@ -367,6 +371,10 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
         if (presignData.error) throw new Error(presignData.error);
         await fetch(presignData.uploadUrl, { method: "PUT", headers: { "Content-Type": profileFile.type }, body: profileFile });
         finalProfileUrl = presignData.publicUrl;
+        try {
+          const key = new URL(finalProfileUrl).pathname.substring(1);
+          await fetch("/api/media-engine/optimize", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ key, mediaType: "IMAGE" }) });
+        } catch (e) {}
       }
       
       let finalCoverUrl = form.coverImage;
@@ -380,6 +388,10 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
         if (presignData.error) throw new Error(presignData.error);
         await fetch(presignData.uploadUrl, { method: "PUT", headers: { "Content-Type": coverFile.type }, body: coverFile });
         finalCoverUrl = presignData.publicUrl;
+        try {
+          const key = new URL(finalCoverUrl).pathname.substring(1);
+          await fetch("/api/media-engine/optimize", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ key, mediaType: "IMAGE" }) });
+        } catch (e) {}
       }
 
       const formData = new FormData();

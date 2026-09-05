@@ -7,7 +7,7 @@ import ImageCropModal from "@/components/ImageCropModal";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
-import { compressImageClient } from "@/lib/client-image-compress";
+
 
 interface BlogPost {
   id: string;
@@ -99,13 +99,11 @@ export default function AdminBlogsPage() {
   // Upload a blob to the blog upload endpoint
   const uploadBlob = async (blob: Blob, prefix: string): Promise<string | null> => {
     try {
-      showToast("Compressing image...");
+      showToast("Uploading image...");
       const file = new File([blob], `${prefix}-${Date.now()}.jpg`, { type: "image/jpeg" });
-      const { blob: finalBlob } = await compressImageClient(file, 2048, 0.82);
-      const compressedFile = new File([finalBlob], `${prefix}-${Date.now()}.webp`, { type: "image/webp" });
 
       const formData = new FormData();
-      formData.append("file", compressedFile, file.name);
+      formData.append("file", file, file.name);
       formData.append("prefix", "blogs");
 
       const uploadRes = await fetch("/api/upload/presign", {
