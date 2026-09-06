@@ -169,7 +169,7 @@ export function MediaLightbox({
                       className="block h-full w-auto max-w-full object-contain carousel-image rounded-[12px] mx-auto"
                     />
                   ) : (
-                    <ThumbnailImage originalSrc={toLandingAssetUrl(item.url)} size={320}
+                    <img
                       key={`img-${activeIndex}`}
                       src={toLandingAssetUrl(activeItem?.url)}
                       alt="Carousel media"
