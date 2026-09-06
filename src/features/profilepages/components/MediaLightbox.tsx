@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { toLandingAssetUrl } from "@/lib/landing-assets";
 import { useMobileComingSoon } from "@/components/ui/MobileComingSoonToast";
+import { ThumbnailImage } from "@/components/ThumbnailImage";
 
 export type LightboxItem = {
   id?: string;
@@ -50,7 +51,7 @@ export function MediaLightbox({
         const paddingLeft = 40; // px-10
         const targetCenter = paddingLeft + (activeIndex * (itemWidth + gap)) + (itemWidth / 2);
         const targetScrollLeft = targetCenter - (containerWidth / 2);
-        
+
         container.scrollTo({
           left: targetScrollLeft,
           behavior: 'smooth'
@@ -108,8 +109,7 @@ export function MediaLightbox({
                         </div>
                       </>
                     ) : (
-                      <img
-                        src={toLandingAssetUrl(item.url)}
+                      <ThumbnailImage originalSrc={toLandingAssetUrl(item.url)} size={320}
                         alt={`Gallery thumbnail ${idx + 1}`}
                         className="h-auto w-full"
                       />
@@ -169,7 +169,7 @@ export function MediaLightbox({
                       className="block h-full w-auto max-w-full object-contain carousel-image rounded-[12px] mx-auto"
                     />
                   ) : (
-                    <img
+                    <ThumbnailImage originalSrc={toLandingAssetUrl(item.url)} size={320}
                       key={`img-${activeIndex}`}
                       src={toLandingAssetUrl(activeItem?.url)}
                       alt="Carousel media"
@@ -217,9 +217,8 @@ export function MediaLightbox({
                   <button
                     key={item.id || `thumb-${idx}`}
                     onClick={() => onSelectIndex(idx)}
-                    className={`relative h-[60px] w-[60px] shrink-0 rounded-[10px] overflow-hidden transition group ${
-                      idx === activeIndex ? "opacity-100" : "opacity-50 hover:opacity-100"
-                    }`}
+                    className={`relative h-[60px] w-[60px] shrink-0 rounded-[10px] overflow-hidden transition group ${idx === activeIndex ? "opacity-100" : "opacity-50 hover:opacity-100"
+                      }`}
                     aria-label={`View photo ${idx + 1}`}
                   >
                     {item.isVideo ? (
@@ -234,8 +233,7 @@ export function MediaLightbox({
                       </>
                     ) : (
                       <>
-                        <img
-                          src={toLandingAssetUrl(item.url)}
+                        <ThumbnailImage originalSrc={toLandingAssetUrl(item.url)} size={320}
                           alt={`Carousel thumbnail ${idx + 1}`}
                           className="h-full w-full object-cover"
                         />

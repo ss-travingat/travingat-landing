@@ -6,6 +6,7 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import type { MouseEvent as ReactMouseEvent } from "react";
 
 import { toLandingAssetUrl } from "@/lib/landing-assets";
+import { ThumbnailImage } from "@/components/ThumbnailImage";
 import { sampleProfiles, type SampleProfile } from "../data/profile-data";
 import { MediaLightbox, type LightboxItem } from "./MediaLightbox";
 import { MoreOptionsButton } from "@/components/ui/MoreOptionsButton";
@@ -1736,7 +1737,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                           <div className="flex items-center gap-3">
                             {COUNTRIES_EMPTY_PREVIEW_IMAGES.map((src, idx) => (
                               <div key={src} className="w-19 h-19 md:w-25 md:h-25 rounded-[10px] overflow-hidden">
-                                <img src={toLandingAssetUrl(src)} alt={`Country preview ${idx + 1}`} loading="eager" decoding="async" className="w-full h-full object-cover" />
+                                <ThumbnailImage originalSrc={toLandingAssetUrl(src)} size={320} alt={`Country preview ${idx + 1}`} loading="eager" decoding="async" className="w-full h-full object-cover" />
                               </div>
                             ))}
                           </div>
@@ -1847,7 +1848,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                           <div className="flex items-center gap-3">
                             {COLLECTIONS_EMPTY_PREVIEW_IMAGES.map((src, idx) => (
                               <div key={src} className="w-19 h-19 md:w-25 md:h-25 rounded-[10px] overflow-hidden">
-                                <img src={toLandingAssetUrl(src)} alt={`Collection preview ${idx + 1}`} loading="eager" decoding="async" className="w-full h-full object-cover" />
+                                <ThumbnailImage originalSrc={toLandingAssetUrl(src)} size={320} alt={`Collection preview ${idx + 1}`} loading="eager" decoding="async" className="w-full h-full object-cover" />
                               </div>
                             ))}
                           </div>
@@ -1970,7 +1971,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                             {aboutPhotos.length > 0 ? (
                               aboutPhotos.map((src, idx) => (
                                 <div key={`${src}-${idx}`} className="w-[160px] md:w-auto md:flex-1 shrink-0 min-w-0 rounded-[8px] md:rounded-[12px] overflow-hidden bg-[#151515] aspect-square snap-start">
-                                  <img src={toLandingAssetUrl(src)} alt={`About photo ${idx + 1}`} loading="eager" decoding="async" draggable={false} className="w-full h-full object-cover pointer-events-none select-none" />
+                                  <ThumbnailImage originalSrc={toLandingAssetUrl(src)} size={320} alt={`About photo ${idx + 1}`} loading="eager" decoding="async" draggable={false} className="w-full h-full object-cover pointer-events-none select-none" />
                                 </div>
                               ))
                             ) : (
