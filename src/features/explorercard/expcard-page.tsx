@@ -775,7 +775,7 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
   if (!isVerified) {
     return (
       <div className="flex flex-col min-h-[100dvh] w-full bg-black relative">
-        <header className="flex w-full justify-center pt-[16px] lg:pt-[40px] pb-4 bg-black shrink-0 relative z-[100]">
+        <header className="flex w-full justify-center pt-[16px] lg:pt-[40px] pb-0 lg:pb-4 bg-black shrink-0 relative z-[100]">
           <div className="flex w-full px-4 lg:px-[64px] items-center justify-between">
             <div className="flex-1 flex items-center">
               <svg className="w-[28px] h-[28px] lg:w-[36px] lg:h-[36px]" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -821,7 +821,7 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
 return (
     <div className="flex flex-col min-h-[100dvh] lg:h-[100dvh] lg:overflow-hidden w-full bg-black relative">
       {pathname?.startsWith("/edit/explorercard") && (
-        <header className="flex w-full justify-center pt-[16px] lg:pt-[40px] pb-4 bg-black shrink-0 relative z-[100]">
+        <header className="flex w-full justify-center pt-[16px] lg:pt-[40px] pb-0 lg:pb-4 bg-black shrink-0 relative z-[100]">
           <div className="flex w-full px-4 lg:px-[64px] items-center justify-between">
             <div className="flex-1 flex items-center">
               <svg className="w-[28px] h-[28px] lg:w-[36px] lg:h-[36px]" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
