@@ -479,7 +479,7 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
           </div>
         </header>
 
-        <main className="flex-1 flex flex-col items-center px-0 lg:px-6 pb-[100px] lg:pb-12 w-full pt-[24px]">
+        <main className="flex-1 flex flex-col items-center px-0 lg:px-6 pb-[100px] lg:pb-12 w-full pt-0 lg:pt-[24px]">
 
         {/* Content Container */}
         <div className="w-full max-w-[1062px] lg:bg-[#111] bg-transparent lg:rounded-[20px] lg:p-[24px] lg:px-[32px] flex flex-col items-center gap-[17px] lg:gap-[20px]">
