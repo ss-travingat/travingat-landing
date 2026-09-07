@@ -452,26 +452,26 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
   if (isCreated) {
     return (
       <div className="flex flex-col min-h-[100dvh] w-full bg-black relative">
-        <header className="flex w-full justify-center pt-[40px] pb-4 bg-black shrink-0 relative z-[100]">
+        <header className="flex w-full justify-center pt-[16px] pb-[20px] lg:pt-[40px] lg:pb-4 bg-black shrink-0 relative z-[100]">
           <div className="flex w-full px-4 lg:px-[64px] items-center justify-between">
             <div className="flex-1 flex items-center">
-              <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <svg className="w-[28px] h-[28px] lg:w-[36px] lg:h-[36px]" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M16.9955 15.3319L17.1236 17.0972L15.3583 16.9692L15.2289 15.2026L16.9955 15.3319Z" fill="white"/>
                 <path d="M13.2539 15.7839C13.5075 15.5304 13.9212 15.5323 14.178 15.7889C14.4348 16.0458 14.4367 16.4606 14.183 16.7143C13.9293 16.9675 13.5156 16.9647 13.2589 16.708C13.0023 16.4512 13.0003 16.0375 13.2539 15.7839Z" fill="white"/>
                 <path d="M15.7801 13.2577C16.0338 13.004 16.4474 13.0061 16.7042 13.2627C16.9609 13.5193 16.9637 13.9331 16.7105 14.1868C16.4568 14.4405 16.042 14.4386 15.7852 14.1818C15.5286 13.925 15.5266 13.5113 15.7801 13.2577Z" fill="white"/>
                 <path fill-rule="evenodd" clip-rule="evenodd" d="M18 0C25.2229 0 28.8341 0.000501037 31.4284 1.73396C32.5515 2.48438 33.5156 3.44849 34.266 4.57157C35.9995 7.16587 36 10.7771 36 18C36 25.2229 35.9995 28.8341 34.266 31.4284C33.5156 32.5515 32.5515 33.5156 31.4284 34.266C28.8341 35.9995 25.2229 36 18 36C10.7771 36 7.16587 35.9995 4.57157 34.266C3.44849 33.5156 2.48438 32.5515 1.73396 31.4284C0.000501037 28.8341 0 25.2229 0 18C0 10.7771 0.000501037 7.16587 1.73396 4.57157C2.48438 3.44849 3.44849 2.48438 4.57157 1.73396C7.16587 0.000501037 10.7771 0 18 0ZM17.0445 12.2256C15.6962 10.8772 13.5236 10.8636 12.1917 12.1955C10.8598 13.5273 10.8735 15.6999 12.2218 17.0483L24.3118 29.1395C25.6602 30.4879 27.8327 30.5003 29.1646 29.1684C30.4965 27.8365 30.4841 25.6639 29.1357 24.3156L17.0445 12.2256ZM16.7645 22.9696C16.1225 22.3276 15.0872 22.3204 14.453 22.9545L9.40053 28.0082C12.0973 30.7045 16.4425 30.7309 19.1062 28.0672L20.4848 26.6886L16.7645 22.9696ZM12.9727 19.1777C12.37 18.575 11.3984 18.5686 10.803 19.1639L5.56473 24.4022C4.74033 25.2267 4.74891 26.5721 5.58357 27.4068C6.41827 28.2413 7.76372 28.2488 8.58817 27.4244L14.9037 21.1088L12.9727 19.1777ZM22.9508 14.4568C22.3167 15.091 22.3238 16.1262 22.9658 16.7683L26.6848 20.4886L28.0635 19.1099C30.7271 16.4463 30.7007 12.101 28.0045 9.4043L22.9508 14.4568ZM27.403 5.58733C26.5684 4.75267 25.223 4.7441 24.3984 5.5685L19.1602 10.8068C18.5649 11.4022 18.5713 12.3737 19.174 12.9764L21.105 14.9075L27.4206 8.59194C28.2451 7.76749 28.2376 6.42204 27.403 5.58733Z" fill="white"/>
               </svg>
             </div>
-            <div className="flex-[2] flex flex-col items-center justify-center gap-[12px]">
-              <h2 className="text-center font-display text-[28px] font-medium leading-[40px] tracking-[-0.5px] text-white">
-                Your explorer card is ready
+            <div className="flex-[3] lg:flex-[2] flex flex-col items-center justify-center gap-[6px] lg:gap-[12px]">
+              <h2 className="text-center font-display text-[24px] leading-[32px] lg:text-[28px] lg:leading-[40px] font-medium tracking-[-0.5px] text-white whitespace-nowrap">
+                Explorer card is ready
               </h2>
               <p className="hidden lg:block text-center font-sans text-[14px] font-normal leading-[20px] tracking-[-0.084px] text-[#989898]">We've emailed you a private edit link if you ever need to update your card.</p>
-              <p className="lg:hidden text-center font-sans text-[14px] font-normal leading-[20px] tracking-[-0.084px] text-[#989898]">Your edit link is in your email</p>
+              <p className="lg:hidden text-center font-sans text-[14px] font-normal leading-[20px] tracking-[-0.084px] text-[#7c7c7c]">Your edit link is in your email</p>
             </div>
             <div className="flex-1 flex justify-end">
-              <button onClick={handleCreatedCrossClick} className="w-[36px] h-[36px] flex items-center justify-center rounded-[8px] bg-[#111] border border-[#212121] hover:bg-[#222] transition-colors">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <button onClick={handleCreatedCrossClick} className="w-[28px] h-[28px] lg:w-[36px] lg:h-[36px] flex items-center justify-center rounded-[8px] bg-[#111] border border-[#212121] hover:bg-[#222] transition-colors shrink-0">
+                <svg className="w-[18px] h-[18px] lg:w-[24px] lg:h-[24px]" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M18 6L6 18M6 6L18 18" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
               </button>
@@ -775,31 +775,31 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
   if (!isVerified) {
     return (
       <div className="flex flex-col min-h-[100dvh] w-full bg-black relative">
-        <header className="flex w-full justify-center pt-[40px] pb-4 bg-black shrink-0 relative z-[100]">
+        <header className="flex w-full justify-center pt-[16px] lg:pt-[40px] pb-4 bg-black shrink-0 relative z-[100]">
           <div className="flex w-full px-4 lg:px-[64px] items-center justify-between">
             <div className="flex-1 flex items-center">
-              <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <svg className="w-[28px] h-[28px] lg:w-[36px] lg:h-[36px]" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M16.9955 15.3319L17.1236 17.0972L15.3583 16.9692L15.2289 15.2026L16.9955 15.3319Z" fill="white"/>
                 <path d="M13.2539 15.7839C13.5075 15.5304 13.9212 15.5323 14.178 15.7889C14.4348 16.0458 14.4367 16.4606 14.183 16.7143C13.9293 16.9675 13.5156 16.9647 13.2589 16.708C13.0023 16.4512 13.0003 16.0375 13.2539 15.7839Z" fill="white"/>
                 <path d="M15.7801 13.2577C16.0338 13.004 16.4474 13.0061 16.7042 13.2627C16.9609 13.5193 16.9637 13.9331 16.7105 14.1868C16.4568 14.4405 16.042 14.4386 15.7852 14.1818C15.5286 13.925 15.5266 13.5113 15.7801 13.2577Z" fill="white"/>
                 <path fill-rule="evenodd" clip-rule="evenodd" d="M18 0C25.2229 0 28.8341 0.000501037 31.4284 1.73396C32.5515 2.48438 33.5156 3.44849 34.266 4.57157C35.9995 7.16587 36 10.7771 36 18C36 25.2229 35.9995 28.8341 34.266 31.4284C33.5156 32.5515 32.5515 33.5156 31.4284 34.266C28.8341 35.9995 25.2229 36 18 36C10.7771 36 7.16587 35.9995 4.57157 34.266C3.44849 33.5156 2.48438 32.5515 1.73396 31.4284C0.000501037 28.8341 0 25.2229 0 18C0 10.7771 0.000501037 7.16587 1.73396 4.57157C2.48438 3.44849 3.44849 2.48438 4.57157 1.73396C7.16587 0.000501037 10.7771 0 18 0ZM17.0445 12.2256C15.6962 10.8772 13.5236 10.8636 12.1917 12.1955C10.8598 13.5273 10.8735 15.6999 12.2218 17.0483L24.3118 29.1395C25.6602 30.4879 27.8327 30.5003 29.1646 29.1684C30.4965 27.8365 30.4841 25.6639 29.1357 24.3156L17.0445 12.2256ZM16.7645 22.9696C16.1225 22.3276 15.0872 22.3204 14.453 22.9545L9.40053 28.0082C12.0973 30.7045 16.4425 30.7309 19.1062 28.0672L20.4848 26.6886L16.7645 22.9696ZM12.9727 19.1777C12.37 18.575 11.3984 18.5686 10.803 19.1639L5.56473 24.4022C4.74033 25.2267 4.74891 26.5721 5.58357 27.4068C6.41827 28.2413 7.76372 28.2488 8.58817 27.4244L14.9037 21.1088L12.9727 19.1777ZM22.9508 14.4568C22.3167 15.091 22.3238 16.1262 22.9658 16.7683L26.6848 20.4886L28.0635 19.1099C30.7271 16.4463 30.7007 12.101 28.0045 9.4043L22.9508 14.4568ZM27.403 5.58733C26.5684 4.75267 25.223 4.7441 24.3984 5.5685L19.1602 10.8068C18.5649 11.4022 18.5713 12.3737 19.174 12.9764L21.105 14.9075L27.4206 8.59194C28.2451 7.76749 28.2376 6.42204 27.403 5.58733Z" fill="white"/>
               </svg>
             </div>
-            <div className="flex-[2] flex justify-center">
-              <h2 className="text-center font-display text-[28px] font-medium leading-[36px] tracking-[-0.5px] text-white">
+            <div className="flex-[3] lg:flex-[2] flex justify-center">
+              <h2 className="text-center font-display text-[24px] leading-[32px] lg:text-[28px] lg:leading-[36px] font-medium tracking-[-0.5px] text-white">
                 Create explorer card
               </h2>
             </div>
             <div className="flex-1 flex justify-end">
-              <button onClick={() => window.location.href = '/'} className="w-[36px] h-[36px] flex items-center justify-center rounded-[8px] bg-[#111] border border-[#212121] hover:bg-[#222] transition-colors">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <button onClick={() => window.location.href = '/'} className="w-[28px] h-[28px] lg:w-[36px] lg:h-[36px] flex items-center justify-center rounded-[8px] bg-[#111] border border-[#212121] hover:bg-[#222] transition-colors shrink-0">
+                <svg className="w-[18px] h-[18px] lg:w-[24px] lg:h-[24px]" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M18 6L6 18M6 6L18 18" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
               </button>
             </div>
           </div>
         </header>
-        <main className="flex-1 flex flex-col items-center bg-black font-sans px-4 sm:px-8 pt-[40px] lg:pt-[48px]">
+        <main className="flex-1 flex flex-col items-center bg-black font-sans px-0 lg:px-4 sm:px-8 pt-[16px] lg:pt-[48px]">
           <div className="w-full max-w-[420px]">
             <EmailVerificationForm 
               source="Explorer Card"
@@ -821,24 +821,24 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
 return (
     <div className="flex flex-col min-h-[100dvh] lg:h-[100dvh] lg:overflow-hidden w-full bg-black relative">
       {pathname?.startsWith("/edit/explorercard") && (
-        <header className="flex w-full justify-center pt-[40px] pb-4 bg-black shrink-0 relative z-[100]">
+        <header className="flex w-full justify-center pt-[16px] lg:pt-[40px] pb-4 bg-black shrink-0 relative z-[100]">
           <div className="flex w-full px-4 lg:px-[64px] items-center justify-between">
             <div className="flex-1 flex items-center">
-              <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <svg className="w-[28px] h-[28px] lg:w-[36px] lg:h-[36px]" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M16.9955 15.3319L17.1236 17.0972L15.3583 16.9692L15.2289 15.2026L16.9955 15.3319Z" fill="white"/>
                 <path d="M13.2539 15.7839C13.5075 15.5304 13.9212 15.5323 14.178 15.7889C14.4348 16.0458 14.4367 16.4606 14.183 16.7143C13.9293 16.9675 13.5156 16.9647 13.2589 16.708C13.0023 16.4512 13.0003 16.0375 13.2539 15.7839Z" fill="white"/>
                 <path d="M15.7801 13.2577C16.0338 13.004 16.4474 13.0061 16.7042 13.2627C16.9609 13.5193 16.9637 13.9331 16.7105 14.1868C16.4568 14.4405 16.042 14.4386 15.7852 14.1818C15.5286 13.925 15.5266 13.5113 15.7801 13.2577Z" fill="white"/>
                 <path fill-rule="evenodd" clip-rule="evenodd" d="M18 0C25.2229 0 28.8341 0.000501037 31.4284 1.73396C32.5515 2.48438 33.5156 3.44849 34.266 4.57157C35.9995 7.16587 36 10.7771 36 18C36 25.2229 35.9995 28.8341 34.266 31.4284C33.5156 32.5515 32.5515 33.5156 31.4284 34.266C28.8341 35.9995 25.2229 36 18 36C10.7771 36 7.16587 35.9995 4.57157 34.266C3.44849 33.5156 2.48438 32.5515 1.73396 31.4284C0.000501037 28.8341 0 25.2229 0 18C0 10.7771 0.000501037 7.16587 1.73396 4.57157C2.48438 3.44849 3.44849 2.48438 4.57157 1.73396C7.16587 0.000501037 10.7771 0 18 0ZM17.0445 12.2256C15.6962 10.8772 13.5236 10.8636 12.1917 12.1955C10.8598 13.5273 10.8735 15.6999 12.2218 17.0483L24.3118 29.1395C25.6602 30.4879 27.8327 30.5003 29.1646 29.1684C30.4965 27.8365 30.4841 25.6639 29.1357 24.3156L17.0445 12.2256ZM16.7645 22.9696C16.1225 22.3276 15.0872 22.3204 14.453 22.9545L9.40053 28.0082C12.0973 30.7045 16.4425 30.7309 19.1062 28.0672L20.4848 26.6886L16.7645 22.9696ZM12.9727 19.1777C12.37 18.575 11.3984 18.5686 10.803 19.1639L5.56473 24.4022C4.74033 25.2267 4.74891 26.5721 5.58357 27.4068C6.41827 28.2413 7.76372 28.2488 8.58817 27.4244L14.9037 21.1088L12.9727 19.1777ZM22.9508 14.4568C22.3167 15.091 22.3238 16.1262 22.9658 16.7683L26.6848 20.4886L28.0635 19.1099C30.7271 16.4463 30.7007 12.101 28.0045 9.4043L22.9508 14.4568ZM27.403 5.58733C26.5684 4.75267 25.223 4.7441 24.3984 5.5685L19.1602 10.8068C18.5649 11.4022 18.5713 12.3737 19.174 12.9764L21.105 14.9075L27.4206 8.59194C28.2451 7.76749 28.2376 6.42204 27.403 5.58733Z" fill="white"/>
               </svg>
             </div>
-            <div className="flex-[2] flex justify-center">
-              <h2 className="text-center font-display text-[28px] font-medium leading-[36px] tracking-[-0.5px] text-white">
+            <div className="flex-[3] lg:flex-[2] flex justify-center">
+              <h2 className="text-center font-display text-[24px] leading-[32px] lg:text-[28px] lg:leading-[36px] font-medium tracking-[-0.5px] text-white">
                 {isEditMode ? "Edit Your Explorer Card" : "Create Your Explorer Card"}
               </h2>
             </div>
             <div className="flex-1 flex justify-end">
-              <button onClick={handleCrossClick} disabled={isSubmitting} className="w-[36px] h-[36px] flex items-center justify-center rounded-[8px] bg-[#111] border border-[#212121] hover:bg-[#222] transition-colors disabled:opacity-50">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <button onClick={handleCrossClick} disabled={isSubmitting} className="w-[28px] h-[28px] lg:w-[36px] lg:h-[36px] flex items-center justify-center rounded-[8px] bg-[#111] border border-[#212121] hover:bg-[#222] transition-colors shrink-0 disabled:opacity-50">
+                <svg className="w-[18px] h-[18px] lg:w-[24px] lg:h-[24px]" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M18 6L6 18M6 6L18 18" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
               </button>
