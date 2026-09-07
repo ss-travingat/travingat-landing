@@ -480,9 +480,20 @@ const EmailVerificationForm = ({ onVerified, initialSessionUser, source }: Props
           >
             {isLoading ? 'Sending...' : 'Send code'}
           </button>
-          <p className="ds-font-body font-normal text-[14px] leading-[20px] tracking-[-0.084px] text-center text-[#7c7c7c] w-full whitespace-nowrap">
-            We&apos;ll send you a code to verify your email
-          </p>
+          <div className="w-full text-center text-[#7c7c7c] ds-font-body font-normal text-[14px] leading-[20px] tracking-[-0.084px]">
+            {/* Desktop text */}
+            <p className="hidden lg:block">
+              {email.trim().length > 0 ? (
+                <>We&apos;ll send you a code to verify your email</>
+              ) : (
+                <>We&apos;ll verify your email before creating your<br/>explorer card</>
+              )}
+            </p>
+            {/* Mobile text */}
+            <p className="lg:hidden whitespace-nowrap">
+              We&apos;ll send you a code to verify your email
+            </p>
+          </div>
         </div>
       </div>
     </div>
