@@ -147,7 +147,7 @@ export function MobileExplorerForm({
       </div>
 
       <form onSubmit={step === 3 ? handleSubmit : handleNext} className="flex-1 flex flex-col relative">
-        <div ref={scrollContainerRef} className="flex-1 p-4 pb-[100px] overflow-y-auto" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+        <div ref={scrollContainerRef} className={`flex-1 p-4 pb-[100px] ${step === 3 ? 'flex flex-col overflow-hidden' : 'overflow-y-auto'}`} style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
           <style dangerouslySetInnerHTML={{__html: `form::-webkit-scrollbar { display: none; }`}} />
           
           {step === 1 && (
@@ -285,12 +285,12 @@ export function MobileExplorerForm({
 
           {step === 3 && (
             <div ref={visitedRef} className="flex flex-col flex-[1_0_0] bg-[#111] rounded-[12px] p-[12px] overflow-hidden min-h-px w-full">
-              <div className="flex w-full items-center justify-between">
+              <div className="flex w-full items-center justify-between shrink-0">
                 <p className="text-[14px] text-white leading-[20px]">Visited countries <span className="text-[#7c7c7c]">({visited.length} Selected)</span></p>
               </div>
 
               {visited.length > 0 && (
-                <div className="flex flex-wrap items-center gap-x-[12px] gap-y-[8px] mt-[10px]">
+                <div className="flex flex-wrap items-start gap-x-[12px] gap-y-[8px] mt-[10px] shrink-0 max-h-[140px] overflow-y-auto" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
                   {visited.map((c) => (
                     <div key={c} className="flex items-center gap-[4px]">
                       <span className={`fi fi-${sampleFlags[c]?.toLowerCase()} h-[13.333px] w-[20px] aspect-[3/2] overflow-clip rounded-[1px] bg-cover bg-center`} title={c} />
@@ -302,7 +302,7 @@ export function MobileExplorerForm({
 
               {/* Minimum countries progress indicator */}
               {visited.length < 5 && (
-                <div className="mt-[10px]">
+                <div className="mt-[10px] shrink-0">
                   <div className="flex items-center justify-between mb-1">
                     <span className="text-[12px] text-[#7c7c7c]">Minimum 5 countries required</span>
                     <span className={`text-[12px] font-medium ${visited.length >= 5 ? 'text-green-400' : 'text-[#7c7c7c]'}`}>{visited.length}/5</span>
