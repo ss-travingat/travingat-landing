@@ -453,8 +453,8 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
     return (
       <div className="flex flex-col min-h-[100dvh] w-full bg-black relative">
         <header className="flex w-full justify-center pt-[16px] pb-[20px] lg:pt-[40px] lg:pb-4 bg-black shrink-0 relative z-[100]">
-          <div className="flex w-full px-4 lg:px-[64px] items-center justify-between">
-            <div className="flex-1 flex items-center">
+          <div className="flex w-full px-[8px] lg:px-[64px] items-start lg:items-center justify-between">
+            <div className="flex-1 flex items-start lg:items-center">
               <svg className="w-[28px] h-[28px] lg:w-[36px] lg:h-[36px]" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M16.9955 15.3319L17.1236 17.0972L15.3583 16.9692L15.2289 15.2026L16.9955 15.3319Z" fill="white"/>
                 <path d="M13.2539 15.7839C13.5075 15.5304 13.9212 15.5323 14.178 15.7889C14.4348 16.0458 14.4367 16.4606 14.183 16.7143C13.9293 16.9675 13.5156 16.9647 13.2589 16.708C13.0023 16.4512 13.0003 16.0375 13.2539 15.7839Z" fill="white"/>
@@ -469,7 +469,7 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
               <p className="hidden lg:block text-center font-sans text-[14px] font-normal leading-[20px] tracking-[-0.084px] text-[#989898]">We've emailed you a private edit link if you ever need to update your card.</p>
               <p className="lg:hidden text-center font-sans text-[14px] font-normal leading-[20px] tracking-[-0.084px] text-[#7c7c7c]">Your edit link is in your email</p>
             </div>
-            <div className="flex-1 flex justify-end">
+            <div className="flex-1 flex justify-end items-start lg:items-center">
               <button onClick={handleCreatedCrossClick} className="w-[28px] h-[28px] lg:w-[36px] lg:h-[36px] flex items-center justify-center rounded-[8px] bg-[#111] border border-[#212121] hover:bg-[#222] transition-colors shrink-0">
                 <svg className="w-[18px] h-[18px] lg:w-[24px] lg:h-[24px]" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M18 6L6 18M6 6L18 18" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
