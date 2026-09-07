@@ -799,8 +799,9 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
             </div>
           </div>
         </header>
-        <main className="flex-1 flex flex-col items-center bg-black font-sans px-0 lg:px-4 sm:px-8 pt-[16px] lg:pt-[48px]">
-          <div className="w-full max-w-[420px]">
+        <main className="flex-1 flex flex-col items-center bg-black font-sans px-0 lg:px-4 sm:px-8 overflow-y-auto">
+          <div className="flex-1 shrink-0 min-h-[16px] lg:min-h-[48px]" />
+          <div className="w-full max-w-[420px] shrink-0">
             <EmailVerificationForm 
               source="Explorer Card"
               initialSessionUser={sessionUser}
@@ -813,6 +814,7 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
               }} 
             />
           </div>
+          <div className="flex-1 shrink-0 min-h-[16px] lg:min-h-[48px]" />
         </main>
       </div>
     );
