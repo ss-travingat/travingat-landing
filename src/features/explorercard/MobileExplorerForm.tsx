@@ -366,7 +366,7 @@ export function MobileExplorerForm({
           )}
         </div>
 
-        <div className="fixed bottom-0 left-0 right-0 px-4 pt-4 pb-8 bg-black flex justify-center z-10">
+        <div className="fixed bottom-0 left-0 right-0 px-4 pt-[20px] pb-8 bg-black flex justify-center z-10">
           <div className="w-full max-w-[361px] flex items-center gap-3">
             {step > 1 && (
               <button
