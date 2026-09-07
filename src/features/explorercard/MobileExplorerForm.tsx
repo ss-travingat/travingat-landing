@@ -147,11 +147,11 @@ export function MobileExplorerForm({
       </div>
 
       <form onSubmit={step === 3 ? handleSubmit : handleNext} className="flex-1 flex flex-col relative">
-        <div ref={scrollContainerRef} className={`flex-1 p-4 pb-[100px] ${step === 3 ? 'flex flex-col overflow-hidden' : 'overflow-y-auto'}`} style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+        <div ref={scrollContainerRef} className={`flex-1 p-4 pb-[100px] flex flex-col ${step === 3 ? 'overflow-hidden' : 'overflow-y-auto'}`} style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
           <style dangerouslySetInnerHTML={{__html: `form::-webkit-scrollbar { display: none; }`}} />
           
           {step === 1 && (
-            <div className="flex flex-col gap-6 bg-[#111] p-4 rounded-xl border border-transparent">
+            <div className="flex flex-col flex-[1_0_0] gap-6 bg-[#111] p-4 rounded-xl border border-transparent">
               <Field label="Email">
                 <div className="flex w-full items-center gap-[8px]">
                   <div className="w-full rounded-[10px] bg-black border border-[#1e1e1e] px-[16px] py-[12px]">
@@ -204,7 +204,7 @@ export function MobileExplorerForm({
           )}
 
           {step === 2 && (
-            <div className="flex flex-col gap-6 bg-[#111] p-4 rounded-xl border border-transparent">
+            <div className="flex flex-col flex-[1_0_0] gap-6 bg-[#111] p-4 rounded-xl border border-transparent">
               <Field label="Full name">
                 <div className="flex w-full items-center gap-[8px]">
                   <div ref={firstNameRef} className="w-full flex flex-col">
