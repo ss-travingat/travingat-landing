@@ -408,7 +408,7 @@ export function MobileExplorerForm({
             <button
               type="submit"
               disabled={isSubmitting || (step === 3 && (isCreated ? !hasChanges : (isEditMode && !hasChanged)))}
-              className="mt-6 flex h-[48px] w-[184px] items-center justify-center rounded-[99px] bg-white text-[16px] font-medium text-black hover:bg-white/90 disabled:opacity-50 transition-colors"
+              className="flex-1 flex h-[48px] items-center justify-center rounded-[999px] bg-[#533df6] px-[24px] font-sans text-[16px] font-medium leading-[24px] tracking-[-0.176px] text-[#ecf0ff] transition-all hover:opacity-90 disabled:bg-[#C0CAFF] disabled:opacity-100 disabled:cursor-not-allowed"
             >
               {isSubmitting ? "Processing..." : step === 3 ? (isCreated ? "Update" : (isEditMode ? "Update" : "Create")) : "Next"}
             </button>
