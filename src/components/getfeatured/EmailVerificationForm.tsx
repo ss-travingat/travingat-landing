@@ -480,7 +480,7 @@ const EmailVerificationForm = ({ onVerified, initialSessionUser, source }: Props
           >
             {isLoading ? 'Sending...' : 'Send code'}
           </button>
-          <p className="ds-font-body font-normal text-[14px] leading-[20px] tracking-[-0.084px] text-center text-[#7c7c7c] w-full">
+          <p className="ds-font-body font-normal text-[14px] leading-[20px] tracking-[-0.084px] text-center text-[#7c7c7c] w-full whitespace-nowrap">
             {email.trim().length > 0 ? (
               <>We&apos;ll send you a code to verify your email</>
             ) : (
