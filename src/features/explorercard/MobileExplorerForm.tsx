@@ -140,9 +140,9 @@ export function MobileExplorerForm({
     <div className="flex lg:hidden flex-col w-full min-h-screen bg-black text-white relative">
       <div className="flex flex-col items-center pt-[14px] pb-[4px] shrink-0">
         <div className="flex items-center gap-1">
-          <div className={`h-1 w-5 rounded-full ${step === 1 ? 'bg-white' : 'bg-[#404040]'}`} />
-          <div className={`h-1 w-5 rounded-full ${step === 2 ? 'bg-white' : 'bg-[#404040]'}`} />
-          <div className={`h-1 w-5 rounded-full ${step === 3 ? 'bg-white' : 'bg-[#404040]'}`} />
+          <div className={`h-1 w-5 rounded-full ${step >= 1 ? 'bg-white' : 'bg-[#404040]'}`} />
+          <div className={`h-1 w-5 rounded-full ${step >= 2 ? 'bg-white' : 'bg-[#404040]'}`} />
+          <div className={`h-1 w-5 rounded-full ${step >= 3 ? 'bg-white' : 'bg-[#404040]'}`} />
         </div>
       </div>
 
