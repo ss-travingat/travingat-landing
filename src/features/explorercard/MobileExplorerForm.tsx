@@ -147,21 +147,24 @@ export function MobileExplorerForm({
       </div>
 
       <form onSubmit={step === 3 ? handleSubmit : handleNext} className="flex-1 flex flex-col relative">
-        <div ref={scrollContainerRef} className={`flex-1 p-4 pb-[100px] flex flex-col ${step === 3 ? 'overflow-hidden' : 'overflow-y-auto'}`} style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+        <div ref={scrollContainerRef} className={`flex-1 p-4 pb-[130px] flex flex-col ${step === 3 ? 'overflow-hidden' : 'overflow-y-auto'}`} style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
           <style dangerouslySetInnerHTML={{__html: `form::-webkit-scrollbar { display: none; }`}} />
           
           {step === 1 && (
             <div className="flex flex-col flex-[1_0_0] gap-6 bg-[#111] p-4 rounded-xl border border-transparent">
               <Field label="Email">
                 <div className="flex w-full items-center gap-[8px]">
-                  <div className="w-full rounded-[10px] bg-black border border-[#1e1e1e] px-[16px] py-[12px]">
+                  <div className="w-full flex items-center justify-between rounded-[10px] bg-black border border-[#1e1e1e] px-[16px] py-[12px]">
                     <input
                       name="email"
                       value={form.email}
                       disabled
                       placeholder="Email"
-                      className="w-full bg-transparent font-sans font-normal text-[16px] leading-[24px] tracking-[-0.096px] text-[#525252] outline-none"
+                      className="w-full bg-transparent font-sans font-normal text-[16px] leading-[24px] tracking-[-0.096px] text-white outline-none placeholder:text-[#525252]"
                     />
+                    <svg className="w-4 h-4 text-[#525252] shrink-0 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                    </svg>
                   </div>
                 </div>
               </Field>
@@ -363,7 +366,7 @@ export function MobileExplorerForm({
           )}
         </div>
 
-        <div className="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black via-black/80 to-transparent flex justify-center z-10">
+        <div className="fixed bottom-0 left-0 right-0 px-4 pt-4 pb-8 bg-black flex justify-center z-10">
           <div className="w-full max-w-[361px] flex items-center gap-3">
             {step > 1 && (
               <button
