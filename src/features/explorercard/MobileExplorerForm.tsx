@@ -76,23 +76,23 @@ export function MobileExplorerForm({
   }, [step]);
 
   React.useEffect(() => {
-    let initialHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
-    
-    const handleResize = () => {
-      const currentHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
-      if (currentHeight > initialHeight) {
-        initialHeight = currentHeight;
+    const handleFocusIn = (e: Event) => {
+      const target = e.target as HTMLElement;
+      if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') {
+        setIsKeyboardOpen(true);
       }
-      setIsKeyboardOpen(currentHeight < initialHeight - 150);
+    };
+    
+    const handleFocusOut = () => {
+      setIsKeyboardOpen(false);
     };
 
-    window.visualViewport?.addEventListener('resize', handleResize);
-    window.addEventListener('resize', handleResize);
-    handleResize();
+    window.addEventListener('focusin', handleFocusIn);
+    window.addEventListener('focusout', handleFocusOut);
 
     return () => {
-      window.visualViewport?.removeEventListener('resize', handleResize);
-      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('focusin', handleFocusIn);
+      window.removeEventListener('focusout', handleFocusOut);
     };
   }, []);
 
