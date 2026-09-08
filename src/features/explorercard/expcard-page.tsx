@@ -833,7 +833,8 @@ return (
             </div>
             <div className="flex-[3] lg:flex-[2] flex justify-center">
               <h2 className="text-center font-display text-[24px] leading-[32px] lg:text-[28px] lg:leading-[36px] font-medium tracking-[-0.5px] text-white">
-                {isEditMode ? "Edit Your Explorer Card" : "Create Your Explorer Card"}
+                <span className="lg:hidden">{isEditMode ? "Edit explorer card" : "Create explorer card"}</span>
+                <span className="hidden lg:inline">{isEditMode ? "Edit Your Explorer Card" : "Create Your Explorer Card"}</span>
               </h2>
             </div>
             <div className="flex-1 flex justify-end">
