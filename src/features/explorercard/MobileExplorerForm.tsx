@@ -53,7 +53,7 @@ export function MobileExplorerForm({
 }: MobileExplorerFormProps) {
   const [isVisitedExpanded, setIsVisitedExpanded] = React.useState(false);
   const [step, setStep] = useState(1);
-  const [isSearchFocused, setIsSearchFocused] = useState(false);
+  const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
   const [keyboardOffset, setKeyboardOffset] = useState(16);
   const scrollContainerRef = React.useRef<HTMLDivElement>(null);
 
@@ -79,9 +79,23 @@ export function MobileExplorerForm({
   React.useEffect(() => {
     if (!window.visualViewport) return;
     
+    let maxVpHeight = window.visualViewport.height;
+    
     const updateOffset = () => {
-      const offset = window.innerHeight - window.visualViewport!.height;
+      const currentVpHeight = window.visualViewport!.height;
+      if (currentVpHeight > maxVpHeight) {
+        maxVpHeight = currentVpHeight;
+      }
+      
+      const isOpen = currentVpHeight < maxVpHeight - 100;
+      setIsKeyboardOpen(isOpen);
+      
+      const offset = window.innerHeight - currentVpHeight;
       setKeyboardOffset(offset > 0 ? offset + 16 : 16);
+      
+      if (!isOpen && document.activeElement && document.activeElement.tagName === 'INPUT') {
+        (document.activeElement as HTMLElement).blur();
+      }
     };
 
     window.visualViewport.addEventListener('resize', updateOffset);
@@ -314,7 +328,7 @@ export function MobileExplorerForm({
                 <p className="text-[14px] text-white leading-[20px]">Visited countries <span className="text-[#7c7c7c]">({visited.length} Selected)</span></p>
               </div>
 
-              {visited.length > 0 && !isSearchFocused && (
+              {visited.length > 0 && !isKeyboardOpen && (
                 <div className="flex flex-wrap items-start gap-x-[12px] gap-y-[8px] mt-[10px] shrink-0 max-h-[140px] overflow-y-auto" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
                   {visited.map((c) => (
                     <div key={c} className="flex items-center gap-[4px]">
@@ -326,7 +340,7 @@ export function MobileExplorerForm({
               )}
 
               {/* Minimum countries progress indicator */}
-              {visited.length < 5 && !isSearchFocused && (
+              {visited.length < 5 && !isKeyboardOpen && (
                 <div className="mt-[10px] shrink-0">
                   <div className="flex items-center justify-between mb-1">
                     <span className="text-[12px] text-[#7c7c7c]">Minimum 5 countries required</span>
@@ -350,8 +364,6 @@ export function MobileExplorerForm({
                 <input
                   value={countryQuery}
                   onChange={(e) => setCountryQuery(e.target.value)}
-                  onFocus={() => setIsSearchFocused(true)}
-                  onBlur={() => setIsSearchFocused(false)}
                   placeholder="Search countries"
                   className="w-full bg-transparent py-[12px] pl-[48px] pr-4 font-sans font-normal text-[16px] leading-[24px] tracking-[-0.096px] text-white outline-none placeholder:text-[#525252]"
                 />
@@ -412,7 +424,7 @@ export function MobileExplorerForm({
             </button>
           </div>
         </div>
-        {step === 3 && isSearchFocused && (
+        {step === 3 && isKeyboardOpen && (
           <button
             type="submit"
             disabled={isSubmitting || (isCreated ? !hasChanges : (isEditMode && !hasChanged))}
