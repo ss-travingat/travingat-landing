@@ -198,8 +198,9 @@ export function MobileExplorerForm({
                       placeholder="Email"
                       className="w-full bg-transparent font-sans font-normal text-[16px] leading-[24px] tracking-[-0.096px] text-white outline-none placeholder:text-[#525252]"
                     />
-                    <svg className="w-4 h-4 text-[#525252] shrink-0 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                    <svg className="w-4 h-4 text-[#525252] shrink-0 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" xmlns="http://www.w3.org/2000/svg">
+                      <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                      <path d="M7 11V7a5 5 0 0 1 10 0v4" />
                     </svg>
                   </div>
                 </div>
@@ -417,7 +418,12 @@ export function MobileExplorerForm({
             )}
             <button
               type="submit"
-              disabled={isSubmitting || (step === 3 && (isCreated ? !hasChanges : (isEditMode && !hasChanged)))}
+              disabled={
+                isSubmitting ||
+                (step === 1 && (!form.profileImage || !form.coverImage)) ||
+                (step === 2 && (!form.firstName || !form.lastName || !form.country)) ||
+                (step === 3 && (isCreated ? !hasChanges : (isEditMode && !hasChanged)))
+              }
               className="flex-1 flex h-[48px] items-center justify-center rounded-[999px] bg-[#533df6] px-[24px] font-sans text-[16px] font-medium leading-[24px] tracking-[-0.176px] text-[#ecf0ff] transition-all hover:opacity-90 disabled:bg-[#C0CAFF] disabled:opacity-100 disabled:cursor-not-allowed"
             >
               {isSubmitting ? "Processing..." : step === 3 ? (isCreated ? "Update" : (isEditMode ? "Update" : "Create")) : "Next"}
