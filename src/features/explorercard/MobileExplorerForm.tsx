@@ -76,13 +76,24 @@ export function MobileExplorerForm({
   }, [step]);
 
   React.useEffect(() => {
+    let initialHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+    
     const handleResize = () => {
-      if (window.visualViewport) {
-        setIsKeyboardOpen(window.visualViewport.height < window.innerHeight - 100);
+      const currentHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+      if (currentHeight > initialHeight) {
+        initialHeight = currentHeight;
       }
+      setIsKeyboardOpen(currentHeight < initialHeight - 150);
     };
+
     window.visualViewport?.addEventListener('resize', handleResize);
-    return () => window.visualViewport?.removeEventListener('resize', handleResize);
+    window.addEventListener('resize', handleResize);
+    handleResize();
+
+    return () => {
+      window.visualViewport?.removeEventListener('resize', handleResize);
+      window.removeEventListener('resize', handleResize);
+    };
   }, []);
 
   const scrollToRef = (ref: React.RefObject<HTMLDivElement | null>) => {
