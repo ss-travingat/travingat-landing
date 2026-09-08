@@ -53,7 +53,7 @@ export function MobileExplorerForm({
 }: MobileExplorerFormProps) {
   const [isVisitedExpanded, setIsVisitedExpanded] = React.useState(false);
   const [step, setStep] = useState(1);
-  const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
   const scrollContainerRef = React.useRef<HTMLDivElement>(null);
 
   // Per-field error state
@@ -74,27 +74,6 @@ export function MobileExplorerForm({
     // Clear errors when changing steps
     setErrors({});
   }, [step]);
-
-  React.useEffect(() => {
-    const handleFocusIn = (e: Event) => {
-      const target = e.target as HTMLElement;
-      if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') {
-        setIsKeyboardOpen(true);
-      }
-    };
-    
-    const handleFocusOut = () => {
-      setIsKeyboardOpen(false);
-    };
-
-    window.addEventListener('focusin', handleFocusIn);
-    window.addEventListener('focusout', handleFocusOut);
-
-    return () => {
-      window.removeEventListener('focusin', handleFocusIn);
-      window.removeEventListener('focusout', handleFocusOut);
-    };
-  }, []);
 
   const scrollToRef = (ref: React.RefObject<HTMLDivElement | null>) => {
     if (ref.current) {
@@ -314,7 +293,7 @@ export function MobileExplorerForm({
                 <p className="text-[14px] text-white leading-[20px]">Visited countries <span className="text-[#7c7c7c]">({visited.length} Selected)</span></p>
               </div>
 
-              {visited.length > 0 && (
+              {visited.length > 0 && !isSearchFocused && (
                 <div className="flex flex-wrap items-start gap-x-[12px] gap-y-[8px] mt-[10px] shrink-0 max-h-[140px] overflow-y-auto" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
                   {visited.map((c) => (
                     <div key={c} className="flex items-center gap-[4px]">
@@ -326,7 +305,7 @@ export function MobileExplorerForm({
               )}
 
               {/* Minimum countries progress indicator */}
-              {visited.length < 5 && (
+              {visited.length < 5 && !isSearchFocused && (
                 <div className="mt-[10px] shrink-0">
                   <div className="flex items-center justify-between mb-1">
                     <span className="text-[12px] text-[#7c7c7c]">Minimum 5 countries required</span>
@@ -350,6 +329,8 @@ export function MobileExplorerForm({
                 <input
                   value={countryQuery}
                   onChange={(e) => setCountryQuery(e.target.value)}
+                  onFocus={() => setIsSearchFocused(true)}
+                  onBlur={() => setIsSearchFocused(false)}
                   placeholder="Search countries"
                   className="w-full bg-transparent py-[12px] pl-[48px] pr-4 font-sans font-normal text-[16px] leading-[24px] tracking-[-0.096px] text-white outline-none placeholder:text-[#525252]"
                 />
@@ -410,7 +391,7 @@ export function MobileExplorerForm({
             </button>
           </div>
         </div>
-        {step === 3 && isKeyboardOpen && (
+        {step === 3 && isSearchFocused && (
           <button
             type="submit"
             disabled={isSubmitting || (isCreated ? !hasChanges : (isEditMode && !hasChanged))}
