@@ -11,6 +11,7 @@ import { MediaLightbox } from "./MediaLightbox";
 import { MoreOptionsButton } from "@/components/ui/MoreOptionsButton";
 import { WaitlistPopup } from "@/components/ui/WaitlistPopup";
 import LoadedImage from "@/components/ui/LoadedImage";
+import { getThumbnailUrl } from "@/components/ThumbnailImage";
 import { useMobileComingSoon } from "@/components/ui/MobileComingSoonToast";
 
 /* eslint-disable @next/next/no-img-element */
@@ -494,6 +495,7 @@ export default function CountryDetailComponent({
                               ) : (
                                 <LoadedImage
                                   src={toLandingAssetUrl(imgUrl)}
+                                  thumbnailSrc={getThumbnailUrl(toLandingAssetUrl(imgUrl), 720)}
                                   alt={`${countryName} photo ${globalIndex + 1}`}
                                   className="w-full h-auto block"
                                   containerClassName="w-full"
@@ -595,6 +597,7 @@ export default function CountryDetailComponent({
                         ) : (
                           <LoadedImage
                             src={toLandingAssetUrl(imgUrl)}
+                            thumbnailSrc={getThumbnailUrl(toLandingAssetUrl(imgUrl), 720)}
                             alt={`${countryName} photo ${globalIndex + 1}`}
                             className="w-full h-auto block"
                             containerClassName="w-full"

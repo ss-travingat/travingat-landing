@@ -12,6 +12,7 @@ import { MoreOptionsButton } from "@/components/ui/MoreOptionsButton";
 import { Tooltip, TooltipProvider } from "@/components/ui/Tooltip";
 import { COUNTRY_LIST } from "@/lib/countries";
 import LoadedImage from "@/components/ui/LoadedImage";
+import { getThumbnailUrl } from "@/components/ThumbnailImage";
 import { useMobileComingSoon } from "@/components/ui/MobileComingSoonToast";
 
 /* eslint-disable @next/next/no-img-element */
@@ -410,6 +411,7 @@ export default function CollectionDetailComponent({
                               ) : (
                                 <LoadedImage
                                   src={toLandingAssetUrl(imgUrl)}
+                                  thumbnailSrc={getThumbnailUrl(toLandingAssetUrl(imgUrl), 720)}
                                   alt={`${title} photo ${globalIndex + 1}`}
                                   className="w-full h-auto block"
                                   containerClassName="w-full"
@@ -462,6 +464,7 @@ export default function CollectionDetailComponent({
                         ) : (
                           <LoadedImage
                             src={toLandingAssetUrl(imgUrl)}
+                            thumbnailSrc={getThumbnailUrl(toLandingAssetUrl(imgUrl), 720)}
                             alt={`${title} photo ${globalIndex + 1}`}
                             className="w-full h-auto block"
                             containerClassName="w-full"

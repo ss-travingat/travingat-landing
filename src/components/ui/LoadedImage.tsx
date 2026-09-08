@@ -9,6 +9,7 @@ export default function LoadedImage({
   containerClassName = "",
   skeletonClassName = "absolute inset-0",
   priority = false,
+  thumbnailSrc,
   onClick,
   onLoad,
 }: { 
@@ -20,20 +21,28 @@ export default function LoadedImage({
   /** When true, sets fetchPriority="high" + loading="eager" so the browser
    *  requests this image immediately, before lower-priority images. */
   priority?: boolean;
+  /** Optional thumbnail URL to display instead of the full-size image.
+   *  Falls back to `src` if the thumbnail fails to load. */
+  thumbnailSrc?: string;
   onClick?: (event: React.MouseEvent<HTMLImageElement>) => void;
   onLoad?: () => void;
 }) {
   const [status, setStatus] = useState<"loading" | "loaded" | "error">("loading");
   const [retryCount, setRetryCount] = useState(0);
+  // Track whether we've fallen back from thumbnail to original
+  const [useThumbnail, setUseThumbnail] = useState(!!thumbnailSrc);
   const maxRetries = 2;
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const maxLoadTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const imgRef = useRef<HTMLImageElement | null>(null);
 
+  // Determine which source to use: thumbnail (if available and not failed) or original
+  const activeSrc = useThumbnail && thumbnailSrc ? thumbnailSrc : src;
+
   // Add a query param on retries to bypass broken browser cache for the failed image
-  let currentSrc = retryCount > 0 && !src.startsWith("blob:") && !src.startsWith("data:") 
-    ? `${src}${src.includes("?") ? "&" : "?"}retry=${retryCount}` 
-    : src;
+  let currentSrc = retryCount > 0 && !activeSrc.startsWith("blob:") && !activeSrc.startsWith("data:") 
+    ? `${activeSrc}${activeSrc.includes("?") ? "&" : "?"}retry=${retryCount}` 
+    : activeSrc;
 
   if (currentSrc.startsWith("http")) {
     currentSrc = `/api/proxy-image?url=${encodeURIComponent(currentSrc)}`;
@@ -46,6 +55,13 @@ export default function LoadedImage({
   };
 
   const handleError = () => {
+    // If thumbnail failed, fall back to the original src
+    if (useThumbnail && thumbnailSrc) {
+      setUseThumbnail(false);
+      setRetryCount(0);
+      setStatus("loading");
+      return;
+    }
     if (retryCount < maxRetries) {
       timeoutRef.current = setTimeout(() => {
         setRetryCount((prev) => prev + 1);
@@ -59,6 +75,8 @@ export default function LoadedImage({
 
   useEffect(() => {
     setStatus("loading");
+    setRetryCount(0);
+    setUseThumbnail(!!thumbnailSrc);
     // Force error state if image hangs for more than 1 minute
     maxLoadTimeoutRef.current = setTimeout(() => {
       setStatus("error");
@@ -68,7 +86,7 @@ export default function LoadedImage({
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
       if (maxLoadTimeoutRef.current) clearTimeout(maxLoadTimeoutRef.current);
     };
-  }, [src, retryCount]);
+  }, [src, thumbnailSrc]);
 
   useEffect(() => {
     const node = imgRef.current;

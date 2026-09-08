@@ -6,7 +6,7 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import type { MouseEvent as ReactMouseEvent } from "react";
 
 import { toLandingAssetUrl } from "@/lib/landing-assets";
-import { ThumbnailImage } from "@/components/ThumbnailImage";
+import { ThumbnailImage, getThumbnailUrl } from "@/components/ThumbnailImage";
 import { sampleProfiles, type SampleProfile } from "../data/profile-data";
 import { MediaLightbox, type LightboxItem } from "./MediaLightbox";
 import { MoreOptionsButton } from "@/components/ui/MoreOptionsButton";
@@ -589,7 +589,7 @@ function JsMasonryGrid({
           return { ...prev, [item.id]: { width, height } };
         });
       };
-      img.src = toLandingAssetUrl(item.fileUrl);
+      img.src = getThumbnailUrl(toLandingAssetUrl(item.fileUrl), 720);
     });
 
     return () => {
@@ -695,6 +695,7 @@ function JsMasonryGrid({
               ) : (
                 <LoadedImage
                   src={toLandingAssetUrl(mediaItem.fileUrl)}
+                  thumbnailSrc={getThumbnailUrl(toLandingAssetUrl(mediaItem.fileUrl), 720)}
                   alt="Uploaded media"
                   className="h-full w-full object-contain rounded-lg md:rounded-2xl cursor-pointer"
                   containerClassName="h-full w-full rounded-lg md:rounded-2xl"
