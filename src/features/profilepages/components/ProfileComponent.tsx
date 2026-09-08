@@ -5,7 +5,7 @@ import Link from "next/link";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import type { MouseEvent as ReactMouseEvent } from "react";
 
-import { toLandingAssetUrl } from "@/lib/landing-assets";
+import { toLandingAssetUrl, normalizeAssetHtml, getOptimizedMediaUrl } from "@/lib/landing-assets";
 import { ThumbnailImage, getThumbnailUrl } from "@/components/ThumbnailImage";
 import { sampleProfiles, type SampleProfile } from "../data/profile-data";
 import { MediaLightbox, type LightboxItem } from "./MediaLightbox";
@@ -1473,6 +1473,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                   <div className="relative size-[64px] lg:size-[100px] xl:size-[120px] shrink-0 overflow-hidden rounded-[20px] bg-[#151515]">
                     <LoadedImage
                       src={toLandingAssetUrl(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url)}
+                      thumbnailSrc={getOptimizedMediaUrl(toLandingAssetUrl(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url))}
                       alt="Profile avatar"
                       className="h-full w-full object-cover rounded-[20px]"
                       skeletonClassName="absolute inset-0 bg-[#1a1a1a]"
@@ -1618,6 +1619,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
               >
                 <LoadedImage
                   src={toLandingAssetUrl(typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url)}
+                  thumbnailSrc={getOptimizedMediaUrl(toLandingAssetUrl(typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url))}
                   alt="Profile cover"
                   className="absolute inset-0 w-full h-full object-cover rounded-3xl lg:rounded-[24px] xl:rounded-[32px]"
                   skeletonClassName="absolute inset-0 bg-[#1a1a1a]"
@@ -2128,17 +2130,19 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                 <div className="-mb-8 h-48.5 w-50 overflow-hidden rounded-xl shrink-0 bg-[#151515]">
                   <LoadedImage
                     src={toLandingAssetUrl(typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url)}
-                    alt={displayName}
-                    className="w-full h-full object-cover"
+                    thumbnailSrc={getOptimizedMediaUrl(toLandingAssetUrl(typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url))}
+                    alt="Cover preview"
+                    className="h-full w-full object-cover"
                     skeletonClassName="absolute inset-0 bg-[#1a1a1a]"
-                    containerClassName="w-full h-full"
+                    containerClassName="absolute inset-0"
                   />
                 </div>
                 <div className="-mb-8 h-15 w-15 overflow-hidden rounded-xl shadow-[8px_8px_12px_0px_rgba(0,0,0,0.25)] shrink-0 bg-[#151515]">
                   <LoadedImage
                     src={toLandingAssetUrl(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url)}
-                    alt={displayName}
-                    className="w-full h-full object-cover"
+                    thumbnailSrc={getOptimizedMediaUrl(toLandingAssetUrl(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url))}
+                    alt={profile.name}
+                    className="h-full w-full object-cover"
                     skeletonClassName="absolute inset-0 bg-[#1a1a1a]"
                     containerClassName="w-full h-full"
                   />

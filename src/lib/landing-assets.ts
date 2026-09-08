@@ -45,3 +45,18 @@ export function normalizeAssetHtml(html: string): string {
     return `src=${quote}${absoluteUrl}${quote}`;
   });
 }
+
+export function getOptimizedMediaUrl(assetUrl: string): string {
+  if (!assetUrl) return assetUrl;
+  
+  // If it's already an optimized extension, return as is
+  if (/\.(webp|webm)$/i.test(assetUrl)) return assetUrl;
+  
+  // Replace video extensions with .webm
+  if (/\.(mp4|mov|m4v|3gp|3g2)$/i.test(assetUrl)) {
+    return assetUrl.replace(/\.[^/.]+$/, ".webm");
+  }
+  
+  // Replace image extensions with .webp
+  return assetUrl.replace(/\.[^/.]+$/, ".webp");
+}

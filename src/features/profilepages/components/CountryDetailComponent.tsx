@@ -11,8 +11,9 @@ import { MediaLightbox } from "./MediaLightbox";
 import { MoreOptionsButton } from "@/components/ui/MoreOptionsButton";
 import { WaitlistPopup } from "@/components/ui/WaitlistPopup";
 import LoadedImage from "@/components/ui/LoadedImage";
-import { getThumbnailUrl } from "@/components/ThumbnailImage";
+import { getOptimizedMediaUrl } from "@/lib/landing-assets";
 import { useMobileComingSoon } from "@/components/ui/MobileComingSoonToast";
+import { getThumbnailUrl } from "@/components/ThumbnailImage";
 
 /* eslint-disable @next/next/no-img-element */
 
@@ -221,8 +222,8 @@ export default function CountryDetailComponent({
 
   const displayImages =
     activeTab === "photos" ? photos :
-    activeTab === "videos" ? videos :
-    imageUrls;
+      activeTab === "videos" ? videos :
+        imageUrls;
 
   const items = displayImages.map((url, index) => ({ url, globalIndex: index }));
 
@@ -299,9 +300,9 @@ export default function CountryDetailComponent({
         }
         // Fallback: open at index 0
         setLightboxIndex(0);
-      } catch (e) {}
+      } catch (e) { }
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Sync lightbox state to URL (only after initial read)
@@ -377,7 +378,14 @@ export default function CountryDetailComponent({
             <div className="flex items-center gap-[8px]">
               <span className="text-[16px] text-white leading-[24px] tracking-[-0.096px] font-normal">By</span>
               <div className="h-[20px] w-[20px] overflow-hidden rounded-[6px] shrink-0">
-                <img src={toLandingAssetUrl(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url)} alt={profile.name} className="w-full h-full object-cover" />
+                <LoadedImage
+                  src={toLandingAssetUrl(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url)}
+                  thumbnailSrc={getOptimizedMediaUrl(toLandingAssetUrl(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url))}
+                  alt={profile.name}
+                  className="w-full h-full object-cover"
+                  skeletonClassName="absolute inset-0 bg-[#2a2a2a]"
+                  containerClassName="w-full h-full relative"
+                />
               </div>
               <Link href={`/profiles/${profile.handle.replace(/^@/, "")}`} className="text-[16px] text-white leading-[24px] tracking-[-0.096px] font-normal hover:underline">
                 {profile.handle}
@@ -412,7 +420,7 @@ export default function CountryDetailComponent({
                   viewHref={`/profiles/${profile.handle.replace(/^@/, "")}`}
                   showViewAction={false}
                   onShare={() => {
-                    navigator.clipboard.writeText(window.location.href).catch(() => {});
+                    navigator.clipboard.writeText(window.location.href).catch(() => { });
                     setShowMenu(false);
                   }}
                   onClose={() => setShowMenu(false)}
@@ -431,11 +439,10 @@ export default function CountryDetailComponent({
               <button
                 key={tab.label}
                 onClick={() => setActiveTab(tab.key as MediaTab)}
-                className={`rounded-[999px] px-[24px] py-[8px] text-[16px] leading-[24px] tracking-[-0.096px] transition ${
-                  activeTab === tab.key
+                className={`rounded-[999px] px-[24px] py-[8px] text-[16px] leading-[24px] tracking-[-0.096px] transition ${activeTab === tab.key
                     ? "bg-[#1e1e1e] border border-white text-white font-medium"
                     : "bg-[#161616] border border-transparent text-[#bdbdbd] font-normal"
-                }`}
+                  }`}
               >
                 {tab.label}
               </button>
@@ -539,11 +546,11 @@ export default function CountryDetailComponent({
                                   <button
                                     type="button"
                                     role="menuitem"
-                                    onClick={(event) => { 
-                                      event.preventDefault(); 
-                                      event.stopPropagation(); 
+                                    onClick={(event) => {
+                                      event.preventDefault();
+                                      event.stopPropagation();
                                       showComingSoonToast("featureLaunch");
-                                      setOpenContextMenuId(null); 
+                                      setOpenContextMenuId(null);
                                     }}
                                     className="flex w-full items-center gap-3 text-[15px] font-medium tracking-[-0.3px] text-white hover:text-[#d4d4d4] transition-colors"
                                   >

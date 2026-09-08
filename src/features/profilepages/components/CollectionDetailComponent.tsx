@@ -12,6 +12,7 @@ import { MoreOptionsButton } from "@/components/ui/MoreOptionsButton";
 import { Tooltip, TooltipProvider } from "@/components/ui/Tooltip";
 import { COUNTRY_LIST } from "@/lib/countries";
 import LoadedImage from "@/components/ui/LoadedImage";
+import { getOptimizedMediaUrl } from "@/lib/landing-assets";
 import { getThumbnailUrl } from "@/components/ThumbnailImage";
 import { useMobileComingSoon } from "@/components/ui/MobileComingSoonToast";
 
@@ -296,7 +297,14 @@ export default function CollectionDetailComponent({
             <div className="flex items-center gap-[8px]">
               <span className="text-[16px] text-white leading-[24px] tracking-[-0.096px] font-normal">By</span>
               <div className="h-[20px] w-[20px] overflow-hidden rounded-[6px] shrink-0">
-                <img src={toLandingAssetUrl(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url)} alt={profile.name} className="w-full h-full object-cover" />
+                <LoadedImage
+                  src={toLandingAssetUrl(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url)}
+                  thumbnailSrc={getOptimizedMediaUrl(toLandingAssetUrl(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url))}
+                  alt={profile.name}
+                  className="w-full h-full object-cover"
+                  skeletonClassName="absolute inset-0 bg-[#2a2a2a]"
+                  containerClassName="w-full h-full relative"
+                />
               </div>
               <Link href={`/profiles/${profile.handle.replace(/^@/, "")}`} className="text-[16px] text-white leading-[24px] tracking-[-0.096px] font-normal hover:underline">
                 {profile.handle}

@@ -6,6 +6,7 @@ import Link from "next/link";
 import { toLandingAssetUrl } from "@/lib/landing-assets";
 import { type SampleProfile } from "../data/profile-data";
 import LoadedImage from "@/components/ui/LoadedImage";
+import { getOptimizedMediaUrl } from "@/lib/landing-assets";
 import { useMobileComingSoon } from "@/components/ui/MobileComingSoonToast";
 
 // Shared Types
@@ -129,7 +130,14 @@ export function MobileProfileNavbar({ profile }: { profile?: any }) {
         <div className={`flex items-center justify-between px-[28px] pt-[20px] pb-[16px] pointer-events-auto transition-colors duration-300 ${(isScrolled || menuOpen) ? "bg-black shadow-[0_2px_0_0_#000]" : "bg-gradient-to-b from-black/50 to-transparent"}`}>
           {isScrolled && profile ? (
             <div className="flex items-center gap-2">
-              <img src={toLandingAssetUrl(profile.images.avatar)} alt="Avatar" className="w-8 h-8 rounded-full object-cover" />
+              <LoadedImage 
+                src={toLandingAssetUrl(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url)}
+                thumbnailSrc={getOptimizedMediaUrl(toLandingAssetUrl(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url))}
+                alt="Avatar" 
+                className="w-8 h-8 rounded-full object-cover"
+                skeletonClassName="absolute inset-0 bg-[#2a2a2a]"
+                containerClassName="w-8 h-8 relative shrink-0 rounded-full"
+              />
               <span className="font-semibold text-[16px] text-white tracking-tight">{profile.handle}</span>
             </div>
           ) : (
@@ -216,6 +224,7 @@ export function MobileHero({
           <div className="w-full aspect-[377/248] -mb-[36px] rounded-2xl overflow-hidden bg-[#151515]">
             <LoadedImage
               src={toLandingAssetUrl(typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url)}
+              thumbnailSrc={getOptimizedMediaUrl(toLandingAssetUrl(typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url))}
               alt="Profile cover"
               className="w-full h-full object-cover"
               skeletonClassName="absolute inset-0 bg-[#1a1a1a]"
@@ -226,6 +235,7 @@ export function MobileHero({
           <div className="relative z-10 mx-auto w-[80px] h-[80px] rounded-2xl ring-4 ring-black bg-[#151515]">
             <LoadedImage
               src={toLandingAssetUrl(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url)}
+              thumbnailSrc={getOptimizedMediaUrl(toLandingAssetUrl(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url))}
               alt="Profile avatar"
               className="w-full h-full object-cover rounded-2xl"
               skeletonClassName="absolute inset-0 bg-[#1a1a1a] rounded-2xl"
