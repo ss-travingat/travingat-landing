@@ -647,7 +647,7 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
 
         <div className="fixed lg:hidden bottom-0 left-0 right-0 pt-[24px] pb-[40px] px-[16px] bg-gradient-to-b from-transparent to-black/60 backdrop-blur-[2px] flex justify-center z-50">
           <div className="w-full max-w-[337px] flex gap-[6px] items-center justify-end relative">
-            <button onClick={() => router.push('/edit/explorercard')} className="bg-[#1a1a1a] border border-[#353535] px-[18px] py-[10px] rounded-full text-white text-[16px] font-medium tracking-[-0.096px] shrink-0">
+            <button onClick={() => router.push('/edit/explorercard')} className="bg-[#1a1a1a] border border-[#353535] w-[66px] h-[44px] flex items-center justify-center rounded-[999px] text-white text-[16px] font-medium tracking-[-0.096px] shrink-0">
               Edit
             </button>
             
@@ -655,7 +655,7 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
               <button onClick={() => {
                 setIsDownloadModalOpen(!isDownloadModalOpen);
                 setIsShareModalOpen(false);
-              }} className="bg-[#1a1a1a] border border-[#353535] px-[18px] py-[10px] rounded-full text-white text-[16px] font-medium tracking-[-0.096px]">
+              }} className="bg-[#1a1a1a] border border-[#353535] w-[112px] h-[44px] flex items-center justify-center rounded-[999px] text-white text-[16px] font-medium tracking-[-0.096px] shrink-0">
                 Download
               </button>
               {/* Download Modal */}
@@ -713,11 +713,11 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
               )}
             </div>
 
-            <div className="relative flex-1" ref={mobileShareRef}>
+            <div className="relative w-[147px] shrink-0" ref={mobileShareRef}>
               <button onClick={() => {
                 setIsShareModalOpen(!isShareModalOpen);
                 setIsDownloadModalOpen(false);
-              }} className="bg-[#5a45f9] flex w-full gap-[4px] items-center justify-center px-[18px] py-[10px] rounded-full text-white text-[16px] font-medium tracking-[-0.096px]">
+              }} className="bg-[#5a45f9] flex w-full gap-[4px] items-center justify-center px-[18px] py-[10px] rounded-[999px] text-white text-[16px] font-medium tracking-[-0.096px]">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
                 Share link
               </button>
@@ -819,9 +819,9 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
   }
 
 return (
-    <div className="flex flex-col min-h-[100dvh] lg:h-[100dvh] lg:overflow-hidden w-full bg-black relative">
+    <div className="flex flex-col h-[100dvh] overflow-hidden w-full bg-black relative">
       {pathname?.startsWith("/edit/explorercard") && (
-        <header className="sticky top-0 flex w-full justify-center pt-[16px] pb-[20px] lg:pt-[40px] lg:pb-[40px] bg-black shrink-0 z-[100]">
+        <header className="sticky top-0 flex w-full justify-center pt-[16px] pb-0 lg:pt-[40px] lg:pb-[40px] bg-black shrink-0 z-[100]">
           <div className="flex w-full px-4 lg:px-[64px] items-center justify-between">
             <div className="flex-1 flex items-center">
               <svg className="w-[28px] h-[28px] lg:w-[36px] lg:h-[36px]" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -915,7 +915,7 @@ return (
           </div>
         </div>
       </div>
-      <div className="block lg:hidden">
+      <div className="flex-1 flex flex-col lg:hidden overflow-hidden w-full">
         <MobileExplorerForm
           form={form}
           setForm={setForm}

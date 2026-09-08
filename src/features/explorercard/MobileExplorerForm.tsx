@@ -173,8 +173,8 @@ export function MobileExplorerForm({
     ) : null;
 
   return (
-    <div className="flex lg:hidden flex-col w-full min-h-screen bg-black text-white relative">
-      <div className="flex flex-col items-center pt-[14px] pb-[4px] shrink-0">
+    <div className="flex lg:hidden flex-col w-full h-full bg-black text-white relative">
+      <div className="flex flex-col items-center pt-[14px] pb-[20px] shrink-0">
         <div className="flex items-center gap-1">
           <div className={`h-1 w-5 rounded-full ${step >= 1 ? 'bg-white' : 'bg-[#404040]'}`} />
           <div className={`h-1 w-5 rounded-full ${step >= 2 ? 'bg-white' : 'bg-[#404040]'}`} />
@@ -183,7 +183,7 @@ export function MobileExplorerForm({
       </div>
 
       <form onSubmit={step === 3 ? handleSubmit : handleNext} className="flex-1 flex flex-col relative">
-        <div ref={scrollContainerRef} className={`flex-1 p-4 pb-[130px] flex flex-col ${step === 3 ? 'overflow-hidden' : 'overflow-y-auto'}`} style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+        <div ref={scrollContainerRef} className={`flex-1 px-4 pb-[112px] flex flex-col ${step === 3 ? 'overflow-hidden' : 'overflow-y-auto'}`} style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
           <style dangerouslySetInnerHTML={{__html: `form::-webkit-scrollbar { display: none; }`}} />
           
           {step === 1 && (
@@ -402,8 +402,8 @@ export function MobileExplorerForm({
           )}
         </div>
 
-        <div className="fixed bottom-0 left-0 right-0 px-4 pt-[20px] pb-8 bg-black flex justify-center z-10">
-          <div className="w-full max-w-[361px] flex items-center gap-3">
+        <div className="fixed bottom-0 left-0 right-0 flex justify-center pt-[24px] pb-[40px] px-[16px] bg-gradient-to-b from-transparent to-[#00000099] backdrop-blur-[2px] z-10 pointer-events-none">
+          <div className="w-full max-w-[361px] flex items-center gap-3 pointer-events-auto">
             {step > 1 && (
               <button
                 type="button"
