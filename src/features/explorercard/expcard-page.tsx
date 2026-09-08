@@ -178,8 +178,36 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
         alert("Failed to download image.");
         return;
       }
+
+      // Convert data URL to Blob
+      const res = await fetch(dataUrl);
+      const blob = await res.blob();
+      const filename = `explorer-card-${style.toLowerCase()}.png`;
+      const file = new File([blob], filename, { type: "image/png" });
+
+      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+      
+      // Try native share on mobile if supported
+      if (isMobile && navigator.canShare && navigator.canShare({ files: [file] })) {
+        try {
+          await navigator.share({
+            files: [file],
+            title: "My Explorer Card",
+          });
+          return; // Success!
+        } catch (error: any) {
+          // If user cancels, don't trigger download fallback
+          if (error.name === "AbortError" || error.message.includes("cancel")) {
+            return;
+          }
+          console.error("Error sharing:", error);
+          // Otherwise, fall through to standard download
+        }
+      }
+
+      // Fallback: Standard <a> tag download
       const link = document.createElement("a");
-      link.download = `explorer-card-${style.toLowerCase()}.png`;
+      link.download = filename;
       link.href = dataUrl;
       document.body.appendChild(link);
       link.click();
@@ -777,7 +805,7 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
       <div className="flex flex-col min-h-[100dvh] w-full bg-black relative">
         <header className="sticky top-0 flex w-full justify-center pt-[16px] pb-[20px] lg:pt-[40px] lg:pb-[40px] bg-black shrink-0 z-[100]">
           <div className="flex w-full px-4 lg:px-[64px] items-center justify-between">
-            <div className="flex-1 flex items-center">
+            <div className="w-[40px] flex items-center shrink-0">
               <svg className="w-[28px] h-[28px] lg:w-[36px] lg:h-[36px]" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M16.9955 15.3319L17.1236 17.0972L15.3583 16.9692L15.2289 15.2026L16.9955 15.3319Z" fill="white"/>
                 <path d="M13.2539 15.7839C13.5075 15.5304 13.9212 15.5323 14.178 15.7889C14.4348 16.0458 14.4367 16.4606 14.183 16.7143C13.9293 16.9675 13.5156 16.9647 13.2589 16.708C13.0023 16.4512 13.0003 16.0375 13.2539 15.7839Z" fill="white"/>
@@ -785,12 +813,12 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
                 <path fill-rule="evenodd" clip-rule="evenodd" d="M18 0C25.2229 0 28.8341 0.000501037 31.4284 1.73396C32.5515 2.48438 33.5156 3.44849 34.266 4.57157C35.9995 7.16587 36 10.7771 36 18C36 25.2229 35.9995 28.8341 34.266 31.4284C33.5156 32.5515 32.5515 33.5156 31.4284 34.266C28.8341 35.9995 25.2229 36 18 36C10.7771 36 7.16587 35.9995 4.57157 34.266C3.44849 33.5156 2.48438 32.5515 1.73396 31.4284C0.000501037 28.8341 0 25.2229 0 18C0 10.7771 0.000501037 7.16587 1.73396 4.57157C2.48438 3.44849 3.44849 2.48438 4.57157 1.73396C7.16587 0.000501037 10.7771 0 18 0ZM17.0445 12.2256C15.6962 10.8772 13.5236 10.8636 12.1917 12.1955C10.8598 13.5273 10.8735 15.6999 12.2218 17.0483L24.3118 29.1395C25.6602 30.4879 27.8327 30.5003 29.1646 29.1684C30.4965 27.8365 30.4841 25.6639 29.1357 24.3156L17.0445 12.2256ZM16.7645 22.9696C16.1225 22.3276 15.0872 22.3204 14.453 22.9545L9.40053 28.0082C12.0973 30.7045 16.4425 30.7309 19.1062 28.0672L20.4848 26.6886L16.7645 22.9696ZM12.9727 19.1777C12.37 18.575 11.3984 18.5686 10.803 19.1639L5.56473 24.4022C4.74033 25.2267 4.74891 26.5721 5.58357 27.4068C6.41827 28.2413 7.76372 28.2488 8.58817 27.4244L14.9037 21.1088L12.9727 19.1777ZM22.9508 14.4568C22.3167 15.091 22.3238 16.1262 22.9658 16.7683L26.6848 20.4886L28.0635 19.1099C30.7271 16.4463 30.7007 12.101 28.0045 9.4043L22.9508 14.4568ZM27.403 5.58733C26.5684 4.75267 25.223 4.7441 24.3984 5.5685L19.1602 10.8068C18.5649 11.4022 18.5713 12.3737 19.174 12.9764L21.105 14.9075L27.4206 8.59194C28.2451 7.76749 28.2376 6.42204 27.403 5.58733Z" fill="white"/>
               </svg>
             </div>
-            <div className="flex-[3] lg:flex-[2] flex justify-center">
-              <h2 className="text-center font-display text-[24px] leading-[32px] lg:text-[28px] lg:leading-[36px] font-medium tracking-[-0.5px] text-white">
+            <div className="flex-1 flex justify-center px-2">
+              <h2 className="text-center font-display text-[24px] leading-[32px] lg:text-[28px] lg:leading-[36px] font-medium tracking-[-0.5px] text-white whitespace-nowrap text-ellipsis overflow-hidden">
                 Create explorer card
               </h2>
             </div>
-            <div className="flex-1 flex justify-end">
+            <div className="w-[40px] flex justify-end shrink-0">
               <button onClick={() => window.location.href = '/'} className="w-[28px] h-[28px] lg:w-[36px] lg:h-[36px] flex items-center justify-center rounded-[8px] bg-[#111] border border-[#212121] hover:bg-[#222] transition-colors shrink-0">
                 <svg className="w-[18px] h-[18px] lg:w-[24px] lg:h-[24px]" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M18 6L6 18M6 6L18 18" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
@@ -823,7 +851,7 @@ return (
       {pathname?.startsWith("/edit/explorercard") && (
         <header className="sticky top-0 flex w-full justify-center pt-[16px] pb-0 lg:pt-[40px] lg:pb-[40px] bg-black shrink-0 z-[100]">
           <div className="flex w-full px-4 lg:px-[64px] items-center justify-between">
-            <div className="flex-1 flex items-center">
+            <div className="w-[40px] flex items-center shrink-0">
               <svg className="w-[28px] h-[28px] lg:w-[36px] lg:h-[36px]" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M16.9955 15.3319L17.1236 17.0972L15.3583 16.9692L15.2289 15.2026L16.9955 15.3319Z" fill="white"/>
                 <path d="M13.2539 15.7839C13.5075 15.5304 13.9212 15.5323 14.178 15.7889C14.4348 16.0458 14.4367 16.4606 14.183 16.7143C13.9293 16.9675 13.5156 16.9647 13.2589 16.708C13.0023 16.4512 13.0003 16.0375 13.2539 15.7839Z" fill="white"/>
@@ -831,13 +859,13 @@ return (
                 <path fill-rule="evenodd" clip-rule="evenodd" d="M18 0C25.2229 0 28.8341 0.000501037 31.4284 1.73396C32.5515 2.48438 33.5156 3.44849 34.266 4.57157C35.9995 7.16587 36 10.7771 36 18C36 25.2229 35.9995 28.8341 34.266 31.4284C33.5156 32.5515 32.5515 33.5156 31.4284 34.266C28.8341 35.9995 25.2229 36 18 36C10.7771 36 7.16587 35.9995 4.57157 34.266C3.44849 33.5156 2.48438 32.5515 1.73396 31.4284C0.000501037 28.8341 0 25.2229 0 18C0 10.7771 0.000501037 7.16587 1.73396 4.57157C2.48438 3.44849 3.44849 2.48438 4.57157 1.73396C7.16587 0.000501037 10.7771 0 18 0ZM17.0445 12.2256C15.6962 10.8772 13.5236 10.8636 12.1917 12.1955C10.8598 13.5273 10.8735 15.6999 12.2218 17.0483L24.3118 29.1395C25.6602 30.4879 27.8327 30.5003 29.1646 29.1684C30.4965 27.8365 30.4841 25.6639 29.1357 24.3156L17.0445 12.2256ZM16.7645 22.9696C16.1225 22.3276 15.0872 22.3204 14.453 22.9545L9.40053 28.0082C12.0973 30.7045 16.4425 30.7309 19.1062 28.0672L20.4848 26.6886L16.7645 22.9696ZM12.9727 19.1777C12.37 18.575 11.3984 18.5686 10.803 19.1639L5.56473 24.4022C4.74033 25.2267 4.74891 26.5721 5.58357 27.4068C6.41827 28.2413 7.76372 28.2488 8.58817 27.4244L14.9037 21.1088L12.9727 19.1777ZM22.9508 14.4568C22.3167 15.091 22.3238 16.1262 22.9658 16.7683L26.6848 20.4886L28.0635 19.1099C30.7271 16.4463 30.7007 12.101 28.0045 9.4043L22.9508 14.4568ZM27.403 5.58733C26.5684 4.75267 25.223 4.7441 24.3984 5.5685L19.1602 10.8068C18.5649 11.4022 18.5713 12.3737 19.174 12.9764L21.105 14.9075L27.4206 8.59194C28.2451 7.76749 28.2376 6.42204 27.403 5.58733Z" fill="white"/>
               </svg>
             </div>
-            <div className="flex-[3] lg:flex-[2] flex justify-center">
-              <h2 className="text-center font-display text-[24px] leading-[32px] lg:text-[28px] lg:leading-[36px] font-medium tracking-[-0.5px] text-white">
+            <div className="flex-1 flex justify-center px-2">
+              <h2 className="text-center font-display text-[24px] leading-[32px] lg:text-[28px] lg:leading-[36px] font-medium tracking-[-0.5px] text-white whitespace-nowrap text-ellipsis overflow-hidden">
                 <span className="lg:hidden">{isEditMode ? "Edit explorer card" : "Create explorer card"}</span>
                 <span className="hidden lg:inline">{isEditMode ? "Edit Your Explorer Card" : "Create Your Explorer Card"}</span>
               </h2>
             </div>
-            <div className="flex-1 flex justify-end">
+            <div className="w-[40px] flex justify-end shrink-0">
               <button onClick={handleCrossClick} disabled={isSubmitting} className="w-[28px] h-[28px] lg:w-[36px] lg:h-[36px] flex items-center justify-center rounded-[8px] bg-[#111] border border-[#212121] hover:bg-[#222] transition-colors shrink-0 disabled:opacity-50">
                 <svg className="w-[18px] h-[18px] lg:w-[24px] lg:h-[24px]" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M18 6L6 18M6 6L18 18" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>

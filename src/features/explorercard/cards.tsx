@@ -188,7 +188,7 @@ export function ClassicCard({ form, sampleFlags, visitedArray, isPreview }: Card
 
         {/* Call to action container */}
         <div className="mt-auto flex w-full shrink-0 items-center justify-center">
-          <a href="/edit/explorercard" className="whitespace-nowrap text-[14px] font-medium leading-[20px] tracking-[-0.084px] text-[#7c7c7c] hover:text-white transition-colors underline decoration-wavy underline-offset-2">
+          <a href="https://www.travingat.com/explorercard" className="whitespace-nowrap text-[14px] font-medium leading-[20px] tracking-[-0.084px] text-[#7c7c7c] hover:text-white transition-colors underline decoration-wavy underline-offset-2">
             Join me on Travingat
           </a>
         </div>
@@ -273,7 +273,7 @@ export function MinimalCard({ form, sampleFlags, visitedArray, isPreview }: Card
       </div>
 
       <div className="flex w-full shrink-0 items-center justify-center">
-        <a href="/edit/explorercard" className="whitespace-nowrap text-[14px] font-medium leading-[20px] tracking-[-0.084px] text-[#7c7c7c] hover:text-white transition-colors underline decoration-wavy underline-offset-2">
+        <a href="https://www.travingat.com/explorercard" className="whitespace-nowrap text-[14px] font-medium leading-[20px] tracking-[-0.084px] text-[#7c7c7c] hover:text-white transition-colors underline decoration-wavy underline-offset-2">
           Join me on Travingat
         </a>
       </div>
@@ -381,11 +381,11 @@ export function AdventureCard({ form, sampleFlags, visitedArray, isPreview }: Ca
       </div>
 
       {/* Call to Action Container */}
-      <div className="mt-auto flex w-full shrink-0 items-center justify-center">
-        <a href="/edit/explorercard" className="whitespace-nowrap text-[14px] font-medium leading-[20px] tracking-[-0.084px] text-[#7c7c7c] hover:text-white transition-colors underline decoration-wavy underline-offset-2">
-          Join me on Travingat
-        </a>
-      </div>
+        <div className="mt-auto pt-6 flex w-full shrink-0 items-center justify-center">
+          <a href="https://www.travingat.com/explorercard" className="whitespace-nowrap text-[14px] font-medium leading-[20px] tracking-[-0.084px] text-[#7c7c7c] hover:text-white transition-colors underline decoration-wavy underline-offset-2">
+            Join me on Travingat
+          </a>
+        </div>
     </div>
   );
 }
