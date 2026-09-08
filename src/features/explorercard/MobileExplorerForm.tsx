@@ -54,6 +54,7 @@ export function MobileExplorerForm({
   const [isVisitedExpanded, setIsVisitedExpanded] = React.useState(false);
   const [step, setStep] = useState(1);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
+  const [keyboardOffset, setKeyboardOffset] = useState(16);
   const scrollContainerRef = React.useRef<HTMLDivElement>(null);
 
   // Per-field error state
@@ -74,6 +75,26 @@ export function MobileExplorerForm({
     // Clear errors when changing steps
     setErrors({});
   }, [step]);
+
+  React.useEffect(() => {
+    if (!window.visualViewport) return;
+    
+    const updateOffset = () => {
+      const offset = window.innerHeight - window.visualViewport!.height;
+      setKeyboardOffset(offset > 0 ? offset + 16 : 16);
+    };
+
+    window.visualViewport.addEventListener('resize', updateOffset);
+    window.visualViewport.addEventListener('scroll', updateOffset);
+    
+    // Initial calculation
+    updateOffset();
+    
+    return () => {
+      window.visualViewport?.removeEventListener('resize', updateOffset);
+      window.visualViewport?.removeEventListener('scroll', updateOffset);
+    };
+  }, []);
 
   const scrollToRef = (ref: React.RefObject<HTMLDivElement | null>) => {
     if (ref.current) {
@@ -396,7 +417,8 @@ export function MobileExplorerForm({
             type="submit"
             disabled={isSubmitting || (isCreated ? !hasChanges : (isEditMode && !hasChanged))}
             onMouseDown={(e) => e.preventDefault()}
-            className="fixed bottom-4 right-4 z-50 flex h-[40px] items-center justify-center rounded-[999px] bg-[#533df6] px-[20px] font-sans text-[16px] font-medium text-white shadow-[0_4px_12px_rgba(0,0,0,0.5)] transition-all hover:opacity-90 disabled:bg-[#C0CAFF] disabled:opacity-100 disabled:cursor-not-allowed"
+            style={{ bottom: `${keyboardOffset}px` }}
+            className="fixed right-4 z-50 flex h-[40px] items-center justify-center rounded-[999px] bg-[#533df6] px-[20px] font-sans text-[16px] font-medium text-white shadow-[0_4px_12px_rgba(0,0,0,0.5)] transition-all hover:opacity-90 disabled:bg-[#C0CAFF] disabled:opacity-100 disabled:cursor-not-allowed"
           >
             {isSubmitting ? "Processing..." : (isCreated ? "Update" : (isEditMode ? "Update" : "Create"))}
           </button>
