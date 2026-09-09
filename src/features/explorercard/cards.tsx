@@ -289,7 +289,7 @@ export function AdventureCard({ form, sampleFlags, visitedArray, isPreview }: Ca
     >
       {/* Main Image Container */}
       <div 
-        className="relative flex w-full h-[528px] shrink-0 flex-col items-center justify-end overflow-hidden rounded-[16px] bg-[#161616] isolate"
+        className="relative flex w-full min-h-[528px] shrink-0 flex-col items-center justify-end overflow-hidden rounded-[16px] bg-[#161616] isolate"
       >
         
         {/* Notch Overlay - Negative top coordinate to overlap any hairline background bleed from anti-aliasing */}
@@ -381,7 +381,7 @@ export function AdventureCard({ form, sampleFlags, visitedArray, isPreview }: Ca
       </div>
 
       {/* Call to Action Container */}
-        <div className="mt-auto pt-6 flex w-full shrink-0 items-center justify-center">
+        <div className="flex w-full shrink-0 items-center justify-center">
           <a href="https://www.travingat.com/explorercard" className="whitespace-nowrap text-[14px] font-medium leading-[20px] tracking-[-0.084px] text-[#7c7c7c] hover:text-white transition-colors underline decoration-wavy underline-offset-2">
             Join me on Travingat
           </a>
