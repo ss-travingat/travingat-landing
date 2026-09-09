@@ -57,6 +57,10 @@ export function getOptimizedMediaUrl(assetUrl: string): string {
     return assetUrl.replace(/\.[^/.]+$/, ".webm");
   }
   
-  // Replace image extensions with .webp
-  return assetUrl.replace(/\.[^/.]+$/, ".webp");
+  // Replace known image extensions with .webp
+  if (/\.(jpe?g|png|avif|heic|heif|gif)$/i.test(assetUrl)) {
+    return assetUrl.replace(/\.[^/.]+$/, ".webp");
+  }
+
+  return assetUrl;
 }

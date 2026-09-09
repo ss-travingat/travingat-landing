@@ -408,7 +408,7 @@ function PhotoCarouselModal({
           {/* Avatar + close */}
           <div className="flex items-start justify-between">
             <div className="h-[72px] w-[72px] overflow-hidden rounded-2xl">
-              <img src={avatarSrc} alt={profileName} className="h-full w-full object-cover" />
+              <LoadedImage src={avatarSrc} thumbnailSrc={getOptimizedMediaUrl(avatarSrc)} alt={profileName} className="h-full w-full object-cover" />
             </div>
             <button
               type="button"

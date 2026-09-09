@@ -3,9 +3,10 @@ import Link from "next/link";
 
 import { demoProfiles } from "@/data/demo-profiles";
 import type { DemoProfile } from "@/data/demo-profiles";
-import { toLandingAssetUrl } from "@/lib/landing-assets";
+import { toLandingAssetUrl, getOptimizedMediaUrl } from "@/lib/landing-assets";
 import { readJsonFromR2 } from "@/lib/r2-upload";
 import JoinSection from "@/components/sections/components/JoinSection";
+import LoadedImage from "@/components/ui/LoadedImage";
 
 export const dynamic = "force-dynamic";
 const R2_KEY = "landingpage-assets/data/profiles.json";
@@ -20,21 +21,19 @@ function TravellerCard({ profile }: { profile: DemoProfile }) {
       <div className="w-full">
         <div className="flex w-full flex-col items-center pb-6 xl:pb-9">
           <div className="relative -mb-6 h-26.75 w-full overflow-hidden rounded-[14px] xl:-mb-9 xl:h-40 xl:rounded-2xl">
-            <Image
+            <LoadedImage
               src={toLandingAssetUrl(profile.images.cover)}
+              thumbnailSrc={getOptimizedMediaUrl(toLandingAssetUrl(profile.images.cover))}
               alt={`${profile.name} cover`}
-              fill
-              className="object-cover"
-              sizes="(min-width: 1280px) 360px, (min-width: 768px) 46vw, 92vw"
+              className="absolute inset-0 h-full w-full object-cover"
             />
           </div>
           <div className="relative z-10 -mb-6 size-13.25 overflow-hidden rounded-[13px] border-[5.333px] border-black xl:-mb-9 xl:size-20 xl:rounded-2xl xl:border-8">
-            <Image
+            <LoadedImage
               src={toLandingAssetUrl(profile.images.avatar)}
+              thumbnailSrc={getOptimizedMediaUrl(toLandingAssetUrl(profile.images.avatar))}
               alt={profile.name}
-              fill
-              className="object-cover"
-              sizes="(min-width: 1280px) 80px, 53px"
+              className="absolute inset-0 h-full w-full object-cover"
             />
           </div>
         </div>

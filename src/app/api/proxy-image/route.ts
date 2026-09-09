@@ -6,7 +6,12 @@ export async function GET(req: NextRequest) {
 
   try {
     const res = await fetch(url);
-    if (!res.ok) throw new Error(`Failed to fetch image: ${res.status}`);
+    if (!res.ok) {
+      if (res.status === 404) {
+        return new NextResponse("Image not found", { status: 404 });
+      }
+      return new NextResponse(`Failed to fetch image: ${res.status}`, { status: res.status });
+    }
     
     const buffer = await res.arrayBuffer();
     const headers = new Headers();
