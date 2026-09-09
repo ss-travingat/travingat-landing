@@ -1,6 +1,13 @@
-import { Pool } from 'pg';
-const pool = new Pool({ connectionString: 'postgres://default:oT3BCHyU8xVb@ep-delicate-darkness-a1z38vj4-pooler.ap-southeast-1.aws.neon.tech:5432/verceldb?sslmode=require' });
-pool.query('SELECT user_id, cover_image_url, profile_image_url FROM explorer_cards ORDER BY card_created DESC LIMIT 1', (err, res) => {
-  console.log(res.rows);
-  pool.end();
-});
+const { neon } = require("@neondatabase/serverless");
+require("dotenv").config({ path: ".env" });
+
+async function run() {
+  const sql = neon(process.env.DATABASE_URL);
+  const res = await sql`
+    SELECT column_name, data_type 
+    FROM information_schema.columns 
+    WHERE table_name = 'explorer_cards';
+  `;
+  console.log(res);
+}
+run();

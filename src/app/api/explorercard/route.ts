@@ -54,10 +54,16 @@ export async function POST(req: Request) {
 
     let profilePublicUrl = existingProfileImage || null;
     let coverPublicUrl = existingCoverImage || null;
+    let profileOriginalExt: string | null = null;
+    let coverOriginalExt: string | null = null;
 
     // Upload Profile Image
     if (profileFile) {
-      const ext = profileFile.type.split('/')[1] || 'png';
+      const extMatch = profileFile.name.match(/\.([^.]+)$/);
+      const originalExt = extMatch ? extMatch[1].toLowerCase() : (profileFile.type.split('/')[1] || 'png');
+      profileOriginalExt = originalExt;
+      
+      const ext = originalExt;
       const arrayBuffer = await profileFile.arrayBuffer();
       const res = await uploadExplorerCardAsset({
         fileBuffer: Buffer.from(arrayBuffer),
@@ -70,7 +76,11 @@ export async function POST(req: Request) {
 
     // Upload Cover Image
     if (coverFile) {
-      const ext = coverFile.type.split('/')[1] || 'png';
+      const extMatch = coverFile.name.match(/\.([^.]+)$/);
+      const originalExt = extMatch ? extMatch[1].toLowerCase() : (coverFile.type.split('/')[1] || 'png');
+      coverOriginalExt = originalExt;
+      
+      const ext = originalExt;
       const arrayBuffer = await coverFile.arrayBuffer();
       const res = await uploadExplorerCardAsset({
         fileBuffer: Buffer.from(arrayBuffer),
@@ -79,6 +89,15 @@ export async function POST(req: Request) {
         userId
       });
       coverPublicUrl = res.url;
+    }
+
+    if (!profileOriginalExt && existingProfileImage) {
+      const extMatch = existingProfileImage.match(/\.([^.]+)$/);
+      if (extMatch) profileOriginalExt = extMatch[1].toLowerCase();
+    }
+    if (!coverOriginalExt && existingCoverImage) {
+      const extMatch = existingCoverImage.match(/\.([^.]+)$/);
+      if (extMatch) coverOriginalExt = extMatch[1].toLowerCase();
     }
 
     // Update user row with the uploaded URLs for general profile, preserving existing ones if empty
@@ -99,15 +118,17 @@ export async function POST(req: Request) {
     // Upsert into the new explorer_cards table
     await sql`
       INSERT INTO explorer_cards (
-        user_id, name, email, country, visited_countries, profile_image_url, cover_image_url, card_style, card_created
+        user_id, name, email, country, visited_countries, profile_image_url, cover_image_url, profile_original_ext, cover_original_ext, card_style, card_created
       ) VALUES (
-        ${userId}, ${firstName + ' ' + lastName}, ${email}, ${country}, ${JSON.stringify(visitedCountries)}::jsonb, ${profilePublicUrl}, ${coverPublicUrl}, ${cardStyle || '--'}, true
+        ${userId}, ${firstName + ' ' + lastName}, ${email}, ${country}, ${JSON.stringify(visitedCountries)}::jsonb, ${profilePublicUrl}, ${coverPublicUrl}, ${profileOriginalExt}, ${coverOriginalExt}, ${cardStyle || '--'}, true
       ) ON CONFLICT (user_id) DO UPDATE SET
         name = EXCLUDED.name,
         country = EXCLUDED.country,
         visited_countries = EXCLUDED.visited_countries,
         profile_image_url = COALESCE(EXCLUDED.profile_image_url, explorer_cards.profile_image_url),
         cover_image_url = COALESCE(EXCLUDED.cover_image_url, explorer_cards.cover_image_url),
+        profile_original_ext = COALESCE(EXCLUDED.profile_original_ext, explorer_cards.profile_original_ext),
+        cover_original_ext = COALESCE(EXCLUDED.cover_original_ext, explorer_cards.cover_original_ext),
         card_style = EXCLUDED.card_style,
         card_created = true;
     `;
