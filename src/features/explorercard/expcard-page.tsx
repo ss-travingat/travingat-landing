@@ -186,10 +186,21 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
       const filename = `explorer-card-${style.toLowerCase()}.png`;
       const file = new File([blob], filename, { type: "image/png" });
 
-      // Always show the "Ready to Share/Download" modal to ensure synchronous share/download.
-      // This bypasses Safari's aggressive blocking of async link.click() downloads.
-      setReadyToShareFile(file);
-      return;
+      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+      if (isMobile) {
+        // Show the "Ready to Share/Download" modal on mobile to ensure synchronous share/download.
+        // This bypasses Safari's aggressive blocking of async link.click() downloads.
+        setReadyToShareFile(file);
+        return;
+      } else {
+        const link = document.createElement("a");
+        link.download = filename;
+        link.href = dataUrl;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        return;
+      }
     } catch (err) {
       console.error("Error generating download:", err);
       alert("Failed to download image.");
