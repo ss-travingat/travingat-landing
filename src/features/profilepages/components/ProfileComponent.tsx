@@ -1287,9 +1287,9 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
       : profile.flagCode;
 
   const carouselDescription = isCollectionItem
-    ? profile.collectionImages?.[activeCarouselItem.collectionIndex!]?.about || profile.bio
+    ? profile.collectionImages?.[activeCarouselItem.collectionIndex!]?.about
     : carouselCountryCode
-      ? profile.countryImages?.find((ci) => ci.countryCode.toUpperCase() === carouselCountryCode)?.about || profile.bio
+      ? profile.countryImages?.find((ci) => ci.countryCode.toUpperCase() === carouselCountryCode)?.about
       : profile.bio;
   const carouselQuote = undefined;
 

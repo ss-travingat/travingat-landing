@@ -220,7 +220,7 @@ export default function CountryDetailComponent({
   const photos = imageUrls.filter((url) => !isVideoAsset(url));
   const videos = imageUrls.filter((url) => isVideoAsset(url));
   const countryImageObj = profile.countryImages?.find(c => c.countryCode.toUpperCase() === countryCode.toUpperCase());
-  const aboutText = countryImageObj?.about || profile.bio;
+  const aboutText = countryImageObj?.about;
 
   const displayImages =
     activeTab === "photos" ? photos :
@@ -356,7 +356,7 @@ export default function CountryDetailComponent({
           profileFlagCode={profile.flagCode}
           countryName={countryName}
           countryCode={countryCode}
-          description={profile.countryImages?.find((c) => c.countryCode.toUpperCase() === countryCode.toUpperCase())?.about || profile.bio}
+          description={profile.countryImages?.find((c) => c.countryCode.toUpperCase() === countryCode.toUpperCase())?.about}
         />
       )}
 
