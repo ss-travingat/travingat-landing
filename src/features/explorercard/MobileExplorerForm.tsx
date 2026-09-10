@@ -53,6 +53,8 @@ export function MobileExplorerForm({
 }: MobileExplorerFormProps) {
   const [isVisitedExpanded, setIsVisitedExpanded] = React.useState(false);
   const [step, setStep] = useState(1);
+  const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
+  const [keyboardOffset, setKeyboardOffset] = useState(16);
   const scrollContainerRef = React.useRef<HTMLDivElement>(null);
 
   // Per-field error state
@@ -73,6 +75,40 @@ export function MobileExplorerForm({
     // Clear errors when changing steps
     setErrors({});
   }, [step]);
+
+  React.useEffect(() => {
+    if (!window.visualViewport) return;
+    
+    let maxVpHeight = window.visualViewport.height;
+    
+    const updateOffset = () => {
+      const currentVpHeight = window.visualViewport!.height;
+      if (currentVpHeight > maxVpHeight) {
+        maxVpHeight = currentVpHeight;
+      }
+      
+      const isOpen = currentVpHeight < maxVpHeight - 100;
+      setIsKeyboardOpen(isOpen);
+      
+      const offset = window.innerHeight - currentVpHeight;
+      setKeyboardOffset(offset > 0 ? offset + 16 : 16);
+      
+      if (!isOpen && document.activeElement && document.activeElement.tagName === 'INPUT') {
+        (document.activeElement as HTMLElement).blur();
+      }
+    };
+
+    window.visualViewport.addEventListener('resize', updateOffset);
+    window.visualViewport.addEventListener('scroll', updateOffset);
+    
+    // Initial calculation
+    updateOffset();
+    
+    return () => {
+      window.visualViewport?.removeEventListener('resize', updateOffset);
+      window.visualViewport?.removeEventListener('scroll', updateOffset);
+    };
+  }, []);
 
   const scrollToRef = (ref: React.RefObject<HTMLDivElement | null>) => {
     if (ref.current) {
@@ -137,31 +173,35 @@ export function MobileExplorerForm({
     ) : null;
 
   return (
-    <div className="flex lg:hidden flex-col w-full min-h-screen bg-black text-white relative">
-      <div className="flex flex-col items-center pt-4 pb-2 shrink-0">
-        <div className="flex items-center gap-1 mt-[14px]">
-          <div className={`h-1 w-5 rounded-full ${step === 1 ? 'bg-white' : 'bg-[#404040]'}`} />
-          <div className={`h-1 w-5 rounded-full ${step === 2 ? 'bg-white' : 'bg-[#404040]'}`} />
-          <div className={`h-1 w-5 rounded-full ${step === 3 ? 'bg-white' : 'bg-[#404040]'}`} />
+    <div className="flex lg:hidden flex-col w-full h-full bg-black text-white relative">
+      <div className="flex flex-col items-center pt-[14px] pb-[20px] shrink-0">
+        <div className="flex items-center gap-1">
+          <div className={`h-1 w-5 rounded-full ${step >= 1 ? 'bg-white' : 'bg-[#404040]'}`} />
+          <div className={`h-1 w-5 rounded-full ${step >= 2 ? 'bg-white' : 'bg-[#404040]'}`} />
+          <div className={`h-1 w-5 rounded-full ${step >= 3 ? 'bg-white' : 'bg-[#404040]'}`} />
         </div>
       </div>
 
       <form onSubmit={step === 3 ? handleSubmit : handleNext} className="flex-1 flex flex-col relative">
-        <div ref={scrollContainerRef} className="flex-1 p-4 pb-[100px] overflow-y-auto" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+        <div ref={scrollContainerRef} className={`flex-1 px-4 pb-[112px] flex flex-col ${step === 3 ? 'overflow-hidden' : 'overflow-y-auto'}`} style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
           <style dangerouslySetInnerHTML={{__html: `form::-webkit-scrollbar { display: none; }`}} />
           
           {step === 1 && (
-            <div className="flex flex-col gap-6 bg-[#111] p-4 rounded-xl border border-transparent">
+            <div className="flex flex-col flex-[1_0_0] gap-6 bg-[#111] p-4 rounded-xl border border-transparent">
               <Field label="Email">
                 <div className="flex w-full items-center gap-[8px]">
-                  <div className="w-full rounded-[10px] bg-black border border-[#1e1e1e] px-[16px] py-[12px]">
+                  <div className="w-full flex items-center justify-between rounded-[10px] bg-black border border-[#1e1e1e] px-[16px] py-[12px]">
                     <input
                       name="email"
                       value={form.email}
                       disabled
                       placeholder="Email"
-                      className="w-full bg-transparent font-sans font-normal text-[16px] leading-[24px] tracking-[-0.096px] text-[#525252] outline-none"
+                      className="w-full bg-transparent font-sans font-normal text-[16px] leading-[24px] tracking-[-0.096px] text-white outline-none placeholder:text-[#525252]"
                     />
+                    <svg className="w-4 h-4 text-[#525252] shrink-0 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" xmlns="http://www.w3.org/2000/svg">
+                      <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                      <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                    </svg>
                   </div>
                 </div>
               </Field>
@@ -204,7 +244,7 @@ export function MobileExplorerForm({
           )}
 
           {step === 2 && (
-            <div className="flex flex-col gap-6 bg-[#111] p-4 rounded-xl border border-transparent">
+            <div className="flex flex-col flex-[1_0_0] gap-6 bg-[#111] p-4 rounded-xl border border-transparent">
               <Field label="Full name">
                 <div className="flex w-full items-center gap-[8px]">
                   <div ref={firstNameRef} className="w-full flex flex-col">
@@ -284,82 +324,53 @@ export function MobileExplorerForm({
           )}
 
           {step === 3 && (
-            <div ref={visitedRef} className="flex flex-col bg-[#111] rounded-xl border border-transparent overflow-hidden">
-              <div className="p-4 border-b border-[#1e1e1e]">
-                <div className="flex w-full items-center justify-between mb-3">
-                  <p className="text-[14px] text-white">Visited countries <span className="text-[#7c7c7c]">({visited.length} Selected)</span></p>
-                  {visited.length > 0 && (
-                    <button type="button" onClick={() => setIsVisitedExpanded(!isVisitedExpanded)} className="text-[#7c7c7c] hover:text-white transition-colors p-[2px]">
-                      {isVisitedExpanded ? (
-                        <svg className="w-[16px] h-[16px]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" /></svg>
-                      ) : (
-                        <svg className="w-[16px] h-[16px]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
-                      )}
-                    </button>
-                  )}
-                </div>
-                {visited.length > 0 && !isVisitedExpanded && (
-                  <div className="flex items-center gap-[4px] mb-[12px]">
-                    {visited.slice(0, 5).map((c) => (
-                      <div
-                        key={c}
-                        className="flex items-center justify-center rounded-[4px] bg-[#1e1e1e] px-[4px] py-[2px]"
-                      >
-                        <span className={`fi fi-${sampleFlags[c]?.toLowerCase()} h-[13.333px] w-[20px] aspect-[3/2] overflow-clip rounded-[1px] bg-cover bg-center`} title={c} />
-                      </div>
-                    ))}
-                    {visited.length > 5 && (
-                      <button type="button" onClick={() => setIsVisitedExpanded(true)} className="flex items-center justify-center rounded-[4px] bg-[#1e1e1e] px-[6px] py-[2px] cursor-pointer hover:bg-[#2a2a2a] transition-colors">
-                        <span className="text-[10px] font-medium text-white">+{visited.length - 5}</span>
-                      </button>
-                    )}
-                  </div>
-                )}
-                {visited.length > 0 && isVisitedExpanded && (
-                  <div className="flex flex-wrap items-center gap-[4px] mb-[12px]">
-                    {visited.map((c) => (
-                      <div
-                        key={c}
-                        className="flex items-center gap-[4px] rounded-[6px] bg-[#1e1e1e] px-[6px] py-[4px]"
-                      >
-                        <span className={`fi fi-${sampleFlags[c]?.toLowerCase()} h-[13.333px] w-[20px] aspect-[3/2] overflow-clip rounded-[1px] bg-cover bg-center`} title={c} />
-                        <span className="text-[12px] text-white font-medium">{sampleFlags[c]}</span>
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                {/* Minimum countries progress indicator */}
-                {visited.length < 5 && (
-                  <div className="mb-3">
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="text-[12px] text-[#7c7c7c]">Minimum 5 countries required</span>
-                      <span className={`text-[12px] font-medium ${visited.length >= 5 ? 'text-green-400' : 'text-[#7c7c7c]'}`}>{visited.length}/5</span>
-                    </div>
-                    <div className="w-full h-[3px] bg-[#1e1e1e] rounded-full overflow-hidden">
-                      <div
-                        className="h-full bg-white rounded-full transition-all duration-300"
-                        style={{ width: `${Math.min((visited.length / 5) * 100, 100)}%` }}
-                      />
-                    </div>
-                  </div>
-                )}
-
-                {errors.visited && (
-                  <p className="text-[12px] text-red-500 font-medium mb-3">{errors.visited}</p>
-                )}
-
-                <div className="relative flex items-center w-full rounded-[10px] border border-[#1e1e1e] bg-black">
-                  <svg className="absolute left-[16px] top-1/2 -translate-y-1/2 h-[20px] w-[20px] text-[#7c7c7c] pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
-                  <input
-                    value={countryQuery}
-                    onChange={(e) => setCountryQuery(e.target.value)}
-                    placeholder="Search countries"
-                    className="w-full bg-transparent py-[12px] pl-[44px] pr-4 font-sans font-normal text-[16px] leading-[24px] tracking-[-0.096px] text-white outline-none placeholder:text-[#525252]"
-                  />
-                </div>
+            <div ref={visitedRef} className="flex flex-col flex-[1_0_0] bg-[#111] rounded-[12px] p-[12px] overflow-hidden min-h-px w-full">
+              <div className="flex w-full items-center justify-between shrink-0">
+                <p className="text-[14px] text-white leading-[20px]">Visited countries <span className="text-[#7c7c7c]">({visited.length} Selected)</span></p>
               </div>
-              <div className="flex flex-col p-2 max-h-[400px] overflow-y-auto">
+
+              {visited.length > 0 && !isKeyboardOpen && (
+                <div className="flex flex-wrap items-start gap-x-[12px] gap-y-[8px] mt-[10px] shrink-0 max-h-[140px] overflow-y-auto" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+                  {visited.map((c) => (
+                    <div key={c} className="flex items-center gap-[4px]">
+                      <span className={`fi fi-${sampleFlags[c]?.toLowerCase()} h-[13.333px] w-[20px] aspect-[3/2] overflow-clip rounded-[1px] bg-cover bg-center`} title={c} />
+                      <span className="text-[12px] text-[#A3A3A3] font-medium leading-none">{sampleFlags[c]}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Minimum countries progress indicator */}
+              {visited.length < 5 && !isKeyboardOpen && (
+                <div className="mt-[10px] shrink-0">
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-[12px] text-[#7c7c7c]">Minimum 5 countries required</span>
+                    <span className={`text-[12px] font-medium ${visited.length >= 5 ? 'text-green-400' : 'text-[#7c7c7c]'}`}>{visited.length}/5</span>
+                  </div>
+                  <div className="w-full h-[3px] bg-[#1e1e1e] rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-white rounded-full transition-all duration-300"
+                      style={{ width: `${Math.min((visited.length / 5) * 100, 100)}%` }}
+                    />
+                  </div>
+                </div>
+              )}
+
+              {errors.visited && (
+                <p className="text-[12px] text-red-500 font-medium mt-[10px]">{errors.visited}</p>
+              )}
+
+              <div className="relative flex items-center w-full rounded-[10px] border border-[#1e1e1e] bg-black mt-[10px] shrink-0">
+                <svg className="absolute left-[16px] top-1/2 -translate-y-1/2 h-[24px] w-[24px] text-[#e3e3e3] pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                <input
+                  value={countryQuery}
+                  onChange={(e) => setCountryQuery(e.target.value)}
+                  placeholder="Search countries"
+                  className="w-full bg-transparent py-[12px] pl-[48px] pr-4 font-sans font-normal text-[16px] leading-[24px] tracking-[-0.096px] text-white outline-none placeholder:text-[#525252]"
+                />
+              </div>
+
+              <div className="flex flex-col mt-[12px] overflow-y-auto flex-1 rounded-[8px]">
                 {Object.keys(sampleFlags)
                   .filter((c) => c.toLowerCase().includes(countryQuery.toLowerCase()))
                   .map((c) => {
@@ -370,20 +381,20 @@ export function MobileExplorerForm({
                       type="button"
                       onMouseDown={(e) => e.preventDefault()}
                       onClick={() => { isSelected ? removeCountry(c) : addCountry(c); setErrors(prev => ({ ...prev, visited: '' })); }}
-                      className="flex w-full items-center justify-between p-[12px] text-left hover:bg-[#1e1e1e] transition-colors rounded-lg"
+                      className={`flex w-full items-center justify-between p-[12px] text-left transition-colors ${isSelected ? 'bg-[#1e1e1e]' : 'bg-transparent hover:bg-[#1e1e1e]'}`}
                     >
-                      <div className="flex items-center gap-[12px]">
+                      <div className="flex items-center gap-[8px]">
                         {isSelected ? (
-                          <div className="flex h-[24px] w-[24px] items-center justify-center rounded-[8px] bg-white">
-                            <svg className="h-[16px] w-[16px] text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>
+                          <div className="flex h-[24px] w-[24px] shrink-0 items-center justify-center rounded-[8px] border border-[#2a2a2a] bg-white">
+                            <svg className="h-[16px] w-[16px] text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" /></svg>
                           </div>
                         ) : (
-                          <div className="h-[24px] w-[24px] rounded-[8px] border border-[#404040] bg-transparent" />
+                          <div className="h-[24px] w-[24px] shrink-0 rounded-[8px] border border-[#464646] bg-[#161616]" />
                         )}
-                        <span className={`fi fi-${sampleFlags[c].toLowerCase()} h-[13.333px] w-[20px] aspect-[3/2] rounded-[2px] inline-block bg-cover bg-center`} title={c} />
-                        <span className="text-[16px] text-white">{c}</span>
+                        <span className={`fi fi-${sampleFlags[c].toLowerCase()} h-[13.333px] w-[20px] shrink-0 aspect-[3/2] rounded-[2px] inline-block bg-cover bg-center`} title={c} />
+                        <span className="text-[16px] text-white font-normal leading-[24px] tracking-[-0.096px]">{c}</span>
                       </div>
-                      <span className="text-[14px] text-[#525252]">{sampleFlags[c]}</span>
+                      <span className="text-[16px] text-[#656565] font-normal leading-[24px] tracking-[-0.096px]">{sampleFlags[c]}</span>
                     </button>
                   );
                 })}
@@ -392,8 +403,8 @@ export function MobileExplorerForm({
           )}
         </div>
 
-        <div className="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black via-black/80 to-transparent flex justify-center z-10">
-          <div className="w-full max-w-[361px] flex items-center gap-3">
+        <div className="fixed bottom-0 left-0 right-0 flex justify-center pt-[24px] pb-[40px] px-[16px] bg-gradient-to-b from-transparent to-[#00000099] backdrop-blur-[2px] z-10 pointer-events-none">
+          <div className="w-full max-w-[361px] flex items-center gap-3 pointer-events-auto">
             {step > 1 && (
               <button
                 type="button"
@@ -407,13 +418,29 @@ export function MobileExplorerForm({
             )}
             <button
               type="submit"
-              disabled={isSubmitting || (step === 3 && (isCreated ? !hasChanges : (isEditMode && !hasChanged)))}
-              className="mt-6 flex h-[48px] w-[184px] items-center justify-center rounded-[99px] bg-white text-[16px] font-medium text-black hover:bg-white/90 disabled:opacity-50 transition-colors"
+              disabled={
+                isSubmitting ||
+                (step === 1 && (!form.profileImage || !form.coverImage)) ||
+                (step === 2 && (!form.firstName || !form.lastName || !form.country)) ||
+                (step === 3 && (isCreated ? !hasChanges : (isEditMode && !hasChanged)))
+              }
+              className="flex-1 flex h-[48px] items-center justify-center rounded-[999px] bg-[#533df6] px-[24px] font-sans text-[16px] font-medium leading-[24px] tracking-[-0.176px] text-[#ecf0ff] transition-all hover:opacity-90 disabled:bg-[#C0CAFF] disabled:opacity-100 disabled:cursor-not-allowed"
             >
               {isSubmitting ? "Processing..." : step === 3 ? (isCreated ? "Update" : (isEditMode ? "Update" : "Create")) : "Next"}
             </button>
           </div>
         </div>
+        {step === 3 && isKeyboardOpen && (
+          <button
+            type="submit"
+            disabled={isSubmitting || (isCreated ? !hasChanges : (isEditMode && !hasChanged))}
+            onMouseDown={(e) => e.preventDefault()}
+            style={{ bottom: `${keyboardOffset}px` }}
+            className="fixed right-4 z-50 flex h-[40px] items-center justify-center rounded-[999px] bg-[#533df6] px-[20px] font-sans text-[16px] font-medium text-white shadow-[0_4px_12px_rgba(0,0,0,0.5)] transition-all hover:opacity-90 disabled:bg-[#C0CAFF] disabled:opacity-100 disabled:cursor-not-allowed"
+          >
+            {isSubmitting ? "Processing..." : (isCreated ? "Update" : (isEditMode ? "Update" : "Create"))}
+          </button>
+        )}
       </form>
     </div>
   );

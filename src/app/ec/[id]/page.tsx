@@ -114,35 +114,9 @@ export default async function ShortExplorerCardPage({
 
 
   return (
-    <main className="min-h-screen bg-black flex flex-col lg:flex-row items-center justify-center gap-6 lg:gap-[80px] pt-[40px] pb-[80px] lg:py-[120px] px-6 lg:px-12 w-full overflow-hidden max-w-[1400px] mx-auto">
-      {/* Mobile-only Title */}
-      <h1 className="lg:hidden text-[32px] sm:text-[40px] font-medium text-white tracking-[-1px] ds-font-display leading-[1.1] mb-0 text-center w-full order-0">
-        <span className="capitalize">{form.fullName}</span>'s Explorer Card
-      </h1>
-
-      {/* Left Column: Text, CTA & Features */}
-      <div className="flex flex-col items-center lg:items-start text-center lg:text-left z-10 max-w-[600px] w-full order-2 lg:order-1 mt-4 lg:mt-0">
-        <h1 className="hidden lg:block lg:text-[56px] font-medium text-white tracking-[-1px] ds-font-display leading-[1.1] mb-6 order-1">
-          <span className="capitalize">{form.fullName}</span>'s Explorer Card
-        </h1>
-
-
-        {/* CTA Container */}
-        <div className="flex flex-col items-center lg:items-start w-full order-3 lg:order-2 mb-0 lg:mb-12 mt-4 lg:mt-0">
-          <p className="text-[16px] lg:text-[18px] text-[#989898] mb-6 lg:mb-8">
-            Join Travingat to create your own!
-          </p>
-          <a 
-            href="/join/explorercard" 
-            className="bg-[#5952ff] rounded-[999px] px-[32px] py-[16px] text-[16px] lg:text-[18px] font-medium text-white hover:opacity-90 transition-opacity flex w-full items-center justify-center"
-          >
-            Create my card
-          </a>
-        </div>
-      </div>
-
-      {/* Right Column: Card */}
-      <div className="relative flex items-center justify-center lg:w-[450px] lg:h-[750px] sm:mb-[60px] lg:mb-0 order-1 lg:order-2">
+    <main className="min-h-screen bg-black flex items-center justify-center pt-[40px] pb-[80px] lg:py-[120px] px-6 lg:px-12 w-full overflow-hidden max-w-[1400px] mx-auto">
+      {/* Centered Card */}
+      <div className="relative flex items-center justify-center lg:w-[450px] lg:h-[750px] sm:mb-[60px] lg:mb-0">
         <div className="scale-100 sm:scale-110 lg:scale-125 origin-top lg:origin-center transition-transform">
           {style === "minimal" ? (
             <MinimalCard form={form} sampleFlags={sampleFlags} visitedArray={visitedArray} />
