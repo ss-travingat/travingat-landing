@@ -20,11 +20,13 @@ export function getLandingAssetsCdnBase(): string {
   return `${publicUrl}/${LANDING_ASSETS_PREFIX}`;
 }
 
-export function toLandingAssetUrl(assetPath: string): string {
-  if (!assetPath) return assetPath;
-  if (/^https?:\/\//i.test(assetPath) || /^blob:/i.test(assetPath) || /^data:/i.test(assetPath)) return assetPath;
+export function toLandingAssetUrl(assetPath: string | { url: string }): string {
+  if (!assetPath) return assetPath as any;
+  const urlStr = typeof assetPath === "string" ? assetPath : assetPath.url;
+  if (!urlStr) return "";
+  if (/^https?:\/\//i.test(urlStr) || /^blob:/i.test(urlStr) || /^data:/i.test(urlStr)) return urlStr;
 
-  const normalizedInput = assetPath.replace(/^\/+/, "");
+  const normalizedInput = urlStr.replace(/^\/+/, "");
   const assetPathWithFolder = isBareMediaFile(normalizedInput)
     ? `profiles/${normalizedInput}`
     : normalizedInput;

@@ -2,8 +2,9 @@
 
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
+import LoadedImage from "@/components/ui/LoadedImage";
 import Link from "next/link";
-import { toLandingAssetUrl } from "@/lib/landing-assets";
+import { toLandingAssetUrl, getOptimizedMediaUrl } from "@/lib/landing-assets";
 import { COUNTRY_LIST } from "@/lib/countries";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
@@ -1043,7 +1044,6 @@ export default function AdminProfilesPage() {
                       {isVid ? (
                         <>
                           <video
-                            src={toLandingAssetUrl(url)}
                             muted
                             playsInline
                             loop
@@ -1051,13 +1051,16 @@ export default function AdminProfilesPage() {
                             className="w-full h-full object-cover"
                             onMouseEnter={(e) => e.currentTarget.play().catch(() => {})}
                             onMouseLeave={(e) => { e.currentTarget.pause(); e.currentTarget.currentTime = 0; }}
-                          />
+                          >
+                                        <source src={getOptimizedMediaUrl(toLandingAssetUrl(url))} type="video/webm" />
+                                        <source src={toLandingAssetUrl(url)} type="video/mp4" />
+                                      </video>
                           <div className="absolute inset-0 flex items-center justify-center pointer-events-none group-hover:opacity-0 transition-opacity">
                             <span className="text-white text-[14px] drop-shadow">▶</span>
                           </div>
                         </>
                       ) : (
-                        <Image unoptimized src={toLandingAssetUrl(url)} alt={`Media ${i + 1}`} fill className="object-cover" />
+                        <LoadedImage src={toLandingAssetUrl(url)} thumbnailSrc={getOptimizedMediaUrl(toLandingAssetUrl(url))} alt={`Media ${i + 1}`} containerClassName="w-full h-full absolute inset-0" className="w-full h-full object-cover" />
                       )}
                       {isAlreadyAdded && (
                         <div className="absolute inset-0 flex items-center justify-center">
@@ -1292,12 +1295,7 @@ export default function AdminProfilesPage() {
                     <div className="w-32 h-20 rounded-lg overflow-hidden bg-white/5 shrink-0 relative group">
                       {form.images.cover ? (
                         <>
-                          <Image unoptimized
-                            src={toLandingAssetUrl(form.images.cover)}
-                            alt="Cover"
-                            fill
-                            className="object-cover"
-                          />
+                          <LoadedImage src={toLandingAssetUrl(form.images.cover)} thumbnailSrc={getOptimizedMediaUrl(toLandingAssetUrl(form.images.cover))} alt="Cover" containerClassName="w-full h-full absolute inset-0" className="w-full h-full object-cover" />
                           <button
                             type="button"
                             onClick={() => setForm(prev => ({ ...prev, images: { ...prev.images, cover: "" } }))}
@@ -1354,12 +1352,7 @@ export default function AdminProfilesPage() {
                     <div className="w-16 h-16 rounded-xl overflow-hidden bg-white/5 shrink-0 relative group">
                       {form.images.avatar ? (
                         <>
-                          <Image unoptimized
-                            src={toLandingAssetUrl(form.images.avatar)}
-                            alt="Avatar"
-                            fill
-                            className="object-cover"
-                          />
+                          <LoadedImage src={toLandingAssetUrl(form.images.avatar)} thumbnailSrc={getOptimizedMediaUrl(toLandingAssetUrl(form.images.avatar))} alt="Avatar" containerClassName="w-full h-full absolute inset-0" className="w-full h-full object-cover" />
                           <button
                             type="button"
                             onClick={() => setForm(prev => ({ ...prev, images: { ...prev.images, avatar: "" } }))}
@@ -1416,11 +1409,12 @@ export default function AdminProfilesPage() {
                         key={i}
                         className="relative w-20 h-16 rounded-lg overflow-hidden bg-white/5 group"
                       >
-                        <Image unoptimized
+                        <LoadedImage
                           src={toLandingAssetUrl(url)}
+                          thumbnailSrc={getOptimizedMediaUrl(toLandingAssetUrl(url))}
                           alt={`About ${i + 1}`}
-                          fill
-                          className="object-cover"
+                          containerClassName="w-full h-full absolute inset-0"
+                          className="w-full h-full object-cover"
                         />
                         <button
                           onClick={() => removeAboutImage(i)}
@@ -1621,7 +1615,8 @@ export default function AdminProfilesPage() {
                             </div>
                           </div>
                           <div className="flex flex-wrap gap-2">
-                            {ci.images.map((imgUrl, imgIdx) => {
+                            {ci.images.map((imgEntry: any, imgIdx: number) => {
+                              const imgUrl = typeof imgEntry === "string" ? imgEntry : imgEntry.url;
                               const isVid = /\.(mp4|mov|webm|m4v)$/i.test(imgUrl);
                               return (
                                 <div key={imgIdx} className="relative group w-16 h-12 shrink-0">
@@ -1629,7 +1624,6 @@ export default function AdminProfilesPage() {
                                   {isVid ? (
                                     <>
                                       <video
-                                        src={toLandingAssetUrl(imgUrl)}
                                         muted
                                         playsInline
                                         loop
@@ -1638,17 +1632,21 @@ export default function AdminProfilesPage() {
                                         onMouseEnter={(e) => e.currentTarget.play().catch(() => {})}
                                         onMouseLeave={(e) => { e.currentTarget.pause(); e.currentTarget.currentTime = 0; }}
                                         onClick={(e) => { const v = e.currentTarget; if (v.paused) v.play().catch(() => {}); else { v.pause(); v.currentTime = 0; } }}
-                                      />
+                                      >
+                                        <source src={getOptimizedMediaUrl(toLandingAssetUrl(imgUrl))} type="video/webm" />
+                                        <source src={toLandingAssetUrl(imgUrl)} type="video/mp4" />
+                                      </video>
                                       <div className="absolute inset-0 flex items-center justify-center pointer-events-none group-hover:opacity-0 transition-opacity">
                                         <span className="text-white text-[16px] drop-shadow">▶</span>
                                       </div>
                                     </>
                                   ) : (
-                                    <Image unoptimized
+                                    <LoadedImage
                                       src={toLandingAssetUrl(imgUrl)}
+                                      thumbnailSrc={getOptimizedMediaUrl(toLandingAssetUrl(imgUrl))}
                                       alt={`${country?.name || ci.countryCode} ${imgIdx + 1}`}
-                                      fill
-                                      className="object-cover"
+                                      containerClassName="w-full h-full absolute inset-0"
+                                      className="w-full h-full object-cover"
                                     />
                                   )}
                                   {ci.coverPhoto === imgUrl && (
@@ -1825,14 +1823,14 @@ export default function AdminProfilesPage() {
                           </div>
                         </div>
                         <div className="flex flex-wrap gap-2">
-                          {ci.images.map((imgUrl, imgIdx) => {
+                          {ci.images.map((imgEntry: any, imgIdx: number) => {
+                            const imgUrl = typeof imgEntry === "string" ? imgEntry : imgEntry.url;
                             const isVid = /\.(mp4|mov|webm|m4v)$/i.test(imgUrl);
                             return (
                               <div key={imgIdx} className="relative group w-16 h-12 rounded-md overflow-hidden bg-white/5 shrink-0">
                                 {isVid ? (
                                   <>
                                     <video
-                                      src={toLandingAssetUrl(imgUrl)}
                                       muted
                                       playsInline
                                       loop
@@ -1841,17 +1839,21 @@ export default function AdminProfilesPage() {
                                       onMouseEnter={(e) => e.currentTarget.play().catch(() => {})}
                                       onMouseLeave={(e) => { e.currentTarget.pause(); e.currentTarget.currentTime = 0; }}
                                       onClick={(e) => { const v = e.currentTarget; if (v.paused) v.play().catch(() => {}); else { v.pause(); v.currentTime = 0; } }}
-                                    />
+                                    >
+                                        <source src={getOptimizedMediaUrl(toLandingAssetUrl(imgUrl))} type="video/webm" />
+                                        <source src={toLandingAssetUrl(imgUrl)} type="video/mp4" />
+                                      </video>
                                     <div className="absolute inset-0 flex items-center justify-center pointer-events-none group-hover:opacity-0 transition-opacity">
                                       <span className="text-white text-[16px] drop-shadow">▶</span>
                                     </div>
                                   </>
                                 ) : (
-                                  <Image unoptimized
+                                  <LoadedImage
                                     src={toLandingAssetUrl(imgUrl)}
+                                    thumbnailSrc={getOptimizedMediaUrl(toLandingAssetUrl(imgUrl))}
                                     alt={`${ci.title} ${imgIdx + 1}`}
-                                    fill
-                                    className="object-cover"
+                                    containerClassName="w-full h-full absolute inset-0"
+                                    className="w-full h-full object-cover"
                                   />
                                 )}
                                   {ci.coverPhoto === imgUrl && (
@@ -2315,12 +2317,7 @@ export default function AdminProfilesPage() {
                     {/* Avatar */}
                     <div className="w-14 h-14 rounded-xl overflow-hidden bg-white/5 shrink-0 relative">
                       {p.images.avatar ? (
-                        <Image unoptimized
-                          src={toLandingAssetUrl(p.images.avatar)}
-                          alt={p.name}
-                          fill
-                          className="object-cover"
-                        />
+                        <LoadedImage src={toLandingAssetUrl(p.images.avatar)} thumbnailSrc={getOptimizedMediaUrl(toLandingAssetUrl(p.images.avatar))} alt={p.name} containerClassName="w-full h-full absolute inset-0" className="w-full h-full object-cover" />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center text-white/20 text-lg">
                           👤
@@ -2401,12 +2398,7 @@ export default function AdminProfilesPage() {
                   {/* Cover preview */}
                   {p.images.cover && (
                     <div className="mt-3 h-24 rounded-xl overflow-hidden relative ring-1 ring-white/10">
-                      <Image unoptimized
-                        src={toLandingAssetUrl(p.images.cover)}
-                        alt="Cover"
-                        fill
-                        className="object-cover"
-                      />
+                      <LoadedImage src={toLandingAssetUrl(p.images.cover)} thumbnailSrc={getOptimizedMediaUrl(toLandingAssetUrl(p.images.cover))} alt="Cover" containerClassName="w-full h-full absolute inset-0" className="w-full h-full object-cover" />
                     </div>
                   )}
                 </div>

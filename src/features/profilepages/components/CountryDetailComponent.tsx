@@ -65,6 +65,7 @@ function PhotoLightbox({
   onPrev,
   onSelectIndex,
   profileName,
+  profileCountry,
   profileHandle,
   profileAvatar,
   profileFlagCode,
@@ -80,6 +81,7 @@ function PhotoLightbox({
   onPrev: () => void;
   onSelectIndex: (index: number) => void;
   profileName: string;
+  profileCountry?: string;
   profileHandle: string;
   profileAvatar: string;
   profileFlagCode?: string;
@@ -128,11 +130,11 @@ function PhotoLightbox({
 
           {/* Profile info */}
           <div className="flex flex-col gap-3">
-            <div className="flex items-center gap-2 text-[13px] text-[#888]">
+            <div className="flex items-center gap-[6px]">
               {profileFlagSrc ? (
                 <img src={profileFlagSrc} alt="" className="h-3 w-[18px] rounded-[2px] object-cover" />
               ) : null}
-              <span>{profileName}</span>
+              <span className="text-[14px] font-medium leading-[20px] tracking-[-0.1px] text-[#A8A8A8]">{profileCountry || profileName}</span>
             </div>
             <p className="text-[20px] font-semibold tracking-[-0.5px] text-white">{profileHandle}</p>
           </div>
@@ -348,6 +350,7 @@ export default function CountryDetailComponent({
           onPrev={() => setLightboxIndex((prev) => prev === null ? null : (prev - 1 + displayImages.length) % displayImages.length)}
           onSelectIndex={setLightboxIndex}
           profileName={profile.name}
+          profileCountry={profile.country}
           profileHandle={profileHandle}
           profileAvatar={typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url}
           profileFlagCode={profile.flagCode}

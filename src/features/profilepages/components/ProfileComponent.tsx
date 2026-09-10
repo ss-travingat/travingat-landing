@@ -359,6 +359,7 @@ function PhotoCarouselModal({
   onSelectIndex,
   onShareClick,
   profileName,
+  profileCountry,
   profileHandle,
   profileAvatar,
   profileFlagCode,
@@ -377,6 +378,7 @@ function PhotoCarouselModal({
   profileName: string;
   profileHandle: string;
   profileAvatar: string;
+  profileCountry?: string;
   profileFlagCode?: string;
   countryName?: string;
   countryFlagCode?: string;
@@ -422,11 +424,11 @@ function PhotoCarouselModal({
 
           {/* Profile info */}
           <div className="flex flex-col gap-1">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-[6px]">
               {profileFlagSrc ? (
                 <img src={profileFlagSrc} alt="" className="h-[15.6px] w-6 rounded-[2px] object-cover" />
               ) : null}
-              <span className="text-[14px] font-normal leading-5 tracking-[-0.084px] text-[#989898]">{profileName}</span>
+              <span className="text-[14px] font-medium leading-[20px] tracking-[-0.1px] text-[#A8A8A8]">{profileCountry || profileName}</span>
             </div>
             <p className="text-[18px] font-medium leading-6 tracking-[-0.198px] text-white">{profileHandle}</p>
           </div>
@@ -1214,12 +1216,17 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
     }
   }, [carouselIndex, carouselItems]);
 
+  const hasReadUrlImage = useRef(false);
+
   // Read from URL on mount
   useEffect(() => {
-    if (typeof window === "undefined") return;
+    if (typeof window === "undefined" || hasReadUrlImage.current) return;
+    if (allMediaItems.length === 0) return;
+    hasReadUrlImage.current = true;
+
     const url = new URL(window.location.href);
     const encodedImage = url.searchParams.get("image");
-    if (encodedImage && allMediaItems.length > 0 && carouselIndex === null) {
+    if (encodedImage && carouselIndex === null) {
       try {
         const imageUrl = decodeURIComponent(escape(atob(encodedImage)));
         const index = allMediaItems.findIndex((item) => item.fileUrl === imageUrl);
@@ -1279,7 +1286,11 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
       ? undefined
       : profile.flagCode;
 
-  const carouselDescription = profile.bio;
+  const carouselDescription = isCollectionItem
+    ? profile.collectionImages?.[activeCarouselItem.collectionIndex!]?.about || profile.bio
+    : carouselCountryCode
+      ? profile.countryImages?.find((ci) => ci.countryCode.toUpperCase() === carouselCountryCode)?.about || profile.bio
+      : profile.bio;
   const carouselQuote = undefined;
 
   const toShareUrl = (url: string) => {
@@ -1295,26 +1306,8 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
 
   const openCarouselAt = (index: number) => {
     if (allMediaItems.length === 0) return;
-    // Determine if clicked item belongs to a collection — prefer collection scope
-    const active = allMediaItems[index];
-    if (typeof active.collectionIndex === "number" && profile.collectionImages?.[active.collectionIndex]) {
-      const filtered = allMediaItems.filter((it) => it.collectionIndex === active.collectionIndex);
-      setCarouselItems(filtered);
-      const newIndex = filtered.findIndex((it) => it.fileUrl === active.fileUrl);
-      setCarouselIndex(newIndex === -1 ? 0 : newIndex);
-    } else {
-      // Fallback to country-scoped carousel (use profile flag if item has no explicit country)
-      const originCode = (active.countryCode || profile.flagCode || "").toUpperCase();
-      if (originCode) {
-        const filtered = allMediaItems.filter((it) => ((it.countryCode || profile.flagCode) || "").toUpperCase() === originCode);
-        setCarouselItems(filtered);
-        const newIndex = filtered.findIndex((it) => it.fileUrl === active.fileUrl);
-        setCarouselIndex(newIndex === -1 ? 0 : newIndex);
-      } else {
-        setCarouselItems(allMediaItems);
-        setCarouselIndex(index);
-      }
-    }
+    setCarouselItems(allMediaItems);
+    setCarouselIndex(index);
     setOpenContextMenuId(null);
   };
 
@@ -2198,6 +2191,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
           onSelectIndex={setCarouselIndex}
           onShareClick={() => showComingSoonToast("featureLaunch")}
           profileName={shareOwnerName}
+          profileCountry={profile.country}
           profileHandle={shareOwnerHandle}
           profileAvatar={shareOwnerAvatar}
           profileFlagCode={profileFlagCode}

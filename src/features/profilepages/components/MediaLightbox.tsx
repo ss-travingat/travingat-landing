@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { toLandingAssetUrl } from "@/lib/landing-assets";
+import { toLandingAssetUrl, getOptimizedMediaUrl } from "@/lib/landing-assets";
 import { useMobileComingSoon } from "@/components/ui/MobileComingSoonToast";
 import { ThumbnailImage } from "@/components/ThumbnailImage";
 
@@ -35,6 +35,11 @@ export function MediaLightbox({
   const { showComingSoonToast } = useMobileComingSoon();
   const [showBrowser, setShowBrowser] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const [mediaLoaded, setMediaLoaded] = useState(false);
+
+  useEffect(() => {
+    setMediaLoaded(false);
+  }, [activeIndex]);
 
   const activeItem = items[activeIndex];
   const totalCount = items.length;
@@ -100,10 +105,10 @@ export function MediaLightbox({
                   <div className="relative">
                     {item.isVideo ? (
                       <>
-                        <video
-                          src={toLandingAssetUrl(item.url)}
-                          className="h-auto w-full"
-                        />
+                        <video className="h-auto w-full">
+                          <source src={getOptimizedMediaUrl(toLandingAssetUrl(item.url))} type="video/webm" />
+                          <source src={toLandingAssetUrl(item.url)} type="video/mp4" />
+                        </video>
                         <div className="absolute left-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-black/55">
                           <span className="material-symbols-rounded text-[18px] text-white">play_arrow</span>
                         </div>
@@ -160,20 +165,40 @@ export function MediaLightbox({
                     </button>
                   </div>
 
+                  {/* Loading Skeleton */}
+                  {!mediaLoaded && (
+                    <div className="absolute inset-0 z-10 flex items-center justify-center rounded-[12px] bg-[#141414] animate-pulse">
+                      <img src="/icons/travingat-logo.svg" alt="Loading..." className="h-6 opacity-30" />
+                    </div>
+                  )}
+
                   {activeItem?.isVideo ? (
                     <video
                       key={`video-${activeIndex}`}
-                      src={toLandingAssetUrl(activeItem.url)}
                       controls
                       autoPlay
-                      className="block h-full w-auto max-w-full object-contain carousel-image rounded-[12px] mx-auto"
-                    />
+                      onLoadedData={() => setMediaLoaded(true)}
+                      className={`block h-full w-full object-contain carousel-image rounded-[12px] mx-auto transition-opacity duration-300 ${mediaLoaded ? 'opacity-100' : 'opacity-0'}`}
+                    >
+                      <source src={getOptimizedMediaUrl(toLandingAssetUrl(activeItem.url))} type="video/webm" />
+                      <source src={toLandingAssetUrl(activeItem.url)} type="video/mp4" />
+                    </video>
                   ) : (
                     <img
                       key={`img-${activeIndex}`}
-                      src={toLandingAssetUrl(activeItem?.url)}
+                      src={getOptimizedMediaUrl(toLandingAssetUrl(activeItem?.url))}
                       alt="Carousel media"
-                      className="block h-full w-auto max-w-full object-contain carousel-image rounded-[12px] mx-auto"
+                      className={`block h-full w-full object-contain carousel-image rounded-[12px] mx-auto transition-opacity duration-300 ${mediaLoaded ? 'opacity-100' : 'opacity-0'}`}
+                      onLoad={() => setMediaLoaded(true)}
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        const originalUrl = toLandingAssetUrl(activeItem?.url || "");
+                        if (target.src !== originalUrl) {
+                          target.src = originalUrl;
+                        } else {
+                          setMediaLoaded(true); // Fallback failed too, stop skeleton
+                        }
+                      }}
                     />
                   )}
                 </div>
@@ -224,7 +249,7 @@ export function MediaLightbox({
                     {item.isVideo ? (
                       <>
                         <video
-                          src={toLandingAssetUrl(item.url)}
+                          src={getOptimizedMediaUrl(toLandingAssetUrl(item.url))}
                           className="h-full w-full object-cover"
                         />
                         <div className="absolute inset-0 flex items-center justify-center bg-black/40">
