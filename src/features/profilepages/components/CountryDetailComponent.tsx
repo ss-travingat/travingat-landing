@@ -509,7 +509,7 @@ export default function CountryDetailComponent({
                                   alt={`${countryName} photo ${globalIndex + 1}`}
                                   className="w-full h-auto block"
                                   containerClassName="w-full"
-                                  skeletonClassName="w-full aspect-[3/4]"
+                                  skeletonClassName="w-full aspect-square"
                                 />
                               )}
                               <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-200 pointer-events-none" />
@@ -611,7 +611,7 @@ export default function CountryDetailComponent({
                             alt={`${countryName} photo ${globalIndex + 1}`}
                             className="w-full h-auto block"
                             containerClassName="w-full"
-                            skeletonClassName="w-full aspect-[3/4]"
+                            skeletonClassName="w-full aspect-square"
                           />
                         )}
                         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-200 pointer-events-none" />

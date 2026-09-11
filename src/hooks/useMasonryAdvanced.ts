@@ -140,30 +140,8 @@ export function useMasonryAdvanced<T extends MasonryItemWithDimensions>(
       columnWidth = Math.max(columnWidth, 0);
       const columnHeights = Array(columns).fill(0);
 
-      const positionedItems = normalizedItems.map((item) => {
-        // Prefer the previous column assignment if it still fits.
-        const prevAssigned = itemColumnMapRef.current[item.id];
-        let chosenColumn = -1;
-
-        if (typeof prevAssigned === "number" && prevAssigned >= 0 && prevAssigned < columns) {
-          chosenColumn = prevAssigned;
-        } else {
-          // Fallback: pick the current shortest column
-          chosenColumn = columnHeights.indexOf(Math.min(...columnHeights));
-        }
-
-        // If chosen column would create a very tall layout imbalance because another
-        // column is much shorter, still allow placing into shortest column to avoid
-        // pathological stacking when columns count changed drastically.
-        const shortestColumnIndex = columnHeights.indexOf(Math.min(...columnHeights));
-        const heightIfPlaced = columnHeights[chosenColumn];
-        const heightIfShortest = columnHeights[shortestColumnIndex];
-        if (heightIfPlaced - heightIfShortest > 200) {
-          chosenColumn = shortestColumnIndex;
-        }
-
-        // Persist assignment
-        itemColumnMapRef.current[item.id] = chosenColumn;
+      const positionedItems = normalizedItems.map((item, index) => {
+        const chosenColumn = index % columns;
 
         const x = chosenColumn * (columnWidth + gapToUseX);
         const y = columnHeights[chosenColumn];
