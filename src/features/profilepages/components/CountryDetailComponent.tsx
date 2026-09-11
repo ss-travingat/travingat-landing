@@ -316,12 +316,12 @@ export default function CountryDetailComponent({
       const encodedUrl = btoa(unescape(encodeURIComponent(activeUrl)));
       if (url.searchParams.get("image") !== encodedUrl) {
         url.searchParams.set("image", encodedUrl);
-        router.replace(url.pathname + url.search, { scroll: false });
+        window.history.replaceState(null, "", url.pathname + url.search);
       }
     } else if (didReadFromUrl.current && lightboxIndex === null) {
       if (url.searchParams.has("image")) {
         url.searchParams.delete("image");
-        router.replace(url.pathname + url.search, { scroll: false });
+        window.history.replaceState(null, "", url.pathname + url.search);
       }
     }
   }, [lightboxIndex, displayImages]);

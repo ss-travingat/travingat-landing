@@ -811,12 +811,12 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
     if (activeTab !== "all") {
       if (url.searchParams.get("tab") !== activeTab) {
         url.searchParams.set("tab", activeTab);
-        router.replace(url.pathname + url.search, { scroll: false });
+        window.history.replaceState(null, "", url.pathname + url.search);
       }
     } else {
       if (url.searchParams.has("tab")) {
         url.searchParams.delete("tab");
-        router.replace(url.pathname + url.search, { scroll: false });
+        window.history.replaceState(null, "", url.pathname + url.search);
       }
     }
   }, [activeTab]);
@@ -1013,7 +1013,15 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
       }
     });
 
-    // Round-robin interleave to perfectly mix countries
+    // 1. Extract the first item from each bucket to defer it
+    const deferredItems: MediaItem[] = [];
+    for (let i = 0; i < buckets.length; i++) {
+      if (buckets[i].length > 0) {
+        deferredItems.push(buckets[i].shift()!);
+      }
+    }
+
+    // 2. Round-robin interleave the remaining items
     const items: MediaItem[] = [];
     let found = true;
     while (found) {
@@ -1025,6 +1033,9 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
         }
       }
     }
+
+    // 3. Append the deferred first items at the end
+    items.push(...deferredItems);
 
     return items;
   }, [profile.id, profile.images.gallery, profile.countryImages, profile.collectionImages]);
@@ -1200,12 +1211,12 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
       const encodedUrl = btoa(unescape(encodeURIComponent(activeUrl)));
       if (url.searchParams.get("image") !== encodedUrl) {
         url.searchParams.set("image", encodedUrl);
-        router.replace(url.pathname + url.search, { scroll: false });
+        window.history.replaceState(null, "", url.pathname + url.search);
       }
     } else {
       if (url.searchParams.has("image")) {
         url.searchParams.delete("image");
-        router.replace(url.pathname + url.search, { scroll: false });
+        window.history.replaceState(null, "", url.pathname + url.search);
       }
     }
   }, [carouselIndex, carouselItems]);
