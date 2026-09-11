@@ -527,41 +527,7 @@ function JsMasonryGrid({
   shareOwnerAvatar,
 }: JsMasonryGridProps) {
   const { showComingSoonToast } = useMobileComingSoon();
-  const loadRankById = useMemo(() => {
-    const rank = new Map<string, number>();
-    let index = 0;
-    for (const id of loadedItemIds) {
-      rank.set(id, index);
-      index += 1;
-    }
-    return rank;
-  }, [loadedItemIds]);
-
-  const sourceIndexById = useMemo(() => {
-    const indexMap = new Map<string, number>();
-    items.forEach((item, index) => {
-      indexMap.set(item.id, index);
-    });
-    return indexMap;
-  }, [items]);
-
-  const orderedItems = useMemo(() => {
-    return [...items].sort((a, b) => {
-      const aRank = loadRankById.get(a.id);
-      const bRank = loadRankById.get(b.id);
-
-      const aLoaded = typeof aRank === "number";
-      const bLoaded = typeof bRank === "number";
-
-      // Loaded media should appear first (top rows), preserving actual load order.
-      if (aLoaded && bLoaded) return aRank! - bRank!;
-      if (aLoaded) return -1;
-      if (bLoaded) return 1;
-
-      // Keep original source order for still-loading media.
-      return (sourceIndexById.get(a.id) ?? 0) - (sourceIndexById.get(b.id) ?? 0);
-    });
-  }, [items, loadRankById, sourceIndexById]);
+  const orderedItems = items;
 
   const [resolvedImageDimensions, setResolvedImageDimensions] = useState<
     Record<string, { width: number; height: number }>
@@ -666,7 +632,7 @@ function JsMasonryGrid({
                     playsInline
                     loop
                     preload="metadata"
-                    className={`relative z-10 h-full w-full object-contain rounded-lg md:rounded-2xl cursor-pointer transition-opacity duration-300 ${isLoaded ? "opacity-100" : "opacity-0"}`}
+                    className={`relative z-10 h-full w-full object-cover rounded-lg md:rounded-2xl cursor-pointer transition-opacity duration-300 ${isLoaded ? "opacity-100" : "opacity-0"}`}
                     onLoadedData={() => markItemLoaded(mediaItem.id)}
                     onCanPlay={() => markItemLoaded(mediaItem.id)}
                     onError={() => markItemLoaded(mediaItem.id)}
@@ -699,7 +665,7 @@ function JsMasonryGrid({
                   src={toLandingAssetUrl(mediaItem.fileUrl)}
                   thumbnailSrc={getThumbnailUrl(toLandingAssetUrl(mediaItem.fileUrl), 720)}
                   alt="Uploaded media"
-                  className="h-full w-full object-contain rounded-lg md:rounded-2xl cursor-pointer"
+                  className="h-full w-full object-cover rounded-lg md:rounded-2xl cursor-pointer"
                   containerClassName="h-full w-full rounded-lg md:rounded-2xl"
                   skeletonClassName="absolute inset-0 rounded-lg md:rounded-2xl"
                   onLoad={() => markItemLoaded(mediaItem.id)}
@@ -988,49 +954,77 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
   const currentlyInFlagSrc = toFlagAssetPath(currentlyInFlagCode);
 
   const allMediaItems = useMemo<MediaItem[]>(() => {
-    const items: MediaItem[] = [];
+    const buckets: MediaItem[][] = [];
 
-    profile.images.gallery.forEach((fileEntry) => {
-      const isObj = typeof fileEntry !== "string" && fileEntry !== null && typeof fileEntry === "object";
-      const url = isObj ? (fileEntry.url as string) : (fileEntry as string);
-      items.push({
-        id: `media-${profile.id}-${items.length}`,
-        fileUrl: url,
-        isVideo: isVideoAsset(url),
-        width: isObj ? (fileEntry.width as number) : undefined,
-        height: isObj ? (fileEntry.height as number) : undefined,
-      });
-    });
-
-    (profile.countryImages ?? []).forEach((country) => {
-      country.images.forEach((fileEntry) => {
+    // Gallery bucket
+    if (profile.images.gallery.length > 0) {
+      const bucket: MediaItem[] = [];
+      profile.images.gallery.forEach((fileEntry) => {
         const isObj = typeof fileEntry !== "string" && fileEntry !== null && typeof fileEntry === "object";
         const url = isObj ? (fileEntry.url as string) : (fileEntry as string);
-        items.push({
-          id: `media-${profile.id}-${items.length}`,
+        bucket.push({
+          id: `media-${profile.id}-gallery-${bucket.length}`,
           fileUrl: url,
           isVideo: isVideoAsset(url),
-          countryCode: country.countryCode,
           width: isObj ? (fileEntry.width as number) : undefined,
           height: isObj ? (fileEntry.height as number) : undefined,
         });
       });
+      buckets.push(bucket);
+    }
+
+    // Country buckets
+    (profile.countryImages ?? []).forEach((country, countryIdx) => {
+      if (country.images.length > 0) {
+        const bucket: MediaItem[] = [];
+        country.images.forEach((fileEntry) => {
+          const isObj = typeof fileEntry !== "string" && fileEntry !== null && typeof fileEntry === "object";
+          const url = isObj ? (fileEntry.url as string) : (fileEntry as string);
+          bucket.push({
+            id: `media-${profile.id}-country-${countryIdx}-${bucket.length}`,
+            fileUrl: url,
+            isVideo: isVideoAsset(url),
+            countryCode: country.countryCode,
+            width: isObj ? (fileEntry.width as number) : undefined,
+            height: isObj ? (fileEntry.height as number) : undefined,
+          });
+        });
+        buckets.push(bucket);
+      }
     });
 
+    // Collection buckets
     (profile.collectionImages ?? []).forEach((collection, collectionIdx) => {
-      collection.images.forEach((fileEntry) => {
-        const isObj = typeof fileEntry !== "string" && fileEntry !== null && typeof fileEntry === "object";
-        const url = isObj ? (fileEntry.url as string) : (fileEntry as string);
-        items.push({
-          id: `media-${profile.id}-${items.length}`,
-          fileUrl: url,
-          isVideo: isVideoAsset(url),
-          collectionIndex: collectionIdx,
-          width: isObj ? (fileEntry.width as number) : undefined,
-          height: isObj ? (fileEntry.height as number) : undefined,
+      if (collection.images.length > 0) {
+        const bucket: MediaItem[] = [];
+        collection.images.forEach((fileEntry) => {
+          const isObj = typeof fileEntry !== "string" && fileEntry !== null && typeof fileEntry === "object";
+          const url = isObj ? (fileEntry.url as string) : (fileEntry as string);
+          bucket.push({
+            id: `media-${profile.id}-collection-${collectionIdx}-${bucket.length}`,
+            fileUrl: url,
+            isVideo: isVideoAsset(url),
+            collectionIndex: collectionIdx,
+            width: isObj ? (fileEntry.width as number) : undefined,
+            height: isObj ? (fileEntry.height as number) : undefined,
+          });
         });
-      });
+        buckets.push(bucket);
+      }
     });
+
+    // Round-robin interleave to perfectly mix countries
+    const items: MediaItem[] = [];
+    let found = true;
+    while (found) {
+      found = false;
+      for (let i = 0; i < buckets.length; i++) {
+        if (buckets[i].length > 0) {
+          items.push(buckets[i].shift()!);
+          found = true;
+        }
+      }
+    }
 
     return items;
   }, [profile.id, profile.images.gallery, profile.countryImages, profile.collectionImages]);
@@ -1231,36 +1225,8 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
         const imageUrl = decodeURIComponent(escape(atob(encodedImage)));
         const index = allMediaItems.findIndex((item) => item.fileUrl === imageUrl);
         if (index !== -1) {
-          const active = allMediaItems[index];
-          // If the image belongs to a collection, prefer collection route
-          if (typeof active.collectionIndex === "number" && profile.collectionImages?.[active.collectionIndex]) {
-            const collectionHref = `/profiles/${profile.handle.replace(/^@/, "")}/collection/${active.collectionIndex}`;
-            if (!window.location.pathname.includes('/collection/')) {
-              window.location.replace(`${collectionHref}?image=${encodedImage}`);
-              return;
-            }
-            const filtered = allMediaItems.filter((it) => it.collectionIndex === active.collectionIndex);
-            setCarouselItems(filtered);
-            const newIndex = filtered.findIndex((it) => it.fileUrl === active.fileUrl);
-            setCarouselIndex(newIndex === -1 ? 0 : newIndex);
-          } else {
-            const itemCountry = active.countryCode || profile.flagCode;
-            if (itemCountry && !window.location.pathname.includes('/country/')) {
-              window.location.replace(`/profiles/${profile.handle.replace(/^@/, "")}/country/${itemCountry.toUpperCase()}?image=${encodedImage}`);
-              return;
-            }
-            const originCode = (itemCountry || "").toUpperCase();
-            if (originCode) {
-              const filtered = allMediaItems.filter((it) => ((it.countryCode || profile.flagCode) || "").toUpperCase() === originCode);
-              setCarouselItems(filtered);
-              const newIndex = filtered.findIndex((it) => it.fileUrl === active.fileUrl);
-              setCarouselIndex(newIndex === -1 ? 0 : newIndex);
-            } else {
-              setCarouselItems(allMediaItems);
-              setCarouselIndex(index);
-            }
-          }
-          // Don't change tab, allow it to just open over whatever tab is active
+          setCarouselItems(allMediaItems);
+          setCarouselIndex(index);
         }
       } catch (e) { }
     }
