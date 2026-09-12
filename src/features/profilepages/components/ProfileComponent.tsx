@@ -395,6 +395,8 @@ function PhotoCarouselModal({
         id: item.id,
         url: item.fileUrl,
         isVideo: item.isVideo,
+        width: item.width,
+        height: item.height,
       }))}
       activeIndex={activeIndex}
       onClose={onClose}

@@ -10,6 +10,8 @@ export type LightboxItem = {
   id?: string;
   url: string;
   isVideo: boolean;
+  width?: number;
+  height?: number;
 };
 
 export type MediaLightboxProps = {
@@ -148,31 +150,35 @@ export function MediaLightbox({
                   </div>
                 )}
 
-                <div className="relative group inline-block h-full max-w-full text-center">
+                <div className="relative group inline-flex items-center justify-center h-fit w-fit max-h-full max-w-full mx-auto my-auto text-center">
                   {/* Hover Buttons */}
-                  <div className="absolute top-4 right-4 z-20 flex items-center gap-2 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
-                    <button
-                      type="button"
-                      onClick={() => showComingSoonToast("featureLaunch")}
-                      className="flex h-9 w-9 items-center justify-center rounded-full bg-black/40 backdrop-blur-sm text-white transition hover:bg-black/60"
-                      aria-label="Like"
-                    >
-                      <span className="material-symbols-rounded text-[20px]">favorite_border</span>
-                    </button>
+                  <div className="absolute top-3 right-3 z-20 flex items-center gap-1 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
                     <button
                       type="button"
                       onClick={(e) => {
                         showComingSoonToast("featureLaunch");
                       }}
-                      className="flex h-9 w-9 items-center justify-center rounded-full bg-black/40 backdrop-blur-sm text-white transition hover:bg-black/60"
+                      className="flex h-12 w-12 items-center justify-center rounded-full bg-black/40 backdrop-blur-sm text-white transition-colors hover:bg-black/60 transform-gpu"
                       aria-label="Share"
                     >
-                      <span className="material-symbols-rounded text-[20px] -mt-[2px]">ios_share</span>
+                      <svg width="20" height="20" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" className="translate-x-[2px] -translate-y-[2px]">
+                        <path d="M4.66667 10V6C4.66667 5.63333 4.79722 5.31944 5.05833 5.05833C5.31944 4.79722 5.63333 4.66667 6 4.66667H11.4333L9.71667 2.95L10.6667 2L14 5.33333L10.6667 8.66667L9.71667 7.73333L11.4333 6H6V10H4.66667ZM3.33333 14C2.96667 14 2.65278 13.8694 2.39167 13.6083C2.13056 13.3472 2 13.0333 2 12.6667V2.66667H3.33333V12.6667H11.3333V10H12.6667V12.6667C12.6667 13.0333 12.5361 13.3472 12.275 13.6083C12.0139 13.8694 11.7 14 11.3333 14H3.33333Z" fill="white"/>
+                      </svg>
                     </button>
                     <button
                       type="button"
                       onClick={() => showComingSoonToast("featureLaunch")}
-                      className="flex h-9 w-9 items-center justify-center rounded-full bg-black/40 backdrop-blur-sm text-white transition hover:bg-black/60"
+                      className="flex h-12 w-12 items-center justify-center rounded-full bg-black/40 backdrop-blur-sm text-white transition-colors hover:bg-black/60 transform-gpu"
+                      aria-label="Like"
+                    >
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mt-[1px]">
+                        <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
+                      </svg>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => showComingSoonToast("featureLaunch")}
+                      className="flex h-12 w-12 items-center justify-center rounded-full bg-black/40 backdrop-blur-sm text-white transition-colors hover:bg-black/60 transform-gpu"
                       aria-label="More options"
                     >
                       <span className="flex items-center gap-1">
@@ -188,7 +194,7 @@ export function MediaLightbox({
                       controls
                       autoPlay
                       onLoadedData={() => setMediaLoaded(true)}
-                      className={`block h-full w-full object-contain carousel-image rounded-[12px] mx-auto transition-opacity duration-300 ${mediaLoaded ? 'opacity-100' : 'opacity-0'}`}
+                      className={`block max-h-full max-w-full carousel-image rounded-[12px] mx-auto transition-opacity duration-300 ${mediaLoaded ? 'opacity-100' : 'opacity-0'}`}
                     >
                       <source src={getOptimizedMediaUrl(toLandingAssetUrl(activeItem.url))} type="video/webm" />
                       <source src={toLandingAssetUrl(activeItem.url)} type="video/mp4" />
@@ -198,7 +204,7 @@ export function MediaLightbox({
                       key={`img-${activeIndex}`}
                       src={toLandingAssetUrl(activeItem?.url)}
                       alt="Carousel media"
-                      className={`block h-full w-full object-contain carousel-image rounded-[12px] mx-auto transition-opacity duration-300 ${mediaLoaded ? 'opacity-100' : 'opacity-0'}`}
+                      className={`block max-h-full max-w-full carousel-image rounded-[12px] mx-auto transition-opacity duration-300 ${mediaLoaded ? 'opacity-100' : 'opacity-0'}`}
                       onLoad={() => setMediaLoaded(true)}
                       onError={(e) => {
                         const target = e.target as HTMLImageElement;
