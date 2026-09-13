@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, type SyntheticEvent } from "react";
 import { toLandingAssetUrl, getOptimizedMediaUrl } from "@/lib/landing-assets";
 import { useMobileComingSoon } from "@/components/ui/MobileComingSoonToast";
 import { ThumbnailImage, getThumbnailUrl } from "@/components/ThumbnailImage";
@@ -40,11 +40,17 @@ export function MediaLightbox({
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [mediaLoaded, setMediaLoaded] = useState(false);
   const [mediaError, setMediaError] = useState(false);
+  const [naturalAspectRatio, setNaturalAspectRatio] = useState<number | null>(null);
 
   useEffect(() => {
     setMediaLoaded(false);
     setMediaError(false);
-  }, [activeIndex]);
+    setNaturalAspectRatio(
+      items[activeIndex]?.width && items[activeIndex]?.height
+        ? items[activeIndex]!.width! / items[activeIndex]!.height!
+        : null
+    );
+  }, [activeIndex, items]);
 
   const activeItem = items[activeIndex];
   const totalCount = items.length;
@@ -77,7 +83,7 @@ export function MediaLightbox({
     >
       {/* Left image panel */}
       <div
-        className="relative flex flex-1 flex-col min-w-0"
+        className="relative flex flex-1 flex-col min-w-0 min-h-0"
         onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
       >
         {/* Top bar: image counter + grid toggle */}
@@ -89,7 +95,14 @@ export function MediaLightbox({
             className="flex h-9 w-9 items-center justify-center text-[#989898] transition hover:text-white"
             aria-label="Toggle photo browser"
           >
-            <span className="material-symbols-rounded text-[22px]">dashboard</span>
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <mask id="mask0_10615_9855" style={{ maskType: 'alpha' }} maskUnits="userSpaceOnUse" x="0" y="0" width="24" height="24">
+                <rect width="24" height="24" fill="#D9D9D9"/>
+              </mask>
+              <g mask="url(#mask0_10615_9855)">
+                <path d="M13 9V3H21V9H13ZM3 13V3H11V13H3ZM13 21V11H21V21H13ZM3 21V15H11V21H3ZM5 11H9V5H5V11ZM15 19H19V13H15V19ZM15 7H19V5H15V7ZM5 19H9V17H5V19Z" fill="currentColor"/>
+              </g>
+            </svg>
           </button>
         </div>
 
@@ -114,8 +127,10 @@ export function MediaLightbox({
                           <source src={getOptimizedMediaUrl(toLandingAssetUrl(item.url))} type="video/webm" />
                           <source src={toLandingAssetUrl(item.url)} type="video/mp4" />
                         </video>
-                        <div className="absolute left-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-black/55">
-                          <span className="material-symbols-rounded text-[18px] text-white">play_arrow</span>
+                        <div className="absolute left-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-black/55 text-white">
+                          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M8 5v14l11-7z" />
+                          </svg>
                         </div>
                       </>
                     ) : (
@@ -134,9 +149,9 @@ export function MediaLightbox({
         ) : (
           <>
             {/* Image + nav arrows */}
-            <div className="relative flex flex-1 min-h-0 pb-8">
+            <div className="relative flex-1 min-h-0 mb-[36px] overflow-hidden">
               {/* Main image */}
-              <div className="relative flex flex-1 items-center justify-center px-10 min-h-0">
+              <div className="absolute inset-0 flex items-center justify-center px-10">
                 {/* Loading Skeleton */}
                 {!mediaLoaded && (
                   <div className="absolute inset-x-10 inset-y-0 z-10 flex items-center justify-center rounded-[12px] bg-[#0a0a0a] animate-pulse">
@@ -150,7 +165,16 @@ export function MediaLightbox({
                   </div>
                 )}
 
-                <div className="relative group inline-flex items-center justify-center h-fit w-fit max-h-full max-w-full mx-auto my-auto text-center">
+                <div 
+                  className="relative group mx-auto my-auto transition-all duration-300"
+                  style={{
+                    maxHeight: '100%',
+                    maxWidth: '100%',
+                    aspectRatio: naturalAspectRatio ? `${naturalAspectRatio}` : 'auto',
+                    height: naturalAspectRatio ? '100%' : 'auto',
+                    width: naturalAspectRatio ? 'auto' : 'fit-content'
+                  }}
+                >
                   {/* Hover Buttons */}
                   <div className="absolute top-3 right-3 z-20 flex items-center gap-1 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
                     <button
@@ -193,8 +217,11 @@ export function MediaLightbox({
                       key={`video-${activeIndex}`}
                       controls
                       autoPlay
-                      onLoadedData={() => setMediaLoaded(true)}
-                      className={`block max-h-full max-w-full carousel-image rounded-[12px] mx-auto transition-opacity duration-300 ${mediaLoaded ? 'opacity-100' : 'opacity-0'}`}
+                      onLoadedData={(e: SyntheticEvent<HTMLVideoElement>) => {
+                        setMediaLoaded(true);
+                        setNaturalAspectRatio(e.currentTarget.videoWidth / e.currentTarget.videoHeight);
+                      }}
+                      className={`block max-h-full max-w-full object-contain carousel-image rounded-[12px] mx-auto transition-opacity duration-300 ${mediaLoaded ? 'opacity-100' : 'opacity-0'}`}
                     >
                       <source src={getOptimizedMediaUrl(toLandingAssetUrl(activeItem.url))} type="video/webm" />
                       <source src={toLandingAssetUrl(activeItem.url)} type="video/mp4" />
@@ -204,10 +231,13 @@ export function MediaLightbox({
                       key={`img-${activeIndex}`}
                       src={toLandingAssetUrl(activeItem?.url)}
                       alt="Carousel media"
-                      className={`block max-h-full max-w-full carousel-image rounded-[12px] mx-auto transition-opacity duration-300 ${mediaLoaded ? 'opacity-100' : 'opacity-0'}`}
-                      onLoad={() => setMediaLoaded(true)}
-                      onError={(e) => {
-                        const target = e.target as HTMLImageElement;
+                      className={`block max-h-full max-w-full object-contain carousel-image rounded-[12px] mx-auto transition-opacity duration-300 ${mediaLoaded ? 'opacity-100' : 'opacity-0'}`}
+                      onLoad={(e: SyntheticEvent<HTMLImageElement>) => {
+                        setMediaLoaded(true);
+                        setNaturalAspectRatio(e.currentTarget.naturalWidth / e.currentTarget.naturalHeight);
+                      }}
+                      onError={(e: SyntheticEvent<HTMLImageElement>) => {
+                        const target = e.currentTarget;
                         const originalUrl = toLandingAssetUrl(activeItem?.url || "");
                         if (target.src !== originalUrl) {
                           target.src = originalUrl;
@@ -238,29 +268,33 @@ export function MediaLightbox({
               <button
                 type="button"
                 onClick={onPrev}
-                className="absolute left-10 top-1/2 -translate-y-1/2 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-white text-black shadow-md transition hover:bg-[#f0f0f0]"
+                className="absolute left-10 top-1/2 -translate-y-1/2 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-white text-black transition hover:scale-105 transform-gpu"
                 aria-label="Previous photo"
               >
-                <span className="material-symbols-rounded text-[24px]">chevron_left</span>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="-ml-[2px]">
+                  <path d="m15 18-6-6 6-6"/>
+                </svg>
               </button>
 
               {/* Next arrow — right edge matching right column margin */}
               <button
                 type="button"
                 onClick={onNext}
-                className="absolute right-10 top-1/2 -translate-y-1/2 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-white text-black shadow-md transition hover:bg-[#f0f0f0]"
+                className="absolute right-10 top-1/2 -translate-y-1/2 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-white text-black transition hover:scale-105 transform-gpu"
                 aria-label="Next photo"
               >
-                <span className="material-symbols-rounded text-[24px]">chevron_right</span>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="ml-[2px]">
+                  <path d="m9 18 6-6-6-6"/>
+                </svg>
               </button>
             </div>
 
             {/* Carousel preview strip */}
             <div
               ref={scrollContainerRef}
-              className="w-full overflow-x-auto px-10 pb-6 pt-2"
+              className="flex-none w-full overflow-x-auto px-10 pb-[48px]"
             >
-              <div className={`relative flex items-center gap-3 pt-3 w-max ${items.length <= 10 ? "mx-auto" : ""}`}>
+              <div className={`relative flex items-center gap-3 pt-[12px] w-max ${items.length <= 10 ? "mx-auto" : ""}`}>
                 {/* Floating sliding indicator bar */}
                 <div
                   className="absolute top-0 left-0 h-[3px] w-[60px] bg-white rounded-full transition-transform duration-300 ease-out z-10"

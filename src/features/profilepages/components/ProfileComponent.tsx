@@ -1712,7 +1712,15 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                           <div className="flex items-center gap-3">
                             {COUNTRIES_EMPTY_PREVIEW_IMAGES.map((src, idx) => (
                               <div key={src} className="w-19 h-19 md:w-25 md:h-25 rounded-[10px] overflow-hidden">
-                                <ThumbnailImage originalSrc={toLandingAssetUrl(src)} size={320} alt={`Country preview ${idx + 1}`} loading="eager" decoding="async" className="w-full h-full object-cover" />
+                                <LoadedImage 
+                                  src={toLandingAssetUrl(src)} 
+                                  thumbnailSrc={getThumbnailUrl(toLandingAssetUrl(src), 320)}
+                                  alt={`Country preview ${idx + 1}`} 
+                                  priority
+                                  className="w-full h-full object-cover" 
+                                  containerClassName="w-full h-full"
+                                  skeletonClassName="absolute inset-0"
+                                />
                               </div>
                             ))}
                           </div>
@@ -1823,7 +1831,15 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                           <div className="flex items-center gap-3">
                             {COLLECTIONS_EMPTY_PREVIEW_IMAGES.map((src, idx) => (
                               <div key={src} className="w-19 h-19 md:w-25 md:h-25 rounded-[10px] overflow-hidden">
-                                <ThumbnailImage originalSrc={toLandingAssetUrl(src)} size={320} alt={`Collection preview ${idx + 1}`} loading="eager" decoding="async" className="w-full h-full object-cover" />
+                                <LoadedImage 
+                                  src={toLandingAssetUrl(src)} 
+                                  thumbnailSrc={getThumbnailUrl(toLandingAssetUrl(src), 320)}
+                                  alt={`Collection preview ${idx + 1}`} 
+                                  priority
+                                  className="w-full h-full object-cover" 
+                                  containerClassName="w-full h-full"
+                                  skeletonClassName="absolute inset-0"
+                                />
                               </div>
                             ))}
                           </div>
