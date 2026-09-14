@@ -229,9 +229,9 @@ export function MediaLightbox({
                   ) : (
                     <img
                       key={`img-${activeIndex}`}
-                      src={toLandingAssetUrl(activeItem?.url)}
+                      src={getOptimizedMediaUrl(toLandingAssetUrl(activeItem?.url || ""))}
                       alt="Carousel media"
-                      className={`block max-h-full max-w-full object-contain carousel-image rounded-[12px] mx-auto transition-opacity duration-300 ${mediaLoaded ? 'opacity-100' : 'opacity-0'}`}
+                      className={`block max-h-full max-w-full object-contain carousel-image rounded-[12px] mx-auto transition-opacity duration-300 ${mediaLoaded && !mediaError ? 'opacity-100' : 'opacity-0'}`}
                       onLoad={(e: SyntheticEvent<HTMLImageElement>) => {
                         setMediaLoaded(true);
                         setNaturalAspectRatio(e.currentTarget.naturalWidth / e.currentTarget.naturalHeight);
@@ -242,8 +242,8 @@ export function MediaLightbox({
                         if (target.src !== originalUrl) {
                           target.src = originalUrl;
                         } else {
-                          setMediaLoaded(true); // Fallback failed too, stop skeleton
                           setMediaError(true);
+                          setMediaLoaded(true); // Fallback failed too, stop skeleton
                         }
                       }}
                     />
@@ -251,7 +251,7 @@ export function MediaLightbox({
 
                   {/* Fallback Error State */}
                   {mediaError && (
-                    <div className="absolute inset-x-10 inset-y-0 z-20 flex items-center justify-center rounded-[12px] bg-[#0a0a0a]">
+                    <div className="absolute inset-0 z-20 flex items-center justify-center rounded-[12px] bg-[#0a0a0a]">
                       <svg width="48" height="48" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" className="opacity-30">
                         <path fillRule="evenodd" clipRule="evenodd" d="M20.9973 21.0011C23.5339 18.4645 27.6719 18.4899 30.2399 21.0579L53.2668 44.0848C55.8347 46.6527 55.8601 50.7908 53.3235 53.3274C50.7869 55.864 46.6489 55.8386 44.0809 53.2706L21.054 30.2437C18.4861 27.6758 18.4607 23.5377 20.9973 21.0011ZM27.0272 30.093L30.391 30.3376L30.146 26.9742L26.7826 26.7292L27.0272 30.093ZM23.0197 27.8352C22.5366 28.3184 22.5414 29.1066 23.0305 29.5957C23.5197 30.0848 24.3079 30.0897 24.791 29.6065C25.2742 29.1233 25.2693 28.3351 24.7802 27.846C24.2911 27.3569 23.5029 27.352 23.0197 27.8352ZM27.8313 23.0236C27.3482 23.5067 27.353 24.2949 27.8422 24.7841C28.3313 25.2732 29.1195 25.278 29.6026 24.7949C30.0858 24.3117 30.081 23.5235 29.5918 23.0344C29.1027 22.5453 28.3145 22.5404 27.8313 23.0236Z" fill="white"/>
                         <path d="M8.4121 49.9708C6.82242 48.3812 6.80669 45.8195 8.37696 44.2493L18.3529 34.2733C19.4868 33.1394 21.3366 33.1508 22.4845 34.2987L26.1627 37.9769L14.1337 50.006C12.5634 51.5763 10.0018 51.5605 8.4121 49.9708Z" fill="white"/>
