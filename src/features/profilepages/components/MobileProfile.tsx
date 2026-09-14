@@ -33,6 +33,11 @@ export function useNavbarVisibility(menuOpen = false) {
     };
 
     const handleScroll = () => {
+      if ((window as any).__isProgrammaticScroll) {
+        lastScrollY.current = window.scrollY;
+        return;
+      }
+
       if (menuOpen) {
         offsetRef.current = 0;
         updateDOM();
@@ -127,7 +132,7 @@ export function MobileProfileNavbar({ profile }: { profile?: any }) {
   return (
     <>
       <div id="profile-mobile-navbar" ref={menuRef} className="fixed top-0 left-0 w-full z-[120] flex flex-col pointer-events-none">
-        <div className={`flex items-center justify-between px-[28px] pt-[20px] pb-[16px] pointer-events-auto transition-colors duration-300 ${(isScrolled || menuOpen) ? "bg-black shadow-[0_2px_0_0_#000]" : "bg-gradient-to-b from-black/50 to-transparent"}`}>
+        <div className={`flex items-center justify-between px-[28px] pt-[20px] pb-[16px] pointer-events-auto transition-colors duration-300 ${(isScrolled || menuOpen) ? "bg-black shadow-[0_2px_0_0_#000]" : "bg-gradient-to-b from-black/50 to-transparent min-[810px]:bg-black min-[810px]:bg-none min-[810px]:shadow-[0_2px_0_0_#000]"}`}>
           {isScrolled && profile ? (
             <div className="flex items-center gap-2">
               <LoadedImage 

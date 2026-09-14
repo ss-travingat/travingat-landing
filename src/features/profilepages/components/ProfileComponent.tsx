@@ -832,30 +832,42 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
   const handleTabChange = (tab: TabKey) => {
     (window as any).__isProgrammaticScroll = true;
     setActiveTab(tab);
+    
     setTimeout(() => {
-      const isMobile = window.innerWidth < 811;
-      if (isMobile) {
-        const hero = document.getElementById("profile-mobile-hero");
-        if (hero) {
-          // Hero offsetTop + height + 40px (gap-10) - 72px (navbar)
-          const offset = hero.offsetTop + hero.offsetHeight + 40 - 72;
-          if (window.scrollY > offset) {
-            window.scrollTo({ top: offset, behavior: "instant" });
-          }
+      const isDesktop = window.innerWidth >= 1200;
+      const tabsId = isDesktop ? "profile-desktop-tabs" : "profile-mobile-tabs";
+      const tabsEl = document.getElementById(tabsId);
+      
+      if (tabsEl && tabsEl.parentElement) {
+        const rect = tabsEl.parentElement.getBoundingClientRect();
+        const absoluteTop = rect.top + window.scrollY;
+        
+        let targetScrollY = 0;
+        
+        if (isDesktop) {
+          const isHeaderHidden = document.body.classList.contains("header-hidden");
+          const stickyOffset = isHeaderHidden ? 0 : 120;
+          targetScrollY = absoluteTop - stickyOffset;
+        } else {
+          // Mobile/iPad
+          // The tabs are sticky at 72px, but they might be visually translated UP by the navbar hook.
+          // We can find the exact translation by checking the navbar's position.
+          const navbarEl = document.getElementById("profile-mobile-navbar");
+          const navbarVisualTop = navbarEl ? navbarEl.getBoundingClientRect().top : 0;
+          // If navbar is translated up by 72px, navbarVisualTop is -72.
+          // The formula: absoluteTop - 72 (sticky offset) - navbarVisualTop.
+          targetScrollY = absoluteTop - 72 - navbarVisualTop;
         }
-      } else {
-        const desktopTabs = document.getElementById("profile-desktop-tabs");
-        if (desktopTabs) {
-          const offset = desktopTabs.offsetTop;
-          if (window.scrollY > offset) {
-            window.dispatchEvent(new Event('forceHeaderHidden'));
-            window.scrollTo({ top: offset, behavior: "instant" });
-          }
+        
+        // Only jump if the user is scrolled past the tabs
+        if (window.scrollY > targetScrollY) {
+          window.scrollTo({ top: targetScrollY, behavior: "instant" });
         }
       }
+      
       setTimeout(() => {
         (window as any).__isProgrammaticScroll = false;
-      }, 100);
+      }, 50);
     }, 10);
   };
 
@@ -1411,7 +1423,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
   return (
     <>
       <div
-        className="bg-black text-white flex flex-col items-center px-[8px] pt-[8px] min-[810px]:pt-0 min-[810px]:px-[32px] min-[1440px]:px-[64px]"
+        className="bg-black text-white flex flex-col items-center px-[8px] pt-[8px] min-[810px]:pt-[92px] min-[1200px]:pt-0 min-[810px]:px-[32px] min-[1440px]:px-[64px]"
         style={
           strictDesktopStyle
             ? {
@@ -1657,7 +1669,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
             </button>
           </div>
 
-          <div className="flex flex-col gap-[12px] md:gap-0 w-full min-[1200px]:mt-[16px] min-[1440px]:mt-[32px]">
+          <div className="flex flex-col gap-[12px] w-full min-[1200px]:mt-[16px] min-[1440px]:mt-[32px]">
             {/* Mobile/iPad: icon-only tabs with sliding underline indicator */}
             <MobileTabs activeTab={activeTab} setActiveTab={handleTabChange} swipeOffset={swipeOffset} />
 
