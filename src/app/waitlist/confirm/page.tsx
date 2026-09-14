@@ -19,7 +19,7 @@ export default async function WaitlistConfirmPage({ searchParams }: Props) {
     const sql = getDb();
 
     const rows = await sql`
-      SELECT id, confirmed, token_expires_at
+      SELECT id, email, confirmed, token_expires_at
       FROM waitlist
       WHERE confirmation_token = ${token.trim()}
       LIMIT 1
@@ -45,6 +45,14 @@ export default async function WaitlistConfirmPage({ searchParams }: Props) {
               confirmation_token = NULL
           WHERE id = ${entry.id}
         `;
+        
+        try {
+          const { sendWelcomeWaitlistEmail } = await import("@/lib/waitlist-email");
+          await sendWelcomeWaitlistEmail(entry.email);
+        } catch (emailErr) {
+          console.error("Failed to send welcome waitlist email:", emailErr);
+        }
+        
         redirectUrl = "/waitlist/confirmed";
       }
     }
