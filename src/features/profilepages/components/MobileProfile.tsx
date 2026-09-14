@@ -33,11 +33,6 @@ export function useNavbarVisibility(menuOpen = false) {
     };
 
     const handleScroll = () => {
-      if ((window as any).__isProgrammaticScroll) {
-        lastScrollY.current = window.scrollY;
-        return;
-      }
-
       if (menuOpen) {
         offsetRef.current = 0;
         updateDOM();
@@ -135,10 +130,10 @@ export function MobileProfileNavbar({ profile }: { profile?: any }) {
         <div className={`flex items-center justify-between px-[28px] pt-[20px] pb-[16px] pointer-events-auto transition-colors duration-300 ${(isScrolled || menuOpen) ? "bg-black shadow-[0_2px_0_0_#000]" : "bg-gradient-to-b from-black/50 to-transparent min-[810px]:bg-black min-[810px]:bg-none min-[810px]:shadow-[0_2px_0_0_#000]"}`}>
           {isScrolled && profile ? (
             <div className="flex items-center gap-2">
-              <LoadedImage 
+              <LoadedImage
                 src={toLandingAssetUrl(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url)}
                 thumbnailSrc={getOptimizedMediaUrl(toLandingAssetUrl(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url))}
-                alt="Avatar" 
+                alt="Avatar"
                 className="w-8 h-8 rounded-full object-cover"
                 skeletonClassName="absolute inset-0 bg-[#2a2a2a]"
                 containerClassName="w-8 h-8 relative shrink-0 rounded-full"
@@ -167,8 +162,8 @@ export function MobileProfileNavbar({ profile }: { profile?: any }) {
       <div
         ref={fullScreenMenuRef}
         className={`fixed inset-0 z-[110] min-[1200px]:hidden bg-black/95 backdrop-blur-xl transition-all duration-300 ease-in-out flex flex-col justify-start items-center px-6 pt-[100px] pb-10 ${menuOpen
-            ? "opacity-100 pointer-events-auto translate-y-0"
-            : "opacity-0 pointer-events-none -translate-y-4"
+          ? "opacity-100 pointer-events-auto translate-y-0"
+          : "opacity-0 pointer-events-none -translate-y-4"
           }`}
       >
         <div className="w-full max-w-xs flex flex-col items-center gap-[24px]">
@@ -220,7 +215,7 @@ export function MobileHero({
   const { showComingSoonToast } = useMobileComingSoon();
   const [openTooltipIndex, setOpenTooltipIndex] = useState<number | null>(null);
   const [openBioTooltip, setOpenBioTooltip] = useState(false);
-  
+
   return (
     <section id="profile-mobile-hero" className="min-[1200px]:hidden space-y-[12px] flex flex-col items-center w-full">
       <div className="flex flex-col items-center gap-[20px] rounded-[24px] w-full relative">
@@ -233,7 +228,7 @@ export function MobileHero({
               alt="Profile cover"
               className="w-full h-full object-cover"
               skeletonClassName="absolute inset-0 bg-[#1a1a1a]"
-              containerClassName="w-full h-full"
+              containerClassName="w-full h-full" ok
               priority
             />
           </div>
@@ -254,16 +249,16 @@ export function MobileHero({
           <div className="flex items-center justify-center gap-1.5 text-[#696969] text-[14px] leading-[20px] tracking-[-0.5px] font-sans font-normal">
             {profileFlagSrc ? (
               <TooltipProvider delayDuration={100}>
-                <Tooltip 
-                  content={basedIn} 
-                  theme="light" 
+                <Tooltip
+                  content={basedIn}
+                  theme="light"
                   side="top"
                   open={openBioTooltip}
                   onOpenChange={setOpenBioTooltip}
                 >
-                  <button 
-                    type="button" 
-                    className="focus:outline-none flex items-center justify-center" 
+                  <button
+                    type="button"
+                    className="focus:outline-none flex items-center justify-center"
                     onClick={(e) => {
                       e.preventDefault();
                       setOpenBioTooltip(!openBioTooltip);
@@ -293,17 +288,17 @@ export function MobileHero({
             {headerFlagCodes.map((code, index) => {
               const countryName = getCountryName(code);
               return (
-                <Tooltip 
-                  key={`${code}-${index}`} 
-                  content={countryName} 
-                  theme="light" 
+                <Tooltip
+                  key={`${code}-${index}`}
+                  content={countryName}
+                  theme="light"
                   side="top"
                   open={openTooltipIndex === index}
                   onOpenChange={(isOpen) => setOpenTooltipIndex(isOpen ? index : null)}
                 >
-                  <button 
-                    type="button" 
-                    className="focus:outline-none shrink-0" 
+                  <button
+                    type="button"
+                    className="focus:outline-none shrink-0"
                     onClick={(e) => {
                       e.preventDefault();
                       setOpenTooltipIndex(openTooltipIndex === index ? null : index);
