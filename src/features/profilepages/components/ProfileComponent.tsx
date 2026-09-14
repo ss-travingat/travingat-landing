@@ -831,15 +831,16 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
 
   const handleTabChange = (tab: TabKey) => {
     (window as any).__isProgrammaticScroll = true;
+    const scrollBefore = window.scrollY;
     setActiveTab(tab);
     
     setTimeout(() => {
       const isDesktop = window.innerWidth >= 1200;
-      const tabsId = isDesktop ? "profile-desktop-tabs" : "profile-mobile-tabs";
-      const tabsEl = document.getElementById(tabsId);
+      const sentinelId = isDesktop ? "desktop-tabs-sentinel" : "mobile-tabs-sentinel";
+      const sentinelEl = document.getElementById(sentinelId);
       
-      if (tabsEl && tabsEl.parentElement) {
-        const rect = tabsEl.parentElement.getBoundingClientRect();
+      if (sentinelEl) {
+        const rect = sentinelEl.getBoundingClientRect();
         const absoluteTop = rect.top + window.scrollY;
         
         let targetScrollY = 0;
@@ -859,14 +860,17 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
           targetScrollY = absoluteTop - 72 - navbarVisualTop;
         }
         
-        // Only jump if the user is scrolled past the tabs
-        if (window.scrollY > targetScrollY) {
+        // Only jump if the user was scrolled past the tabs BEFORE the tab change triggered native browser scrolling
+        if (scrollBefore > targetScrollY) {
           window.scrollTo({ top: targetScrollY, behavior: "instant" });
         }
       }
       
       setTimeout(() => {
         (window as any).__isProgrammaticScroll = false;
+        // Dispatch a final scroll event so Desktop LandingHeader re-evaluates the absolute scroll position
+        // and correctly applies or removes the 'header-hidden' class, preventing the tabs from moving down incorrectly.
+        window.dispatchEvent(new Event('scroll'));
       }, 50);
     }, 10);
   };
@@ -1615,9 +1619,10 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
           </section>
 
           {/* Desktop: pill tabs with text */}
+          <div id="desktop-tabs-sentinel" className="w-full h-0 min-[1200px]:mt-[48px] min-[1440px]:mt-[64px]" />
           <div 
             id="profile-desktop-tabs" 
-            className={`hidden min-[1200px]:flex items-center justify-center gap-2 flex-wrap min-[1200px]:mt-[48px] min-[1440px]:mt-[64px] sticky z-header py-6 -mx-4 px-4 lg:-mx-8 lg:px-8 xl:-mx-10 xl:px-10 transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] top-[120px] [.header-hidden_&]:top-0`}
+            className={`hidden min-[1200px]:flex items-center justify-center gap-2 flex-wrap sticky z-header py-6 -mx-4 px-4 lg:-mx-8 lg:px-8 xl:-mx-10 xl:px-10 transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] top-[120px] [.header-hidden_&]:top-0`}
           >
             {/* Background gradient and progressive blur */}
             <div 
@@ -1671,6 +1676,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
 
           <div className="flex flex-col gap-[12px] w-full min-[1200px]:mt-[16px] min-[1440px]:mt-[32px]">
             {/* Mobile/iPad: icon-only tabs with sliding underline indicator */}
+            <div id="mobile-tabs-sentinel" className="w-full h-0" />
             <MobileTabs activeTab={activeTab} setActiveTab={handleTabChange} swipeOffset={swipeOffset} />
 
             <div

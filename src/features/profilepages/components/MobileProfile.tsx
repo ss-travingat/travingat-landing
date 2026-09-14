@@ -228,7 +228,7 @@ export function MobileHero({
               alt="Profile cover"
               className="w-full h-full object-cover"
               skeletonClassName="absolute inset-0 bg-[#1a1a1a]"
-              containerClassName="w-full h-full" ok
+              containerClassName="w-full h-full"
               priority
             />
           </div>
