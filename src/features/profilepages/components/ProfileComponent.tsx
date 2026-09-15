@@ -846,9 +846,12 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
         let targetScrollY = 0;
         
         if (isDesktop) {
-          const isHeaderHidden = document.body.classList.contains("header-hidden");
-          const stickyOffset = isHeaderHidden ? 0 : 120;
-          targetScrollY = absoluteTop - stickyOffset;
+          let predictedTarget = absoluteTop - 0;
+          if (predictedTarget > 100) {
+            targetScrollY = predictedTarget;
+          } else {
+            targetScrollY = absoluteTop - 120;
+          }
         } else {
           // Mobile/iPad
           // The tabs are sticky at 72px, but they might be visually translated UP by the navbar hook.

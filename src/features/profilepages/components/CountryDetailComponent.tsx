@@ -677,8 +677,8 @@ export default function CountryDetailComponent({
         <a href="#" className="hover:text-white transition">About</a>
         <a href="#" className="hover:text-white transition">Careers</a>
         <Link href="/blog" className="hover:text-white transition">Blog</Link>
-        <a href="#" className="hover:text-white transition">Terms of Service</a>
-        <a href="#" className="hover:text-white transition">Privacy Policy</a>
+        <a href="https://travingat.com/terms" className="hover:text-white transition">Terms of Service</a>
+        <a href="https://travingat.com/privacy" className="hover:text-white transition">Privacy Policy</a>
       </footer>
     </div>
   );

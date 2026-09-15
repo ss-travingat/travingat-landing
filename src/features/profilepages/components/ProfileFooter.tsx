@@ -8,8 +8,8 @@ export default function ProfileFooter({ className = "" }: { className?: string }
         <Link href="#" className="hover:text-white transition-colors">About</Link>
         <Link href="#" className="hover:text-white transition-colors">Careers</Link>
         <Link href="/blog" className="hover:text-white transition-colors">Blog</Link>
-        <Link href="#" className="hover:text-white transition-colors whitespace-nowrap">Terms of Service</Link>
-        <Link href="#" className="hover:text-white transition-colors whitespace-nowrap">Privacy Policy</Link>
+        <Link href="https://travingat.com/terms" className="hover:text-white transition-colors whitespace-nowrap">Terms of Service</Link>
+        <Link href="https://travingat.com/privacy" className="hover:text-white transition-colors whitespace-nowrap">Privacy Policy</Link>
       </div>
     </footer>
   );

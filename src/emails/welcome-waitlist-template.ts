@@ -169,9 +169,9 @@ export function buildWelcomeWaitlistEmail(ctaUrl: string): string {
           </div>
           
           <div class="wc-footer-links">
-            <a href="#">Privacy policy</a>
+            <a href="https://travingat.com/privacy">Privacy policy</a>
             <span class="wc-dot"></span>
-            <a href="#">Terms of use</a>
+            <a href="https://travingat.com/terms">Terms of use</a>
             <span class="wc-dot"></span>
             <a href="mailto:hello@travingat.com">hello@travingat.com</a>
           </div>

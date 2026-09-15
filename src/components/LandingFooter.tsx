@@ -62,10 +62,9 @@ export default function LandingFooter() {
 
           <div>
             <p className="text-[12px] text-gray-500 mb-2">©Copyrights 2025 travingat.</p>
-            <div className="flex gap-4">
-              <a href="#" className="text-[12px] text-gray-500 hover:text-white transition-colors">Privacy</a>
-              <a href="#" className="text-[12px] text-gray-500 hover:text-white transition-colors">Terms</a>
-              <a href="#" className="text-[12px] text-gray-500 hover:text-white transition-colors">Policy</a>
+            <div className="flex items-center gap-6">
+              <a href="https://travingat.com/terms" className="text-[12px] text-gray-500 hover:text-white transition-colors">Terms</a>
+              <a href="https://travingat.com/privacy" className="text-[12px] text-gray-500 hover:text-white transition-colors">Privacy Policy</a>
             </div>
           </div>
         </div>

@@ -272,7 +272,7 @@ export function buildCardAndInviteEmail(name: string, editUrl: string): string {
           </div>
           <p class="footer-text">A home for your travel life</p>
           <p class="footer-links">
-            <a href="#">Privacy policy</a> • <a href="#">Terms of use</a> • <a href="mailto:hello@travingat.com">hello@travingat.com</a>
+            <a href="https://travingat.com/privacy">Privacy policy</a> • <a href="https://travingat.com/terms">Terms of use</a> • <a href="mailto:hello@travingat.com">hello@travingat.com</a>
           </p>
           <p class="footer-copyright">
             © ${new Date().getFullYear()} Travingat. All rights reserved.
