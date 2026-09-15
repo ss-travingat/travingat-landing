@@ -59,6 +59,9 @@ interface Profile {
   visitedCountryCodes: string[];
   countryImages: CountryImage[];
   collectionImages: CollectionImage[];
+  email?: string;
+  isExplorerCard?: boolean;
+  isFeaturedProfile?: boolean;
 }
 
 const emptyForm: Omit<Profile, "id"> = {
@@ -84,6 +87,9 @@ const emptyForm: Omit<Profile, "id"> = {
   visitedCountryCodes: [],
   countryImages: [],
   collectionImages: [],
+  email: "",
+  isExplorerCard: false,
+  isFeaturedProfile: true,
 };
 
 function CountrySelect({
@@ -455,7 +461,7 @@ export default function AdminProfilesPage() {
   const fetchProfiles = async () => {
     setLoading(true);
     try {
-      const res = await fetch("/api/profiles");
+      const res = await fetch("/api/profiles", { cache: "no-store" });
       const data = await res.json();
       const normalizedProfiles = (Array.isArray(data) ? data : []).map((profile) => ({
         ...profile,
@@ -1976,6 +1982,24 @@ export default function AdminProfilesPage() {
                 <h3 className="text-sm font-medium text-white/80 pb-2 border-b border-white/10">
                   Basic Info
                 </h3>
+
+                {/* Email (Optional) */}
+                <div>
+                  <label className="text-sm text-white/60 block mb-1.5">
+                    User Email <span className="text-white/30 text-xs ml-2">(Optional - creates user account if provided)</span>
+                  </label>
+                  <Input
+                    type="email"
+                    value={form.email || ""}
+                    onChange={(e) =>
+                      setForm((prev) => ({ ...prev, email: e.target.value }))
+                    }
+                    placeholder="user@example.com"
+                    className="bg-white/5 border border-white/10 placeholder:text-white/25 focus:border-[#5A45F9]"
+                  />
+                </div>
+
+
 
                 {/* Name */}
                 <div>

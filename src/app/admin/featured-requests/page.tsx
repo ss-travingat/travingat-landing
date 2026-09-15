@@ -47,9 +47,9 @@ export default function FeaturedRequestsPage() {
     }
   };
 
-  const handleArchive = async (id: string, email: string) => {
-    const isCurrentlyArchived = archivedIds.has(id);
-    const newStatus = isCurrentlyArchived ? 'Created' : 'Archived';
+  const handleDelete = async (id: string, email: string) => {
+    const isCurrentlyDeleted = archivedIds.has(id);
+    const newStatus = isCurrentlyDeleted ? 'Created' : 'Deleted';
 
     setArchivedIds(prev => {
       const newSet = new Set(prev);
@@ -64,6 +64,10 @@ export default function FeaturedRequestsPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, status: newStatus })
       });
+      // Optionally remove from list visually if soft deleted
+      if (newStatus === 'Deleted') {
+        setRequests(prev => prev.filter(r => r.id !== id));
+      }
     } catch (err) {
       console.error("Failed to update status", err);
     }
@@ -88,15 +92,15 @@ export default function FeaturedRequestsPage() {
         setRequests(data.requests || []);
         
         const initialApproved = new Set<string>();
-        const initialArchived = new Set<string>();
+        const initialDeleted = new Set<string>();
         
         (data.requests || []).forEach((req: FeaturedRequest) => {
           if (req.status === 'Approved') initialApproved.add(req.id);
-          if (req.status === 'Archived') initialArchived.add(req.id);
+          if (req.status === 'Deleted') initialDeleted.add(req.id);
         });
         
         setApprovedIds(initialApproved);
-        setArchivedIds(initialArchived);
+        setArchivedIds(initialDeleted);
       })
       .catch((err) => {
         setError(err.message);
@@ -130,10 +134,9 @@ export default function FeaturedRequestsPage() {
             <p className="text-white/40 text-sm mb-6">Review users who applied to be featured on the platform.</p>
             
             <div className="flex flex-wrap items-center gap-2 border-b border-white/10 pb-4">
-              {['all', 'approved', 'archived', 'new'].map(tab => {
+              {['all', 'approved', 'new'].map(tab => {
                 let count = 0;
                 if (tab === 'approved') count = requests.filter(req => approvedIds.has(req.id) && !archivedIds.has(req.id)).length;
-                else if (tab === 'archived') count = requests.filter(req => archivedIds.has(req.id)).length;
 
                 return (
                   <button
@@ -146,7 +149,7 @@ export default function FeaturedRequestsPage() {
                     }`}
                   >
                     <span>{tab === 'new' ? 'New (Past 7 Days)' : tab}</span>
-                    {['approved', 'archived'].includes(tab) && (
+                    {['approved'].includes(tab) && (
                       <span className={`text-[11px] px-2 py-0.5 rounded-full font-bold ${
                         activeTab === tab ? 'bg-black/10 text-black/70' : 'bg-white/10 text-white/50'
                       }`}>
@@ -166,13 +169,12 @@ export default function FeaturedRequestsPage() {
           ) : (() => {
             const filteredRequests = requests.filter(req => {
               const isApproved = approvedIds.has(req.id);
-              const isArchived = archivedIds.has(req.id);
+              const isDeleted = archivedIds.has(req.id);
               const isNew = new Date(req.created_at).getTime() > Date.now() - 7 * 24 * 60 * 60 * 1000;
 
-              if (activeTab === "all") return !isApproved && !isArchived;
-              if (activeTab === "approved") return isApproved && !isArchived;
-              if (activeTab === "archived") return isArchived;
-              if (activeTab === "new") return isNew && !isApproved && !isArchived;
+              if (activeTab === "all") return !isApproved && !isDeleted;
+              if (activeTab === "approved") return isApproved && !isDeleted;
+              if (activeTab === "new") return isNew && !isApproved && !isDeleted;
               return true;
             });
 
@@ -263,16 +265,16 @@ export default function FeaturedRequestsPage() {
                         </div>
                       </button>
                       <button 
-                        onClick={() => handleArchive(req.id, req.email)}
+                        onClick={() => handleDelete(req.id, req.email)}
                         className={`w-[36px] h-[36px] flex items-center justify-center rounded-xl border transition-colors shrink-0 ${
                           archivedIds.has(req.id)
                             ? 'bg-red-500/10 border-red-500/30 text-red-400 hover:bg-red-500/20'
                             : 'bg-white/5 border-white/10 text-white/50 hover:bg-white/10 hover:text-red-400'
                         }`}
-                        title={archivedIds.has(req.id) ? "Unarchive" : "Archive"}
+                        title={archivedIds.has(req.id) ? "Restore" : "Delete"}
                       >
                         <span className="material-symbols-rounded text-[18px]">
-                          {archivedIds.has(req.id) ? "unarchive" : "delete"}
+                          {archivedIds.has(req.id) ? "restore" : "delete"}
                         </span>
                       </button>
                     </div>

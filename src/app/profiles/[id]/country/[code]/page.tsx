@@ -1,22 +1,20 @@
 import { notFound } from "next/navigation";
-
 import { CountryDetailComponent } from "@/features/profilepages";
-import { readJsonFromR2 } from "@/lib/r2-upload";
-import type { SampleProfile } from "@/features/profilepages";
-
-const R2_KEY = "landingpage-assets/data/profiles.json";
+import { getAllActiveProfiles, getProfileByHandle } from "@/lib/profiles";
 
 export const dynamicParams = true;
 export const revalidate = 60;
 
 export async function generateStaticParams() {
   try {
-    const profiles = await readJsonFromR2<SampleProfile[]>(R2_KEY);
+    const profiles = await getAllActiveProfiles();
     const params: { id: string; code: string }[] = [];
     for (const profile of profiles) {
-      if (profile.countryImages) {
+      if (profile?.countryImages) {
         for (const ci of profile.countryImages) {
-          params.push({ id: profile.handle.replace(/^@/, ""), code: ci.countryCode.toUpperCase() });
+          if (ci.countryCode) {
+            params.push({ id: profile.handle.replace(/^@/, ""), code: ci.countryCode.toUpperCase() });
+          }
         }
       }
     }
@@ -32,29 +30,20 @@ export default async function CountryDetailPage({
   params: Promise<{ id: string; code: string }>;
 }) {
   const { id, code } = await params;
-
-  let profiles: SampleProfile[];
-  try {
-    profiles = await readJsonFromR2<SampleProfile[]>(R2_KEY);
-  } catch {
-    notFound();
-  }
-
   const decodedId = decodeURIComponent(id);
-  const profile = profiles.find((p) => p.handle.replace(/^@/, "") === decodedId);
+  
+  const profile = await getProfileByHandle(decodedId);
 
   if (!profile) {
     notFound();
   }
 
   const countryEntry = profile.countryImages?.find(
-    (ci) => ci.countryCode.toUpperCase() === code.toUpperCase()
+    (ci: any) => ci.countryCode?.toUpperCase() === code.toUpperCase()
   );
 
-  // Fallback: profile uses visitedCountryCodes / flagCode fields for countries tab
-  // Allow viewing if this code appears in visitedCountryCodes or top-level flag codes
   const isKnownFallbackCountry =
-    profile.visitedCountryCodes?.map((c) => c.toUpperCase()).includes(code.toUpperCase()) ||
+    profile.visitedCountryCodes?.map((c: string) => c.toUpperCase()).includes(code.toUpperCase()) ||
     profile.flagCode?.toUpperCase() === code.toUpperCase() ||
     profile.homelandFlagCode?.toUpperCase() === code.toUpperCase() ||
     profile.currentlyInFlagCode?.toUpperCase() === code.toUpperCase();
@@ -71,7 +60,7 @@ export default async function CountryDetailPage({
 
   return (
     <CountryDetailComponent
-      profile={profile}
+      profile={profile as any}
       countryCode={code.toUpperCase()}
       images={images!}
     />

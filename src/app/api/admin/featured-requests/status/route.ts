@@ -56,16 +56,23 @@ export async function PATCH(req: NextRequest) {
       return jsonResponse({ error: "Missing email or status" }, { status: 400 });
     }
 
-    if (!['Created', 'Approved', 'Archived'].includes(status)) {
+    if (!['Created', 'Approved', 'Deleted'].includes(status)) {
       return jsonResponse({ error: "Invalid status" }, { status: 400 });
     }
 
     const db = getDrizzle();
     
-    await db
-      .update(waitlist)
-      .set({ get_featured_status: status })
-      .where(eq(waitlist.email, email));
+    if (status === 'Deleted') {
+      await db
+        .update(waitlist)
+        .set({ deleted_at: new Date() })
+        .where(eq(waitlist.email, email));
+    } else {
+      await db
+        .update(waitlist)
+        .set({ get_featured_status: status })
+        .where(eq(waitlist.email, email));
+    }
 
     return jsonResponse({ success: true });
   } catch (err) {

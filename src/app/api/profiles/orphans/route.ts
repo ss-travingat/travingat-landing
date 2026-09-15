@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
-import { readJsonFromR2, listR2Objects, deleteR2Objects } from "@/lib/r2-upload";
+import { listR2Objects, deleteR2Objects } from "@/lib/r2-upload";
+import { getDrizzle } from "@/lib/drizzle";
+import { featuredProfiles } from "@/db/schema";
 import { getLandingAssetsCdnBase } from "@/lib/landing-assets";
 
 export const dynamic = "force-dynamic";
@@ -67,9 +69,21 @@ export async function GET() {
     // 1. Read all profiles from R2
     let profiles: Profile[] = [];
     try {
-      profiles = await readJsonFromR2<Profile[]>(PROFILES_JSON_KEY);
-    } catch {
-      // profiles.json might not exist yet — that's fine
+      const db = getDrizzle();
+      const records = await db.select().from(featuredProfiles);
+      // Map DB records to the Profile interface expected by collectReferencedKeys
+      profiles = records.map(p => ({
+        images: {
+          cover: (p.images as any)?.cover || "",
+          avatar: (p.images as any)?.avatar || "",
+          gallery: (p.images as any)?.gallery || []
+        },
+        aboutImages: (p.about_images as string[]) || [],
+        countryImages: (p.country_images as any[]) || [],
+        collectionImages: (p.collection_images as any[]) || []
+      }));
+    } catch (dbErr) {
+      console.error("Failed to fetch profiles for orphans check:", dbErr);
     }
 
     // 2. Collect all URLs referenced by profiles

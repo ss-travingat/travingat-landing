@@ -182,13 +182,14 @@ export async function GET(req: NextRequest) {
         u.id as user_uuid
       FROM waitlist w
       LEFT JOIN users u ON w.email = u.email
+      WHERE w.deleted_at IS NULL
       ORDER BY w.created_at DESC
     `;
 
-    const countResult = await sql`SELECT COUNT(*)::int as total FROM waitlist`;
-    const confirmedResult = await sql`SELECT COUNT(*)::int as confirmed FROM waitlist WHERE confirmed = TRUE`;
-    const explorerCardCreatedResult = await sql`SELECT COUNT(*)::int as count FROM waitlist WHERE explorer_card_status = 'Created'`;
-    const getFeaturedCreatedResult = await sql`SELECT COUNT(*)::int as count FROM waitlist WHERE get_featured_status = 'Created'`;
+    const countResult = await sql`SELECT COUNT(*)::int as total FROM waitlist WHERE deleted_at IS NULL`;
+    const confirmedResult = await sql`SELECT COUNT(*)::int as confirmed FROM waitlist WHERE confirmed = TRUE AND deleted_at IS NULL`;
+    const explorerCardCreatedResult = await sql`SELECT COUNT(*)::int as count FROM waitlist WHERE explorer_card_status = 'Created' AND deleted_at IS NULL`;
+    const getFeaturedCreatedResult = await sql`SELECT COUNT(*)::int as count FROM waitlist WHERE get_featured_status = 'Created' AND deleted_at IS NULL`;
 
     const total: number = countResult[0]?.total ?? 0;
     const confirmedCount: number = confirmedResult[0]?.confirmed ?? 0;

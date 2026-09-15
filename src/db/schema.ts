@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, integer, jsonb, uuid } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, integer, jsonb, uuid, boolean } from "drizzle-orm/pg-core";
 
 export const users = pgTable("users", {
   id: uuid("id").defaultRandom().primaryKey(),
@@ -12,6 +12,7 @@ export const users = pgTable("users", {
   links: jsonb("links").$type<string[]>(),
   created_at: timestamp("created_at").defaultNow(),
   updated_at: timestamp("updated_at").defaultNow().$onUpdateFn(() => new Date()),
+  deleted_at: timestamp("deleted_at"),
 });
 
 export const waitlist = pgTable("waitlist", {
@@ -20,4 +21,38 @@ export const waitlist = pgTable("waitlist", {
   get_featured_status: text("get_featured_status"),
   created_at: timestamp("created_at").defaultNow(),
   updated_at: timestamp("updated_at").defaultNow().$onUpdateFn(() => new Date()),
+  deleted_at: timestamp("deleted_at"),
+});
+
+export const featuredProfiles = pgTable("featured_profiles", {
+  id: text("id").primaryKey(),
+  user_id: uuid("user_id").references(() => users.id),
+  email: text("email"),
+  is_explorer_card: boolean("is_explorer_card").default(false),
+  is_featured_profile: boolean("is_featured_profile").default(false),
+  name: text("name").notNull(),
+  handle: text("handle").notNull().unique(),
+  country: text("country").notNull(),
+  flag: text("flag").notNull(),
+  flag_code: text("flag_code").notNull(),
+  homeland_flag_code: text("homeland_flag_code"),
+  currently_in_flag_code: text("currently_in_flag_code"),
+  countries: integer("countries").notNull().default(0),
+  media: integer("media").notNull().default(0),
+  collections: integer("collections").notNull().default(0),
+  align: text("align").notNull().default("end"),
+  bio: text("bio").notNull(),
+  interests: jsonb("interests").$type<string[]>().default([]),
+  languages: jsonb("languages").$type<string[]>().default([]),
+  homeland: text("homeland").notNull(),
+  currently_in: text("currently_in").notNull(),
+  socials: jsonb("socials").$type<{ x?: string; instagram?: string; linkedin?: string; youtube?: string }>(),
+  images: jsonb("images").$type<{ cover: string; avatar: string; gallery: string[] }>(),
+  about_images: jsonb("about_images").$type<string[]>().default([]),
+  visited_country_codes: jsonb("visited_country_codes").$type<string[]>().default([]),
+  country_images: jsonb("country_images").$type<{ countryCode: string; images: string[]; coverPhoto?: string; about?: string }[]>().default([]),
+  collection_images: jsonb("collection_images").$type<{ title: string; images: string[]; coverPhoto?: string; about?: string; countryCodes?: string[] }[]>().default([]),
+  created_at: timestamp("created_at").defaultNow(),
+  updated_at: timestamp("updated_at").defaultNow().$onUpdateFn(() => new Date()),
+  deleted_at: timestamp("deleted_at"),
 });

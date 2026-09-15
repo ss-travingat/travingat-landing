@@ -16,28 +16,44 @@ export async function GET(req: Request) {
 
   try {
     const sql = getDb();
-    const rows = await sql`
-      SELECT id, original_id, email, source, deleted_at, data
-      FROM archived_users
+    
+    // Fetch soft-deleted waitlist entries
+    const deletedWaitlist = await sql`
+      SELECT *
+      FROM waitlist
+      WHERE deleted_at IS NOT NULL
       ORDER BY deleted_at DESC
     `;
-    return NextResponse.json({ archived_users: rows });
+
+    // Fetch soft-deleted users
+    const deletedUsers = await sql`
+      SELECT *
+      FROM users
+      WHERE deleted_at IS NOT NULL
+      ORDER BY deleted_at DESC
+    `;
+
+    // Fetch soft-deleted featured profiles
+    const deletedProfiles = await sql`
+      SELECT *
+      FROM featured_profiles
+      WHERE deleted_at IS NOT NULL
+      ORDER BY deleted_at DESC
+    `;
+
+    return NextResponse.json({ waitlist: deletedWaitlist, users: deletedUsers, profiles: deletedProfiles });
   } catch (error) {
-    console.error("Failed to fetch archived users:", error);
+    console.error("Failed to fetch recycle bin items:", error);
     return NextResponse.json({ error: "Database error" }, { status: 500 });
   }
 }
 
 // Used for cron job auto-deletion
 export async function DELETE(req: Request) {
-  // Check for cron authorization (using a secret header or Vercel cron header)
   const authHeader = req.headers.get("authorization");
   const cronSecret = process.env.CRON_SECRET;
   
-  // Note: For simplicity if CRON_SECRET is not set we might allow manual admin trigger or rely on Vercel's protections.
-  // We'll require either a valid admin session or the correct CRON_SECRET.
   let isAuthorized = false;
-  
   if (cronSecret && authHeader === `Bearer ${cronSecret}`) {
     isAuthorized = true;
   } else {
@@ -54,16 +70,29 @@ export async function DELETE(req: Request) {
 
   try {
     const sql = getDb();
-    // Delete users older than 30 days
-    const result = await sql`
-      DELETE FROM archived_users
+    
+    // Delete items older than 30 days
+    const result1 = await sql`
+      DELETE FROM waitlist
       WHERE deleted_at < NOW() - INTERVAL '30 days'
       RETURNING id
     `;
     
-    return NextResponse.json({ success: true, deletedCount: result.length });
+    const result2 = await sql`
+      DELETE FROM users
+      WHERE deleted_at < NOW() - INTERVAL '30 days'
+      RETURNING id
+    `;
+
+    const result3 = await sql`
+      DELETE FROM featured_profiles
+      WHERE deleted_at < NOW() - INTERVAL '30 days'
+      RETURNING id
+    `;
+    
+    return NextResponse.json({ success: true, deletedCount: result1.length + result2.length + result3.length });
   } catch (error) {
-    console.error("Failed to auto-delete archived users:", error);
+    console.error("Failed to auto-delete old items:", error);
     return NextResponse.json({ error: "Database error" }, { status: 500 });
   }
 }

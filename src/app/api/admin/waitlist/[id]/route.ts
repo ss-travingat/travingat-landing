@@ -27,18 +27,20 @@ export async function DELETE(req: Request, context: { params: Promise<{ id: stri
     
     const entry = existing[0];
     
-    // Archive the entry
+    // Soft delete the waitlist entry
     await sql`
-      INSERT INTO archived_users (original_id, email, source, data)
-      VALUES (${String(entry.id)}, ${entry.email}, 'waitlist', ${JSON.stringify(entry)}::jsonb)
+      UPDATE waitlist 
+      SET deleted_at = NOW() 
+      WHERE id = ${id}
     `;
     
-    // Delete from waitlist and other related local tables
-    await sql`DELETE FROM waitlist WHERE id = ${id}`;
+    // Also soft delete associated user if email exists
     if (entry.email) {
-      await sql`DELETE FROM explorer_cards WHERE email = ${entry.email}`;
-      await sql`DELETE FROM users WHERE email = ${entry.email}`;
-      await sql`DELETE FROM otps WHERE email = ${entry.email}`;
+      await sql`
+        UPDATE users 
+        SET deleted_at = NOW() 
+        WHERE email = ${entry.email}
+      `;
     }
 
     return NextResponse.json({ success: true });

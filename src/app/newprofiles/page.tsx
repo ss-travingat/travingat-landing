@@ -4,12 +4,11 @@ import Link from "next/link";
 import { demoProfiles } from "@/data/demo-profiles";
 import type { DemoProfile } from "@/data/demo-profiles";
 import { toLandingAssetUrl, getOptimizedMediaUrl } from "@/lib/landing-assets";
-import { readJsonFromR2 } from "@/lib/r2-upload";
+import { getAllActiveProfiles } from "@/lib/profiles";
 import JoinSection from "@/components/sections/components/JoinSection";
 import LoadedImage from "@/components/ui/LoadedImage";
 
 export const dynamic = "force-dynamic";
-const R2_KEY = "landingpage-assets/data/profiles.json";
 
 function toFlagAssetPath(flagCode: string) {
   return `/flags/${flagCode.toUpperCase()}.svg`;
@@ -102,11 +101,10 @@ function TravellerCard({ profile }: { profile: DemoProfile }) {
 export default async function NewProfilesPage() {
   let fetchedProfiles: DemoProfile[] = [];
   try {
-    fetchedProfiles = await readJsonFromR2<DemoProfile[]>(R2_KEY);
-    // Reverse to show newest first
-    fetchedProfiles = fetchedProfiles.reverse();
+    const rawProfiles = await getAllActiveProfiles();
+    fetchedProfiles = rawProfiles as unknown as DemoProfile[];
   } catch (e) {
-    console.error("Failed to fetch profiles from R2:", e);
+    console.error("Failed to fetch profiles from DB:", e);
   }
 
   // Combine fetched profiles with demo profiles as fallback

@@ -5,7 +5,7 @@ import {
 } from "@/lib/admin-session";
 import { getDrizzle } from "@/lib/drizzle";
 import { users, waitlist } from "@/db/schema";
-import { eq, inArray, desc } from "drizzle-orm";
+import { eq, inArray, desc, and, isNull } from "drizzle-orm";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -67,7 +67,12 @@ export async function GET(req: NextRequest) {
       })
       .from(waitlist)
       .innerJoin(users, eq(waitlist.email, users.email))
-      .where(inArray(waitlist.get_featured_status, ['Created', 'Approved', 'Archived']))
+      .where(
+        and(
+          inArray(waitlist.get_featured_status, ['Created', 'Approved']),
+          isNull(waitlist.deleted_at)
+        )
+      )
       .orderBy(desc(waitlist.created_at));
 
     return jsonResponse({

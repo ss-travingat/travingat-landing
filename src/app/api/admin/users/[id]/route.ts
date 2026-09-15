@@ -70,18 +70,20 @@ export async function DELETE(req: Request, context: { params: Promise<{ id: stri
     const { getDb } = await import("@/lib/db");
     const sql = getDb();
     
-    // Archive the user in Neon DB before hard-deleting
+    // Soft delete the user in Neon DB
     await sql`
-      INSERT INTO archived_users (original_id, email, source, data)
-      VALUES (${id}, ${body.email || 'unknown'}, 'main', ${JSON.stringify(body)}::jsonb)
+      UPDATE users 
+      SET deleted_at = NOW() 
+      WHERE id = ${id}
     `;
 
     if (body.email) {
-      // Clean up any associated waitlist/explorer card data in the local DB
-      await sql`DELETE FROM explorer_cards WHERE email = ${body.email}`;
-      await sql`DELETE FROM users WHERE email = ${body.email}`;
-      await sql`DELETE FROM waitlist WHERE email = ${body.email}`;
-      await sql`DELETE FROM otps WHERE email = ${body.email}`;
+      // Clean up any associated waitlist
+      await sql`
+        UPDATE waitlist 
+        SET deleted_at = NOW() 
+        WHERE email = ${body.email}
+      `;
     }
 
     const res = await fetch(`${API_URL}/api/admin/users/${id}`, {

@@ -1,17 +1,13 @@
 import { notFound } from "next/navigation";
-
 import { ProfileComponent } from "@/features/profilepages";
-import { readJsonFromR2 } from "@/lib/r2-upload";
-import type { SampleProfile } from "@/features/profilepages";
-
-const R2_KEY = "landingpage-assets/data/profiles.json";
+import { getAllActiveProfiles, getProfileByHandle } from "@/lib/profiles";
 
 export const dynamicParams = true;
 export const revalidate = 60;
 
 export async function generateStaticParams() {
   try {
-    const profiles = await readJsonFromR2<SampleProfile[]>(R2_KEY);
+    const profiles = await getAllActiveProfiles();
     return profiles.map((profile) => ({ id: profile.handle.replace(/^@/, "") }));
   } catch {
     return [];
@@ -24,16 +20,9 @@ export default async function ProfilePage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-
-  let profiles: SampleProfile[];
-  try {
-    profiles = await readJsonFromR2<SampleProfile[]>(R2_KEY);
-  } catch {
-    notFound();
-  }
-
   const decodedId = decodeURIComponent(id);
-  const profile = profiles.find((p) => p.handle.replace(/^@/, "") === decodedId);
+  
+  const profile = await getProfileByHandle(decodedId);
 
   if (!profile) {
     notFound();
