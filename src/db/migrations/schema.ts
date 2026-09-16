@@ -1,4 +1,4 @@
-import { pgTable, text, integer, jsonb, timestamp, uuid, varchar, foreignKey, boolean, unique, serial, index } from "drizzle-orm/pg-core"
+import { pgTable, text, integer, jsonb, timestamp, uuid, varchar, foreignKey, unique, boolean, serial, index } from "drizzle-orm/pg-core"
 import { sql } from "drizzle-orm"
 
 
@@ -7,22 +7,22 @@ export const profiles = pgTable("profiles", {
 	id: text().primaryKey().notNull(),
 	name: text().notNull(),
 	handle: text().notNull(),
-	country: text().default('),
-	flag: text().default('),
-	flagCode: text("flag_code").default('),
-	homelandFlagCode: text("homeland_flag_code").default('),
-	currentlyInFlagCode: text("currently_in_flag_code").default('),
+	country: text().default(''),
+	flag: text().default(''),
+	flagCode: text("flag_code").default(''),
+	homelandFlagCode: text("homeland_flag_code").default(''),
+	currentlyInFlagCode: text("currently_in_flag_code").default(''),
 	countries: integer().default(0),
 	media: integer().default(0),
 	collections: integer().default(0),
-	images: jsonb().default({"cover":"","avatar":"","gallery":[]}),
+	images: jsonb().default({ "cover": "", "avatar": "", "gallery": [] }),
 	align: text().default('end'),
-	bio: text().default('),
+	bio: text().default(''),
 	interests: text().array().default([""]),
 	languages: text().array().default([""]),
-	homeland: text().default('),
-	currentlyIn: text("currently_in").default('),
-	socials: jsonb().default({"x":"","youtube":"","linkedin":"","instagram":""}),
+	homeland: text().default(''),
+	currentlyIn: text("currently_in").default(''),
+	socials: jsonb().default({ "x": "", "youtube": "", "linkedin": "", "instagram": "" }),
 	visitedCountryCodes: text("visited_country_codes").array().default([""]),
 	countryImages: jsonb("country_images").default([]),
 	collectionImages: jsonb("collection_images").default([]),
@@ -54,10 +54,11 @@ export const explorerCards = pgTable("explorer_cards", {
 	coverOriginalExt: text("cover_original_ext"),
 }, (table) => [
 	foreignKey({
-			columns: [table.userId],
-			foreignColumns: [users.id],
-			name: "explorer_cards_user_id_users_id_fk"
-		}).onDelete("cascade"),
+		columns: [table.userId],
+		foreignColumns: [users.id],
+		name: "explorer_cards_user_id_fkey"
+	}).onDelete("cascade"),
+	unique("explorer_cards_user_id_key").on(table.userId),
 ]);
 
 export const waitlist = pgTable("waitlist", {
@@ -68,7 +69,7 @@ export const waitlist = pgTable("waitlist", {
 	country: text(),
 	city: text(),
 	ip: text(),
-	createdAt: timestamp("created_at", { mode: 'string' }).defaultNow(),
+	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow(),
 	confirmed: boolean().default(false).notNull(),
 	confirmationToken: text("confirmation_token"),
 	confirmedAt: timestamp("confirmed_at", { withTimezone: true, mode: 'string' }),
@@ -77,11 +78,11 @@ export const waitlist = pgTable("waitlist", {
 	explorerCardStatus: varchar("explorer_card_status", { length: 50 }).default('Not created'),
 	countriesCount: integer("countries_count"),
 	cardStyle: varchar("card_style", { length: 50 }),
-	getFeaturedStatus: text("get_featured_status"),
-	updatedAt: timestamp("updated_at", { mode: 'string' }).defaultNow(),
+	getFeaturedStatus: varchar("get_featured_status").default('Not created'),
 	deletedAt: timestamp("deleted_at", { mode: 'string' }),
 }, (table) => [
-	unique("waitlist_email_unique").on(table.email),
+	unique("waitlist_email_key").on(table.email),
+	unique("waitlist_confirmation_token_key").on(table.confirmationToken),
 ]);
 
 export const otps = pgTable("otps", {
@@ -90,29 +91,29 @@ export const otps = pgTable("otps", {
 	otp: varchar({ length: 10 }).notNull(),
 	expiresAt: timestamp("expires_at", { mode: 'string' }).notNull(),
 	createdAt: timestamp("created_at", { mode: 'string' }).default(sql`CURRENT_TIMESTAMP`).notNull(),
-	userAgent: text("user_agent").default(').notNull(),
+	userAgent: text("user_agent").default('').notNull(),
 }, (table) => [
 	index("otps_email_idx").using("btree", table.email.asc().nullsLast().op("text_ops")),
 ]);
 
 export const users = pgTable("users", {
 	id: uuid().defaultRandom().primaryKey().notNull(),
-	firstName: text("first_name"),
-	lastName: text("last_name"),
-	email: text().notNull(),
-	country: text(),
+	firstName: varchar("first_name", { length: 255 }),
+	lastName: varchar("last_name", { length: 255 }),
+	email: varchar({ length: 255 }),
+	country: varchar({ length: 255 }),
 	visitedCountries: text("visited_countries").array(),
 	profileImageUrl: varchar("profile_image_url", { length: 1024 }),
 	coverImageUrl: varchar("cover_image_url", { length: 1024 }),
-	createdAt: timestamp("created_at", { mode: 'string' }).defaultNow(),
+	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).default(sql`CURRENT_TIMESTAMP`),
 	links: text().array(),
 	visitedCount: integer("visited_count"),
+	deletedAt: timestamp("deleted_at", { mode: 'string' }),
 	avatarUrl: text("avatar_url"),
 	coverPhotoUrl: text("cover_photo_url"),
 	updatedAt: timestamp("updated_at", { mode: 'string' }).defaultNow(),
-	deletedAt: timestamp("deleted_at", { mode: 'string' }),
 }, (table) => [
-	unique("users_email_unique").on(table.email),
+	unique("users_email_key").on(table.email),
 ]);
 
 export const featuredProfiles = pgTable("featured_profiles", {
@@ -148,9 +149,9 @@ export const featuredProfiles = pgTable("featured_profiles", {
 	deletedAt: timestamp("deleted_at", { mode: 'string' }),
 }, (table) => [
 	foreignKey({
-			columns: [table.userId],
-			foreignColumns: [users.id],
-			name: "featured_profiles_user_id_users_id_fk"
-		}),
+		columns: [table.userId],
+		foreignColumns: [users.id],
+		name: "featured_profiles_user_id_users_id_fk"
+	}),
 	unique("featured_profiles_handle_unique").on(table.handle),
 ]);
