@@ -117,7 +117,7 @@ export function MobileProfileNavbar({ profile }: { profile?: any }) {
     event.preventDefault();
     const section = document.getElementById(sectionId);
     if (!section) {
-      window.location.href = `/#${sectionId}`;
+      window.location.href = `https://travingat.com/#${sectionId}`;
       return;
     }
     setMenuOpen(false);
@@ -141,9 +141,9 @@ export function MobileProfileNavbar({ profile }: { profile?: any }) {
               <span className="font-semibold text-[1rem] text-white tracking-tight">{profile.handle}</span>
             </div>
           ) : (
-            <Link href="/" className="flex items-center">
+            <a href="https://travingat.com/" className="flex items-center">
               <img src="/icons/travingat-logo.svg" alt="Travingat Logo" className="h-[1.375rem] w-auto" />
-            </Link>
+            </a>
           )}
           <button
             onClick={() => setMenuOpen((prev) => !prev)}

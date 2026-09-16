@@ -880,7 +880,7 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
               </h2>
             </div>
             <div className="w-[40px] flex justify-end shrink-0">
-              <button onClick={() => window.location.href = '/'} className="w-[28px] h-[28px] lg:w-[36px] lg:h-[36px] flex items-center justify-center rounded-[8px] bg-[#111] border border-[#212121] hover:bg-[#222] transition-colors shrink-0">
+              <button onClick={() => window.location.href = 'https://travingat.com/'} className="w-[28px] h-[28px] lg:w-[36px] lg:h-[36px] flex items-center justify-center rounded-[8px] bg-[#111] border border-[#212121] hover:bg-[#222] transition-colors shrink-0">
                 <svg className="w-[18px] h-[18px] lg:w-[24px] lg:h-[24px]" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M18 6L6 18M6 6L18 18" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>

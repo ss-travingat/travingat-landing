@@ -98,8 +98,8 @@ export default async function WaitlistConfirmedPage({ searchParams }: Props) {
         </p>
 
         {/* Back to homepage */}
-        <Link
-          href="/"
+        <a
+          href="https://travingat.com/"
           style={{
             display: "inline-block",
             background: "#fff",
@@ -113,7 +113,7 @@ export default async function WaitlistConfirmedPage({ searchParams }: Props) {
           }}
         >
           Back to home
-        </Link>
+        </a>
       </div>
 
       {/* Footer wordmark */}

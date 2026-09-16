@@ -6,7 +6,9 @@ export default function LandingFooter() {
       <div className="px-5 py-12 md:px-8 md:py-14 xl:px-24 xl:py-16 xl:flex xl:justify-between xl:items-start">
         <div>
           <div className="mb-10 xl:mb-8">
-            <h2 className="ds-font-logo text-[32px] font-bold text-white mb-6">travingat</h2>
+            <a href="https://travingat.com/">
+              <h2 className="ds-font-logo text-[32px] font-bold text-white mb-6">travingat</h2>
+            </a>
             <div className="space-y-2">
               <a href="tel:+1826725005" className="block text-[14px] text-gray-400 hover:text-white transition-colors">
                 +1 826 725 005
@@ -45,8 +47,9 @@ export default function LandingFooter() {
           <div className="flex gap-16 xl:gap-25 mb-12">
             <div className="space-y-3">
               <a href="https://travingat.com/" className="block text-[14px] text-gray-400 hover:text-white transition-colors">About us</a>
-              <Link href="/featured-profiles" className="block text-[14px] text-gray-400 hover:text-white transition-colors">Featured profiles</Link>
-              <Link href="https://travingat.com/profiles" className="block text-[14px] text-gray-400 hover:text-white transition-colors">Profiles</Link>
+              <a href="https://travingat.com/featured-profiles" className="block text-[14px] text-gray-400 hover:text-white transition-colors">Featured profiles</a>
+              <a href="https://travingat.com/profiles" className="block text-[14px] text-gray-400 hover:text-white transition-colors">Profiles</a>
+              <a href="https://travingat.com/templates" className="block text-[14px] text-gray-400 hover:text-white transition-colors">Templates</a>
               <a href="https://travingat.com/blog" className="block text-[14px] text-gray-400 hover:text-white transition-colors">Blog</a>
               <a href="https://travingat.com/#join" className="block text-[14px] text-gray-400 hover:text-white transition-colors">Join waiting list</a>
             </div>
