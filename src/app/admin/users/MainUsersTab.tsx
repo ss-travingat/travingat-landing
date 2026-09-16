@@ -50,12 +50,21 @@ function UserActionsDropdown({
   onDelete,
   onToggleStatus,
   processing,
+  onViewDetails,
+  hasExplorerCard,
+  isOpen,
+  toggle,
+  close,
 }: {
   user: AdminUser;
   onDelete: (u: AdminUser) => void;
   onToggleStatus: (u: AdminUser) => void;
   processing: boolean;
   onViewDetails: (u: AdminUser) => void;
+  hasExplorerCard: boolean;
+  isOpen: boolean;
+  toggle: () => void;
+  close: () => void;
 }) {
   const ref = useRef<HTMLDivElement>(null);
 
@@ -73,16 +82,16 @@ function UserActionsDropdown({
 
   return (
     <div className="relative inline-block" ref={ref}>
-      <button 
+      <button
         type="button"
         className="p-1.5 rounded-md hover:bg-white/5 transition-colors"
         title="More actions"
         onClick={toggle}
       >
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" className="opacity-50 hover:opacity-100 transition-opacity">
-          <circle cx="8" cy="3" r="1.5" fill="white"/>
-          <circle cx="8" cy="8" r="1.5" fill="white"/>
-          <circle cx="8" cy="13" r="1.5" fill="white"/>
+          <circle cx="8" cy="3" r="1.5" fill="white" />
+          <circle cx="8" cy="8" r="1.5" fill="white" />
+          <circle cx="8" cy="13" r="1.5" fill="white" />
         </svg>
       </button>
 
@@ -137,7 +146,7 @@ function UserActionsDropdown({
             <p className={`px-5 ${hasExplorerCard ? "pt-1" : "pt-4"} pb-1 text-[13px] font-bold text-white tracking-wide`}>
               Profile
             </p>
-            {/* View Details */}
+            {/* VIew */}
             <button
               className="block w-full px-5 py-2 text-[12px] text-left text-white/70 hover:text-white hover:bg-white/5 transition-colors"
               onClick={() => {
@@ -145,7 +154,7 @@ function UserActionsDropdown({
                 close();
               }}
             >
-              View Details
+              VIew
             </button>
             {/* View */}
             <a
@@ -167,7 +176,7 @@ function UserActionsDropdown({
             >
               Edit
             </a>
-            {/* Resend email */}
+            {/* Resend */}
             <button
               className="w-full px-5 py-2 text-[12px] text-white/70 hover:text-white hover:bg-white/5 text-left transition-colors"
               onClick={() => {
@@ -175,7 +184,7 @@ function UserActionsDropdown({
                 close();
               }}
             >
-              Resend email
+              Resend
             </button>
             {/* Delete profile */}
             <button
@@ -418,13 +427,15 @@ export function MainUsersTab() {
                       {formatDateTime(u.created_at)}
                     </td>
                     <td className={`px-4 py-3 text-right relative ${openDropdownId === u.id ? 'z-[100]' : ''}`}>
-                      <RowDropdown
+                      <UserActionsDropdown
                         user={u}
                         hasExplorerCard={!!u.has_explorer_card}
                         isOpen={openDropdownId === u.id}
                         toggle={() => setOpenDropdownId(openDropdownId === u.id ? null : u.id)}
                         close={() => setOpenDropdownId(null)}
                         onDelete={onDeleteUser}
+                        onToggleStatus={() => {}}
+                        processing={false}
                         onViewDetails={(user) => setDetailsModalUser(user)}
                       />
                     </td>
@@ -451,7 +462,7 @@ export function MainUsersTab() {
               </button>
             </div>
             <div className="p-6 overflow-y-auto flex-1 flex flex-col gap-6">
-              
+
               {/* Profile Overview */}
               <div>
                 <p className="text-xs font-bold text-white/40 uppercase tracking-wider mb-3">Profile Overview</p>

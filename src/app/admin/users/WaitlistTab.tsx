@@ -38,6 +38,9 @@ export function WaitlistTab() {
   const [filter, setFilter] = useState<Filter>("all");
   const [openDropdownId, setOpenDropdownId] = useState<number | null>(null);
   const [detailsModalEntry, setDetailsModalEntry] = useState<WaitlistEntry | null>(null);
+  const [resendEntry, setResendEntry] = useState<WaitlistEntry | null>(null);
+  const [resendType, setResendType] = useState<'waitlist' | 'explorer' | 'profile' | null>(null);
+  const [resendLoading, setResendLoading] = useState(false);
 
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
   const [advancedFilters, setAdvancedFilters] = useState({
@@ -160,8 +163,8 @@ export function WaitlistTab() {
                 onClick={() => setFilter(f)}
                 variant="ghost"
                 className={`h-10 px-4 rounded-lg text-sm font-medium transition-colors capitalize ${filter === f
-                    ? "bg-white !text-black"
-                    : "bg-[#141414] text-white/50 border border-white/10 hover:text-white"
+                  ? "bg-white !text-black"
+                  : "bg-[#141414] text-white/50 border border-white/10 hover:text-white"
                   }`}
               >
                 {f}
@@ -172,8 +175,8 @@ export function WaitlistTab() {
             <button
               onClick={() => setIsFilterModalOpen(true)}
               className={`h-10 px-4 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 border ${activeFiltersCount > 0
-                  ? "bg-[#163d22] text-[#4ade80] border-[#4ade80]/30"
-                  : "bg-[#141414] text-white/50 border-white/10 hover:text-white hover:border-white/30"
+                ? "bg-[#163d22] text-[#4ade80] border-[#4ade80]/30"
+                : "bg-[#141414] text-white/50 border-white/10 hover:text-white hover:border-white/30"
                 }`}
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" /></svg>
@@ -300,15 +303,15 @@ export function WaitlistTab() {
                     </td>
                     <td className={`px-4 py-3 text-right relative ${openDropdownId === entry.id ? 'z-[100]' : ''}`}>
                       <div className="relative inline-block">
-                        <button 
+                        <button
                           className="p-1.5 rounded-md hover:bg-white/5 transition-colors"
                           title="More actions"
                           onClick={() => setOpenDropdownId(openDropdownId === entry.id ? null : entry.id)}
                         >
                           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" className="opacity-50 hover:opacity-100 transition-opacity">
-                            <circle cx="8" cy="3" r="1.5" fill="white"/>
-                            <circle cx="8" cy="8" r="1.5" fill="white"/>
-                            <circle cx="8" cy="13" r="1.5" fill="white"/>
+                            <circle cx="8" cy="3" r="1.5" fill="white" />
+                            <circle cx="8" cy="8" r="1.5" fill="white" />
+                            <circle cx="8" cy="13" r="1.5" fill="white" />
                           </svg>
                         </button>
 
@@ -353,7 +356,8 @@ export function WaitlistTab() {
                                   <button
                                     className="w-full px-5 py-2 text-[12px] text-white/70 hover:text-white hover:bg-white/5 text-left transition-colors"
                                     onClick={() => {
-                                      alert("Resend explorer card email (not yet wired)");
+                                      setResendEntry(entry);
+                                      setResendType('explorer');
                                       setOpenDropdownId(null);
                                     }}
                                   >
@@ -375,7 +379,7 @@ export function WaitlistTab() {
                                     setOpenDropdownId(null);
                                   }}
                                 >
-                                  View Details
+                                  VIew
                                 </button>
                               )}
                               {entry.user_uuid && (
@@ -392,7 +396,8 @@ export function WaitlistTab() {
                               <button
                                 className="w-full px-5 py-2 text-[12px] text-white/70 hover:text-white hover:bg-white/5 text-left transition-colors"
                                 onClick={() => {
-                                  alert("Resend email (not yet wired)");
+                                  setResendEntry(entry);
+                                  setResendType('profile');
                                   setOpenDropdownId(null);
                                 }}
                               >
@@ -415,7 +420,8 @@ export function WaitlistTab() {
                                   <button
                                     className="w-full px-5 py-2 text-[12px] text-white/70 hover:text-white hover:bg-white/5 text-left transition-colors"
                                     onClick={() => {
-                                      alert("Resend waitlist confirmation email (not yet wired)");
+                                      setResendEntry(entry);
+                                      setResendType('waitlist');
                                       setOpenDropdownId(null);
                                     }}
                                   >
@@ -584,19 +590,19 @@ export function WaitlistTab() {
         <div className="fixed inset-0 z-[120] flex justify-end p-5">
           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setDetailsModalEntry(null)} />
           <div className="bg-[#161616] border border-[#1E1E1E] rounded-2xl w-[420px] h-full relative z-10 shadow-[20px_20px_40px_rgba(0,0,0,0.40)] flex flex-col overflow-hidden animate-in slide-in-from-right duration-300">
-            
+
             <div className="p-6 flex justify-between items-center bg-[#161616] shrink-0">
-              <h2 className="text-xl font-bold text-white">View details</h2>
-              <button 
-                onClick={() => setDetailsModalEntry(null)} 
+              <h2 className="text-xl font-bold text-white">VIew</h2>
+              <button
+                onClick={() => setDetailsModalEntry(null)}
                 className="text-white/60 hover:text-white bg-white/5 hover:bg-white/10 rounded-md p-1.5 transition-colors"
               >
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6L6 18M6 6l12 12" /></svg>
               </button>
             </div>
-            
+
             <div className="px-6 pb-8 overflow-y-auto flex-1 flex flex-col">
-              
+
               {/* Basic info */}
               <div className="mb-6">
                 <h3 className="text-[15px] font-bold text-white mb-4">Basic info</h3>
@@ -628,11 +634,10 @@ export function WaitlistTab() {
                   <div className="grid grid-cols-[130px_1fr] items-center">
                     <span className="text-white/50 font-medium">Waitlist status</span>
                     <div className="flex">
-                      <span className={`px-2 py-0.5 rounded text-[11px] font-medium tracking-wide ${
-                        detailsModalEntry.confirmed 
-                          ? "bg-[#4ade80]/10 text-[#4ade80] border border-[#4ade80]/20" 
-                          : "bg-yellow-500/10 text-yellow-500 border border-yellow-500/20"
-                      }`}>
+                      <span className={`px-2 py-0.5 rounded text-[11px] font-medium tracking-wide ${detailsModalEntry.confirmed
+                        ? "bg-[#4ade80]/10 text-[#4ade80] border border-[#4ade80]/20"
+                        : "bg-yellow-500/10 text-yellow-500 border border-yellow-500/20"
+                        }`}>
                         {detailsModalEntry.confirmed ? "Confirmed" : "Pending"}
                       </span>
                     </div>
@@ -659,11 +664,10 @@ export function WaitlistTab() {
                   <div className="grid grid-cols-[130px_1fr] items-center">
                     <span className="text-white/50 font-medium">Status</span>
                     <div className="flex">
-                      <span className={`px-2 py-0.5 rounded text-[11px] font-medium tracking-wide ${
-                        detailsModalEntry.explorer_card_status?.toLowerCase() === 'created'
-                          ? "bg-[#4ade80]/10 text-[#4ade80] border border-[#4ade80]/20" 
-                          : "bg-white/10 text-white/70 border border-white/10"
-                      }`}>
+                      <span className={`px-2 py-0.5 rounded text-[11px] font-medium tracking-wide ${detailsModalEntry.explorer_card_status?.toLowerCase() === 'created'
+                        ? "bg-[#4ade80]/10 text-[#4ade80] border border-[#4ade80]/20"
+                        : "bg-white/10 text-white/70 border border-white/10"
+                        }`}>
                         {detailsModalEntry.explorer_card_status || "Not created"}
                       </span>
                     </div>
@@ -680,9 +684,9 @@ export function WaitlistTab() {
                       </div>
                       <div className="grid grid-cols-[130px_1fr] items-center">
                         <span className="text-white/50 font-medium">View card</span>
-                        <a 
+                        <a
                           href={`/view/explorercard/${detailsModalEntry.user_uuid}?style=${detailsModalEntry.card_style?.toLowerCase() || 'adventure'}`}
-                          target="_blank" 
+                          target="_blank"
                           rel="noreferrer"
                           className="text-[#60a5fa] hover:underline"
                         >
@@ -703,28 +707,27 @@ export function WaitlistTab() {
                   <div className="grid grid-cols-[130px_1fr] items-center">
                     <span className="text-white/50 font-medium">Status</span>
                     <div className="flex">
-                      <span className={`px-2 py-0.5 rounded text-[11px] font-medium tracking-wide ${
-                        detailsModalEntry.get_featured_status?.toLowerCase() === 'approved'
-                          ? "bg-[#60a5fa]/10 text-[#60a5fa] border border-[#60a5fa]/20"
-                          : detailsModalEntry.get_featured_status?.toLowerCase() === 'created'
-                            ? "bg-yellow-500/10 text-yellow-500 border border-yellow-500/20"
-                            : "bg-white/10 text-white/70 border border-white/10"
-                      }`}>
+                      <span className={`px-2 py-0.5 rounded text-[11px] font-medium tracking-wide ${detailsModalEntry.get_featured_status?.toLowerCase() === 'approved'
+                        ? "bg-[#60a5fa]/10 text-[#60a5fa] border border-[#60a5fa]/20"
+                        : detailsModalEntry.get_featured_status?.toLowerCase() === 'created'
+                          ? "bg-yellow-500/10 text-yellow-500 border border-yellow-500/20"
+                          : "bg-white/10 text-white/70 border border-white/10"
+                        }`}>
                         {detailsModalEntry.get_featured_status || "Not created"}
                       </span>
                     </div>
                   </div>
-                  
+
                   {detailsModalEntry.get_featured_status?.toLowerCase() === 'created' && (
                     <div className="flex gap-3 mt-2">
-                      <button 
+                      <button
                         onClick={() => {
                           const searchParams = new URLSearchParams();
                           searchParams.set("create", "true");
                           if (detailsModalEntry.email) searchParams.set("email", detailsModalEntry.email);
                           if (detailsModalEntry.country) searchParams.set("country", detailsModalEntry.country);
                           if (detailsModalEntry.id) searchParams.set("waitlistId", detailsModalEntry.id.toString());
-                          
+
                           window.open(`/admin/profiles?${searchParams.toString()}`, "_blank");
                         }}
                         className="px-4 py-2 bg-[#e8f5e9] text-[#1b5e20] hover:bg-[#c8e6c9] font-medium rounded-lg text-[13px] transition-colors"
@@ -772,6 +775,59 @@ export function WaitlistTab() {
                 </div>
               </div>
 
+            </div>
+          </div>
+        </div>
+      )}
+      {/* Resend Modal */}
+      {resendEntry && (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setResendEntry(null)} />
+          <div className="relative bg-[#161616] border border-white/10 rounded-2xl w-full max-w-md overflow-hidden shadow-2xl p-6">
+            <h3 className="text-xl font-display font-medium text-white mb-2">
+              {resendEntry.confirmed ? "Reverify User" : "Verify User"}
+            </h3>
+            <p className="text-sm text-white/60 mb-6">
+              Are you sure you want to resend the {resendType === 'waitlist' ? 'waitlist confirmation' : resendType === 'explorer' ? 'Explorer Card' : 'Profile'} email to {resendEntry.email} to {resendEntry.confirmed ? "reverify" : "verify"} this user?
+            </p>
+            <div className="flex justify-end gap-3">
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={() => setResendEntry(null)}
+                className="bg-transparent hover:bg-white/5 text-white/60 hover:text-white"
+                disabled={resendLoading}
+              >
+                Cancel
+              </Button>
+              <Button
+                type="button"
+                onClick={async () => {
+                  setResendLoading(true);
+                  try {
+                    const res = await fetch("/api/admin/waitlist/resend", {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ id: resendEntry.id, type: resendType }),
+                    });
+                    if (res.ok) {
+                      alert("Email sent successfully!");
+                    } else {
+                      alert("Failed to send email.");
+                    }
+                  } catch (e) {
+                    alert("Error sending email.");
+                  } finally {
+                    setResendLoading(false);
+                    setResendEntry(null);
+                    setResendType(null);
+                  }
+                }}
+                className="bg-[#5A45F9] hover:bg-[#5A45F9]/80 text-white"
+                disabled={resendLoading}
+              >
+                {resendLoading ? "Sending..." : "Resend Email"}
+              </Button>
             </div>
           </div>
         </div>
