@@ -32,11 +32,7 @@ export default function LandingFooter() {
                 <path d="M23.5 6.507a2.786 2.786 0 00-.766-1.27 3.05 3.05 0 00-1.338-.742C19.518 4 11.994 4 11.994 4a76.624 76.624 0 00-9.39.47 3.16 3.16 0 00-1.338.76c-.37.356-.638.795-.766 1.277A29.09 29.09 0 000 12a29.09 29.09 0 00.5 5.493 2.786 2.786 0 00.766 1.27 3.05 3.05 0 001.338.742c1.883.494 9.39.494 9.39.494a76.8 76.8 0 009.402-.494 3.05 3.05 0 001.338-.742 2.786 2.786 0 00.766-1.27A29.09 29.09 0 0024 12a29.09 29.09 0 00-.5-5.493zM9.602 15.424V8.577L15.862 12l-6.26 3.424z" />
               </svg>
             </a>
-            <a href="#" className="text-gray-400 hover:text-white transition-colors">
-              <svg width="20" height="23" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.88-2.88 2.89 2.89 0 012.88-2.88c.28 0 .55.04.81.1v-3.5a6.37 6.37 0 00-.81-.05A6.34 6.34 0 003.15 15.2a6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.34-6.34V8.51a8.27 8.27 0 004.76 1.49V6.55a4.83 4.83 0 01-1-.14z" />
-              </svg>
-            </a>
+
             <a href="#" className="text-gray-400 hover:text-white transition-colors">
               <svg width="23" height="21" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
@@ -48,15 +44,14 @@ export default function LandingFooter() {
         <div>
           <div className="flex gap-16 xl:gap-25 mb-12">
             <div className="space-y-3">
-              <Link href="/" className="block text-[14px] text-gray-400 hover:text-white transition-colors">About us</Link>
+              <a href="https://travingat.com/" className="block text-[14px] text-gray-400 hover:text-white transition-colors">About us</a>
               <Link href="/featured-profiles" className="block text-[14px] text-gray-400 hover:text-white transition-colors">Featured profiles</Link>
-              <Link href="/blog" className="block text-[14px] text-gray-400 hover:text-white transition-colors">Blog</Link>
-              <a href="/#join" className="block text-[14px] text-gray-400 hover:text-white transition-colors">Join waiting list</a>
+              <Link href="/newprofiles" className="block text-[14px] text-gray-400 hover:text-white transition-colors">Profiles</Link>
+              <a href="https://travingat.com/blog" className="block text-[14px] text-gray-400 hover:text-white transition-colors">Blog</a>
+              <a href="https://travingat.com/#join" className="block text-[14px] text-gray-400 hover:text-white transition-colors">Join waiting list</a>
             </div>
             <div className="space-y-3">
-              <a href="#" className="block text-[14px] text-gray-400 hover:text-white transition-colors">Contact us</a>
-              <a href="#" className="block text-[14px] text-gray-400 hover:text-white transition-colors">Showreel</a>
-              <a href="#" className="block text-[14px] text-gray-400 hover:text-white transition-colors">Invest</a>
+              <a href="mailto:hello@travingat.com" className="block text-[14px] text-gray-400 hover:text-white transition-colors">hello@travingat.com</a>
             </div>
           </div>
 
