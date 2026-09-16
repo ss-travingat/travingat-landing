@@ -127,7 +127,7 @@ export function MobileProfileNavbar({ profile }: { profile?: any }) {
   return (
     <>
       <div id="profile-mobile-navbar" ref={menuRef} className="fixed top-0 left-0 w-full z-[120] flex flex-col pointer-events-none">
-        <div className={`flex items-center justify-between px-[28px] pt-[20px] pb-[16px] pointer-events-auto transition-colors duration-300 ${(isScrolled || menuOpen) ? "bg-black shadow-[0_2px_0_0_#000]" : "bg-gradient-to-b from-black/50 to-transparent min-[810px]:bg-black min-[810px]:bg-none min-[810px]:shadow-[0_2px_0_0_#000]"}`}>
+        <div className={`flex items-center justify-between px-[1.75rem] pt-[1.25rem] pb-[1rem] pointer-events-auto transition-colors duration-300 ${(isScrolled || menuOpen) ? "bg-black shadow-[0_2px_0_0_#000]" : "bg-gradient-to-b from-black/50 to-transparent min-[50.625rem]:bg-black min-[50.625rem]:bg-none min-[50.625rem]:shadow-[0_2px_0_0_#000]"}`}>
           {isScrolled && profile ? (
             <div className="flex items-center gap-2">
               <LoadedImage
@@ -138,22 +138,22 @@ export function MobileProfileNavbar({ profile }: { profile?: any }) {
                 skeletonClassName="absolute inset-0 bg-[#2a2a2a]"
                 containerClassName="w-8 h-8 relative shrink-0 rounded-full"
               />
-              <span className="font-semibold text-[16px] text-white tracking-tight">{profile.handle}</span>
+              <span className="font-semibold text-[1rem] text-white tracking-tight">{profile.handle}</span>
             </div>
           ) : (
             <Link href="/" className="flex items-center">
-              <img src="/icons/travingat-logo.svg" alt="Travingat Logo" className="h-[22px] w-auto" />
+              <img src="/icons/travingat-logo.svg" alt="Travingat Logo" className="h-[1.375rem] w-auto" />
             </Link>
           )}
           <button
             onClick={() => setMenuOpen((prev) => !prev)}
-            className={`relative flex h-[36px] w-[36px] flex-col items-center justify-center gap-[4px] rounded-full transition-colors ${menuOpen ? 'bg-[#1c1c1c] text-white hover:bg-[#2a2a2a]' : ''}`}
+            className={`relative flex h-[2.25rem] w-[2.25rem] flex-col items-center justify-center gap-[0.25rem] rounded-full transition-colors ${menuOpen ? 'bg-[#1c1c1c] text-white hover:bg-[#2a2a2a]' : ''}`}
             aria-label="Toggle navigation menu"
             aria-expanded={menuOpen}
           >
-            <span className={`block h-[2px] w-[18px] origin-center rounded-full bg-white transition-all duration-300 ease-in-out ${menuOpen ? 'translate-y-[6px] rotate-45' : ''}`} />
-            <span className={`block h-[2px] w-[18px] origin-center rounded-full bg-white transition-all duration-300 ease-in-out ${menuOpen ? 'opacity-0' : ''}`} />
-            <span className={`block h-[2px] w-[18px] origin-center rounded-full bg-white transition-all duration-300 ease-in-out ${menuOpen ? '-translate-y-[6px] -rotate-45' : ''}`} />
+            <span className={`block h-[0.125rem] w-[1.125rem] origin-center rounded-full bg-white transition-all duration-300 ease-in-out ${menuOpen ? 'translate-y-[0.375rem] rotate-45' : ''}`} />
+            <span className={`block h-[0.125rem] w-[1.125rem] origin-center rounded-full bg-white transition-all duration-300 ease-in-out ${menuOpen ? 'opacity-0' : ''}`} />
+            <span className={`block h-[0.125rem] w-[1.125rem] origin-center rounded-full bg-white transition-all duration-300 ease-in-out ${menuOpen ? '-translate-y-[0.375rem] -rotate-45' : ''}`} />
           </button>
         </div>
       </div>
@@ -161,23 +161,23 @@ export function MobileProfileNavbar({ profile }: { profile?: any }) {
       {/* Fixed Full-Screen Mobile Overlay Menu */}
       <div
         ref={fullScreenMenuRef}
-        className={`fixed inset-0 z-[110] min-[1200px]:hidden bg-black/95 backdrop-blur-xl transition-all duration-300 ease-in-out flex flex-col justify-start items-center px-6 pt-[100px] pb-10 ${menuOpen
+        className={`fixed inset-0 z-[110] min-[75rem]:hidden bg-black/95 backdrop-blur-xl transition-all duration-300 ease-in-out flex flex-col justify-start items-center px-6 pt-[6.25rem] pb-10 ${menuOpen
           ? "opacity-100 pointer-events-auto translate-y-0"
           : "opacity-0 pointer-events-none -translate-y-4"
           }`}
       >
-        <div className="w-full max-w-xs flex flex-col items-center gap-[24px]">
-          <nav className="flex flex-col items-center justify-start gap-[24px] w-full">
-            <Link href="/" onClick={() => setMenuOpen(false)} className="text-[28px] font-medium leading-[1.2] text-white hover:text-white/80 transition">Home</Link>
-            <Link href="/newprofiles" onClick={() => setMenuOpen(false)} className="text-[28px] font-medium leading-[1.2] text-white hover:text-white/80 transition">Profiles</Link>
-            <Link href="/templates" onClick={() => setMenuOpen(false)} className="text-[28px] font-medium leading-[1.2] text-white hover:text-white/80 transition">Templates</Link>
-            <Link href="/pricing" onClick={() => setMenuOpen(false)} className="text-[28px] font-medium leading-[1.2] text-white hover:text-white/80 transition">Pricing</Link>
-            <Link href="/blog" onClick={() => setMenuOpen(false)} className="text-[28px] font-medium leading-[1.2] text-white hover:text-white/80 transition">Blog</Link>
+        <div className="w-full max-w-xs flex flex-col items-center gap-[1.5rem]">
+          <nav className="flex flex-col items-center justify-start gap-[1.5rem] w-full">
+            <Link href="/" onClick={() => setMenuOpen(false)} className="text-[1.75rem] font-medium leading-[1.2] text-white hover:text-white/80 transition">Home</Link>
+            <Link href="https://travingat.com/profiles" onClick={() => setMenuOpen(false)} className="text-[1.75rem] font-medium leading-[1.2] text-white hover:text-white/80 transition">Profiles</Link>
+            <Link href="/templates" onClick={() => setMenuOpen(false)} className="text-[1.75rem] font-medium leading-[1.2] text-white hover:text-white/80 transition">Templates</Link>
+            <Link href="/pricing" onClick={() => setMenuOpen(false)} className="text-[1.75rem] font-medium leading-[1.2] text-white hover:text-white/80 transition">Pricing</Link>
+            <Link href="/blog" onClick={() => setMenuOpen(false)} className="text-[1.75rem] font-medium leading-[1.2] text-white hover:text-white/80 transition">Blog</Link>
 
             <a
               href="/#join"
               onClick={(e) => scrollToSection(e, "join")}
-              className="mt-[12px] w-full text-center rounded-[999px] bg-white px-[28px] py-[12px] text-[15px] font-medium tracking-tight text-black hover:bg-[#ececec] transition shadow-lg shrink-0"
+              className="mt-[0.75rem] w-full text-center rounded-[62.4375rem] bg-white px-[1.75rem] py-[0.75rem] text-[0.9375rem] font-medium tracking-tight text-black hover:bg-[#ececec] transition shadow-lg shrink-0"
             >
               Join now
             </a>
@@ -217,11 +217,11 @@ export function MobileHero({
   const [openBioTooltip, setOpenBioTooltip] = useState(false);
 
   return (
-    <section id="profile-mobile-hero" className="min-[1200px]:hidden space-y-[12px] flex flex-col items-center w-full">
-      <div className="flex flex-col items-center gap-[20px] rounded-[24px] w-full relative">
+    <section id="profile-mobile-hero" className="min-[75rem]:hidden space-y-[0.75rem] flex flex-col items-center w-full">
+      <div className="flex flex-col items-center gap-[1.25rem] rounded-[1.5rem] w-full relative">
         <MobileProfileNavbar profile={profile} />
-        <div className="w-full min-[810px]:max-w-[400px] min-[810px]:mx-auto flex flex-col items-center">
-          <div className="w-full aspect-[377/248] -mb-[36px] rounded-2xl overflow-hidden bg-[#151515]">
+        <div className="w-full min-[50.625rem]:max-w-[25rem] min-[50.625rem]:mx-auto flex flex-col items-center">
+          <div className="w-full aspect-[377/248] -mb-[2.25rem] rounded-2xl overflow-hidden bg-[#151515]">
             <LoadedImage
               src={toLandingAssetUrl(typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url)}
               thumbnailSrc={getOptimizedMediaUrl(toLandingAssetUrl(typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url))}
@@ -232,7 +232,7 @@ export function MobileHero({
               priority
             />
           </div>
-          <div className="relative z-10 mx-auto w-[80px] h-[80px] rounded-2xl ring-4 ring-black bg-[#151515]">
+          <div className="relative z-10 mx-auto w-[5rem] h-[5rem] rounded-2xl ring-4 ring-black bg-[#151515]">
             <LoadedImage
               src={toLandingAssetUrl(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url)}
               thumbnailSrc={getOptimizedMediaUrl(toLandingAssetUrl(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url))}
@@ -245,8 +245,8 @@ export function MobileHero({
           </div>
         </div>
 
-        <div className="flex flex-col items-center gap-[8px] w-full min-[810px]:max-w-[400px] min-[810px]:mx-auto">
-          <div className="flex items-center justify-center gap-1.5 text-[#696969] text-[14px] leading-[20px] tracking-[-0.5px] font-sans font-normal">
+        <div className="flex flex-col items-center gap-[0.5rem] w-full min-[50.625rem]:max-w-[25rem] min-[50.625rem]:mx-auto">
+          <div className="flex items-center justify-center gap-1.5 text-[#696969] text-[0.875rem] leading-[1.25rem] tracking-[-0.5px] font-sans font-normal">
             {profileFlagSrc ? (
               <TooltipProvider delayDuration={100}>
                 <Tooltip
@@ -267,7 +267,7 @@ export function MobileHero({
                     <img
                       src={profileFlagSrc}
                       alt={`${basedIn} flag`}
-                      className="h-[10px] w-[15px] rounded-[2px] object-cover cursor-pointer"
+                      className="h-[0.625rem] w-[0.9375rem] rounded-[0.125rem] object-cover cursor-pointer"
                       loading="lazy"
                       decoding="async"
                     />
@@ -279,11 +279,11 @@ export function MobileHero({
             )}
             <span>{basedIn}</span>
           </div>
-          <h1 className="text-white text-[20px] leading-[24px] tracking-[-0.41px] font-semibold text-center w-full">{displayName}</h1>
-          <p className="text-[#a8a8a8] text-[14px] leading-[20px] tracking-[-0.5px] text-center w-full font-sans font-normal">{handle}</p>
+          <h1 className="text-white text-[1.25rem] leading-[1.5rem] tracking-[-0.41px] font-semibold text-center w-full">{displayName}</h1>
+          <p className="text-[#a8a8a8] text-[0.875rem] leading-[1.25rem] tracking-[-0.5px] text-center w-full font-sans font-normal">{handle}</p>
         </div>
 
-        <div className="flex flex-wrap items-start justify-center gap-[4px] px-[6px] w-full min-[810px]:max-w-[400px] min-[810px]:mx-auto">
+        <div className="flex flex-wrap items-start justify-center gap-[0.25rem] px-[0.375rem] w-full min-[50.625rem]:max-w-[25rem] min-[50.625rem]:mx-auto">
           <TooltipProvider delayDuration={100}>
             {headerFlagCodes.map((code, index) => {
               const countryName = getCountryName(code);
@@ -307,7 +307,7 @@ export function MobileHero({
                     <img
                       src={toFlagAssetPath(code) || ""}
                       alt={`${countryName} flag`}
-                      className="h-[17px] w-[26px] rounded-[2px] object-cover cursor-pointer"
+                      className="h-[1.0625rem] w-[1.625rem] rounded-[0.125rem] object-cover cursor-pointer"
                       loading="lazy"
                       decoding="async"
                     />
@@ -317,8 +317,8 @@ export function MobileHero({
             })}
           </TooltipProvider>
           {flagOverflowCount > 0 && (
-            <div className="flex h-[17px] w-[26px] shrink-0 items-center justify-center overflow-hidden rounded-[2px] bg-white">
-              <span className="font-medium text-violet-600 text-[10px] text-center tracking-[-0.408px] whitespace-nowrap">
+            <div className="flex h-[1.0625rem] w-[1.625rem] shrink-0 items-center justify-center overflow-hidden rounded-[0.125rem] bg-white">
+              <span className="font-medium text-violet-600 text-[0.625rem] text-center tracking-[-0.408px] whitespace-nowrap">
                 +{flagOverflowCount}
               </span>
             </div>
@@ -326,56 +326,56 @@ export function MobileHero({
         </div>
 
         {/* Mobile Stats Container */}
-        <div className="bg-[#111] flex items-center justify-center gap-[20px] rounded-[12px] w-full min-[810px]:max-w-[400px] min-[810px]:mx-auto pt-[18px] pb-[20px] px-[20px]">
-          <div className="flex flex-1 flex-col items-center justify-center gap-[4px]">
-            <p className="ds-font-display text-[24px] font-semibold leading-[32px] tracking-[-0.5px] text-white">
+        <div className="bg-[#111] flex items-center justify-center gap-[1.25rem] rounded-[0.75rem] w-full min-[50.625rem]:max-w-[25rem] min-[50.625rem]:mx-auto pt-[1.125rem] pb-[1.25rem] px-[1.25rem]">
+          <div className="flex flex-1 flex-col items-center justify-center gap-[0.25rem]">
+            <p className="ds-font-display text-[1.5rem] font-semibold leading-[2rem] tracking-[-0.5px] text-white">
               {profile.countries}
             </p>
-            <p className="text-[14px] font-normal leading-[20px] tracking-[-0.084px] text-[#989898]">
+            <p className="text-[0.875rem] font-normal leading-[1.25rem] tracking-[-0.084px] text-[#989898]">
               Countries
             </p>
           </div>
-          <div className="flex flex-1 flex-col items-center justify-center gap-[4px]">
-            <p className="ds-font-display text-[24px] font-semibold leading-[32px] tracking-[-0.5px] text-white">
+          <div className="flex flex-1 flex-col items-center justify-center gap-[0.25rem]">
+            <p className="ds-font-display text-[1.5rem] font-semibold leading-[2rem] tracking-[-0.5px] text-white">
               {profile.media}
             </p>
-            <p className="text-[14px] font-normal leading-[20px] tracking-[-0.084px] text-[#989898]">
+            <p className="text-[0.875rem] font-normal leading-[1.25rem] tracking-[-0.084px] text-[#989898]">
               All media
             </p>
           </div>
-          <div className="flex flex-1 flex-col items-center justify-center gap-[4px]">
-            <p className="ds-font-display text-[24px] font-semibold leading-[32px] tracking-[-0.5px] text-white">
+          <div className="flex flex-1 flex-col items-center justify-center gap-[0.25rem]">
+            <p className="ds-font-display text-[1.5rem] font-semibold leading-[2rem] tracking-[-0.5px] text-white">
               {profile.collections}
             </p>
-            <p className="text-[14px] font-normal leading-[20px] tracking-[-0.084px] text-[#989898]">
+            <p className="text-[0.875rem] font-normal leading-[1.25rem] tracking-[-0.084px] text-[#989898]">
               Collections
             </p>
           </div>
         </div>
 
         {/* Buttons under Stats Card */}
-        <div className="flex gap-[8px] items-center w-full min-[810px]:max-w-[400px] min-[810px]:mx-auto mt-[4px]">
+        <div className="flex gap-[0.5rem] items-center w-full min-[50.625rem]:max-w-[25rem] min-[50.625rem]:mx-auto mt-[0.25rem]">
           <button
             onClick={() => showComingSoonToast("featureLaunch")}
-            className="flex-1 rounded-full bg-white text-black px-[18px] py-[10px] text-[16px] font-medium leading-[24px] tracking-[-0.096px]"
+            className="flex-1 rounded-full bg-white text-black px-[1.125rem] py-[0.625rem] text-[1rem] font-medium leading-[1.5rem] tracking-[-0.096px]"
           >
             Follow
           </button>
           <button
             onClick={() => showComingSoonToast("featureLaunch")}
-            className="h-[44px] w-[43px] shrink-0 rounded-full border border-[#353535] bg-[#1a1a1a] grid place-items-center text-white"
+            className="h-[2.75rem] w-[2.6875rem] shrink-0 rounded-full border border-[#353535] bg-[#1a1a1a] grid place-items-center text-white"
             aria-label="More options"
           >
             <span className="grid grid-cols-2 gap-1">
-              <span className="h-[3px] w-[3px] rounded-full bg-white" />
-              <span className="h-[3px] w-[3px] rounded-full bg-white" />
-              <span className="h-[3px] w-[3px] rounded-full bg-white" />
-              <span className="h-[3px] w-[3px] rounded-full bg-white" />
+              <span className="h-[0.1875rem] w-[0.1875rem] rounded-full bg-white" />
+              <span className="h-[0.1875rem] w-[0.1875rem] rounded-full bg-white" />
+              <span className="h-[0.1875rem] w-[0.1875rem] rounded-full bg-white" />
+              <span className="h-[0.1875rem] w-[0.1875rem] rounded-full bg-white" />
             </span>
           </button>
           <button
             onClick={() => showComingSoonToast("featureLaunch")}
-            className="flex-1 rounded-full bg-[#1a1a1a] border border-[#353535] text-white px-[18px] py-[10px] text-[16px] font-medium leading-[24px] tracking-[-0.096px]"
+            className="flex-1 rounded-full bg-[#1a1a1a] border border-[#353535] text-white px-[1.125rem] py-[0.625rem] text-[1rem] font-medium leading-[1.5rem] tracking-[-0.096px]"
           >
             Connect
           </button>
@@ -418,7 +418,7 @@ export function MobileTabs({ activeTab, setActiveTab, swipeOffset = 0 }: MobileT
   const isDragging = swipeOffset !== 0;
 
   return (
-    <div id="profile-mobile-tabs" className="flex min-[1200px]:hidden flex-col w-[calc(100%+16px)] -mx-[8px] border-b border-[#252525] sticky top-[72px] z-header bg-black">
+    <div id="profile-mobile-tabs" className="flex min-[75rem]:hidden flex-col w-[calc(100%+16px)] -mx-[0.5rem] border-b border-[#252525] sticky top-[4.5rem] z-header bg-black">
       <div className="flex items-center w-full">
         {mobileTabs.map((tab) => (
           <button
@@ -429,7 +429,7 @@ export function MobileTabs({ activeTab, setActiveTab, swipeOffset = 0 }: MobileT
             }}
             className="flex-1 flex items-center justify-center px-6 py-4 transition-all duration-200 opacity-100"
           >
-            <img src={`/icons/tab-${tab.key}.svg`} alt={`${tab.key} tab`} className="w-[24px] h-[24px]" />
+            <img src={`/icons/tab-${tab.key}.svg`} alt={`${tab.key} tab`} className="w-[1.5rem] h-[1.5rem]" />
           </button>
         ))}
       </div>
@@ -455,26 +455,26 @@ export interface MobileActionBarProps {
 
 export function MobileActionBar({ onFollowClick }: MobileActionBarProps) {
   return (
-    <div className="md:hidden fixed left-1/2 -translate-x-1/2 bottom-[4px] z-header rounded-full backdrop-blur-[6px] bg-[rgba(255,255,255,0.12)] border border-[rgba(255,255,255,0.1)] px-[9px] py-[8px] shadow-[0px_12px_12px_0px_rgba(0,0,0,0.12)] flex items-center overflow-clip w-[calc(100%-20px)] max-w-[600px] opacity-0">
-      <div className="flex gap-[8px] items-center w-full">
+    <div className="md:hidden fixed left-1/2 -translate-x-1/2 bottom-[0.25rem] z-header rounded-full backdrop-blur-[0.375rem] bg-[rgba(255,255,255,0.12)] border border-[rgba(255,255,255,0.1)] px-[0.5625rem] py-[0.5rem] shadow-[0px_12px_12px_0px_rgba(0,0,0,0.12)] flex items-center overflow-clip w-[calc(100%-20px)] max-w-[37.5rem] opacity-0">
+      <div className="flex gap-[0.5rem] items-center w-full">
         <button
           onClick={onFollowClick}
-          className="flex-1 rounded-full bg-white text-black px-[18px] py-[10px] text-[16px] font-medium leading-[24px] tracking-[-0.096px]"
+          className="flex-1 rounded-full bg-white text-black px-[1.125rem] py-[0.625rem] text-[1rem] font-medium leading-[1.5rem] tracking-[-0.096px]"
         >
           Follow
         </button>
         <button
-          className="h-[44px] w-[43px] shrink-0 rounded-full border border-[#353535] bg-[#1a1a1a] grid place-items-center text-white"
+          className="h-[2.75rem] w-[2.6875rem] shrink-0 rounded-full border border-[#353535] bg-[#1a1a1a] grid place-items-center text-white"
           aria-label="More options"
         >
           <span className="grid grid-cols-2 gap-1">
-            <span className="h-[3px] w-[3px] rounded-full bg-white" />
-            <span className="h-[3px] w-[3px] rounded-full bg-white" />
-            <span className="h-[3px] w-[3px] rounded-full bg-white" />
-            <span className="h-[3px] w-[3px] rounded-full bg-white" />
+            <span className="h-[0.1875rem] w-[0.1875rem] rounded-full bg-white" />
+            <span className="h-[0.1875rem] w-[0.1875rem] rounded-full bg-white" />
+            <span className="h-[0.1875rem] w-[0.1875rem] rounded-full bg-white" />
+            <span className="h-[0.1875rem] w-[0.1875rem] rounded-full bg-white" />
           </span>
         </button>
-        <button className="flex-1 rounded-full border border-[#353535] bg-[#1a1a1a] text-white px-[18px] py-[10px] text-[16px] font-medium leading-[24px] tracking-[-0.096px]">
+        <button className="flex-1 rounded-full border border-[#353535] bg-[#1a1a1a] text-white px-[1.125rem] py-[0.625rem] text-[1rem] font-medium leading-[1.5rem] tracking-[-0.096px]">
           Connect
         </button>
       </div>

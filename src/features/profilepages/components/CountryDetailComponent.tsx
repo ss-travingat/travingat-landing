@@ -8,6 +8,7 @@ import { toLandingAssetUrl } from "@/lib/landing-assets";
 import { sampleProfiles, type SampleProfile } from "../data/profile-data";
 import { ContextMenu } from "./ProfileComponent";
 import { MediaLightbox } from "./MediaLightbox";
+import ProfileFooter from "./ProfileFooter";
 import { MoreOptionsButton } from "@/components/ui/MoreOptionsButton";
 import { WaitlistPopup } from "@/components/ui/WaitlistPopup";
 import LoadedImage from "@/components/ui/LoadedImage";
@@ -110,12 +111,12 @@ function PhotoLightbox({
       onSelectIndex={onSelectIndex}
       sidebarContent={
         <aside
-          className="flex w-[360px] shrink-0 flex-col gap-8 overflow-y-auto bg-[#111111] p-8 text-white"
+          className="flex w-[22.5rem] shrink-0 flex-col gap-8 overflow-y-auto bg-[#111111] p-8 text-white"
           onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
         >
           {/* Avatar + close */}
           <div className="flex items-start justify-between">
-            <div className="h-[72px] w-[72px] overflow-hidden rounded-2xl">
+            <div className="h-[4.5rem] w-[4.5rem] overflow-hidden rounded-2xl">
               <LoadedImage src={avatarSrc} thumbnailSrc={getOptimizedMediaUrl(avatarSrc)} alt={profileName} className="h-full w-full object-cover" />
             </div>
             <button
@@ -124,19 +125,19 @@ function PhotoLightbox({
               className="flex h-8 w-8 items-center justify-center text-[#666] transition hover:text-white"
               aria-label="Close"
             >
-              <span className="material-symbols-rounded text-[24px]">close</span>
+              <span className="material-symbols-rounded text-[1.5rem]">close</span>
             </button>
           </div>
 
           {/* Profile info */}
           <div className="flex flex-col gap-3">
-            <div className="flex items-center gap-[6px]">
+            <div className="flex items-center gap-[0.375rem]">
               {profileFlagSrc ? (
-                <img src={profileFlagSrc} alt="" className="h-3 w-[18px] rounded-[2px] object-cover" />
+                <img src={profileFlagSrc} alt="" className="h-3 w-[1.125rem] rounded-[0.125rem] object-cover" />
               ) : null}
-              <span className="text-[14px] font-medium leading-[20px] tracking-[-0.1px] text-[#A8A8A8]">{profileCountry || profileName}</span>
+              <span className="text-[0.875rem] font-medium leading-[1.25rem] tracking-[-0.1px] text-[#A8A8A8]">{profileCountry || profileName}</span>
             </div>
-            <p className="text-[20px] font-semibold tracking-[-0.5px] text-white">{profileHandle}</p>
+            <p className="text-[1.25rem] font-semibold tracking-[-0.5px] text-white">{profileHandle}</p>
           </div>
 
           {/* Follow / Connect / More */}
@@ -144,46 +145,46 @@ function PhotoLightbox({
             <button
               type="button"
               onClick={() => showComingSoonToast("featureLaunch")}
-              className="h-[38px] flex-1 rounded-full bg-white text-[14px] font-medium text-black transition hover:bg-[#e8e8e8]"
+              className="h-[2.375rem] flex-1 rounded-full bg-white text-[0.875rem] font-medium text-black transition hover:bg-[#e8e8e8]"
             >
               Follow
             </button>
             <button
               type="button"
               onClick={() => showComingSoonToast("featureLaunch")}
-              className="h-[38px] flex-1 rounded-full border border-[#2e2e2e] bg-[#1a1a1a] text-[14px] font-medium text-white transition hover:bg-[#222]"
+              className="h-[2.375rem] flex-1 rounded-full border border-[#2e2e2e] bg-[#1a1a1a] text-[0.875rem] font-medium text-white transition hover:bg-[#222]"
             >
               Connect
             </button>
             <button
               type="button"
               onClick={() => showComingSoonToast("featureLaunch")}
-              className="flex h-[38px] w-[38px] shrink-0 items-center justify-center rounded-full border border-[#2e2e2e] bg-[#1a1a1a] text-white transition hover:bg-[#222]"
+              className="flex h-[2.375rem] w-[2.375rem] shrink-0 items-center justify-center rounded-full border border-[#2e2e2e] bg-[#1a1a1a] text-white transition hover:bg-[#222]"
               aria-label="More options"
             >
-              <span className="material-symbols-rounded text-[20px]">more_horiz</span>
+              <span className="material-symbols-rounded text-[1.25rem]">more_horiz</span>
             </button>
           </div>
 
           {/* Country + description */}
-          <div className="flex flex-col gap-[8px]">
-            <div className="flex items-center gap-[12px]">
+          <div className="flex flex-col gap-[0.5rem]">
+            <div className="flex items-center gap-[0.75rem]">
               {countryFlagSrc ? (
-                <img src={countryFlagSrc} alt="" className="h-[21px] w-[32px] rounded-[3.27px] object-cover shadow-sm" />
+                <img src={countryFlagSrc} alt="" className="h-[1.3125rem] w-[2rem] rounded-[0.204375rem] object-cover shadow-sm" />
               ) : null}
-              <p className="text-[24px] font-semibold tracking-[-0.5px] text-white leading-[32px]">
+              <p className="text-[1.5rem] font-semibold tracking-[-0.5px] text-white leading-[2rem]">
                 {countryName}
               </p>
             </div>
             {description ? (
-              <p className="text-[16px] leading-[24px] tracking-[-0.096px] font-normal text-[#dcdcdc] whitespace-pre-wrap">{description}</p>
+              <p className="text-[1rem] leading-[1.5rem] tracking-[-0.096px] font-normal text-[#dcdcdc] whitespace-pre-wrap">{description}</p>
             ) : null}
           </div>
 
           {/* Divider + quote */}
           {quote ? (
             <div className="border-t border-[#222] pt-6">
-              <p className="text-[16px] leading-[24px] tracking-[-0.096px] font-normal text-[#dcdcdc] whitespace-pre-wrap">{quote}</p>
+              <p className="text-[1rem] leading-[1.5rem] tracking-[-0.096px] font-normal text-[#dcdcdc] whitespace-pre-wrap">{quote}</p>
             </div>
           ) : null}
         </aside>
@@ -339,7 +340,7 @@ export default function CountryDetailComponent({
   const profileHandle = profile.handle.startsWith("@") ? profile.handle : `@${profile.handle}`;
 
   return (
-    <div className="min-h-screen bg-black text-white flex flex-col items-center px-[12px] min-[810px]:px-[32px] min-[1200px]:px-[48px] min-[1440px]:px-[64px]">
+    <div className="min-h-screen bg-black text-white flex flex-col items-center px-[0.75rem] min-[50.625rem]:px-[2rem] min-[75rem]:px-[3rem] min-[90rem]:px-[4rem]">
       {/* Lightbox */}
       {lightboxIndex !== null && (
         <PhotoLightbox
@@ -361,26 +362,26 @@ export default function CountryDetailComponent({
       )}
 
       {/* Country Info */}
-      <main className="w-full max-w-[1728px] flex flex-col items-center gap-[48px] pb-28 md:pb-20 pt-8 md:pt-10">
-        <div className="flex flex-col items-center gap-[20px] w-full max-w-[600px]">
-          <div className="flex flex-col items-center gap-[24px]">
-            <div className="h-[80px] w-[120px] overflow-hidden rounded-[8px] shrink-0">
+      <main className="w-full max-w-[108rem] flex flex-col items-center gap-[3rem] pb-28 md:pb-20 pt-8 md:pt-10">
+        <div className="flex flex-col items-center gap-[1.25rem] w-full max-w-[37.5rem]">
+          <div className="flex flex-col items-center gap-[1.5rem]">
+            <div className="h-[5rem] w-[7.5rem] overflow-hidden rounded-[0.5rem] shrink-0">
               <img
                 src={`/flags/${countryCode}.svg`}
                 alt={`${countryName} flag`}
                 className="w-full h-full object-cover"
               />
             </div>
-            <h1 className="ds-font-display text-[52px] leading-[60px] tracking-[-1px] font-bold text-white text-center">
+            <h1 className="ds-font-display text-[3.25rem] leading-[3.75rem] tracking-[-1px] font-bold text-white text-center">
               {countryName}
             </h1>
           </div>
 
           {/* Meta info row */}
-          <div className="flex items-center gap-[12px]">
-            <div className="flex items-center gap-[8px]">
-              <span className="text-[16px] text-white leading-[24px] tracking-[-0.096px] font-normal">By</span>
-              <div className="h-[20px] w-[20px] overflow-hidden rounded-[6px] shrink-0">
+          <div className="flex items-center gap-[0.75rem]">
+            <div className="flex items-center gap-[0.5rem]">
+              <span className="text-[1rem] text-white leading-[1.5rem] tracking-[-0.096px] font-normal">By</span>
+              <div className="h-[1.25rem] w-[1.25rem] overflow-hidden rounded-[0.375rem] shrink-0">
                 <LoadedImage
                   src={toLandingAssetUrl(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url)}
                   thumbnailSrc={getOptimizedMediaUrl(toLandingAssetUrl(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url))}
@@ -390,29 +391,29 @@ export default function CountryDetailComponent({
                   containerClassName="w-full h-full relative"
                 />
               </div>
-              <Link href={`/profiles/${profile.handle.replace(/^@/, "")}`} className="text-[16px] text-white leading-[24px] tracking-[-0.096px] font-normal hover:underline">
+              <Link href={`/profiles/${profile.handle.replace(/^@/, "")}`} className="text-[1rem] text-white leading-[1.5rem] tracking-[-0.096px] font-normal hover:underline">
                 {profile.handle}
               </Link>
             </div>
-            <div className="h-[3px] w-[3px] rounded-full bg-[#505050] shrink-0" />
-            <div className="flex items-center gap-[8px]">
-              <span className="text-[16px] text-[#989898] leading-[24px] tracking-[-0.096px] font-normal">Last Updated:</span>
-              <span className="text-[16px] text-[#989898] leading-[24px] tracking-[-0.096px] font-normal">
+            <div className="h-[0.1875rem] w-[0.1875rem] rounded-full bg-[#505050] shrink-0" />
+            <div className="flex items-center gap-[0.5rem]">
+              <span className="text-[1rem] text-[#989898] leading-[1.5rem] tracking-[-0.096px] font-normal">Last Updated:</span>
+              <span className="text-[1rem] text-[#989898] leading-[1.5rem] tracking-[-0.096px] font-normal">
                 {STATIC_LAST_UPDATED_LABEL}
               </span>
             </div>
-            <div className="h-[3px] w-[3px] rounded-full bg-[#505050] shrink-0" />
+            <div className="h-[0.1875rem] w-[0.1875rem] rounded-full bg-[#505050] shrink-0" />
             <div className="relative flex items-center" ref={menuRef}>
               <button
                 type="button"
                 onClick={() => setShowMenu((prev) => !prev)}
-                className="flex px-[12px] py-[9px] items-center justify-center rounded-[50px] border border-[#363636] bg-[#181818] hover:bg-[#222] transition shrink-0"
+                className="flex px-[0.75rem] py-[0.5625rem] items-center justify-center rounded-[3.125rem] border border-[#363636] bg-[#181818] hover:bg-[#222] transition shrink-0"
                 aria-label="More options"
               >
-                <div className="flex items-center gap-[7px]">
-                  <div className="h-[2px] w-[2px] rounded-full bg-white" />
-                  <div className="h-[2px] w-[2px] rounded-full bg-white" />
-                  <div className="h-[2px] w-[2px] rounded-full bg-white" />
+                <div className="flex items-center gap-[0.4375rem]">
+                  <div className="h-[0.125rem] w-[0.125rem] rounded-full bg-white" />
+                  <div className="h-[0.125rem] w-[0.125rem] rounded-full bg-white" />
+                  <div className="h-[0.125rem] w-[0.125rem] rounded-full bg-white" />
                 </div>
               </button>
               {showMenu && (
@@ -435,14 +436,14 @@ export default function CountryDetailComponent({
         </div>
 
         {/* Tabs + content */}
-        <div className="w-full flex flex-col gap-[48px] items-center">
+        <div className="w-full flex flex-col gap-[3rem] items-center">
           {/* Tab pills */}
-          <div className="flex items-center justify-center gap-[8px] flex-wrap">
+          <div className="flex items-center justify-center gap-[0.5rem] flex-wrap">
             {tabs.map((tab) => (
               <button
                 key={tab.label}
                 onClick={() => setActiveTab(tab.key as MediaTab)}
-                className={`rounded-[999px] px-[24px] py-[8px] text-[16px] leading-[24px] tracking-[-0.096px] transition ${activeTab === tab.key
+                className={`rounded-[62.4375rem] px-[1.5rem] py-[0.5rem] text-[1rem] leading-[1.5rem] tracking-[-0.096px] transition ${activeTab === tab.key
                     ? "bg-[#1e1e1e] border border-white text-white font-medium"
                     : "bg-[#161616] border border-transparent text-[#bdbdbd] font-normal"
                   }`}
@@ -454,22 +455,22 @@ export default function CountryDetailComponent({
 
           {/* Masonry grid or About */}
           {activeTab === "about" ? (
-            <div className="flex flex-col items-start gap-4 w-full max-w-[800px] text-left mt-8 mb-20 px-4 md:px-0">
-              <h2 className="text-[24px] font-semibold text-white">About {countryName}</h2>
-              <p className="text-[16px] text-[#a8a8a8] leading-relaxed whitespace-pre-wrap">
+            <div className="flex flex-col items-start gap-4 w-full max-w-[50rem] text-left mt-8 mb-20 px-4 md:px-0">
+              <h2 className="text-[1.5rem] font-semibold text-white">About {countryName}</h2>
+              <p className="text-[1rem] text-[#a8a8a8] leading-relaxed whitespace-pre-wrap">
                 {aboutText || "No information provided yet."}
               </p>
             </div>
           ) : displayImages.length === 0 ? (
             <div className="flex flex-col items-center gap-4 py-16 text-center">
-              <p className="text-[#a8a8a8] text-[16px]">No media in this category yet.</p>
+              <p className="text-[#a8a8a8] text-[1rem]">No media in this category yet.</p>
             </div>
           ) : (
             <div className="w-full">
               {/* Desktop: 4 explicit flex columns — matches Figma layout */}
-              <div className="hidden lg:flex gap-[20px] items-start">
+              <div className="hidden lg:flex gap-[1.25rem] items-start">
                 {[0, 1, 2, 3].map((colIdx) => (
-                  <div key={colIdx} className="flex-1 min-w-0 flex flex-col gap-[20px]">
+                  <div key={colIdx} className="flex-1 min-w-0 flex flex-col gap-[1.25rem]">
                     {items
                       .filter((_, i) => i % 4 === colIdx)
                       .map(({ url: imgUrl, globalIndex }) => {
@@ -528,7 +529,7 @@ export default function CountryDetailComponent({
                               <div
                                 ref={contextMenuRef}
                                 role="menu"
-                                className="absolute right-3 bottom-14 z-30 w-[200px] rounded-2xl border border-[#2e2e2e] bg-[#1a1a1a] p-4 shadow-[0_8px_30px_rgb(0,0,0,0.5)]"
+                                className="absolute right-3 bottom-14 z-30 w-[12.5rem] rounded-2xl border border-[#2e2e2e] bg-[#1a1a1a] p-4 shadow-[0_8px_30px_rgb(0,0,0,0.5)]"
                                 onClick={(event) => { event.preventDefault(); event.stopPropagation(); }}
                               >
                                 <div className="flex flex-col gap-4">
@@ -541,9 +542,9 @@ export default function CountryDetailComponent({
                                       setOpenContextMenuId(null);
                                       showComingSoonToast("featureLaunch");
                                     }}
-                                    className="flex w-full items-center gap-3 text-[15px] font-medium tracking-[-0.3px] text-white hover:text-[#d4d4d4] transition-colors"
+                                    className="flex w-full items-center gap-3 text-[0.9375rem] font-medium tracking-[-0.3px] text-white hover:text-[#d4d4d4] transition-colors"
                                   >
-                                    <span className="material-symbols-rounded text-[22px]">favorite_border</span>
+                                    <span className="material-symbols-rounded text-[1.375rem]">favorite_border</span>
                                     <span>Add to favorites</span>
                                   </button>
                                   <button
@@ -555,9 +556,9 @@ export default function CountryDetailComponent({
                                       showComingSoonToast("featureLaunch");
                                       setOpenContextMenuId(null);
                                     }}
-                                    className="flex w-full items-center gap-3 text-[15px] font-medium tracking-[-0.3px] text-white hover:text-[#d4d4d4] transition-colors"
+                                    className="flex w-full items-center gap-3 text-[0.9375rem] font-medium tracking-[-0.3px] text-white hover:text-[#d4d4d4] transition-colors"
                                   >
-                                    <span className="material-symbols-rounded text-[22px]">block</span>
+                                    <span className="material-symbols-rounded text-[1.375rem]">block</span>
                                     <span>Report</span>
                                   </button>
                                 </div>
@@ -570,13 +571,13 @@ export default function CountryDetailComponent({
                 ))}
               </div>
               {/* Mobile/tablet: 2-column CSS columns */}
-              <div className="lg:hidden columns-2 gap-[6px] w-full">
+              <div className="lg:hidden columns-2 gap-[0.375rem] w-full">
                 {items.map(({ url: imgUrl, globalIndex }) => {
                   const isVideo = isVideoAsset(imgUrl);
                   return (
                     <div
                       key={globalIndex}
-                      className="group mb-[8px] w-full break-inside-avoid relative [-webkit-column-break-inside:avoid] inline-block"
+                      className="group mb-[0.5rem] w-full break-inside-avoid relative [-webkit-column-break-inside:avoid] inline-block"
                     >
                       <div
                         className="relative rounded-2xl overflow-hidden bg-[#151515] cursor-pointer"
@@ -630,7 +631,7 @@ export default function CountryDetailComponent({
                         <div
                           ref={contextMenuRef}
                           role="menu"
-                          className="absolute right-3 bottom-14 z-30 w-[200px] rounded-2xl border border-[#2e2e2e] bg-[#1a1a1a] p-4 shadow-[0_8px_30px_rgb(0,0,0,0.5)]"
+                          className="absolute right-3 bottom-14 z-30 w-[12.5rem] rounded-2xl border border-[#2e2e2e] bg-[#1a1a1a] p-4 shadow-[0_8px_30px_rgb(0,0,0,0.5)]"
                           onClick={(event) => { event.preventDefault(); event.stopPropagation(); }}
                         >
                           <div className="flex flex-col gap-4">
@@ -643,18 +644,18 @@ export default function CountryDetailComponent({
                                 setOpenContextMenuId(null);
                                 showComingSoonToast("featureLaunch");
                               }}
-                              className="flex w-full items-center gap-3 text-[15px] font-medium tracking-[-0.3px] text-white hover:text-[#d4d4d4] transition-colors"
+                              className="flex w-full items-center gap-3 text-[0.9375rem] font-medium tracking-[-0.3px] text-white hover:text-[#d4d4d4] transition-colors"
                             >
-                              <span className="material-symbols-rounded text-[22px]">favorite_border</span>
+                              <span className="material-symbols-rounded text-[1.375rem]">favorite_border</span>
                               <span>Add to favorites</span>
                             </button>
                             <button
                               type="button"
                               role="menuitem"
                               onClick={(event) => { event.preventDefault(); event.stopPropagation(); setOpenContextMenuId(null); }}
-                              className="flex w-full items-center gap-3 text-[15px] font-medium tracking-[-0.3px] text-white hover:text-[#d4d4d4] transition-colors"
+                              className="flex w-full items-center gap-3 text-[0.9375rem] font-medium tracking-[-0.3px] text-white hover:text-[#d4d4d4] transition-colors"
                             >
-                              <span className="material-symbols-rounded text-[22px]">block</span>
+                              <span className="material-symbols-rounded text-[1.375rem]">block</span>
                               <span>Report</span>
                             </button>
                           </div>
@@ -672,14 +673,7 @@ export default function CountryDetailComponent({
       </main>
 
       {/* Footer */}
-      <footer className="w-full max-w-[1728px] py-8 flex items-center justify-center gap-8 text-[12px] text-white-500 tracking-[-0.408px]">
-        <a href="#" className="hover:text-white transition">Help</a>
-        <a href="#" className="hover:text-white transition">About</a>
-        <a href="#" className="hover:text-white transition">Careers</a>
-        <Link href="/blog" className="hover:text-white transition">Blog</Link>
-        <a href="https://travingat.com/terms" className="hover:text-white transition">Terms of Service</a>
-        <a href="https://travingat.com/privacy" className="hover:text-white transition">Privacy Policy</a>
-      </footer>
+      <ProfileFooter />
     </div>
   );
 }

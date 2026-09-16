@@ -23,6 +23,7 @@ import FramerFrontend from "@/components/getfeatured/FramerFrontend";
 import { buildCardAndInviteEmail } from "@/emails/cardninvite-template";
 import { buildWaitlistConfirmEmail } from "@/emails/waitlist-confirm-template";
 import { buildWelcomeWaitlistEmail } from "@/emails/welcome-waitlist-template";
+import { buildGetFeaturedEmail } from "@/emails/get-featured-template";
 
 export default function DesignSystemPage() {
   const [isWaitlistOpen, setIsWaitlistOpen] = useState(false);
@@ -229,6 +230,16 @@ export default function DesignSystemPage() {
                     <div 
                       className="w-full max-w-[600px]"
                       dangerouslySetInnerHTML={{ __html: buildWelcomeWaitlistEmail("https://www.travingat.com/explorercard") }}
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <p className="ds-font-body mb-3 text-[13px] font-semibold uppercase tracking-[0.12em] text-[#7e889c]">Get Featured HTML Email Preview</p>
+                  <div className="flex justify-center bg-white p-8 rounded-xl overflow-hidden border border-[#252525]">
+                    <div 
+                      className="w-full max-w-[600px]"
+                      dangerouslySetInnerHTML={{ __html: buildGetFeaturedEmail("https://www.travingat.com/confirm") }}
                     />
                   </div>
                 </div>

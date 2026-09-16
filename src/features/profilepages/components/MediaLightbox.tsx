@@ -62,7 +62,7 @@ export function MediaLightbox({
       setTimeout(() => {
         const containerWidth = container.clientWidth;
         if (containerWidth === 0) return;
-        const itemWidth = 60; // w-[60px]
+        const itemWidth = 60; // w-[3.75rem]
         const gap = 12; // gap-3
         const paddingLeft = 40; // px-10
         const targetCenter = paddingLeft + (activeIndex * (itemWidth + gap)) + (itemWidth / 2);
@@ -88,7 +88,7 @@ export function MediaLightbox({
       >
         {/* Top bar: image counter + grid toggle */}
         <div className="flex items-center justify-between px-10 py-6">
-          <span className="text-[14px] font-normal tracking-[-0.084px] text-[#989898]">{`${displayIndex} of ${totalCount}`}</span>
+          <span className="text-[0.875rem] font-normal tracking-[-0.084px] text-[#989898]">{`${displayIndex} of ${totalCount}`}</span>
           <button
             type="button"
             onClick={() => setShowBrowser((prev) => !prev)}
@@ -117,7 +117,7 @@ export function MediaLightbox({
                     onSelectIndex(idx);
                     setShowBrowser(false);
                   }}
-                  className="mb-6 w-full break-inside-avoid overflow-hidden rounded-[22px] bg-[#0a0a0a] text-left"
+                  className="mb-6 w-full break-inside-avoid overflow-hidden rounded-[1.375rem] bg-[#0a0a0a] text-left"
                   aria-label={`Open photo ${idx + 1}`}
                 >
                   <div className="relative">
@@ -149,12 +149,12 @@ export function MediaLightbox({
         ) : (
           <>
             {/* Image + nav arrows */}
-            <div className="relative flex-1 min-h-0 mb-[36px] overflow-hidden">
+            <div className="relative flex-1 min-h-0 mb-[2.25rem] overflow-hidden">
               {/* Main image */}
               <div className="absolute inset-0 flex items-center justify-center px-10">
                 {/* Loading Skeleton */}
                 {!mediaLoaded && (
-                  <div className="absolute inset-x-10 inset-y-0 z-10 flex items-center justify-center rounded-[12px] bg-[#0a0a0a] animate-pulse">
+                  <div className="absolute inset-x-10 inset-y-0 z-10 flex items-center justify-center rounded-[0.75rem] bg-[#0a0a0a] animate-pulse">
                     <svg width="48" height="48" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" className="opacity-30">
                       <path fillRule="evenodd" clipRule="evenodd" d="M20.9973 21.0011C23.5339 18.4645 27.6719 18.4899 30.2399 21.0579L53.2668 44.0848C55.8347 46.6527 55.8601 50.7908 53.3235 53.3274C50.7869 55.864 46.6489 55.8386 44.0809 53.2706L21.054 30.2437C18.4861 27.6758 18.4607 23.5377 20.9973 21.0011ZM27.0272 30.093L30.391 30.3376L30.146 26.9742L26.7826 26.7292L27.0272 30.093ZM23.0197 27.8352C22.5366 28.3184 22.5414 29.1066 23.0305 29.5957C23.5197 30.0848 24.3079 30.0897 24.791 29.6065C25.2742 29.1233 25.2693 28.3351 24.7802 27.846C24.2911 27.3569 23.5029 27.352 23.0197 27.8352ZM27.8313 23.0236C27.3482 23.5067 27.353 24.2949 27.8422 24.7841C28.3313 25.2732 29.1195 25.278 29.6026 24.7949C30.0858 24.3117 30.081 23.5235 29.5918 23.0344C29.1027 22.5453 28.3145 22.5404 27.8313 23.0236Z" fill="white"/>
                       <path d="M8.4121 49.9708C6.82242 48.3812 6.80669 45.8195 8.37696 44.2493L18.3529 34.2733C19.4868 33.1394 21.3366 33.1508 22.4845 34.2987L26.1627 37.9769L14.1337 50.006C12.5634 51.5763 10.0018 51.5605 8.4121 49.9708Z" fill="white"/>
@@ -185,7 +185,7 @@ export function MediaLightbox({
                       className="flex h-12 w-12 items-center justify-center rounded-full bg-black/40 backdrop-blur-sm text-white transition-colors hover:bg-black/60 transform-gpu"
                       aria-label="Share"
                     >
-                      <svg width="20" height="20" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" className="translate-x-[2px] -translate-y-[2px]">
+                      <svg width="20" height="20" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" className="translate-x-[0.125rem] -translate-y-[0.125rem]">
                         <path d="M4.66667 10V6C4.66667 5.63333 4.79722 5.31944 5.05833 5.05833C5.31944 4.79722 5.63333 4.66667 6 4.66667H11.4333L9.71667 2.95L10.6667 2L14 5.33333L10.6667 8.66667L9.71667 7.73333L11.4333 6H6V10H4.66667ZM3.33333 14C2.96667 14 2.65278 13.8694 2.39167 13.6083C2.13056 13.3472 2 13.0333 2 12.6667V2.66667H3.33333V12.6667H11.3333V10H12.6667V12.6667C12.6667 13.0333 12.5361 13.3472 12.275 13.6083C12.0139 13.8694 11.7 14 11.3333 14H3.33333Z" fill="white"/>
                       </svg>
                     </button>
@@ -195,7 +195,7 @@ export function MediaLightbox({
                       className="flex h-12 w-12 items-center justify-center rounded-full bg-black/40 backdrop-blur-sm text-white transition-colors hover:bg-black/60 transform-gpu"
                       aria-label="Like"
                     >
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mt-[1px]">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mt-[0.0625rem]">
                         <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
                       </svg>
                     </button>
@@ -221,7 +221,7 @@ export function MediaLightbox({
                         setMediaLoaded(true);
                         setNaturalAspectRatio(e.currentTarget.videoWidth / e.currentTarget.videoHeight);
                       }}
-                      className={`block max-h-full max-w-full object-contain carousel-image rounded-[12px] mx-auto transition-opacity duration-300 ${mediaLoaded ? 'opacity-100' : 'opacity-0'}`}
+                      className={`block max-h-full max-w-full object-contain carousel-image rounded-[0.75rem] mx-auto transition-opacity duration-300 ${mediaLoaded ? 'opacity-100' : 'opacity-0'}`}
                     >
                       <source src={getOptimizedMediaUrl(toLandingAssetUrl(activeItem.url))} type="video/webm" />
                       <source src={toLandingAssetUrl(activeItem.url)} type="video/mp4" />
@@ -231,7 +231,7 @@ export function MediaLightbox({
                       key={`img-${activeIndex}`}
                       src={getOptimizedMediaUrl(toLandingAssetUrl(activeItem?.url || ""))}
                       alt="Carousel media"
-                      className={`block max-h-full max-w-full object-contain carousel-image rounded-[12px] mx-auto transition-opacity duration-300 ${mediaLoaded && !mediaError ? 'opacity-100' : 'opacity-0'}`}
+                      className={`block max-h-full max-w-full object-contain carousel-image rounded-[0.75rem] mx-auto transition-opacity duration-300 ${mediaLoaded && !mediaError ? 'opacity-100' : 'opacity-0'}`}
                       onLoad={(e: SyntheticEvent<HTMLImageElement>) => {
                         setMediaLoaded(true);
                         setNaturalAspectRatio(e.currentTarget.naturalWidth / e.currentTarget.naturalHeight);
@@ -251,7 +251,7 @@ export function MediaLightbox({
 
                   {/* Fallback Error State */}
                   {mediaError && (
-                    <div className="absolute inset-0 z-20 flex items-center justify-center rounded-[12px] bg-[#0a0a0a]">
+                    <div className="absolute inset-0 z-20 flex items-center justify-center rounded-[0.75rem] bg-[#0a0a0a]">
                       <svg width="48" height="48" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" className="opacity-30">
                         <path fillRule="evenodd" clipRule="evenodd" d="M20.9973 21.0011C23.5339 18.4645 27.6719 18.4899 30.2399 21.0579L53.2668 44.0848C55.8347 46.6527 55.8601 50.7908 53.3235 53.3274C50.7869 55.864 46.6489 55.8386 44.0809 53.2706L21.054 30.2437C18.4861 27.6758 18.4607 23.5377 20.9973 21.0011ZM27.0272 30.093L30.391 30.3376L30.146 26.9742L26.7826 26.7292L27.0272 30.093ZM23.0197 27.8352C22.5366 28.3184 22.5414 29.1066 23.0305 29.5957C23.5197 30.0848 24.3079 30.0897 24.791 29.6065C25.2742 29.1233 25.2693 28.3351 24.7802 27.846C24.2911 27.3569 23.5029 27.352 23.0197 27.8352ZM27.8313 23.0236C27.3482 23.5067 27.353 24.2949 27.8422 24.7841C28.3313 25.2732 29.1195 25.278 29.6026 24.7949C30.0858 24.3117 30.081 23.5235 29.5918 23.0344C29.1027 22.5453 28.3145 22.5404 27.8313 23.0236Z" fill="white"/>
                         <path d="M8.4121 49.9708C6.82242 48.3812 6.80669 45.8195 8.37696 44.2493L18.3529 34.2733C19.4868 33.1394 21.3366 33.1508 22.4845 34.2987L26.1627 37.9769L14.1337 50.006C12.5634 51.5763 10.0018 51.5605 8.4121 49.9708Z" fill="white"/>
@@ -271,7 +271,7 @@ export function MediaLightbox({
                 className="absolute left-10 top-1/2 -translate-y-1/2 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-white text-black transition hover:scale-105 transform-gpu"
                 aria-label="Previous photo"
               >
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="-ml-[2px]">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="-ml-[0.125rem]">
                   <path d="m15 18-6-6 6-6"/>
                 </svg>
               </button>
@@ -283,7 +283,7 @@ export function MediaLightbox({
                 className="absolute right-10 top-1/2 -translate-y-1/2 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-white text-black transition hover:scale-105 transform-gpu"
                 aria-label="Next photo"
               >
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="ml-[2px]">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="ml-[0.125rem]">
                   <path d="m9 18 6-6-6-6"/>
                 </svg>
               </button>
@@ -292,12 +292,12 @@ export function MediaLightbox({
             {/* Carousel preview strip */}
             <div
               ref={scrollContainerRef}
-              className="flex-none w-full overflow-x-auto px-10 pb-[48px]"
+              className="flex-none w-full overflow-x-auto px-10 pb-[3rem]"
             >
-              <div className={`relative flex items-center gap-3 pt-[12px] w-max ${items.length <= 10 ? "mx-auto" : ""}`}>
+              <div className={`relative flex items-center gap-3 pt-[0.75rem] w-max ${items.length <= 10 ? "mx-auto" : ""}`}>
                 {/* Floating sliding indicator bar */}
                 <div
-                  className="absolute top-0 left-0 h-[3px] w-[60px] bg-white rounded-full transition-transform duration-300 ease-out z-10"
+                  className="absolute top-0 left-0 h-[0.1875rem] w-[3.75rem] bg-white rounded-full transition-transform duration-300 ease-out z-10"
                   style={{
                     transform: `translate3d(calc(${activeIndex} * 72px), 0, 0)`,
                   }}
@@ -306,7 +306,7 @@ export function MediaLightbox({
                   <button
                     key={item.id || `thumb-${idx}`}
                     onClick={() => onSelectIndex(idx)}
-                    className={`relative h-[60px] w-[60px] shrink-0 rounded-[10px] overflow-hidden transition group ${idx === activeIndex ? "opacity-100" : "opacity-50 hover:opacity-100"
+                    className={`relative h-[3.75rem] w-[3.75rem] shrink-0 rounded-[0.625rem] overflow-hidden transition group ${idx === activeIndex ? "opacity-100" : "opacity-50 hover:opacity-100"
                       }`}
                     aria-label={`View photo ${idx + 1}`}
                   >
@@ -317,7 +317,7 @@ export function MediaLightbox({
                           className="h-full w-full object-cover"
                         />
                         <div className="absolute inset-0 flex items-center justify-center bg-black/40">
-                          <span className="material-symbols-rounded text-white text-[20px]">play_circle</span>
+                          <span className="material-symbols-rounded text-white text-[1.25rem]">play_circle</span>
                         </div>
                       </>
                     ) : (
