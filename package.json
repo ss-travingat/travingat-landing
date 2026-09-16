@@ -11,7 +11,11 @@
     "start": "next start",
     "lint": "next lint",
     "fonts:sync": "node scripts/sync-inter-display-fonts.mjs",
-    "upload:assets:r2": "node scripts/upload-public-assets-to-r2.mjs"
+    "upload:assets:r2": "node scripts/upload-public-assets-to-r2.mjs",
+    "db:push": "drizzle-kit push",
+    "db:pull": "drizzle-kit pull",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.922.0",
