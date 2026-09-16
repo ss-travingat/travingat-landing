@@ -168,14 +168,14 @@ export function MobileProfileNavbar({ profile }: { profile?: any }) {
       >
         <div className="w-full max-w-xs flex flex-col items-center gap-[1.5rem]">
           <nav className="flex flex-col items-center justify-start gap-[1.5rem] w-full">
-            <Link href="/" onClick={() => setMenuOpen(false)} className="text-[1.75rem] font-medium leading-[1.2] text-white hover:text-white/80 transition">Home</Link>
-            <Link href="https://travingat.com/profiles" onClick={() => setMenuOpen(false)} className="text-[1.75rem] font-medium leading-[1.2] text-white hover:text-white/80 transition">Profiles</Link>
-            <Link href="/templates" onClick={() => setMenuOpen(false)} className="text-[1.75rem] font-medium leading-[1.2] text-white hover:text-white/80 transition">Templates</Link>
-            <Link href="/pricing" onClick={() => setMenuOpen(false)} className="text-[1.75rem] font-medium leading-[1.2] text-white hover:text-white/80 transition">Pricing</Link>
-            <Link href="/blog" onClick={() => setMenuOpen(false)} className="text-[1.75rem] font-medium leading-[1.2] text-white hover:text-white/80 transition">Blog</Link>
+            <a href="https://travingat.com/" onClick={() => setMenuOpen(false)} className="text-[1.75rem] font-medium leading-[1.2] text-white hover:text-white/80 transition">Home</a>
+            <a href="https://travingat.com/profiles" onClick={() => setMenuOpen(false)} className="text-[1.75rem] font-medium leading-[1.2] text-white hover:text-white/80 transition">Profiles</a>
+            <a href="https://travingat.com/templates" onClick={() => setMenuOpen(false)} className="text-[1.75rem] font-medium leading-[1.2] text-white hover:text-white/80 transition">Templates</a>
+            <a href="https://travingat.com/pricing" onClick={() => setMenuOpen(false)} className="text-[1.75rem] font-medium leading-[1.2] text-white hover:text-white/80 transition">Pricing</a>
+            <a href="https://travingat.com/blog" onClick={() => setMenuOpen(false)} className="text-[1.75rem] font-medium leading-[1.2] text-white hover:text-white/80 transition">Blog</a>
 
             <a
-              href="/#join"
+              href="https://travingat.com/#join"
               onClick={(e) => scrollToSection(e, "join")}
               className="mt-[0.75rem] w-full text-center rounded-[62.4375rem] bg-white px-[1.75rem] py-[0.75rem] text-[0.9375rem] font-medium tracking-tight text-black hover:bg-[#ececec] transition shadow-lg shrink-0"
             >
