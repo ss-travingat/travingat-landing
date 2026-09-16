@@ -698,7 +698,7 @@ function JsMasonryGrid({
 
             {/* Flag badge (visible after image loads) */}
             {displayCountryCode && isLoaded ? (
-              <div className="absolute top-2 right-2 z-20 transition-opacity duration-200 opacity-100 pointer-events-auto">
+              <div className="absolute top-2 right-2 md:top-3 md:right-3 z-20 transition-opacity duration-200 opacity-100 pointer-events-auto">
                 <TooltipProvider delayDuration={100}>
                   <Tooltip 
                     content={COUNTRY_LIST_LOOKUP[displayCountryCode.toUpperCase()] || displayCountryCode} 
