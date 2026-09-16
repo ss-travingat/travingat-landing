@@ -56,7 +56,7 @@ export const users = pgTable("users", {
   avatar_url: text("avatar_url"),
   cover_photo_url: text("cover_photo_url"),
   visited_count: integer("visited_count"),
-  links: jsonb("links").$type<string[]>(),
+  links: text("links").array(),
   created_at: timestamp("created_at").defaultNow(),
   updated_at: timestamp("updated_at").defaultNow().$onUpdateFn(() => new Date()),
   deleted_at: timestamp("deleted_at"),
