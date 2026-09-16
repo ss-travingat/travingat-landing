@@ -169,7 +169,7 @@ export function MobileProfileNavbar({ profile }: { profile?: any }) {
         <div className="w-full max-w-xs flex flex-col items-center gap-[1.5rem]">
           <nav className="flex flex-col items-center justify-start gap-[1.5rem] w-full">
             <Link href="/" onClick={() => setMenuOpen(false)} className="text-[1.75rem] font-medium leading-[1.2] text-white hover:text-white/80 transition">Home</Link>
-            <Link href="/newprofiles" onClick={() => setMenuOpen(false)} className="text-[1.75rem] font-medium leading-[1.2] text-white hover:text-white/80 transition">Profiles</Link>
+            <Link href="https://travingat.com/profiles" onClick={() => setMenuOpen(false)} className="text-[1.75rem] font-medium leading-[1.2] text-white hover:text-white/80 transition">Profiles</Link>
             <Link href="/templates" onClick={() => setMenuOpen(false)} className="text-[1.75rem] font-medium leading-[1.2] text-white hover:text-white/80 transition">Templates</Link>
             <Link href="/pricing" onClick={() => setMenuOpen(false)} className="text-[1.75rem] font-medium leading-[1.2] text-white hover:text-white/80 transition">Pricing</Link>
             <Link href="/blog" onClick={() => setMenuOpen(false)} className="text-[1.75rem] font-medium leading-[1.2] text-white hover:text-white/80 transition">Blog</Link>

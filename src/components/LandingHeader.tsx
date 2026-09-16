@@ -49,7 +49,7 @@ export default function LandingHeader({
     logoSrc = "/icons/travingat-logo.svg?v=newlogo",
     navItems = [
         { label: "Home", href: "https://travingat.com/" },
-        { label: "Profiles", href: "/newprofiles" },
+        { label: "Profiles", href: "https://travingat.com/profiles" },
         { label: "Templates", href: "https://travingat.com/templates" },
         { label: "Pricing", href: "https://travingat.com/pricing" },
         { label: "Blog", href: "https://travingat.com/blog" },

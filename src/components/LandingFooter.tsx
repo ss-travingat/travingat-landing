@@ -46,7 +46,7 @@ export default function LandingFooter() {
             <div className="space-y-3">
               <a href="https://travingat.com/" className="block text-[14px] text-gray-400 hover:text-white transition-colors">About us</a>
               <Link href="/featured-profiles" className="block text-[14px] text-gray-400 hover:text-white transition-colors">Featured profiles</Link>
-              <Link href="/newprofiles" className="block text-[14px] text-gray-400 hover:text-white transition-colors">Profiles</Link>
+              <Link href="https://travingat.com/profiles" className="block text-[14px] text-gray-400 hover:text-white transition-colors">Profiles</Link>
               <a href="https://travingat.com/blog" className="block text-[14px] text-gray-400 hover:text-white transition-colors">Blog</a>
               <a href="https://travingat.com/#join" className="block text-[14px] text-gray-400 hover:text-white transition-colors">Join waiting list</a>
             </div>
