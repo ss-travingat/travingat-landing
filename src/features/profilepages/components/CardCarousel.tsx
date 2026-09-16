@@ -47,7 +47,7 @@ export default function CardCarousel({
 
   return (
     <div 
-      className={`relative w-full overflow-hidden rounded-[8px] md:rounded-2xl bg-[#151515] group ${containerClassName}`}
+      className={`relative w-full overflow-hidden rounded-[0.5rem] md:rounded-2xl bg-[#151515] group ${containerClassName}`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
@@ -76,7 +76,7 @@ export default function CardCarousel({
             className="hidden md:grid absolute left-3 top-1/2 -translate-y-1/2 h-8 w-8 place-items-center rounded-full bg-white/95 text-black shadow-md opacity-0 transition-all duration-200 group-hover:opacity-100 hover:bg-white hover:scale-105 focus-visible:opacity-100 z-10"
             aria-label={`Previous photo`}
           >
-            <span className="material-symbols-rounded text-[20px]">chevron_left</span>
+            <span className="material-symbols-rounded text-[1.25rem]">chevron_left</span>
           </button>
 
           <button
@@ -85,7 +85,7 @@ export default function CardCarousel({
             className="hidden md:grid absolute right-3 top-1/2 -translate-y-1/2 h-8 w-8 place-items-center rounded-full bg-white/95 text-black shadow-md opacity-0 transition-all duration-200 group-hover:opacity-100 hover:bg-white hover:scale-105 focus-visible:opacity-100 z-10"
             aria-label={`Next photo`}
           >
-            <span className="material-symbols-rounded text-[20px]">chevron_right</span>
+            <span className="material-symbols-rounded text-[1.25rem]">chevron_right</span>
           </button>
 
           <div className="hidden md:flex absolute bottom-3 left-1/2 -translate-x-1/2 items-center justify-center gap-1.5 z-10">
