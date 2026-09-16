@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
-import { getDb } from "@/lib/db";
+import { getDrizzle } from "@/lib/drizzle";
+import { waitlist, users } from "@/db/schema";
+import { eq } from "drizzle-orm";
 import {
   getAdminSessionCookieName,
   verifyAdminSessionToken,
@@ -9,7 +11,7 @@ import { cookies } from "next/headers";
 export async function DELETE(req: Request, context: { params: Promise<{ id: string }> }) {
   const cookieStore = await cookies();
   const token = cookieStore.get(getAdminSessionCookieName())?.value || "";
-  
+
   if (!verifyAdminSessionToken(token)) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
@@ -17,30 +19,27 @@ export async function DELETE(req: Request, context: { params: Promise<{ id: stri
   const { id } = await context.params;
 
   try {
-    const sql = getDb();
-    
+    const db = getDrizzle();
+
     // Fetch the waitlist entry
-    const existing = await sql`SELECT * FROM waitlist WHERE id = ${id}`;
+    const existing = await db.select().from(waitlist).where(eq(waitlist.id, Number(id)));
     if (existing.length === 0) {
       return NextResponse.json({ error: "Waitlist entry not found" }, { status: 404 });
     }
-    
+
     const entry = existing[0];
-    
+    const now = new Date();
+
     // Soft delete the waitlist entry
-    await sql`
-      UPDATE waitlist 
-      SET deleted_at = NOW() 
-      WHERE id = ${id}
-    `;
-    
+    await db.update(waitlist)
+      .set({ deleted_at: now })
+      .where(eq(waitlist.id, Number(id)));
+
     // Also soft delete associated user if email exists
     if (entry.email) {
-      await sql`
-        UPDATE users 
-        SET deleted_at = NOW() 
-        WHERE email = ${entry.email}
-      `;
+      await db.update(users)
+        .set({ deleted_at: now })
+        .where(eq(users.email, entry.email));
     }
 
     return NextResponse.json({ success: true });

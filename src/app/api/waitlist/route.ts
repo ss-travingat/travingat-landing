@@ -1,5 +1,7 @@
 import { NextRequest } from "next/server";
-import { getDb } from "@/lib/db";
+import { getDrizzle } from "@/lib/drizzle";
+import { waitlist, users } from "@/db/schema";
+import { eq, isNull, desc, count, and } from "drizzle-orm";
 import { sendConfirmationEmail } from "@/lib/waitlist-email";
 import {
   getAdminSessionCookieName,
@@ -120,8 +122,11 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    const sql = getDb();
-    const existing = await sql`SELECT id, confirmed FROM waitlist WHERE email = ${email}`;
+    const db = getDrizzle();
+    const existing = await db.select({ id: waitlist.id, confirmed: waitlist.confirmed })
+      .from(waitlist)
+      .where(eq(waitlist.email, email));
+      
     const token = crypto.randomUUID();
 
     if (existing.length > 0) {
@@ -130,29 +135,35 @@ export async function POST(req: NextRequest) {
         return jsonResponse({ error: "Already on the waitlist" }, { status: 409 });
       }
 
-      await sql`
-        UPDATE waitlist
-        SET confirmation_token = ${token},
-            token_expires_at = NOW() + INTERVAL '24 hours',
-            browser = ${browser},
-            device = ${device},
-            country = ${country || "Unknown"},
-            city = ${city || "Unknown"},
-            ip = ${ip},
-            source = ${source}
-        WHERE id = ${entry.id}
-      `;
+      await db.update(waitlist).set({
+        confirmation_token: token,
+        token_expires_at: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+        browser,
+        device,
+        country: country || "Unknown",
+        city: city || "Unknown",
+        ip,
+        source
+      }).where(eq(waitlist.id, entry.id));
     } else {
-      await sql`
-        INSERT INTO waitlist (email, browser, device, country, city, ip, confirmed, confirmation_token, token_expires_at, source)
-        VALUES (${email}, ${browser}, ${device}, ${country || "Unknown"}, ${city || "Unknown"}, ${ip}, FALSE, ${token}, NOW() + INTERVAL '24 hours', ${source})
-      `;
+      await db.insert(waitlist).values({
+        email,
+        browser,
+        device,
+        country: country || "Unknown",
+        city: city || "Unknown",
+        ip,
+        confirmed: false,
+        confirmation_token: token,
+        token_expires_at: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+        source
+      });
     }
     
     // Also create user account if it doesn't exist
-    const existingUser = await sql`SELECT id FROM users WHERE email = ${email} LIMIT 1`;
+    const existingUser = await db.select({ id: users.id }).from(users).where(eq(users.email, email)).limit(1);
     if (existingUser.length === 0) {
-      await sql`INSERT INTO users (email) VALUES (${email})`;
+      await db.insert(users).values({ email });
     }
 
     try {
@@ -175,21 +186,34 @@ export async function GET(req: NextRequest) {
       return jsonResponse({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const sql = getDb();
-    const rows = await sql`
-      SELECT 
-        w.id, w.email, w.browser, w.device, w.country, w.city, w.ip, w.confirmed, w.confirmed_at, w.created_at, w.source, w.explorer_card_status, w.get_featured_status, w.countries_count, w.card_style,
-        u.id as user_uuid
-      FROM waitlist w
-      LEFT JOIN users u ON w.email = u.email
-      WHERE w.deleted_at IS NULL
-      ORDER BY w.created_at DESC
-    `;
+    const db = getDrizzle();
+    const rows = await db.select({
+        id: waitlist.id,
+        email: waitlist.email,
+        browser: waitlist.browser,
+        device: waitlist.device,
+        country: waitlist.country,
+        city: waitlist.city,
+        ip: waitlist.ip,
+        confirmed: waitlist.confirmed,
+        confirmed_at: waitlist.confirmed_at,
+        created_at: waitlist.created_at,
+        source: waitlist.source,
+        explorer_card_status: waitlist.explorer_card_status,
+        get_featured_status: waitlist.get_featured_status,
+        countries_count: waitlist.countries_count,
+        card_style: waitlist.card_style,
+        user_uuid: users.id
+      })
+      .from(waitlist)
+      .leftJoin(users, eq(waitlist.email, users.email))
+      .where(isNull(waitlist.deleted_at))
+      .orderBy(desc(waitlist.created_at));
 
-    const countResult = await sql`SELECT COUNT(*)::int as total FROM waitlist WHERE deleted_at IS NULL`;
-    const confirmedResult = await sql`SELECT COUNT(*)::int as confirmed FROM waitlist WHERE confirmed = TRUE AND deleted_at IS NULL`;
-    const explorerCardCreatedResult = await sql`SELECT COUNT(*)::int as count FROM waitlist WHERE explorer_card_status = 'Created' AND deleted_at IS NULL`;
-    const getFeaturedCreatedResult = await sql`SELECT COUNT(*)::int as count FROM waitlist WHERE get_featured_status = 'Created' AND deleted_at IS NULL`;
+    const countResult = await db.select({ total: count() }).from(waitlist).where(isNull(waitlist.deleted_at));
+    const confirmedResult = await db.select({ confirmed: count() }).from(waitlist).where(and(eq(waitlist.confirmed, true), isNull(waitlist.deleted_at)));
+    const explorerCardCreatedResult = await db.select({ count: count() }).from(waitlist).where(and(eq(waitlist.explorer_card_status, 'Created'), isNull(waitlist.deleted_at)));
+    const getFeaturedCreatedResult = await db.select({ count: count() }).from(waitlist).where(and(eq(waitlist.get_featured_status, 'Created'), isNull(waitlist.deleted_at)));
 
     const total: number = countResult[0]?.total ?? 0;
     const confirmedCount: number = confirmedResult[0]?.confirmed ?? 0;

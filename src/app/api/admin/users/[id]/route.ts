@@ -67,23 +67,23 @@ export async function DELETE(req: Request, context: { params: Promise<{ id: stri
   }
 
   try {
-    const { getDb } = await import("@/lib/db");
-    const sql = getDb();
+    const { getDrizzle } = await import("@/lib/drizzle");
+    const { users, waitlist } = await import("@/db/schema");
+    const { eq } = await import("drizzle-orm");
+    const db = getDrizzle();
     
+    const now = new Date();
+
     // Soft delete the user in Neon DB
-    await sql`
-      UPDATE users 
-      SET deleted_at = NOW() 
-      WHERE id = ${id}
-    `;
+    await db.update(users)
+      .set({ deleted_at: now })
+      .where(eq(users.id, id));
 
     if (body.email) {
       // Clean up any associated waitlist
-      await sql`
-        UPDATE waitlist 
-        SET deleted_at = NOW() 
-        WHERE email = ${body.email}
-      `;
+      await db.update(waitlist)
+        .set({ deleted_at: now })
+        .where(eq(waitlist.email, body.email));
     }
 
     const res = await fetch(`${API_URL}/api/admin/users/${id}`, {

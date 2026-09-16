@@ -1,5 +1,7 @@
 import { notFound } from "next/navigation";
-import { getDb } from "@/lib/db";
+import { getDrizzle } from "@/lib/drizzle";
+import { explorerCards, users } from "@/db/schema";
+import { eq } from "drizzle-orm";
 import { ClassicCard, MinimalCard, AdventureCard } from "@/features/explorercard/cards";
 import countryData from "@/features/explorercard/countries.json";
 import ProfileFooter from "@/features/profilepages/components/ProfileFooter";
@@ -32,42 +34,43 @@ export default async function SharedExplorerCardPage({
     notFound();
   }
 
-  const sql = getDb();
+  const db = getDrizzle();
   
   let cardData: any = null;
   try {
-    const explorerCards = await sql`
-      SELECT 
-        name as first_name, /* we will split name below */
-        '' as last_name,
-        country, 
-        visited_countries,
-        profile_image_url,
-        cover_image_url
-      FROM explorer_cards 
-      WHERE user_id = ${id}
-    `;
+    const cards = await db.select()
+      .from(explorerCards)
+      .where(eq(explorerCards.userId, id))
+      .limit(1);
 
-    if (explorerCards && explorerCards.length > 0) {
-      cardData = explorerCards[0];
-      const nameParts = (cardData.first_name || '').split(' ');
-      cardData.first_name = nameParts[0] || '';
-      cardData.last_name = nameParts.slice(1).join(' ') || '';
+    if (cards && cards.length > 0) {
+      const data = cards[0];
+      const nameParts = (data.name || '').split(' ');
+      cardData = {
+        first_name: nameParts[0] || '',
+        last_name: nameParts.slice(1).join(' ') || '',
+        country: data.country,
+        visited_countries: data.visitedCountries,
+        profile_image_url: data.profileImageUrl,
+        cover_image_url: data.coverImageUrl
+      };
     } else {
       // Fallback to users table
-      const userRows = await sql`
-        SELECT 
-          first_name, 
-          last_name, 
-          country, 
-          visited_countries,
-          profile_image_url,
-          cover_image_url
-        FROM users 
-        WHERE id = ${id}
-      `;
+      const userRows = await db.select()
+        .from(users)
+        .where(eq(users.id, id))
+        .limit(1);
+        
       if (userRows && userRows.length > 0) {
-        cardData = userRows[0];
+        const data = userRows[0];
+        cardData = {
+          first_name: data.first_name,
+          last_name: data.last_name,
+          country: data.country,
+          visited_countries: data.visited_countries,
+          profile_image_url: data.avatar_url,
+          cover_image_url: data.cover_photo_url
+        };
       }
     }
   } catch (err) {

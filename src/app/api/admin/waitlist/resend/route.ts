@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
-import { getDb } from "@/lib/db";
+import { getDrizzle } from "@/lib/drizzle";
+import { waitlist } from "@/db/schema";
+import { eq } from "drizzle-orm";
 import {
   getAdminSessionCookieName,
   verifyAdminSessionToken,
@@ -17,10 +19,10 @@ export async function POST(req: Request) {
 
   try {
     const { id, type } = await req.json();
-    const sql = getDb();
+    const db = getDrizzle();
     
     // Fetch the waitlist entry
-    const existing = await sql`SELECT * FROM waitlist WHERE id = ${id} LIMIT 1`;
+    const existing = await db.select().from(waitlist).where(eq(waitlist.id, Number(id))).limit(1);
     if (existing.length === 0) {
       return NextResponse.json({ error: "Waitlist entry not found" }, { status: 404 });
     }
@@ -28,7 +30,7 @@ export async function POST(req: Request) {
     const entry = existing[0];
     
     if (type === 'waitlist') {
-      await sendConfirmationEmail(entry.email, entry.confirmation_token);
+      await sendConfirmationEmail(entry.email, entry.confirmation_token || "");
       return NextResponse.json({ success: true, message: "Waitlist email sent" });
     } else if (type === 'explorer') {
       // TODO: implement explorer card resend
@@ -44,3 +46,4 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Database error" }, { status: 500 });
   }
 }
+

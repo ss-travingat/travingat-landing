@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
-import { getDb } from "@/lib/db";
+import { getDrizzle } from "@/lib/drizzle";
+import { waitlist, users, featuredProfiles } from "@/db/schema";
+import { isNotNull, desc, sql } from "drizzle-orm";
 import {
   getAdminSessionCookieName,
   verifyAdminSessionToken,
@@ -15,31 +17,25 @@ export async function GET(req: Request) {
   }
 
   try {
-    const sql = getDb();
+    const db = getDrizzle();
     
     // Fetch soft-deleted waitlist entries
-    const deletedWaitlist = await sql`
-      SELECT *
-      FROM waitlist
-      WHERE deleted_at IS NOT NULL
-      ORDER BY deleted_at DESC
-    `;
+    const deletedWaitlist = await db.select()
+      .from(waitlist)
+      .where(isNotNull(waitlist.deleted_at))
+      .orderBy(desc(waitlist.deleted_at));
 
     // Fetch soft-deleted users
-    const deletedUsers = await sql`
-      SELECT *
-      FROM users
-      WHERE deleted_at IS NOT NULL
-      ORDER BY deleted_at DESC
-    `;
+    const deletedUsers = await db.select()
+      .from(users)
+      .where(isNotNull(users.deleted_at))
+      .orderBy(desc(users.deleted_at));
 
     // Fetch soft-deleted featured profiles
-    const deletedProfiles = await sql`
-      SELECT *
-      FROM featured_profiles
-      WHERE deleted_at IS NOT NULL
-      ORDER BY deleted_at DESC
-    `;
+    const deletedProfiles = await db.select()
+      .from(featuredProfiles)
+      .where(isNotNull(featuredProfiles.deleted_at))
+      .orderBy(desc(featuredProfiles.deleted_at));
 
     return NextResponse.json({ waitlist: deletedWaitlist, users: deletedUsers, profiles: deletedProfiles });
   } catch (error) {
@@ -69,26 +65,20 @@ export async function DELETE(req: Request) {
   }
 
   try {
-    const sql = getDb();
+    const db = getDrizzle();
     
     // Delete items older than 30 days
-    const result1 = await sql`
-      DELETE FROM waitlist
-      WHERE deleted_at < NOW() - INTERVAL '30 days'
-      RETURNING id
-    `;
+    const result1 = await db.delete(waitlist)
+      .where(sql`${waitlist.deleted_at} < NOW() - INTERVAL '30 days'`)
+      .returning({ id: waitlist.id });
     
-    const result2 = await sql`
-      DELETE FROM users
-      WHERE deleted_at < NOW() - INTERVAL '30 days'
-      RETURNING id
-    `;
+    const result2 = await db.delete(users)
+      .where(sql`${users.deleted_at} < NOW() - INTERVAL '30 days'`)
+      .returning({ id: users.id });
 
-    const result3 = await sql`
-      DELETE FROM featured_profiles
-      WHERE deleted_at < NOW() - INTERVAL '30 days'
-      RETURNING id
-    `;
+    const result3 = await db.delete(featuredProfiles)
+      .where(sql`${featuredProfiles.deleted_at} < NOW() - INTERVAL '30 days'`)
+      .returning({ id: featuredProfiles.id });
     
     return NextResponse.json({ success: true, deletedCount: result1.length + result2.length + result3.length });
   } catch (error) {
