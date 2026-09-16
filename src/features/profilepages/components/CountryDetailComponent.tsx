@@ -8,6 +8,7 @@ import { toLandingAssetUrl } from "@/lib/landing-assets";
 import { sampleProfiles, type SampleProfile } from "../data/profile-data";
 import { ContextMenu } from "./ProfileComponent";
 import { MediaLightbox } from "./MediaLightbox";
+import ProfileFooter from "./ProfileFooter";
 import { MoreOptionsButton } from "@/components/ui/MoreOptionsButton";
 import { WaitlistPopup } from "@/components/ui/WaitlistPopup";
 import LoadedImage from "@/components/ui/LoadedImage";
@@ -672,14 +673,7 @@ export default function CountryDetailComponent({
       </main>
 
       {/* Footer */}
-      <footer className="w-full max-w-[108rem] py-8 flex items-center justify-center gap-8 text-[0.75rem] text-white-500 tracking-[-0.408px]">
-        <a href="#" className="hover:text-white transition">Help</a>
-        <a href="#" className="hover:text-white transition">About</a>
-        <a href="#" className="hover:text-white transition">Careers</a>
-        <Link href="/blog" className="hover:text-white transition">Blog</Link>
-        <a href="https://travingat.com/terms" className="hover:text-white transition">Terms of Service</a>
-        <a href="https://travingat.com/privacy" className="hover:text-white transition">Privacy Policy</a>
-      </footer>
+      <ProfileFooter />
     </div>
   );
 }

@@ -5,6 +5,7 @@ import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { domToPng } from "modern-screenshot";
 import { ClassicCard, MinimalCard, AdventureCard, ImagePlaceholderIcon, AvatarPlaceholderIcon } from "./cards";
 import EmailVerificationForm from "@/components/getfeatured/EmailVerificationForm";
+import ProfileFooter from "@/features/profilepages/components/ProfileFooter";
 
 import countryData from "./countries.json";
 import { DesktopExplorerForm } from "./DesktopExplorerForm";
@@ -854,6 +855,7 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
           </div>
         </div>
       </main>
+      <ProfileFooter />
       {readyToShareModal}
       </div>
     );
@@ -901,6 +903,7 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
             />
           </div>
         </main>
+        <ProfileFooter />
       </div>
     );
   }
@@ -1028,6 +1031,7 @@ return (
       </div>
       </div>
 
+      <ProfileFooter />
       {readyToShareModal}
     </div>
   );
