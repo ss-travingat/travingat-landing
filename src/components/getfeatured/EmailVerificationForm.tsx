@@ -107,8 +107,8 @@ const EmailVerificationForm = ({ onVerified, initialSessionUser, source }: Props
       onVerified(email, res.user, res.explorerCard);
     } else {
       if (res.user || res.explorerCard) {
-        const u = res.user || {};
-        const ec = res.explorerCard || {};
+        const u: any = res.user || {};
+        const ec: any = res.explorerCard || {};
         
         let fname = u.first_name;
         let lname = u.last_name;
@@ -125,10 +125,11 @@ const EmailVerificationForm = ({ onVerified, initialSessionUser, source }: Props
         if (bestCountry) setSelectedCountry(bestCountry);
         
         let count = u.visited_count;
-        if (!count && ec.visited_countries) {
-          if (Array.isArray(ec.visited_countries)) count = ec.visited_countries.length;
-          else if (typeof ec.visited_countries === 'string') {
-            try { count = JSON.parse(ec.visited_countries).length; } catch { count = 0; }
+        const ecVisited = ec.visitedCountries || ec.visited_countries;
+        if (!count && ecVisited) {
+          if (Array.isArray(ecVisited)) count = ecVisited.length;
+          else if (typeof ecVisited === 'string') {
+            try { count = JSON.parse(ecVisited).length; } catch { count = 0; }
           }
         }
         if (count) setVisitedCount(count.toString());

@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
-import { getDb } from "@/lib/db";
+import { getDrizzle } from "@/lib/drizzle";
+import { waitlist, users, featuredProfiles } from "@/db/schema";
+import { eq } from "drizzle-orm";
 import {
   getAdminSessionCookieName,
   verifyAdminSessionToken,
@@ -17,14 +19,14 @@ export async function PATCH(req: Request, context: { params: Promise<{ type: str
   const { type, id } = await context.params;
 
   try {
-    const sql = getDb();
+    const db = getDrizzle();
     
     if (type === "waitlist") {
-      await sql`UPDATE waitlist SET deleted_at = NULL WHERE id = ${id}`;
+      await db.update(waitlist).set({ deleted_at: null }).where(eq(waitlist.id, Number(id)));
     } else if (type === "users") {
-      await sql`UPDATE users SET deleted_at = NULL WHERE id = ${id}`;
+      await db.update(users).set({ deleted_at: null }).where(eq(users.id, id));
     } else if (type === "profiles") {
-      await sql`UPDATE featured_profiles SET deleted_at = NULL WHERE id = ${id}`;
+      await db.update(featuredProfiles).set({ deleted_at: null }).where(eq(featuredProfiles.id, id));
     } else {
       return NextResponse.json({ error: "invalid type" }, { status: 400 });
     }
@@ -47,14 +49,14 @@ export async function DELETE(req: Request, context: { params: Promise<{ type: st
   const { type, id } = await context.params;
 
   try {
-    const sql = getDb();
+    const db = getDrizzle();
     
     if (type === "waitlist") {
-      await sql`DELETE FROM waitlist WHERE id = ${id}`;
+      await db.delete(waitlist).where(eq(waitlist.id, Number(id)));
     } else if (type === "users") {
-      await sql`DELETE FROM users WHERE id = ${id}`;
+      await db.delete(users).where(eq(users.id, id));
     } else if (type === "profiles") {
-      await sql`DELETE FROM featured_profiles WHERE id = ${id}`;
+      await db.delete(featuredProfiles).where(eq(featuredProfiles.id, id));
     } else {
       return NextResponse.json({ error: "invalid type" }, { status: 400 });
     }

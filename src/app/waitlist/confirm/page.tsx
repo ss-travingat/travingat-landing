@@ -1,5 +1,7 @@
 import { redirect } from "next/navigation";
-import { getDb } from "@/lib/db";
+import { getDrizzle } from "@/lib/drizzle";
+import { waitlist } from "@/db/schema";
+import { eq } from "drizzle-orm";
 
 interface Props {
   searchParams: Promise<{ token?: string }>;
@@ -16,14 +18,14 @@ export default async function WaitlistConfirmPage({ searchParams }: Props) {
   let redirectUrl = "/waitlist/confirmed?error=server";
 
   try {
-    const sql = getDb();
+    const db = getDrizzle();
 
-    const rows = await sql`
-      SELECT id, email, confirmed, token_expires_at
-      FROM waitlist
-      WHERE confirmation_token = ${token.trim()}
-      LIMIT 1
-    `;
+    const rows = await db.select({ 
+      id: waitlist.id, 
+      email: waitlist.email, 
+      confirmed: waitlist.confirmed, 
+      token_expires_at: waitlist.token_expires_at 
+    }).from(waitlist).where(eq(waitlist.confirmation_token, token.trim())).limit(1);
 
     if (rows.length === 0) {
       // Token not found — already confirmed (token cleared) or invalid
@@ -38,13 +40,13 @@ export default async function WaitlistConfirmPage({ searchParams }: Props) {
         redirectUrl = "/waitlist/confirmed?error=expired";
       } else {
         // Mark confirmed and clear token
-        await sql`
-          UPDATE waitlist
-          SET confirmed = TRUE,
-              confirmed_at = NOW(),
-              confirmation_token = NULL
-          WHERE id = ${entry.id}
-        `;
+        await db.update(waitlist)
+          .set({
+            confirmed: true,
+            confirmed_at: new Date().toISOString(),
+            confirmation_token: null
+          })
+          .where(eq(waitlist.id, entry.id));
         
         try {
           const { sendWelcomeWaitlistEmail } = await import("@/lib/waitlist-email");

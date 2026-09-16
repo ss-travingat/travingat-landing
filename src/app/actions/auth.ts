@@ -1,14 +1,15 @@
 'use server';
 
-import { getDb } from '@/lib/db';
+import { getDrizzle } from '@/lib/drizzle';
 import { sendOtpEmail } from '@/lib/otp-email';
 import { cookies, headers } from 'next/headers';
 import { createUserSessionToken, getUserSessionCookieName, getUserSessionMaxAgeSeconds } from '@/lib/user-session';
+import { users, otps, waitlist, explorerCards } from '@/db/schema';
+import { eq, sql } from 'drizzle-orm';
 
 export async function requestOtpAction(email: string, _userAgentHint?: string) {
   try {
-    const sql = getDb();
-
+    const db = getDrizzle();
 
     // Read User-Agent directly from the incoming request headers (works in server actions via next/headers)
     const reqHeaders = await headers();
@@ -19,19 +20,14 @@ export async function requestOtpAction(email: string, _userAgentHint?: string) {
     const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
 
     // Store OTP with user_agent for device tracking on verification
-    await sql`DELETE FROM otps WHERE email = ${email}`;
-    try {
-      await sql`
-        INSERT INTO otps (email, otp, expires_at, user_agent)
-        VALUES (${email}, ${otp}, ${expiresAt}, ${userAgent})
-      `;
-    } catch {
-      // Fallback if user_agent column doesn't exist yet
-      await sql`
-        INSERT INTO otps (email, otp, expires_at)
-        VALUES (${email}, ${otp}, ${expiresAt})
-      `;
-    }
+    await db.delete(otps).where(eq(otps.email, email));
+    
+    await db.insert(otps).values({
+      email,
+      otp,
+      expiresAt: expiresAt.toISOString(),
+      userAgent
+    });
 
     // Send OTP
     await sendOtpEmail(email, otp);
@@ -62,10 +58,8 @@ function parseBrowser(ua: string): string {
 
 export async function verifyOtpAction(email: string, otp: string, source?: string) {
   try {
-    const sql = getDb();
-    const existingOtps = await sql`
-      SELECT * FROM otps WHERE email = ${email} LIMIT 1
-    `;
+    const db = getDrizzle();
+    const existingOtps = await db.select().from(otps).where(eq(otps.email, email)).limit(1);
     const otpRecord = existingOtps[0];
 
     if (!otpRecord) {
@@ -76,26 +70,22 @@ export async function verifyOtpAction(email: string, otp: string, source?: strin
       return { error: 'Invalid OTP.' };
     }
 
-    if (new Date() > new Date(otpRecord.expires_at)) {
+    if (new Date() > new Date(otpRecord.expiresAt)) {
       return { error: 'OTP has expired. Please request a new one.' };
     }
 
     // Create user if they don't exist yet
-    const existingUsers = await sql`
-      SELECT * FROM users WHERE email = ${email} LIMIT 1
-    `;
+    const existingUsers = await db.select().from(users).where(eq(users.email, email)).limit(1);
     let user;
     if (existingUsers.length === 0) {
-      const inserted = await sql`
-        INSERT INTO users (email) VALUES (${email}) RETURNING *
-      `;
+      const inserted = await db.insert(users).values({ email }).returning();
       user = inserted[0];
     } else {
       user = existingUsers[0];
     }
     
     // Extract device info from the stored user_agent in the OTP record
-    const ua = otpRecord.user_agent ?? '';
+    const ua = otpRecord.userAgent ?? '';
     const browser = parseBrowser(ua);
     const device = parseDevice(ua);
 
@@ -135,51 +125,62 @@ export async function verifyOtpAction(email: string, otp: string, source?: strin
     }
 
     // Set user session cookie
-    const existingWaitlist = await sql`SELECT id, device, country FROM waitlist WHERE email = ${email} LIMIT 1`;
+    const existingWaitlist = await db.select({
+      id: waitlist.id,
+      device: waitlist.device,
+      country: waitlist.country
+    }).from(waitlist).where(eq(waitlist.email, email)).limit(1);
+
     const waitlistSource = source || 'Waitlist';
     if (existingWaitlist.length > 0) {
       if (!country || country === 'Unknown') {
         country = existingWaitlist[0].country || country;
       }
-      await sql`
-        UPDATE waitlist 
-        SET confirmed = TRUE, 
-            confirmed_at = COALESCE(confirmed_at, NOW()),
-            source = CASE WHEN source = 'Waitlist' THEN ${waitlistSource} ELSE source END,
-            browser = CASE WHEN browser = 'Unknown' OR browser IS NULL THEN ${browser} ELSE browser END,
-            device = CASE WHEN device = 'Unknown' OR device IS NULL THEN ${device} ELSE device END,
-            country = CASE WHEN country = 'Unknown' OR country IS NULL THEN ${country || 'Unknown'} ELSE country END,
-            city = CASE WHEN city = 'Unknown' OR city IS NULL THEN ${city || 'Unknown'} ELSE city END,
-            ip = CASE WHEN ip = '0.0.0.0' OR ip IS NULL THEN ${ip} ELSE ip END,
-            explorer_card_status = CASE 
-                WHEN explorer_card_status = 'Created' THEN 'Created' 
-                WHEN ${waitlistSource}::text = 'Explorer Card' THEN 'incomplete' 
-                ELSE explorer_card_status 
-            END,
-            get_featured_status = CASE 
-                WHEN get_featured_status = 'Created' THEN 'Created' 
-                WHEN ${waitlistSource}::text = 'Get Featured' THEN 'incomplete' 
-                ELSE get_featured_status 
-            END
-        WHERE id = ${existingWaitlist[0].id}
-      `;
+      await db.update(waitlist)
+        .set({
+          confirmed: true,
+          confirmed_at: sql`COALESCE(${waitlist.confirmed_at}, NOW())`,
+          source: sql`CASE WHEN ${waitlist.source} = 'Waitlist' THEN ${waitlistSource} ELSE ${waitlist.source} END`,
+          browser: sql`CASE WHEN ${waitlist.browser} = 'Unknown' OR ${waitlist.browser} IS NULL THEN ${browser} ELSE ${waitlist.browser} END`,
+          device: sql`CASE WHEN ${waitlist.device} = 'Unknown' OR ${waitlist.device} IS NULL THEN ${device} ELSE ${waitlist.device} END`,
+          country: sql`CASE WHEN ${waitlist.country} = 'Unknown' OR ${waitlist.country} IS NULL THEN ${country || 'Unknown'} ELSE ${waitlist.country} END`,
+          city: sql`CASE WHEN ${waitlist.city} = 'Unknown' OR ${waitlist.city} IS NULL THEN ${city || 'Unknown'} ELSE ${waitlist.city} END`,
+          ip: sql`CASE WHEN ${waitlist.ip} = '0.0.0.0' OR ${waitlist.ip} IS NULL THEN ${ip} ELSE ${waitlist.ip} END`,
+          explorer_card_status: sql`CASE 
+                WHEN ${waitlist.explorer_card_status} = 'Created' THEN 'Created' 
+                WHEN ${waitlistSource} = 'Explorer Card' THEN 'incomplete' 
+                ELSE ${waitlist.explorer_card_status} 
+            END`,
+          get_featured_status: sql`CASE 
+                WHEN ${waitlist.get_featured_status} = 'Created' THEN 'Created' 
+                WHEN ${waitlistSource} = 'Get Featured' THEN 'incomplete' 
+                ELSE ${waitlist.get_featured_status} 
+            END`
+        })
+        .where(eq(waitlist.id, existingWaitlist[0].id));
     } else {
       const confirmationToken = crypto.randomUUID();
-      await sql`
-        INSERT INTO waitlist (email, confirmed, confirmed_at, source, created_at, browser, device, country, city, ip, confirmation_token, explorer_card_status, get_featured_status)
-        VALUES (${email}, TRUE, NOW(), ${waitlistSource}, NOW(), ${browser}, ${device}, ${country || 'Unknown'}, ${city || 'Unknown'}, ${ip}, ${confirmationToken}, 
-                CASE WHEN ${waitlistSource}::text = 'Explorer Card' THEN 'incomplete' ELSE 'Not created' END,
-                CASE WHEN ${waitlistSource}::text = 'Get Featured' THEN 'incomplete' ELSE 'Not created' END)
-      `;
+      await db.insert(waitlist).values({
+        email,
+        confirmed: true,
+        confirmed_at: new Date().toISOString(),
+        source: waitlistSource,
+        browser,
+        device,
+        country: country || 'Unknown',
+        city: city || 'Unknown',
+        ip,
+        confirmation_token: confirmationToken,
+        explorer_card_status: waitlistSource === 'Explorer Card' ? 'incomplete' : 'Not created',
+        get_featured_status: waitlistSource === 'Get Featured' ? 'incomplete' : 'Not created'
+      });
     }
     
-    await sql`DELETE FROM otps WHERE email = ${email}`;
+    await db.delete(otps).where(eq(otps.email, email));
     
     // Update users table with country if missing
     if (!user.country && country && country !== 'Unknown') {
-      const updatedUserRes = await sql`
-        UPDATE users SET country = ${country} WHERE id = ${user.id} RETURNING *
-      `;
+      const updatedUserRes = await db.update(users).set({ country }).where(eq(users.id, user.id)).returning();
       if (updatedUserRes.length > 0) {
         user = updatedUserRes[0];
       }
@@ -197,8 +198,8 @@ export async function verifyOtpAction(email: string, otp: string, source?: strin
       maxAge: getUserSessionMaxAgeSeconds(),
     });
     
-    const explorerCards = await sql`SELECT * FROM explorer_cards WHERE user_id = ${user.id} LIMIT 1`;
-    const explorerCard = explorerCards.length > 0 ? explorerCards[0] : null;
+    const cards = await db.select().from(explorerCards).where(eq(explorerCards.userId, user.id)).limit(1);
+    const explorerCard = cards.length > 0 ? cards[0] : null;
     
     return { success: true, user, explorerCard };
   } catch (error) {
@@ -215,44 +216,30 @@ export async function submitApplicationAction(email: string, data: {
   links: string[];
 }) {
   try {
-    const sql = getDb();
+    const db = getDrizzle();
     
     // Check if user exists
-    const existingUsers = await sql`
-      SELECT id FROM users WHERE email = ${email} LIMIT 1
-    `;
+    const existingUsers = await db.select({ id: users.id }).from(users).where(eq(users.email, email)).limit(1);
     if (existingUsers.length === 0) {
       return { error: 'User not found. Please verify your email first.' };
     }
 
-    // We can map visitedCount to a dummy string array since the main DB uses visited_countries array
-    // E.g., just store array of numbers or leave it as we are just tracking the count. 
-    // The user proposal was: we infer visitedCount from the length of visited_countries array.
-    // Let's create an array of that size with generic country strings or empty. 
-    // Actually, maybe it's better to add a visited_count column to users if we only know the number.
-    // I will add visited_count to users table right now to be safe.
-    
-    await sql`
-      ALTER TABLE users ADD COLUMN IF NOT EXISTS visited_count INTEGER;
-    `;
+    await db.update(users)
+      .set({
+        first_name: data.firstName,
+        last_name: data.lastName,
+        country: data.country,
+        visited_count: data.visitedCount,
+        links: data.links
+      })
+      .where(eq(users.email, email));
 
-    await sql`
-      UPDATE users
-      SET
-        first_name = ${data.firstName},
-        last_name = ${data.lastName},
-        country = ${data.country},
-        visited_count = ${data.visitedCount},
-        links = ${data.links}
-      WHERE email = ${email}
-    `;
-
-    await sql`
-      UPDATE waitlist
-      SET get_featured_status = 'Created',
-          countries_count = ${data.visitedCount}
-      WHERE email = ${email}
-    `;
+    await db.update(waitlist)
+      .set({
+        get_featured_status: 'Created',
+        countries_count: data.visitedCount
+      })
+      .where(eq(waitlist.email, email));
       
     return { success: true };
   } catch (error) {

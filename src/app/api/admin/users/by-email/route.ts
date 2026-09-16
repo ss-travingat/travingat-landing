@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { getAdminSessionCookieName, verifyAdminSessionToken } from "@/lib/admin-session";
 import { getDrizzle } from "@/lib/drizzle";
-import { users } from "@/db/schema";
+import { users, explorerCards } from "@/db/schema";
 import { eq } from "drizzle-orm";
 
 export async function GET(req: Request) {
@@ -26,9 +26,7 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: "user not found" }, { status: 404 });
     }
     
-    const { getDb } = await import("@/lib/db");
-    const sql = getDb();
-    const ecResult = await sql`SELECT * FROM explorer_cards WHERE user_id = ${userList[0].id} LIMIT 1`;
+    const ecResult = await db.select().from(explorerCards).where(eq(explorerCards.userId, userList[0].id)).limit(1);
     const explorerCard = ecResult.length > 0 ? ecResult[0] : null;
 
     return NextResponse.json({ ...userList[0], explorerCard });
@@ -37,3 +35,4 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: "internal server error" }, { status: 500 });
   }
 }
+

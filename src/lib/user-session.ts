@@ -61,7 +61,9 @@ export function verifyUserSessionToken(token: string): string | null {
 }
 
 import { cookies } from "next/headers";
-import { getDb } from "./db";
+import { getDrizzle } from "./drizzle";
+import { users } from "@/db/schema";
+import { eq } from "drizzle-orm";
 
 export async function getSessionUser() {
   const cookieStore = await cookies();
@@ -72,8 +74,8 @@ export async function getSessionUser() {
   if (!userId) return null;
 
   try {
-    const sql = getDb();
-    const rows = await sql`SELECT * FROM users WHERE id = ${userId} LIMIT 1`;
+    const db = getDrizzle();
+    const rows = await db.select().from(users).where(eq(users.id, userId)).limit(1);
     return rows[0] || null;
   } catch (error) {
     console.error("Error fetching session user:", error);
