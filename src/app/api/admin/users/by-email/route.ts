@@ -26,7 +26,12 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: "user not found" }, { status: 404 });
     }
     
-    return NextResponse.json(userList[0]);
+    const { getDb } = await import("@/lib/db");
+    const sql = getDb();
+    const ecResult = await sql`SELECT * FROM explorer_cards WHERE user_id = ${userList[0].id} LIMIT 1`;
+    const explorerCard = ecResult.length > 0 ? ecResult[0] : null;
+
+    return NextResponse.json({ ...userList[0], explorerCard });
   } catch (error: any) {
     console.error("Failed to fetch user by email:", error);
     return NextResponse.json({ error: "internal server error" }, { status: 500 });

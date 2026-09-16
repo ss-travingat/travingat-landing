@@ -106,12 +106,34 @@ const EmailVerificationForm = ({ onVerified, initialSessionUser, source }: Props
     if (onVerified) {
       onVerified(email, res.user, res.explorerCard);
     } else {
-      if (res.user) {
-        if (res.user.first_name) setFirstName(res.user.first_name);
-        if (res.user.last_name) setLastName(res.user.last_name);
-        if (res.user.country) setSelectedCountry(res.user.country);
-        if (res.user.visited_count) setVisitedCount(res.user.visited_count.toString());
-        if (Array.isArray(res.user.links)) setLinks(res.user.links);
+      if (res.user || res.explorerCard) {
+        const u = res.user || {};
+        const ec = res.explorerCard || {};
+        
+        let fname = u.first_name;
+        let lname = u.last_name;
+        if (!fname && !lname && ec.name) {
+          const parts = ec.name.split(' ');
+          fname = parts[0];
+          lname = parts.slice(1).join(' ');
+        }
+        
+        if (fname) setFirstName(fname);
+        if (lname) setLastName(lname);
+        
+        const bestCountry = u.country || ec.country;
+        if (bestCountry) setSelectedCountry(bestCountry);
+        
+        let count = u.visited_count;
+        if (!count && ec.visited_countries) {
+          if (Array.isArray(ec.visited_countries)) count = ec.visited_countries.length;
+          else if (typeof ec.visited_countries === 'string') {
+            try { count = JSON.parse(ec.visited_countries).length; } catch { count = 0; }
+          }
+        }
+        if (count) setVisitedCount(count.toString());
+        
+        if (Array.isArray(u.links)) setLinks(u.links);
       }
       setStep('application');
     }

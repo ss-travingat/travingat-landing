@@ -525,7 +525,16 @@ export default function AdminProfilesPage() {
             .then(res => res.ok ? res.json() : Promise.reject())
             .then(user => {
               if (user && !user.error) {
-                const fullName = [user.first_name, user.last_name].filter(Boolean).join(" ");
+                const ec = user.explorerCard || {};
+                
+                let fname = user.first_name;
+                let lname = user.last_name;
+                if (!fname && !lname && ec.name) {
+                  const parts = ec.name.split(' ');
+                  fname = parts[0];
+                  lname = parts.slice(1).join(' ');
+                }
+                const fullName = [fname, lname].filter(Boolean).join(" ");
                 
                 // Extract socials from links jsonb array if it exists
                 const newSocials = { x: "", instagram: "", linkedin: "", youtube: "" };
@@ -542,30 +551,39 @@ export default function AdminProfilesPage() {
                 let fetchedFlagCode = flagCode;
                 let fetchedFlag = flag;
                 let fetchedCountryName = finalCountryName;
-                if (user.country && user.country !== finalCountryName) {
+                const bestCountry = user.country || ec.country;
+                if (bestCountry && bestCountry !== finalCountryName) {
                   const matchedCountry = COUNTRY_LIST.find(
-                    (c) => c.name.toLowerCase() === user.country?.toLowerCase() || c.code.toLowerCase() === user.country?.toLowerCase()
+                    (c) => c.name.toLowerCase() === bestCountry.toLowerCase() || c.code.toLowerCase() === bestCountry.toLowerCase()
                   );
                   if (matchedCountry) {
                     fetchedCountryName = matchedCountry.name;
                     fetchedFlagCode = matchedCountry.code;
                     fetchedFlag = matchedCountry.flag;
                   } else {
-                    fetchedCountryName = user.country;
+                    fetchedCountryName = bestCountry;
+                  }
+                }
+                
+                let count = user.visited_count;
+                if (!count && ec.visited_countries) {
+                  if (Array.isArray(ec.visited_countries)) count = ec.visited_countries.length;
+                  else if (typeof ec.visited_countries === 'string') {
+                    try { count = JSON.parse(ec.visited_countries).length; } catch { count = 0; }
                   }
                 }
 
                 setForm(prev => ({
                   ...prev,
                   name: fullName || prev.name,
-                  countries: user.visited_count || prev.countries,
+                  countries: count || prev.countries,
                   country: fetchedCountryName,
                   flagCode: fetchedFlagCode,
                   flag: fetchedFlag,
                   images: {
                     ...prev.images,
-                    avatar: user.avatar_url || prev.images.avatar,
-                    cover: user.cover_photo_url || prev.images.cover,
+                    avatar: user.avatar_url || user.profile_image_url || ec.profile_image_url || prev.images.avatar,
+                    cover: user.cover_photo_url || user.cover_image_url || ec.cover_image_url || prev.images.cover,
                   },
                   socials: { ...prev.socials, ...newSocials },
                 }));
@@ -2141,40 +2159,6 @@ export default function AdminProfilesPage() {
                   />
                 </div>
 
-                {/* Align */}
-                <div>
-                  <label className="text-sm text-white/60 block mb-1.5">
-                    Card Alignment
-                  </label>
-                  <div className="flex gap-2">
-                    <Button
-                      type="button"
-                      onClick={() =>
-                        setForm((prev) => ({ ...prev, align: "start" }))
-                      }
-                      className={`flex-1 py-2 rounded-lg text-sm font-medium ${
-                        form.align === "start"
-                          ? "bg-[#5A45F9] text-white"
-                          : "bg-white/10 text-white/60 hover:bg-white/15"
-                      }`}
-                    >
-                      Start
-                    </Button>
-                    <Button
-                      type="button"
-                      onClick={() =>
-                        setForm((prev) => ({ ...prev, align: "end" }))
-                      }
-                      className={`flex-1 py-2 rounded-lg text-sm font-medium ${
-                        form.align === "end"
-                          ? "bg-[#5A45F9] text-white"
-                          : "bg-white/10 text-white/60 hover:bg-white/15"
-                      }`}
-                    >
-                      End
-                    </Button>
-                  </div>
-                </div>
               </div>
 
               {/* Country & Location */}
