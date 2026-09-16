@@ -45,17 +45,17 @@ function normalizePath(path: string): string {
 }
 
 export default function LandingHeader({
-    logoHref = "/",
+    logoHref = "https://travingat.com/",
     logoSrc = "/icons/travingat-logo.svg?v=newlogo",
     navItems = [
-        { label: "Home", href: "/" },
+        { label: "Home", href: "https://travingat.com/" },
         { label: "Profiles", href: "/newprofiles" },
-        { label: "Templates", href: "/templates" },
-        { label: "Pricing", href: "/pricing" },
-        { label: "Blog", href: "/blog" },
+        { label: "Templates", href: "https://travingat.com/templates" },
+        { label: "Pricing", href: "https://travingat.com/pricing" },
+        { label: "Blog", href: "https://travingat.com/blog" },
     ],
     ctaLabel = "Join now",
-    ctaHref = "/#join",
+    ctaHref = "https://travingat.com/#join",
     className = "",
 }: TravingatHeaderProps) {
     const [menuOpen, setMenuOpen] = useState(false)
