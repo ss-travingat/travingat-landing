@@ -55,60 +55,55 @@ function UserActionsDropdown({
   onDelete: (u: AdminUser) => void;
   onToggleStatus: (u: AdminUser) => void;
   processing: boolean;
+  onViewDetails: (u: AdminUser) => void;
 }) {
-  const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
-  const hasExplorerCard = !!user.has_explorer_card;
-
-  const close = useCallback(() => setOpen(false), []);
-
   useEffect(() => {
-    if (!open) return;
-    const handler = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) close();
-    };
-    document.addEventListener("mousedown", handler);
-    return () => document.removeEventListener("mousedown", handler);
-  }, [open, close]);
+    function handleClickOutside(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) {
+        close();
+      }
+    }
+    if (isOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [isOpen, close]);
 
   return (
-    <div ref={ref} className="relative inline-block">
-      {/* Trigger – more-dropdown icon */}
-      <button
+    <div className="relative inline-block" ref={ref}>
+      <button 
         type="button"
-        onClick={() => setOpen((prev) => !prev)}
         className="p-1.5 rounded-md hover:bg-white/5 transition-colors"
         title="More actions"
-        disabled={processing}
+        onClick={toggle}
       >
-        <img
-          src="/icons/more-dropdown.png"
-          alt="More actions"
-          className="w-5 h-5 opacity-60 hover:opacity-100 transition-opacity"
-        />
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" className="opacity-50 hover:opacity-100 transition-opacity">
+          <circle cx="8" cy="3" r="1.5" fill="white"/>
+          <circle cx="8" cy="8" r="1.5" fill="white"/>
+          <circle cx="8" cy="13" r="1.5" fill="white"/>
+        </svg>
       </button>
 
-      {open && (
+      {isOpen && (
         <>
-          {/* Backdrop */}
-          <div className="fixed inset-0 z-[90]" onClick={close} />
-
-          {/* Dropdown panel */}
+          <div
+            className="fixed inset-0 z-[90]"
+            onClick={close}
+          />
           <div
             className="absolute right-0 top-full mt-1 z-[100] rounded-2xl border border-[#1E1E1E] bg-[#161616] shadow-[20px_20px_20px_rgba(0,0,0,0.25)] text-left overflow-hidden"
             style={{ width: hasExplorerCard ? 276 : 140 }}
           >
-            {/* ── Explorer card section (conditional) ── */}
+            {/* ── Explorer card section (only if created) ── */}
             {hasExplorerCard && (
               <>
-                {/* Section header */}
                 <p className="px-5 pt-4 pb-1 text-[13px] font-bold text-white tracking-wide">
                   Explore card
                 </p>
-                {/* View */}
                 <a
-                  href={`/view/explorercard/${user.id}?style=${user.card_style?.toLowerCase() || "adventure"}`}
+                  href={`/view/explorercard/${user.username || user.id}?style=${user.card_style?.toLowerCase() || 'adventure'}`}
                   target="_blank"
                   rel="noreferrer"
                   className="block w-full px-5 py-2 text-[12px] text-white/70 hover:text-white hover:bg-white/5 transition-colors"
@@ -116,9 +111,8 @@ function UserActionsDropdown({
                 >
                   View
                 </a>
-                {/* Edit */}
                 <a
-                  href={`/edit/explorercard?userId=${user.id}`}
+                  href={`/edit/explorercard?userId=${user.username || user.id}`}
                   target="_blank"
                   rel="noreferrer"
                   className="block w-full px-5 py-2 text-[12px] text-white/70 hover:text-white hover:bg-white/5 transition-colors"
@@ -126,7 +120,6 @@ function UserActionsDropdown({
                 >
                   Edit
                 </a>
-                {/* Resend */}
                 <button
                   className="w-full px-5 py-2 text-[12px] text-white/70 hover:text-white hover:bg-white/5 text-left transition-colors"
                   onClick={() => {
@@ -136,8 +129,6 @@ function UserActionsDropdown({
                 >
                   Resend
                 </button>
-
-                {/* Separator */}
                 <div className="mx-5 my-2 h-px bg-[#303030]" />
               </>
             )}
@@ -146,6 +137,16 @@ function UserActionsDropdown({
             <p className={`px-5 ${hasExplorerCard ? "pt-1" : "pt-4"} pb-1 text-[13px] font-bold text-white tracking-wide`}>
               Profile
             </p>
+            {/* View Details */}
+            <button
+              className="block w-full px-5 py-2 text-[12px] text-left text-white/70 hover:text-white hover:bg-white/5 transition-colors"
+              onClick={() => {
+                onViewDetails(user);
+                close();
+              }}
+            >
+              View Details
+            </button>
             {/* View */}
             <a
               href={`/profiles/${user.username || user.id}`}
@@ -232,6 +233,8 @@ export function MainUsersTab() {
   const [processingUserID, setProcessingUserID] = useState("");
   const [error, setError] = useState("");
   const [query, setQuery] = useState("");
+  const [detailsModalUser, setDetailsModalUser] = useState<AdminUser | null>(null);
+  const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
 
   const loadUsers = async () => {
     setLoading(true);
@@ -306,6 +309,8 @@ export function MainUsersTab() {
       setProcessingUserID("");
     }
   };
+
+  const handleDelete = onDeleteUser;
 
   const onSignOut = async () => {
     await fetch("/api/cms/session", { method: "DELETE" });
@@ -412,12 +417,15 @@ export function MainUsersTab() {
                     <td className="px-4 py-3 text-white/70">
                       {formatDateTime(u.created_at)}
                     </td>
-                    <td className="px-4 py-3 text-right">
-                      <UserActionsDropdown
+                    <td className={`px-4 py-3 text-right relative ${openDropdownId === u.id ? 'z-[100]' : ''}`}>
+                      <RowDropdown
                         user={u}
+                        hasExplorerCard={!!u.has_explorer_card}
+                        isOpen={openDropdownId === u.id}
+                        toggle={() => setOpenDropdownId(openDropdownId === u.id ? null : u.id)}
+                        close={() => setOpenDropdownId(null)}
                         onDelete={onDeleteUser}
-                        onToggleStatus={onToggleStatus}
-                        processing={processingUserID === u.id}
+                        onViewDetails={(user) => setDetailsModalUser(user)}
                       />
                     </td>
                   </tr>
@@ -431,6 +439,124 @@ export function MainUsersTab() {
           </div>
         )}
       </div>
+      {/* Details Side Panel */}
+      {detailsModalUser && (
+        <div className="fixed inset-0 z-[120] flex justify-end p-5">
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setDetailsModalUser(null)} />
+          <div className="bg-[#161616] border border-[#1E1E1E] rounded-2xl w-[420px] h-full relative z-10 shadow-[20px_20px_40px_rgba(0,0,0,0.40)] flex flex-col overflow-hidden animate-in slide-in-from-right duration-300">
+            <div className="p-6 border-b border-[#1E1E1E] flex justify-between items-center bg-[#161616]">
+              <h2 className="text-xl font-semibold text-white">Details</h2>
+              <button onClick={() => setDetailsModalUser(null)} className="text-white/40 hover:text-white transition-colors">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 6L6 18M6 6l12 12" /></svg>
+              </button>
+            </div>
+            <div className="p-6 overflow-y-auto flex-1 flex flex-col gap-6">
+              
+              {/* Profile Overview */}
+              <div>
+                <p className="text-xs font-bold text-white/40 uppercase tracking-wider mb-3">Profile Overview</p>
+                <div className="bg-[#1E1E1E]/40 rounded-xl p-4 border border-white/5 space-y-3">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-white/60">Display Name</span>
+                    <span className="text-sm text-white font-medium">{detailsModalUser.display_name || "N/A"}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-white/60">Username</span>
+                    <span className="text-sm text-white">@{detailsModalUser.username || "N/A"}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-white/60">Email</span>
+                    <span className="text-sm text-white">{detailsModalUser.email}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-white/60">User ID</span>
+                    <span className="text-xs text-white/80 bg-white/5 px-2 py-1 rounded font-mono truncate max-w-[200px]">{detailsModalUser.id}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-white/60">Joined</span>
+                    <span className="text-sm text-white">{new Date(detailsModalUser.created_at).toLocaleDateString()}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Status & Analytics */}
+              <div>
+                <p className="text-xs font-bold text-white/40 uppercase tracking-wider mb-3">Status & Analytics</p>
+                <div className="bg-[#1E1E1E]/40 rounded-xl p-4 border border-white/5 space-y-3">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-white/60">Status</span>
+                    <span className={`text-sm font-medium ${detailsModalUser.status === 'active' ? 'text-green-400' : 'text-red-400'}`}>
+                      {detailsModalUser.status}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-white/60">Onboarded</span>
+                    <span className="text-sm text-white">{detailsModalUser.onboarded ? "Yes" : "No"}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-white/60">Auth Provider</span>
+                    <span className="text-sm text-white capitalize">{detailsModalUser.auth_provider || "N/A"}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-white/60">Countries Traveled</span>
+                    <span className="text-sm text-white">{detailsModalUser.countries_traveled}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-white/60">Based In</span>
+                    <span className="text-sm text-white">{detailsModalUser.based_in || "N/A"}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Media Usage */}
+              <div>
+                <p className="text-xs font-bold text-white/40 uppercase tracking-wider mb-3">Media Storage</p>
+                <div className="bg-[#1E1E1E]/40 rounded-xl p-4 border border-white/5 space-y-3">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-white/60">Total Media</span>
+                    <span className="text-sm text-white">{detailsModalUser.total_media_count} files</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-white/60">Images</span>
+                    <span className="text-sm text-white">{detailsModalUser.image_count}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-white/60">Videos</span>
+                    <span className="text-sm text-white">{detailsModalUser.video_count}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-white/60">Storage Used</span>
+                    <span className="text-sm text-white">{(detailsModalUser.storage_bytes / (1024 * 1024)).toFixed(2)} MB</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Quick Actions inside modal */}
+              <div className="mt-4 pt-4 border-t border-[#1E1E1E] flex flex-col gap-2">
+                <a
+                  href={`/profiles/${detailsModalUser.username || detailsModalUser.id}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="w-full py-2.5 bg-[#2A2A2A] hover:bg-[#333333] text-white text-sm font-medium rounded-lg text-center transition-colors"
+                >
+                  View Public Profile
+                </a>
+                <button
+                  className="w-full py-2.5 bg-red-500/10 hover:bg-red-500/20 text-red-500 text-sm font-medium rounded-lg text-center transition-colors"
+                  onClick={() => {
+                    handleDelete(detailsModalUser);
+                    setDetailsModalUser(null);
+                  }}
+                  disabled={!!processingUserID}
+                >
+                  {processingUserID === detailsModalUser.id ? "Deleting..." : "Delete User"}
+                </button>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
