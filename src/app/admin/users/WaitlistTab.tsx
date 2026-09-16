@@ -717,7 +717,18 @@ export function WaitlistTab() {
                   
                   {detailsModalEntry.get_featured_status?.toLowerCase() === 'created' && (
                     <div className="flex gap-3 mt-2">
-                      <button className="px-4 py-2 bg-[#e8f5e9] text-[#1b5e20] hover:bg-[#c8e6c9] font-medium rounded-lg text-[13px] transition-colors">
+                      <button 
+                        onClick={() => {
+                          const searchParams = new URLSearchParams();
+                          searchParams.set("create", "true");
+                          if (detailsModalEntry.email) searchParams.set("email", detailsModalEntry.email);
+                          if (detailsModalEntry.country) searchParams.set("country", detailsModalEntry.country);
+                          if (detailsModalEntry.id) searchParams.set("waitlistId", detailsModalEntry.id.toString());
+                          
+                          window.open(`/admin/profiles?${searchParams.toString()}`, "_blank");
+                        }}
+                        className="px-4 py-2 bg-[#e8f5e9] text-[#1b5e20] hover:bg-[#c8e6c9] font-medium rounded-lg text-[13px] transition-colors"
+                      >
                         Mark as Featured
                       </button>
                       <button className="px-4 py-2 bg-white text-black hover:bg-gray-100 font-medium rounded-lg text-[13px] transition-colors">

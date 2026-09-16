@@ -483,6 +483,42 @@ export default function AdminProfilesPage() {
 
   useEffect(() => {
     fetchProfiles();
+
+    // Check if we are navigated here to create a new profile with prefilled data
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get("create") === "true") {
+        const email = params.get("email") || "";
+        const countryName = params.get("country") || "";
+        
+        let flagCode = "";
+        let flag = "";
+        let finalCountryName = countryName;
+        
+        if (countryName) {
+          const matchedCountry = COUNTRY_LIST.find(
+            (c) => c.name.toLowerCase() === countryName.toLowerCase() || c.code.toLowerCase() === countryName.toLowerCase()
+          );
+          if (matchedCountry) {
+            finalCountryName = matchedCountry.name;
+            flagCode = matchedCountry.code;
+            flag = matchedCountry.flag;
+          }
+        }
+
+        // Open the form with prefilled data but keep editing as null to trigger a POST (new creation)
+        setForm((prev) => ({
+          ...prev,
+          email,
+          country: finalCountryName,
+          flagCode,
+          flag,
+        }));
+        
+        // Remove the search params from URL so it doesn't stay there on refresh
+        window.history.replaceState({}, '', '/admin/profiles');
+      }
+    }
   }, []);
 
   const scanOrphans = async () => {
