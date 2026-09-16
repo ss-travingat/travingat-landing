@@ -489,6 +489,7 @@ export default function AdminProfilesPage() {
       const params = new URLSearchParams(window.location.search);
       if (params.get("create") === "true") {
         const email = params.get("email") || "";
+        const waitlistId = params.get("waitlistId") || "";
         const countryName = params.get("country") || "";
         
         let flagCode = "";
@@ -506,7 +507,7 @@ export default function AdminProfilesPage() {
           }
         }
 
-        // Open the form with prefilled data but keep editing as null to trigger a POST (new creation)
+        // Initially open the form with whatever basic info we have
         setForm((prev) => ({
           ...prev,
           email,
@@ -517,6 +518,61 @@ export default function AdminProfilesPage() {
         
         // Remove the search params from URL so it doesn't stay there on refresh
         window.history.replaceState({}, '', '/admin/profiles');
+
+        // Fetch detailed user info if email exists
+        if (email) {
+          fetch(`/api/admin/users/by-email?email=${encodeURIComponent(email)}`)
+            .then(res => res.ok ? res.json() : Promise.reject())
+            .then(user => {
+              if (user && !user.error) {
+                const fullName = [user.first_name, user.last_name].filter(Boolean).join(" ");
+                
+                // Extract socials from links jsonb array if it exists
+                const newSocials = { x: "", instagram: "", linkedin: "", youtube: "" };
+                if (Array.isArray(user.links)) {
+                  user.links.forEach((link: string) => {
+                    const lc = link.toLowerCase();
+                    if (lc.includes("instagram.com")) newSocials.instagram = link;
+                    else if (lc.includes("twitter.com") || lc.includes("x.com")) newSocials.x = link;
+                    else if (lc.includes("youtube.com")) newSocials.youtube = link;
+                    else if (lc.includes("linkedin.com")) newSocials.linkedin = link;
+                  });
+                }
+                
+                let fetchedFlagCode = flagCode;
+                let fetchedFlag = flag;
+                let fetchedCountryName = finalCountryName;
+                if (user.country && user.country !== finalCountryName) {
+                  const matchedCountry = COUNTRY_LIST.find(
+                    (c) => c.name.toLowerCase() === user.country?.toLowerCase() || c.code.toLowerCase() === user.country?.toLowerCase()
+                  );
+                  if (matchedCountry) {
+                    fetchedCountryName = matchedCountry.name;
+                    fetchedFlagCode = matchedCountry.code;
+                    fetchedFlag = matchedCountry.flag;
+                  } else {
+                    fetchedCountryName = user.country;
+                  }
+                }
+
+                setForm(prev => ({
+                  ...prev,
+                  name: fullName || prev.name,
+                  countries: user.visited_count || prev.countries,
+                  country: fetchedCountryName,
+                  flagCode: fetchedFlagCode,
+                  flag: fetchedFlag,
+                  images: {
+                    ...prev.images,
+                    avatar: user.avatar_url || prev.images.avatar,
+                    cover: user.cover_photo_url || prev.images.cover,
+                  },
+                  socials: { ...prev.socials, ...newSocials },
+                }));
+              }
+            })
+            .catch(console.error);
+        }
       }
     }
   }, []);

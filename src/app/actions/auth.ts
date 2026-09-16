@@ -135,9 +135,12 @@ export async function verifyOtpAction(email: string, otp: string, source?: strin
     }
 
     // Set user session cookie
-    const existingWaitlist = await sql`SELECT id, device FROM waitlist WHERE email = ${email} LIMIT 1`;
+    const existingWaitlist = await sql`SELECT id, device, country FROM waitlist WHERE email = ${email} LIMIT 1`;
     const waitlistSource = source || 'Waitlist';
     if (existingWaitlist.length > 0) {
+      if (!country || country === 'Unknown') {
+        country = existingWaitlist[0].country || country;
+      }
       await sql`
         UPDATE waitlist 
         SET confirmed = TRUE, 
@@ -172,6 +175,16 @@ export async function verifyOtpAction(email: string, otp: string, source?: strin
     
     await sql`DELETE FROM otps WHERE email = ${email}`;
     
+    // Update users table with country if missing
+    if (!user.country && country && country !== 'Unknown') {
+      const updatedUserRes = await sql`
+        UPDATE users SET country = ${country} WHERE id = ${user.id} RETURNING *
+      `;
+      if (updatedUserRes.length > 0) {
+        user = updatedUserRes[0];
+      }
+    }
+
     // Set user session cookie
     const cookieStore = await cookies();
     cookieStore.set({

@@ -41,7 +41,7 @@ export async function POST(req: Request) {
         first_name = ${firstName},
         last_name = ${lastName},
         country = ${country},
-        visited_countries = ${visitedCountries}
+        visited_count = ${visitedCountries.length}
       WHERE email = ${email}
       RETURNING id;
     `;
@@ -104,8 +104,8 @@ export async function POST(req: Request) {
     await sql`
       UPDATE users 
       SET 
-        profile_image_url = COALESCE(${profilePublicUrl || null}, profile_image_url),
-        cover_image_url = COALESCE(${coverPublicUrl || null}, cover_image_url)
+        avatar_url = COALESCE(${profilePublicUrl || null}, avatar_url),
+        cover_photo_url = COALESCE(${coverPublicUrl || null}, cover_photo_url)
       WHERE id = ${userId};
     `;
 

@@ -106,6 +106,13 @@ const EmailVerificationForm = ({ onVerified, initialSessionUser, source }: Props
     if (onVerified) {
       onVerified(email, res.user, res.explorerCard);
     } else {
+      if (res.user) {
+        if (res.user.first_name) setFirstName(res.user.first_name);
+        if (res.user.last_name) setLastName(res.user.last_name);
+        if (res.user.country) setSelectedCountry(res.user.country);
+        if (res.user.visited_count) setVisitedCount(res.user.visited_count.toString());
+        if (Array.isArray(res.user.links)) setLinks(res.user.links);
+      }
       setStep('application');
     }
   };
