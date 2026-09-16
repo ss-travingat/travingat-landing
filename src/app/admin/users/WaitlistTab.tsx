@@ -37,7 +37,7 @@ export function WaitlistTab() {
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<Filter>("all");
   const [openDropdownId, setOpenDropdownId] = useState<number | null>(null);
-  
+
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
   const [advancedFilters, setAdvancedFilters] = useState({
     source: "",
@@ -66,7 +66,7 @@ export function WaitlistTab() {
         setExplorerCardCount(data.explorerCardCount ?? 0);
         setGetFeaturedCount(data.getFeaturedCount ?? 0);
       })
-      .catch(() => {})
+      .catch(() => { })
       .finally(() => setLoading(false));
   }, []);
 
@@ -82,13 +82,13 @@ export function WaitlistTab() {
       (filter === "confirmed" && e.confirmed) ||
       (filter === "unconfirmed" && !e.confirmed);
 
-    const matchesAdvanced = 
+    const matchesAdvanced =
       (!advancedFilters.source || (e.source || "Waitlist") === advancedFilters.source) &&
-      (!advancedFilters.explorer_card_status || 
-        (advancedFilters.explorer_card_status === 'Created' && e.explorer_card_status === 'Created') || 
+      (!advancedFilters.explorer_card_status ||
+        (advancedFilters.explorer_card_status === 'Created' && e.explorer_card_status === 'Created') ||
         (advancedFilters.explorer_card_status === 'Not created' && e.explorer_card_status !== 'Created')) &&
-      (!advancedFilters.get_featured_status || 
-        (advancedFilters.get_featured_status === 'Created' && e.get_featured_status === 'Created') || 
+      (!advancedFilters.get_featured_status ||
+        (advancedFilters.get_featured_status === 'Created' && e.get_featured_status === 'Created') ||
         (advancedFilters.get_featured_status === 'Not created' && e.get_featured_status !== 'Created')) &&
       (!advancedFilters.device || e.device === advancedFilters.device) &&
       (!advancedFilters.browser || e.browser === advancedFilters.browser) &&
@@ -158,26 +158,24 @@ export function WaitlistTab() {
                 type="button"
                 onClick={() => setFilter(f)}
                 variant="ghost"
-                className={`h-10 px-4 rounded-lg text-sm font-medium transition-colors capitalize ${
-                  filter === f
+                className={`h-10 px-4 rounded-lg text-sm font-medium transition-colors capitalize ${filter === f
                     ? "bg-white !text-black"
                     : "bg-[#141414] text-white/50 border border-white/10 hover:text-white"
-                }`}
+                  }`}
               >
                 {f}
               </Button>
             ))}
             <div className="w-px h-6 bg-white/10 mx-1" />
-            
+
             <button
               onClick={() => setIsFilterModalOpen(true)}
-              className={`h-10 px-4 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 border ${
-                activeFiltersCount > 0 
-                  ? "bg-[#163d22] text-[#4ade80] border-[#4ade80]/30" 
+              className={`h-10 px-4 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 border ${activeFiltersCount > 0
+                  ? "bg-[#163d22] text-[#4ade80] border-[#4ade80]/30"
                   : "bg-[#141414] text-white/50 border-white/10 hover:text-white hover:border-white/30"
-              }`}
+                }`}
             >
-              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" /></svg>
               Filter
               {activeFiltersCount > 0 && (
                 <span className="flex h-4 w-4 items-center justify-center rounded-full bg-[#4ade80] text-[10px] font-bold text-[#0a0a0a]">
@@ -190,7 +188,7 @@ export function WaitlistTab() {
               href="/admin/recycle-bin"
               className="h-10 px-4 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 bg-[#141414] text-white/50 border border-white/10 hover:text-white hover:border-white/30"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18" /><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" /><line x1="10" y1="11" x2="10" y2="17" /><line x1="14" y1="11" x2="14" y2="17" /></svg>
               Recycle Bin
             </Link>
           </div>
@@ -302,52 +300,154 @@ export function WaitlistTab() {
                     <td className={`px-4 py-3 text-right relative ${openDropdownId === entry.id ? 'z-[100]' : ''}`}>
                       <div className="relative inline-block">
                         <button 
-                          className="text-white/40 hover:text-white transition-colors p-1"
-                          title="Actions"
+                          className="p-1.5 rounded-md hover:bg-white/5 transition-colors"
+                          title="More actions"
                           onClick={() => setOpenDropdownId(openDropdownId === entry.id ? null : entry.id)}
                         >
-                          <span className="material-symbols-rounded text-[18px] align-middle">more_horiz</span>
+                          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" className="opacity-50 hover:opacity-100 transition-opacity">
+                            <circle cx="8" cy="3" r="1.5" fill="white"/>
+                            <circle cx="8" cy="8" r="1.5" fill="white"/>
+                            <circle cx="8" cy="13" r="1.5" fill="white"/>
+                          </svg>
                         </button>
-                        
+
                         {openDropdownId === entry.id && (
                           <>
-                            <div 
-                              className="fixed inset-0 z-[90]" 
+                            <div
+                              className="fixed inset-0 z-[90]"
                               onClick={() => setOpenDropdownId(null)}
                             />
-                            <div className="absolute right-0 top-full mt-1 w-32 bg-[#1a1c22] border border-white/10 rounded-lg shadow-xl z-[100] overflow-hidden text-left py-1">
-                              {entry.explorer_card_status?.toLowerCase() === "created" && entry.user_uuid && (
-                                <a 
-                                  href={`/view/explorercard/${entry.user_uuid}?style=${entry.card_style?.toLowerCase() || 'adventure'}`}
+                            <div
+                              className="absolute right-0 top-full mt-1 z-[100] rounded-2xl border border-[#1E1E1E] bg-[#161616] shadow-[20px_20px_20px_rgba(0,0,0,0.25)] text-left overflow-hidden"
+                              style={{ width: entry.explorer_card_status?.toLowerCase() === "created" ? 276 : 140 }}
+                            >
+                              {/* ── Explorer card section (only if created) ── */}
+                              {entry.explorer_card_status?.toLowerCase() === "created" && (
+                                <>
+                                  <p className="px-5 pt-4 pb-1 text-[13px] font-bold text-white tracking-wide">
+                                    Explore card
+                                  </p>
+                                  {entry.user_uuid && (
+                                    <a
+                                      href={`/view/explorercard/${entry.user_uuid}?style=${entry.card_style?.toLowerCase() || 'adventure'}`}
+                                      target="_blank"
+                                      rel="noreferrer"
+                                      className="block w-full px-5 py-2 text-[12px] text-white/70 hover:text-white hover:bg-white/5 transition-colors"
+                                      onClick={() => setOpenDropdownId(null)}
+                                    >
+                                      View
+                                    </a>
+                                  )}
+                                  {entry.user_uuid && (
+                                    <a
+                                      href={`/edit/explorercard?userId=${entry.user_uuid}`}
+                                      target="_blank"
+                                      rel="noreferrer"
+                                      className="block w-full px-5 py-2 text-[12px] text-white/70 hover:text-white hover:bg-white/5 transition-colors"
+                                      onClick={() => setOpenDropdownId(null)}
+                                    >
+                                      Edit
+                                    </a>
+                                  )}
+                                  <button
+                                    className="w-full px-5 py-2 text-[12px] text-white/70 hover:text-white hover:bg-white/5 text-left transition-colors"
+                                    onClick={() => {
+                                      alert("Resend explorer card email (not yet wired)");
+                                      setOpenDropdownId(null);
+                                    }}
+                                  >
+                                    Resend
+                                  </button>
+                                  <div className="mx-5 my-2 h-px bg-[#303030]" />
+                                </>
+                              )}
+
+                              {/* ── Profile section ── */}
+                              <p className={`px-5 ${entry.explorer_card_status?.toLowerCase() === "created" ? "pt-1" : "pt-4"} pb-1 text-[13px] font-bold text-white tracking-wide`}>
+                                Profile
+                              </p>
+                              {entry.user_uuid && (
+                                <a
+                                  href={`/profiles/${entry.user_uuid}`}
                                   target="_blank"
                                   rel="noreferrer"
-                                  className="block w-full px-3 py-2 text-xs text-white/70 hover:text-white hover:bg-white/5 text-left transition-colors"
+                                  className="block w-full px-5 py-2 text-[12px] text-white/70 hover:text-white hover:bg-white/5 transition-colors"
+                                  onClick={() => setOpenDropdownId(null)}
                                 >
-                                  View Explorer Card
+                                  View
                                 </a>
                               )}
-                              <button className="w-full px-3 py-2 text-xs text-white/70 hover:text-white hover:bg-white/5 text-left transition-colors">Contact user</button>
-                              <button className="w-full px-3 py-2 text-xs text-white/70 hover:text-white hover:bg-white/5 text-left transition-colors">Suspend</button>
-                              <button className="w-full px-3 py-2 text-xs text-[#ef4444]/70 hover:text-[#ef4444] hover:bg-[#ef4444]/10 text-left transition-colors">Ban</button>
-                              <div className="h-px w-full bg-white/5 my-1" />
-                              <button className="w-full px-3 py-2 text-xs text-[#ef4444]/70 hover:text-[#ef4444] hover:bg-[#ef4444]/10 text-left transition-colors" onClick={async () => {
-                                if (window.confirm("Are you sure you want to delete this waitlist entry?")) {
-                                  try {
-                                    const res = await fetch(`/api/admin/waitlist/${entry.id}`, { method: "DELETE" });
-                                    if (res.ok) {
-                                      setEntries(entries.filter(e => e.id !== entry.id));
-                                      setTotal(total - 1);
-                                      if (entry.confirmed) setConfirmedCount(confirmedCount - 1);
-                                      else setUnconfirmedCount(unconfirmedCount - 1);
-                                    } else {
-                                      alert("Failed to delete entry");
+                              {entry.user_uuid && (
+                                <a
+                                  href={`/admin/profiles?edit=${entry.user_uuid}`}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                  className="block w-full px-5 py-2 text-[12px] text-white/70 hover:text-white hover:bg-white/5 transition-colors"
+                                  onClick={() => setOpenDropdownId(null)}
+                                >
+                                  Edit
+                                </a>
+                              )}
+                              <button
+                                className="w-full px-5 py-2 text-[12px] text-white/70 hover:text-white hover:bg-white/5 text-left transition-colors"
+                                onClick={() => {
+                                  alert("Resend email (not yet wired)");
+                                  setOpenDropdownId(null);
+                                }}
+                              >
+                                Resend email
+                              </button>
+                              <button
+                                className="w-full px-5 py-2 text-[12px] text-white/70 hover:text-white hover:bg-white/5 text-left transition-colors"
+                                onClick={() => {
+                                  alert("Delete profile (not yet wired)");
+                                  setOpenDropdownId(null);
+                                }}
+                              >
+                                Delete
+                              </button>
+
+                              {/* ── Resend waitlist confirmation (only if explorer card) ── */}
+                              {entry.explorer_card_status?.toLowerCase() === "created" && (
+                                <>
+                                  <div className="mx-5 my-2 h-px bg-[#303030]" />
+                                  <button
+                                    className="w-full px-5 py-2 text-[12px] text-white/70 hover:text-white hover:bg-white/5 text-left transition-colors"
+                                    onClick={() => {
+                                      alert("Resend waitlist confirmation email (not yet wired)");
+                                      setOpenDropdownId(null);
+                                    }}
+                                  >
+                                    Resend waitlist confirmation email
+                                  </button>
+                                </>
+                              )}
+
+                              {/* ── Separator + Delete everything ── */}
+                              <div className="mx-5 my-2 h-px bg-[#303030]" />
+                              <button
+                                className="w-full px-5 pt-1 pb-4 text-[12px] text-[#ef4444]/80 hover:text-[#ef4444] hover:bg-[#ef4444]/5 text-left transition-colors"
+                                onClick={async () => {
+                                  if (window.confirm("Are you sure you want to delete this waitlist entry?")) {
+                                    try {
+                                      const res = await fetch(`/api/admin/waitlist/${entry.id}`, { method: "DELETE" });
+                                      if (res.ok) {
+                                        setEntries(entries.filter(e => e.id !== entry.id));
+                                        setTotal(total - 1);
+                                        if (entry.confirmed) setConfirmedCount(confirmedCount - 1);
+                                        else setUnconfirmedCount(unconfirmedCount - 1);
+                                      } else {
+                                        alert("Failed to delete entry");
+                                      }
+                                    } catch (err) {
+                                      alert("Error deleting entry");
                                     }
-                                  } catch (err) {
-                                    alert("Error deleting entry");
                                   }
-                                }
-                                setOpenDropdownId(null);
-                              }}>Delete</button>
+                                  setOpenDropdownId(null);
+                                }}
+                              >
+                                Delete everything
+                              </button>
                             </div>
                           </>
                         )}
@@ -367,45 +467,45 @@ export function WaitlistTab() {
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-lg font-semibold text-white">Advanced Filters</h2>
               <button onClick={() => setIsFilterModalOpen(false)} className="text-white/40 hover:text-white">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 6L6 18M6 6l12 12" /></svg>
               </button>
             </div>
-            
+
             <div className="grid grid-cols-2 gap-5">
               {/* Source */}
               <div>
                 <label className="block text-xs font-medium text-white/50 mb-1.5">Source</label>
-                <select 
+                <select
                   className="w-full bg-[#0a0a0a] border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white focus:border-[#5A45F9]/50 focus:outline-none"
                   value={advancedFilters.source}
-                  onChange={e => setAdvancedFilters({...advancedFilters, source: e.target.value})}
+                  onChange={e => setAdvancedFilters({ ...advancedFilters, source: e.target.value })}
                 >
                   <option value="">All Sources</option>
                   {uniqueSources.map(s => <option key={s} value={s}>{s}</option>)}
                 </select>
               </div>
-              
+
               {/* Explorer Card Status */}
               <div>
                 <label className="block text-xs font-medium text-white/50 mb-1.5">Explorer Card</label>
-                <select 
+                <select
                   className="w-full bg-[#0a0a0a] border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white focus:border-[#5A45F9]/50 focus:outline-none"
                   value={advancedFilters.explorer_card_status}
-                  onChange={e => setAdvancedFilters({...advancedFilters, explorer_card_status: e.target.value})}
+                  onChange={e => setAdvancedFilters({ ...advancedFilters, explorer_card_status: e.target.value })}
                 >
                   <option value="">All</option>
                   <option value="Created">Created</option>
                   <option value="Not created">Not created</option>
                 </select>
               </div>
-              
+
               {/* Get Featured Status */}
               <div>
                 <label className="block text-xs font-medium text-white/50 mb-1.5">Get Featured</label>
-                <select 
+                <select
                   className="w-full bg-[#0a0a0a] border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white focus:border-[#5A45F9]/50 focus:outline-none"
                   value={advancedFilters.get_featured_status}
-                  onChange={e => setAdvancedFilters({...advancedFilters, get_featured_status: e.target.value})}
+                  onChange={e => setAdvancedFilters({ ...advancedFilters, get_featured_status: e.target.value })}
                 >
                   <option value="">All</option>
                   <option value="Created">Created</option>
@@ -416,10 +516,10 @@ export function WaitlistTab() {
               {/* Device */}
               <div>
                 <label className="block text-xs font-medium text-white/50 mb-1.5">Device</label>
-                <select 
+                <select
                   className="w-full bg-[#0a0a0a] border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white focus:border-[#5A45F9]/50 focus:outline-none"
                   value={advancedFilters.device}
-                  onChange={e => setAdvancedFilters({...advancedFilters, device: e.target.value})}
+                  onChange={e => setAdvancedFilters({ ...advancedFilters, device: e.target.value })}
                 >
                   <option value="">All Devices</option>
                   {uniqueDevices.map(s => <option key={s} value={s} className="capitalize">{s}</option>)}
@@ -429,10 +529,10 @@ export function WaitlistTab() {
               {/* Browser */}
               <div>
                 <label className="block text-xs font-medium text-white/50 mb-1.5">Browser</label>
-                <select 
+                <select
                   className="w-full bg-[#0a0a0a] border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white focus:border-[#5A45F9]/50 focus:outline-none"
                   value={advancedFilters.browser}
-                  onChange={e => setAdvancedFilters({...advancedFilters, browser: e.target.value})}
+                  onChange={e => setAdvancedFilters({ ...advancedFilters, browser: e.target.value })}
                 >
                   <option value="">All Browsers</option>
                   {uniqueBrowsers.map(s => <option key={s} value={s}>{s}</option>)}
@@ -442,10 +542,10 @@ export function WaitlistTab() {
               {/* Country */}
               <div>
                 <label className="block text-xs font-medium text-white/50 mb-1.5">Country</label>
-                <select 
+                <select
                   className="w-full bg-[#0a0a0a] border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white focus:border-[#5A45F9]/50 focus:outline-none"
                   value={advancedFilters.country}
-                  onChange={e => setAdvancedFilters({...advancedFilters, country: e.target.value})}
+                  onChange={e => setAdvancedFilters({ ...advancedFilters, country: e.target.value })}
                 >
                   <option value="">All Countries</option>
                   {uniqueCountries.map(s => <option key={s} value={s}>{s}</option>)}
@@ -454,13 +554,13 @@ export function WaitlistTab() {
             </div>
 
             <div className="mt-8 flex justify-end gap-3">
-              <button 
+              <button
                 onClick={() => setAdvancedFilters({ source: "", explorer_card_status: "", get_featured_status: "", device: "", browser: "", country: "" })}
                 className="px-4 py-2 rounded-lg text-sm font-medium bg-[#1a1a1a] border border-white/10 text-white hover:bg-[#222] transition-colors"
               >
                 Clear all
               </button>
-              <button 
+              <button
                 onClick={() => setIsFilterModalOpen(false)}
                 className="px-4 py-2 rounded-lg text-sm font-medium bg-white text-black hover:bg-white/90 transition-colors"
               >

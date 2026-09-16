@@ -1,8 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useRef, useCallback } from "react";
 import Link from "next/link";
-import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 
 type AdminUser = {
@@ -28,6 +27,8 @@ type AdminUser = {
   disabled_at?: string;
   disabled_reason: string;
   created_at: string;
+  has_explorer_card?: boolean;
+  card_style?: string;
 };
 
 function formatBytes(bytes: number) {
@@ -43,6 +44,188 @@ function formatDateTime(input: string) {
   return new Date(input).toLocaleString();
 }
 
+/* ─── Dropdown Menu Component ─── */
+function UserActionsDropdown({
+  user,
+  onDelete,
+  onToggleStatus,
+  processing,
+}: {
+  user: AdminUser;
+  onDelete: (u: AdminUser) => void;
+  onToggleStatus: (u: AdminUser) => void;
+  processing: boolean;
+}) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  const hasExplorerCard = !!user.has_explorer_card;
+
+  const close = useCallback(() => setOpen(false), []);
+
+  useEffect(() => {
+    if (!open) return;
+    const handler = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) close();
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [open, close]);
+
+  return (
+    <div ref={ref} className="relative inline-block">
+      {/* Trigger – more-dropdown icon */}
+      <button
+        type="button"
+        onClick={() => setOpen((prev) => !prev)}
+        className="p-1.5 rounded-md hover:bg-white/5 transition-colors"
+        title="More actions"
+        disabled={processing}
+      >
+        <img
+          src="/icons/more-dropdown.png"
+          alt="More actions"
+          className="w-5 h-5 opacity-60 hover:opacity-100 transition-opacity"
+        />
+      </button>
+
+      {open && (
+        <>
+          {/* Backdrop */}
+          <div className="fixed inset-0 z-[90]" onClick={close} />
+
+          {/* Dropdown panel */}
+          <div
+            className="absolute right-0 top-full mt-1 z-[100] rounded-2xl border border-[#1E1E1E] bg-[#161616] shadow-[20px_20px_20px_rgba(0,0,0,0.25)] text-left overflow-hidden"
+            style={{ width: hasExplorerCard ? 276 : 140 }}
+          >
+            {/* ── Explorer card section (conditional) ── */}
+            {hasExplorerCard && (
+              <>
+                {/* Section header */}
+                <p className="px-5 pt-4 pb-1 text-[13px] font-bold text-white tracking-wide">
+                  Explore card
+                </p>
+                {/* View */}
+                <a
+                  href={`/view/explorercard/${user.id}?style=${user.card_style?.toLowerCase() || "adventure"}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="block w-full px-5 py-2 text-[12px] text-white/70 hover:text-white hover:bg-white/5 transition-colors"
+                  onClick={close}
+                >
+                  View
+                </a>
+                {/* Edit */}
+                <a
+                  href={`/edit/explorercard?userId=${user.id}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="block w-full px-5 py-2 text-[12px] text-white/70 hover:text-white hover:bg-white/5 transition-colors"
+                  onClick={close}
+                >
+                  Edit
+                </a>
+                {/* Resend */}
+                <button
+                  className="w-full px-5 py-2 text-[12px] text-white/70 hover:text-white hover:bg-white/5 text-left transition-colors"
+                  onClick={() => {
+                    alert("Resend explorer card email (not yet wired)");
+                    close();
+                  }}
+                >
+                  Resend
+                </button>
+
+                {/* Separator */}
+                <div className="mx-5 my-2 h-px bg-[#303030]" />
+              </>
+            )}
+
+            {/* ── Profile section ── */}
+            <p className={`px-5 ${hasExplorerCard ? "pt-1" : "pt-4"} pb-1 text-[13px] font-bold text-white tracking-wide`}>
+              Profile
+            </p>
+            {/* View */}
+            <a
+              href={`/profiles/${user.username || user.id}`}
+              target="_blank"
+              rel="noreferrer"
+              className="block w-full px-5 py-2 text-[12px] text-white/70 hover:text-white hover:bg-white/5 transition-colors"
+              onClick={close}
+            >
+              View
+            </a>
+            {/* Edit */}
+            <a
+              href={`/admin/profiles?edit=${user.id}`}
+              target="_blank"
+              rel="noreferrer"
+              className="block w-full px-5 py-2 text-[12px] text-white/70 hover:text-white hover:bg-white/5 transition-colors"
+              onClick={close}
+            >
+              Edit
+            </a>
+            {/* Resend email */}
+            <button
+              className="w-full px-5 py-2 text-[12px] text-white/70 hover:text-white hover:bg-white/5 text-left transition-colors"
+              onClick={() => {
+                alert("Resend profile email (not yet wired)");
+                close();
+              }}
+            >
+              Resend email
+            </button>
+            {/* Delete profile */}
+            <button
+              className="w-full px-5 py-2 text-[12px] text-white/70 hover:text-white hover:bg-white/5 text-left transition-colors"
+              onClick={() => {
+                alert("Delete profile (not yet wired)");
+                close();
+              }}
+            >
+              Delete
+            </button>
+
+            {hasExplorerCard && (
+              <>
+                {/* Separator */}
+                <div className="mx-5 my-2 h-px bg-[#303030]" />
+
+                {/* Resend waitlist confirmation email */}
+                <button
+                  className="w-full px-5 py-2 text-[12px] text-white/70 hover:text-white hover:bg-white/5 text-left transition-colors"
+                  onClick={() => {
+                    alert("Resend waitlist confirmation email (not yet wired)");
+                    close();
+                  }}
+                >
+                  Resend waitlist confirmation email
+                </button>
+              </>
+            )}
+
+            {/* Separator */}
+            <div className="mx-5 my-2 h-px bg-[#303030]" />
+
+            {/* Delete everything */}
+            <button
+              className="w-full px-5 pt-1 pb-4 text-[12px] text-[#ef4444]/80 hover:text-[#ef4444] hover:bg-[#ef4444]/5 text-left transition-colors"
+              onClick={() => {
+                onDelete(user);
+                close();
+              }}
+            >
+              Delete everything
+            </button>
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+/* ─── Main Component ─── */
 export function MainUsersTab() {
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [loading, setLoading] = useState(true);
@@ -54,7 +237,7 @@ export function MainUsersTab() {
     setLoading(true);
     setError("");
     try {
-      const res = await fetch("/api/admin/users?limit=500", { cache: "no-store" });
+      const res = await fetch("/api/admin/users?limit=50", { cache: "no-store" });
       const data = await res.json();
       if (!res.ok) {
         setError(data.error || "Failed to load users");
@@ -174,7 +357,7 @@ export function MainUsersTab() {
                   <th className="text-left px-4 py-3 font-medium">Activity</th>
                   <th className="text-left px-4 py-3 font-medium">Status</th>
                   <th className="text-left px-4 py-3 font-medium">Created</th>
-                  <th className="text-left px-4 py-3 font-medium">Actions</th>
+                  <th className="text-right px-4 py-3 font-medium">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -229,29 +412,13 @@ export function MainUsersTab() {
                     <td className="px-4 py-3 text-white/70">
                       {formatDateTime(u.created_at)}
                     </td>
-                    <td className="px-4 py-3 min-w-[220px]">
-                      <div className="flex items-center gap-2">
-                        <Button
-                          type="button"
-                          onClick={() => onToggleStatus(u)}
-                          variant="ghost"
-                          size="sm"
-                          loading={processingUserID === u.id}
-                          className={`px-2.5 py-1.5 rounded-md text-xs font-medium transition ${u.status === "active" ? "bg-yellow-500/15 text-yellow-300 hover:bg-yellow-500/25" : "bg-emerald-500/15 text-emerald-300 hover:bg-emerald-500/25"}`}
-                        >
-                          {processingUserID === u.id ? "Working..." : u.status === "active" ? "Disable" : "Enable"}
-                        </Button>
-                        <Button
-                          type="button"
-                          onClick={() => onDeleteUser(u)}
-                          variant="ghost"
-                          size="sm"
-                          loading={processingUserID === u.id}
-                          className="px-2.5 py-1.5 rounded-md text-xs font-medium bg-red-500/15 text-red-300 hover:bg-red-500/25 transition"
-                        >
-                          Delete
-                        </Button>
-                      </div>
+                    <td className="px-4 py-3 text-right">
+                      <UserActionsDropdown
+                        user={u}
+                        onDelete={onDeleteUser}
+                        onToggleStatus={onToggleStatus}
+                        processing={processingUserID === u.id}
+                      />
                     </td>
                   </tr>
                 ))}
