@@ -27,6 +27,40 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  async redirects() {
+    return [
+      {
+        source: "/",
+        destination: "https://travingat.com/",
+        permanent: false,
+      },
+      {
+        source: "/profiles",
+        destination: "https://travingat.com/profiles",
+        permanent: false,
+      },
+      {
+        source: "/pricing",
+        destination: "https://travingat.com/pricing",
+        permanent: false,
+      },
+      {
+        source: "/templates",
+        destination: "https://travingat.com/templates",
+        permanent: false,
+      },
+      {
+        source: "/blog",
+        destination: "https://travingat.com/blog",
+        permanent: false,
+      },
+      {
+        source: "/blog/:slug*",
+        destination: "https://travingat.com/blog",
+        permanent: false,
+      }
+    ];
+  },
 };
 
 export default nextConfig;
