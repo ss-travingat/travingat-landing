@@ -68,7 +68,7 @@ export const users = pgTable("users", {
 
 export const explorerCards = pgTable("explorer_cards", {
   id: uuid("id").defaultRandom().primaryKey().notNull(),
-  userId: uuid("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  userId: uuid("user_id").notNull().unique().references(() => users.id, { onDelete: "cascade" }),
   name: varchar("name", { length: 255 }),
   email: varchar("email", { length: 255 }),
   country: varchar("country", { length: 255 }),
