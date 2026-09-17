@@ -1,161 +1,177 @@
-"use client";
-import React, { useState, useRef } from 'react';
-import { countries } from 'countries-list';
+"use client"
+import React, { useState, useRef } from "react"
+import { countries } from "https://esm.sh/countries-list"
 
 const countryOptions = Object.entries(countries)
   .map(([code, data]) => ({
     code,
     name: data.name,
   }))
-  .sort((a, b) => a.name.localeCompare(b.name));
+  .sort((a, b) => a.name.localeCompare(b.name))
 
 const EmailVerificationForm = () => {
-  const [email, setEmail] = useState('');
-  const [step, setStep] = useState<'email' | 'otp' | 'application'>('email');
-  const [otp, setOtp] = useState(['', '', '', '']);
-  const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [countrySearchQuery, setCountrySearchQuery] = useState('');
-  const [linkInput, setLinkInput] = useState('');
-  const [links, setLinks] = useState<string[]>([]);
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [visitedCount, setVisitedCount] = useState('');
-  const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [email, setEmail] = useState("")
+  const [step, setStep] = useState<"email" | "otp" | "application">("email")
+  const [otp, setOtp] = useState(["", "", "", ""])
+  const [selectedCountry, setSelectedCountry] = useState<string | null>(null)
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+  const [countrySearchQuery, setCountrySearchQuery] = useState("")
+  const [linkInput, setLinkInput] = useState("")
+  const [links, setLinks] = useState<string[]>([])
+  const [firstName, setFirstName] = useState("")
+  const [lastName, setLastName] = useState("")
+  const [visitedCount, setVisitedCount] = useState("")
+  const inputRefs = useRef<(HTMLInputElement | null)[]>([])
+  const [isLoading, setIsLoading] = useState(false)
 
-  const backendUrl = "https://travingat.com"
+  const backendUrl = "https://app.travingat.com"
   // Basic email validation regex
-  const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
 
-  const filteredCountries = countryOptions.filter(c => c.name.toLowerCase().includes(countrySearchQuery.toLowerCase()));
+  const filteredCountries = countryOptions.filter((c) =>
+    c.name.toLowerCase().includes(countrySearchQuery.toLowerCase())
+  )
 
-  const isLinkInputValid = linkInput.trim().length === 0 || (linkInput.trim().includes('.') && !linkInput.trim().includes(' '));
+  const isLinkInputValid =
+    linkInput.trim().length === 0 ||
+    (linkInput.trim().includes(".") && !linkInput.trim().includes(" "))
 
-  const isAppValid = firstName.trim().length > 0 &&
+  const isAppValid =
+    firstName.trim().length > 0 &&
     lastName.trim().length > 0 &&
     selectedCountry !== null &&
-    visitedCount !== '' &&
-    links.length > 0;
+    visitedCount !== "" &&
+    parseInt(visitedCount) <= 195 &&
+    links.length > 0
 
   const handleSendCode = async () => {
     if (isValidEmail) {
-      setIsLoading(true);
+      setIsLoading(true)
 
-      const resData = await fetch(backendUrl + '/api/auth/request-otp', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email })
-      });
-      const res = await resData.json();
+      const resData = await fetch(backendUrl + "/api/auth/request-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      })
+      const res = await resData.json()
 
-      setIsLoading(false);
+      setIsLoading(false)
 
       if (res.error) {
-        alert(res.error);
-        return;
+        alert(res.error)
+        return
       }
 
-      setStep('otp');
+      setStep("otp")
     }
-  };
+  }
 
   const handleVerifyOtp = async () => {
-    setIsLoading(true);
-    const otpString = otp.join('');
+    setIsLoading(true)
+    const otpString = otp.join("")
 
-    const resData = await fetch(backendUrl + '/api/auth/verify-otp', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, otp: otpString, source: 'Get Featured' })
-    });
-    const res = await resData.json();
+    const resData = await fetch(backendUrl + "/api/auth/verify-otp", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, otp: otpString }),
+    })
+    const res = await resData.json()
 
-    setIsLoading(false);
+    setIsLoading(false)
 
     if (res.error) {
-      alert(res.error);
-      return;
+      alert(res.error)
+      return
     }
 
-    if (res.user) {
-      if (res.user.first_name) setFirstName(res.user.first_name);
-      if (res.user.last_name) setLastName(res.user.last_name);
-      if (res.user.country) setSelectedCountry(res.user.country);
-      if (res.user.visited_count !== null && res.user.visited_count !== undefined) {
-        setVisitedCount(res.user.visited_count.toString());
-      }
-      if (res.user.links && Array.isArray(res.user.links)) {
-        setLinks(res.user.links);
-      }
-    }
-
-    setStep('application');
-  };
+    setStep("application")
+  }
 
   const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
-    e.preventDefault();
-    const pastedData = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, 4);
+    e.preventDefault()
+    const pastedData = e.clipboardData
+      .getData("text")
+      .replace(/\D/g, "")
+      .slice(0, 4)
     if (pastedData) {
-      const newOtp = [...otp];
+      const newOtp = [...otp]
       for (let i = 0; i < pastedData.length; i++) {
-        newOtp[i] = pastedData[i];
+        newOtp[i] = pastedData[i]
       }
-      setOtp(newOtp);
-      const focusIndex = Math.min(pastedData.length, 3);
-      inputRefs.current[focusIndex]?.focus();
+      setOtp(newOtp)
+      const focusIndex = Math.min(pastedData.length, 3)
+      inputRefs.current[focusIndex]?.focus()
     }
-  };
+  }
 
   const handleOtpChange = (index: number, value: string) => {
-    const digits = value.replace(/\D/g, '');
-    if (!digits && value) return; // ignore non-digits
+    const digits = value.replace(/\D/g, "")
+    if (!digits && value) return // ignore non-digits
 
-    const newOtp = [...otp];
+    const newOtp = [...otp]
     // Take the last character in case they type over an existing digit without selecting it
-    const lastChar = digits.slice(-1);
-    newOtp[index] = lastChar;
-    setOtp(newOtp);
+    const lastChar = digits.slice(-1)
+    newOtp[index] = lastChar
+    setOtp(newOtp)
 
     // Auto-focus next input
     if (lastChar && index < 3) {
-      inputRefs.current[index + 1]?.focus();
+      inputRefs.current[index + 1]?.focus()
     }
-  };
+  }
 
-  const handleKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = (
+    index: number,
+    e: React.KeyboardEvent<HTMLInputElement>
+  ) => {
     // Move to previous input on backspace if current is empty
-    if (e.key === 'Backspace' && !otp[index] && index > 0) {
-      inputRefs.current[index - 1]?.focus();
+    if (e.key === "Backspace" && !otp[index] && index > 0) {
+      inputRefs.current[index - 1]?.focus()
     }
     // Submit OTP on enter
-    if (e.key === 'Enter') {
-      handleVerifyOtp();
+    if (e.key === "Enter") {
+      handleVerifyOtp()
     }
-  };
+  }
 
-  if (step === 'otp') {
+  if (step === "otp") {
     return (
       <div className={"tf-form"}>
         <div className={"tf-otpFieldParent"}>
           <div className={"tf-otpInner"}>
             <div className={"tf-emailField"}>
+              <img
+                src="https://cdn.travingat.com/email-assets/eIconl.png"
+                alt="Email"
+                className={"tf-icon"}
+              />
               <div className={"tf-otpHeader"}>
-                <div className={"tf-emailLabel"}>Verify your email</div>
-                <div className={"tf-submittedEmail"}>{email}</div>
+                <div className={"tf-emailLabel"}>
+                  Verify your email
+                </div>
+                <div className={"tf-submittedEmail"}>
+                  {email}
+                </div>
               </div>
               <div className={"tf-otpInputsContainer"}>
                 {otp.map((digit, index) => (
                   <input
                     key={index}
                     ref={(el) => {
-                      inputRefs.current[index] = el;
+                      inputRefs.current[index] = el
                     }}
                     type="text"
                     maxLength={2} // Using 2 so overtyping produces a new character
                     value={digit}
-                    onChange={(e) => handleOtpChange(index, e.target.value)}
-                    onKeyDown={(e) => handleKeyDown(index, e)}
+                    onChange={(e) =>
+                      handleOtpChange(
+                        index,
+                        e.target.value
+                      )
+                    }
+                    onKeyDown={(e) =>
+                      handleKeyDown(index, e)
+                    }
                     onPaste={handlePaste}
                     className={"tf-otpInput"}
                   />
@@ -163,29 +179,64 @@ const EmailVerificationForm = () => {
               </div>
             </div>
             <div className={"tf-buttonText"}>
-              <button onClick={handleVerifyOtp} disabled={isLoading} className={`${"tf-button"} ${!isLoading ? "tf-buttonActive" : ''}`}>
-                {isLoading ? 'Verifying...' : 'Verify email'}
+              <button
+                onClick={handleVerifyOtp}
+                disabled={isLoading}
+                className={`${"tf-button"} ${!isLoading ? "tf-buttonActive" : ""}`}
+              >
+                {isLoading ? "Verifying..." : "Verify email"}
               </button>
-              <div className={"tf-resendCode"} onClick={() => alert('Code resent!')}>
+              <div
+                className={"tf-resendCode"}
+                onClick={() => alert("Code resent!")}
+              >
                 Resend code
               </div>
             </div>
           </div>
         </div>
       </div>
-    );
+    )
   }
-  if (step === 'application') {
+  if (step === "application") {
     return (
       <div className={"tf-app-form"}>
         <div className={"tf-app-emailField"}>
           <div className={"tf-app-emailLabel"}>Full name</div>
           <div className={"tf-app-emailInputParent"}>
             <div className={"tf-app-emailInput"}>
-              <input type="text" placeholder="First name" value={firstName} onChange={(e) => setFirstName(e.target.value)} style={{ background: 'transparent', border: 'none', outline: 'none', color: 'white', width: '100%', fontFamily: 'Inter', fontSize: '16px' }} />
+              <input
+                type="text"
+                placeholder="First name"
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
+                style={{
+                  background: "transparent",
+                  border: "none",
+                  outline: "none",
+                  color: "white",
+                  width: "100%",
+                  fontFamily: "Inter",
+                  fontSize: "16px",
+                }}
+              />
             </div>
             <div className={"tf-app-emailInput"}>
-              <input type="text" placeholder="Last name" value={lastName} onChange={(e) => setLastName(e.target.value)} style={{ background: 'transparent', border: 'none', outline: 'none', color: 'white', width: '100%', fontFamily: 'Inter', fontSize: '16px' }} />
+              <input
+                type="text"
+                placeholder="Last name"
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
+                style={{
+                  background: "transparent",
+                  border: "none",
+                  outline: "none",
+                  color: "white",
+                  width: "100%",
+                  fontFamily: "Inter",
+                  fontSize: "16px",
+                }}
+              />
             </div>
           </div>
         </div>
@@ -193,70 +244,164 @@ const EmailVerificationForm = () => {
         <div className={"tf-app-emailField"}>
           <div className={"tf-app-emailLabel"}>Email</div>
           <div className={"tf-app-fullNameInput"}>
-            <input type="email" value={email} disabled style={{ background: 'transparent', border: 'none', outline: 'none', color: '#525252', width: '100%', fontFamily: 'Inter', fontSize: '16px' }} />
+            <input
+              type="email"
+              value={email}
+              disabled
+              style={{
+                background: "transparent",
+                border: "none",
+                outline: "none",
+                color: "#525252",
+                width: "100%",
+                fontFamily: "Inter",
+                fontSize: "16px",
+              }}
+            />
           </div>
         </div>
 
         <div className={"tf-app-emailField"}>
-          <div className={"tf-app-emailLabel"}>Where are you from?</div>
+          <div className={"tf-app-emailLabel"}>
+            Where are you from?
+          </div>
           <div className={"tf-selectWrapper"}>
             {!isDropdownOpen ? (
               <div
                 className={"tf-app-countryInput"}
                 onClick={() => setIsDropdownOpen(true)}
-                style={{ cursor: 'pointer' }}
+                style={{ cursor: "pointer" }}
               >
                 {selectedCountry ? (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: 1, color: 'white' }}>
-                    <span className={`fi fi-${selectedCountry.toLowerCase()}`} />
-                    {countryOptions.find(c => c.code === selectedCountry)?.name}
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "8px",
+                      flex: 1,
+                      color: "white",
+                    }}
+                  >
+                    <span
+                      className={`fi fi-${selectedCountry.toLowerCase()}`}
+                    />
+                    {
+                      countryOptions.find(
+                        (c) =>
+                          c.code === selectedCountry
+                      )?.name
+                    }
                   </div>
                 ) : (
-                  <div style={{ flex: 1 }}>Select country</div>
+                  <div style={{ flex: 1 }}>
+                    Select country
+                  </div>
                 )}
                 <img
                   src={`https://cdn.travingat.com/landingpage-assets/get-featured/dropdown-icon.svg`}
                   alt="Toggle Dropdown"
-                  className={`${"tf-app-dropdownIcon"} ${isDropdownOpen ? "tf-selectIconOpen" : ''}`}
+                  className={`${"tf-app-dropdownIcon"} ${isDropdownOpen ? "tf-selectIconOpen" : ""}`}
                 />
               </div>
             ) : (
-              <div style={{ width: '100%', paddingLeft: 16, paddingRight: 16, paddingTop: 12, paddingBottom: 12, position: 'relative', background: 'black', borderRadius: 10, outline: '1px #1E1E1E solid', outlineOffset: '-1px', display: 'flex', alignItems: 'center', gap: 12 }}>
-                <div style={{ width: 24, height: 24, position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M19.6 21L13.3 14.7C12.8 15.1 12.225 15.4167 11.575 15.65C10.925 15.8833 10.2333 16 9.5 16C7.68333 16 6.14583 15.3708 4.8875 14.1125C3.62917 12.8542 3 11.3167 3 9.5C3 7.68333 3.62917 6.14583 4.8875 4.8875C6.14583 3.62917 7.68333 3 9.5 3C11.3167 3 12.8542 3.62917 14.1125 4.8875C15.3708 6.14583 16 7.68333 16 9.5C16 10.2333 15.8833 10.925 15.65 11.575C15.4167 12.225 15.1 12.8 14.7 13.3L21 19.6L19.6 21ZM9.5 14C10.75 14 11.8125 13.5625 12.6875 12.6875C13.5625 11.8125 14 10.75 14 9.5C14 8.25 13.5625 7.1875 12.6875 6.3125C11.8125 5.4375 10.75 5 9.5 5C8.25 5 7.1875 5.4375 6.3125 6.3125C5.4375 7.1875 5 8.25 5 9.5C5 10.75 5.4375 11.8125 6.3125 12.6875C7.1875 13.5625 8.25 14 9.5 14Z" fill="#7C7C7C" />
+              <div
+                style={{
+                  width: "100%",
+                  paddingLeft: 16,
+                  paddingRight: 16,
+                  paddingTop: 12,
+                  paddingBottom: 12,
+                  position: "relative",
+                  background: "black",
+                  borderRadius: 10,
+                  outline: "1px #1E1E1E solid",
+                  outlineOffset: "-1px",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 12,
+                }}
+              >
+                <div
+                  style={{
+                    width: 24,
+                    height: 24,
+                    position: "relative",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <svg
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M19.6 21L13.3 14.7C12.8 15.1 12.225 15.4167 11.575 15.65C10.925 15.8833 10.2333 16 9.5 16C7.68333 16 6.14583 15.3708 4.8875 14.1125C3.62917 12.8542 3 11.3167 3 9.5C3 7.68333 3.62917 6.14583 4.8875 4.8875C6.14583 3.62917 7.68333 3 9.5 3C11.3167 3 12.8542 3.62917 14.1125 4.8875C15.3708 6.14583 16 7.68333 16 9.5C16 10.2333 15.8833 10.925 15.65 11.575C15.4167 12.225 15.1 12.8 14.7 13.3L21 19.6L19.6 21ZM9.5 14C10.75 14 11.8125 13.5625 12.6875 12.6875C13.5625 11.8125 14 10.75 14 9.5C14 8.25 13.5625 7.1875 12.6875 6.3125C11.8125 5.4375 10.75 5 9.5 5C8.25 5 7.1875 5.4375 6.3125 6.3125C5.4375 7.1875 5 8.25 5 9.5C5 10.75 5.4375 11.8125 6.3125 12.6875C7.1875 13.5625 8.25 14 9.5 14Z"
+                      fill="#7C7C7C"
+                    />
                   </svg>
                 </div>
-                <div style={{ width: 1, height: 24, background: 'white', opacity: 0.2 }}></div>
+                <div
+                  style={{
+                    width: 1,
+                    height: 24,
+                    background: "white",
+                    opacity: 0.2,
+                  }}
+                ></div>
                 <input
                   autoFocus
                   type="text"
                   placeholder="Search country"
                   value={countrySearchQuery}
-                  onChange={(e) => setCountrySearchQuery(e.target.value)}
-                  style={{ background: 'transparent', border: 'none', outline: 'none', color: 'white', fontSize: 16, fontFamily: 'Inter', fontWeight: '400', lineHeight: '24px', width: '100%' }}
+                  onChange={(e) =>
+                    setCountrySearchQuery(e.target.value)
+                  }
+                  style={{
+                    background: "transparent",
+                    border: "none",
+                    outline: "none",
+                    color: "white",
+                    fontSize: 16,
+                    fontFamily: "Inter",
+                    fontWeight: "400",
+                    lineHeight: "24px",
+                    width: "100%",
+                  }}
                 />
               </div>
             )}
 
             {isDropdownOpen && (
               <div className={"tf-dropdownMenu"}>
-                {filteredCountries.map(country => (
+                {filteredCountries.map((country) => (
                   <div
                     key={country.code}
-                    className={`${"tf-dropdownItem"} ${selectedCountry === country.code ? "tf-dropdownItemSelected" : ''}`}
+                    className={`${"tf-dropdownItem"} ${selectedCountry === country.code ? "tf-dropdownItemSelected" : ""}`}
                     onClick={() => {
-                      setSelectedCountry(country.code);
-                      setIsDropdownOpen(false);
-                      setCountrySearchQuery('');
+                      setSelectedCountry(country.code)
+                      setIsDropdownOpen(false)
+                      setCountrySearchQuery("")
                     }}
                   >
-                    <span className={`fi fi-${country.code.toLowerCase()}`} />
+                    <span
+                      className={`fi fi-${country.code.toLowerCase()}`}
+                    />
                     {country.name}
                   </div>
                 ))}
                 {filteredCountries.length === 0 && (
-                  <div style={{ padding: '10px 16px', color: '#7C7C7C' }}>No countries found</div>
+                  <div
+                    style={{
+                      padding: "10px 16px",
+                      color: "#7C7C7C",
+                    }}
+                  >
+                    No countries found
+                  </div>
                 )}
               </div>
             )}
@@ -264,7 +409,9 @@ const EmailVerificationForm = () => {
         </div>
 
         <div className={"tf-app-emailField"}>
-          <div className={"tf-app-emailLabel"}>How many countries have you visited?</div>
+          <div className={"tf-app-emailLabel"}>
+            How many countries have you visited?
+          </div>
           <div className={"tf-app-fullNameInput"}>
             <input
               type="number"
@@ -272,78 +419,173 @@ const EmailVerificationForm = () => {
               min={0}
               max={195}
               value={visitedCount}
-              onChange={(e) => {
-                const val = e.target.value;
-                if (val === '') {
-                  setVisitedCount('');
-                  return;
-                }
-                const num = parseInt(val);
-                if (!isNaN(num)) {
-                  if (num > 195) setVisitedCount('195');
-                  else setVisitedCount(num.toString());
-                }
+              onChange={(e) => setVisitedCount(e.target.value)}
+              style={{
+                background: "transparent",
+                border: "none",
+                outline: "none",
+                color: "white",
+                width: "100%",
+                fontFamily: "Inter",
+                fontSize: "16px",
               }}
-              style={{ background: 'transparent', border: 'none', outline: 'none', color: 'white', width: '100%', fontFamily: 'Inter', fontSize: '16px' }}
             />
           </div>
+          {visitedCount !== "" && parseInt(visitedCount) > 195 && (
+            <div
+              style={{
+                width: "100%",
+                color: "#989898",
+                fontSize: "14px",
+                fontFamily: "Inter",
+                fontWeight: "400",
+                lineHeight: "20px",
+                wordWrap: "break-word",
+                marginTop: "4px",
+              }}
+            >
+              Maximum number of countries is 195
+            </div>
+          )}
         </div>
 
         <div className={"tf-app-emailField"}>
-          <div className={"tf-app-emailLabel"}>Share links to your travel photos</div>
+          <div className={"tf-app-emailLabel"}>
+            Share links to your travel photos
+          </div>
           <div className={"tf-app-emailInputContainer"}>
             <div className={"tf-app-emailInput4"}>
               <div className={"tf-app-socialMediainstagram"} />
               <div className={"tf-app-emailPlaceholder4"}>
                 <input
                   type="text"
-                  placeholder={links.length >= 3 ? "Maximum 3 links reached" : "e.g. instagram.com/username"}
+                  placeholder={
+                    links.length >= 3
+                      ? "Maximum 3 links reached"
+                      : "e.g. instagram.com/username"
+                  }
                   value={linkInput}
-                  onChange={(e) => setLinkInput(e.target.value)}
+                  onChange={(e) =>
+                    setLinkInput(e.target.value)
+                  }
                   onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      e.preventDefault();
-                      if (linkInput.trim() && isLinkInputValid && links.length < 3 && !links.includes(linkInput.trim())) {
-                        setLinks([...links, linkInput.trim()]);
-                        setLinkInput('');
+                    if (e.key === "Enter") {
+                      e.preventDefault()
+                      if (
+                        linkInput.trim() &&
+                        isLinkInputValid &&
+                        links.length < 3 &&
+                        !links.includes(
+                          linkInput.trim()
+                        )
+                      ) {
+                        setLinks([
+                          ...links,
+                          linkInput.trim(),
+                        ])
+                        setLinkInput("")
                       }
                     }
                   }}
                   disabled={links.length >= 3}
-                  style={{ background: 'transparent', border: 'none', outline: 'none', color: 'white', width: '100%', fontFamily: 'Inter', fontSize: '16px' }}
+                  style={{
+                    background: "transparent",
+                    border: "none",
+                    outline: "none",
+                    color: "white",
+                    width: "100%",
+                    fontFamily: "Inter",
+                    fontSize: "16px",
+                  }}
                 />
               </div>
               <div
                 className={"tf-app-emailPlaceholderWrapper"}
                 onClick={() => {
-                  if (linkInput.trim() && isLinkInputValid && links.length < 3 && !links.includes(linkInput.trim())) {
-                    setLinks([...links, linkInput.trim()]);
-                    setLinkInput('');
+                  if (
+                    linkInput.trim() &&
+                    isLinkInputValid &&
+                    links.length < 3 &&
+                    !links.includes(linkInput.trim())
+                  ) {
+                    setLinks([...links, linkInput.trim()])
+                    setLinkInput("")
                   }
                 }}
                 style={{
-                  cursor: (linkInput.trim() && isLinkInputValid && links.length < 3 && !links.includes(linkInput.trim())) ? 'pointer' : 'not-allowed',
-                  opacity: (linkInput.trim() && isLinkInputValid && links.length < 3 && !links.includes(linkInput.trim())) ? 1 : 0.5,
-                  backgroundColor: (linkInput.trim() && isLinkInputValid && links.length < 3 && !links.includes(linkInput.trim())) ? 'white' : '#1a1a1a',
-                  color: (linkInput.trim() && isLinkInputValid && links.length < 3 && !links.includes(linkInput.trim())) ? '#161616' : '#3d3d3d'
+                  cursor:
+                    linkInput.trim() &&
+                      isLinkInputValid &&
+                      links.length < 3 &&
+                      !links.includes(linkInput.trim())
+                      ? "pointer"
+                      : "not-allowed",
+                  opacity:
+                    linkInput.trim() &&
+                      isLinkInputValid &&
+                      links.length < 3 &&
+                      !links.includes(linkInput.trim())
+                      ? 1
+                      : 0.5,
+                  backgroundColor:
+                    linkInput.trim() &&
+                      isLinkInputValid &&
+                      links.length < 3 &&
+                      !links.includes(linkInput.trim())
+                      ? "white"
+                      : "#1a1a1a",
+                  color:
+                    linkInput.trim() &&
+                      isLinkInputValid &&
+                      links.length < 3 &&
+                      !links.includes(linkInput.trim())
+                      ? "#161616"
+                      : "#3d3d3d",
                 }}
               >
-                <div className={"tf-app-emailPlaceholder5"}>{`Add`}</div>
+                <div
+                  className={"tf-app-emailPlaceholder5"}
+                >{`Add`}</div>
               </div>
             </div>
             {!isLinkInputValid && (
-              <div style={{ width: '100%', color: '#989898', fontSize: '12px', fontFamily: 'Inter', fontWeight: '400', lineHeight: '16px', wordWrap: 'break-word', marginTop: '4px' }}>
-                Enter a full link, e.g. instagram.com/username or flickr.com/photos/username
+              <div
+                style={{
+                  width: "100%",
+                  color: "#989898",
+                  fontSize: "14px",
+                  fontFamily: "Inter",
+                  fontWeight: "400",
+                  lineHeight: "20px",
+                  wordWrap: "break-word",
+                  marginTop: "4px",
+                }}
+              >
+                Enter a full link, e.g. instagram.com/username
+                or flickr.com/photos/username
               </div>
             )}
             {links.map((link, index) => (
-              <div key={index} className={"tf-addedLinkBadge"} style={{ marginTop: '10px' }}>
+              <div
+                key={index}
+                className={"tf-addedLinkBadge"}
+                style={{ marginTop: "10px" }}
+              >
                 <div className={"tf-addedLinkText"}>{link}</div>
                 <div
                   className={"tf-addedLinkRemoveBtn"}
-                  onClick={() => setLinks(links.filter((_, i) => i !== index))}
+                  onClick={() =>
+                    setLinks(
+                      links.filter((_, i) => i !== index)
+                    )
+                  }
                 >
-                  <img src={`https://cdn.travingat.com/landingpage-assets/get-featured/close.svg`} alt="Remove link" width={8} height={8} />
+                  <img
+                    src={`https://cdn.travingat.com/landingpage-assets/get-featured/close.svg`}
+                    alt="Remove link"
+                    width={8}
+                    height={8}
+                  />
                 </div>
               </div>
             ))}
@@ -351,59 +593,77 @@ const EmailVerificationForm = () => {
         </div>
 
         <button
-          className={`${"tf-app-button"} ${isAppValid && !isLoading ? "tf-submitAppBtnActive" : ''}`}
+          className={`${"tf-app-button"} ${isAppValid && !isLoading ? "tf-submitAppBtnActive" : ""}`}
           disabled={!isAppValid || isLoading}
           onClick={async () => {
-            setIsLoading(true);
+            setIsLoading(true)
 
-            const resData = await fetch(backendUrl + '/api/auth/submit-application', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                email, data: {
-                  firstName,
-                  lastName,
-                  country: selectedCountry || '',
-                  visitedCount: parseInt(visitedCount) || 0,
-                  links
-                }
-              })
-            });
-            const res = await resData.json();
+            const resData = await fetch(
+              backendUrl + "/api/auth/submit-application",
+              {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  email,
+                  data: {
+                    firstName,
+                    lastName,
+                    country: selectedCountry || "",
+                    visitedCount:
+                      parseInt(visitedCount) || 0,
+                    links,
+                  },
+                }),
+              }
+            )
+            const res = await resData.json()
 
-            setIsLoading(false);
+            setIsLoading(false)
 
             if (res.error) {
-              alert(res.error);
-              return;
+              alert(res.error)
+              return
             }
 
-            alert('Your application has been submitted successfully!');
+            alert(
+              "Your application has been submitted successfully!"
+            )
             // Reset form state to return to home page view
-            setStep('email');
-            setEmail('');
-            setOtp(['', '', '', '']);
-            setFirstName('');
-            setLastName('');
-            setVisitedCount('');
-            setLinks([]);
-            setSelectedCountry(null);
+            setStep("email")
+            setEmail("")
+            setOtp(["", "", "", ""])
+            setFirstName("")
+            setLastName("")
+            setVisitedCount("")
+            setLinks([])
+            setSelectedCountry(null)
           }}
         >
-          <div className={"tf-app-button2"}>{isLoading ? 'Submitting...' : 'Submit'}</div>
+          <div className={"tf-app-button2"}>
+            {isLoading ? "Submitting..." : "Submit"}
+          </div>
         </button>
 
         <div className={"tf-app-fullNameLabel2"}>
-          Applications are reviewed manually. If selected, we&apos;ll email you a private upload link to create your travel profile before launch.
+          Applications are reviewed manually. If selected, we&apos;ll
+          email you a private upload link to create your travel
+          profile before launch.
         </div>
       </div>
-    );
+    )
   }
   return (
     <div className={"tf-form"}>
       <div className={"tf-emailFieldParent"}>
         <div className={"tf-emailField"}>
-          <div className={"tf-emailLabel"}>Verify your email to apply</div>
+          <img
+            src="https://cdn.travingat.com/email-assets/eIconl.png"
+            alt="Email"
+            className={"tf-icon"}
+          />
+          <div className={"tf-emailLabel"}>
+            Verify your email to apply
+          </div>
           <div className={"tf-emailInputContainer"}>
             <input
               type="email"
@@ -412,9 +672,9 @@ const EmailVerificationForm = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               onKeyDown={(e) => {
-                if (e.key === 'Enter' && isValidEmail) {
-                  e.preventDefault();
-                  handleSendCode();
+                if (e.key === "Enter" && isValidEmail) {
+                  e.preventDefault()
+                  handleSendCode()
                 }
               }}
             />
@@ -422,47 +682,42 @@ const EmailVerificationForm = () => {
         </div>
         <div className={"tf-buttonText"}>
           <button
-            className={`${"tf-button"} ${isValidEmail && !isLoading ? "tf-buttonActive" : ''}`}
+            className={`${"tf-button"} ${isValidEmail && !isLoading ? "tf-buttonActive" : ""}`}
             disabled={!isValidEmail || isLoading}
             onClick={handleSendCode}
           >
-            {isLoading ? 'Sending...' : 'Send code'}
+            {isLoading ? "Sending..." : "Send code"}
           </button>
           <div className={"tf-emailLabel2"}>
-            We&apos;ll verify your email before creating your explorer card.
+            We&apos;ll verify your email before continuing your
+            application.
           </div>
         </div>
       </div>
     </div>
-  );
-};
-
-
-
+  )
+}
 
 export default function FramerFrontend() {
   return (
     <>
-      <style dangerouslySetInnerHTML={{
-        __html: `
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `
         .tf-form {
-  height: 563px;
-  width: 420px;
   position: relative;
-  border-radius: 20px;
-  background-color: #111;
-  overflow: hidden;
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 32px;
   box-sizing: border-box;
   text-align: center;
   font-size: 24px;
   color: #fff;
-  font-family: var(--font-sans);
+  font-family: 'Inter Display', var(--font-sans);
+  width: 100%;
+  gap: 24px;
 }
 
 .tf-emailFieldParent {
@@ -470,7 +725,6 @@ export default function FramerFrontend() {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 0;
   box-sizing: border-box;
   gap: 24px;
   max-width: 100%;
@@ -498,7 +752,6 @@ export default function FramerFrontend() {
   letter-spacing: -0.5px;
   line-height: 32px;
   font-weight: 500;
-  font-family: var(--font-display-css);
   font-size: 24px;
   text-align: center;
 }
@@ -525,9 +778,8 @@ export default function FramerFrontend() {
   border: none;
   letter-spacing: -0.5px;
   line-height: 32px;
-  font-family: var(--font-display-css);
   font-size: 24px;
-  font-weight: 400;
+  font-family: 'Inter Display', var(--font-sans);
   box-sizing: border-box;
   width: 100%;
 }
@@ -546,6 +798,7 @@ export default function FramerFrontend() {
   font-size: 14px;
   color: #ecf0ff;
   font-family: var(--font-secondary);
+  padding: 0 32px;
 }
 
 .tf-button {
@@ -591,9 +844,8 @@ export default function FramerFrontend() {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 0;
   box-sizing: border-box;
-  gap: 24px;
+  gap: 32px;
   max-width: 100%;
 }
 
@@ -602,7 +854,7 @@ export default function FramerFrontend() {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 16px;
+  gap: 24px;
 }
 
 .tf-otpHeader {
@@ -618,10 +870,9 @@ export default function FramerFrontend() {
   text-align: center;
   color: #7C7C7C;
   font-size: 14px;
-  font-family: var(--font-sans);
+  font-family: var(--font-secondary);
   font-weight: 400;
   line-height: 20px;
-  letter-spacing: -0.084px;
   word-wrap: break-word;
 }
 
@@ -643,9 +894,7 @@ export default function FramerFrontend() {
   color: #fff;
   text-align: center;
   font-size: 24px;
-  font-family: var(--font-display-css);
-  font-weight: 400;
-  letter-spacing: -0.5px;
+  font-family: var(--font-sans);
   box-sizing: border-box;
 }
 
@@ -1121,8 +1370,10 @@ export default function FramerFrontend() {
   text-align: center;
   color: #989898;
 }
-`}} />
+`,
+        }}
+      />
       <EmailVerificationForm />
     </>
-  );
+  )
 }

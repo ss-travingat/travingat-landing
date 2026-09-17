@@ -19,7 +19,7 @@ import { Textarea } from "@/components/ui/Textarea";
 import { WaitlistPopup } from "@/components/ui/WaitlistPopup";
 import { WaitlistBar } from "@/components/ui/waitlistbar";
 import { Badge } from "@/components/ui/Badge";
-import FramerFrontend from "@/components/getfeatured/FramerFrontend";
+import FramerFrontend from "@/components/framer/Getfeatured";
 import { buildCardAndInviteEmail } from "@/emails/cardninvite-template";
 import { buildWaitlistConfirmEmail } from "@/emails/waitlist-confirm-template";
 import { buildWelcomeWaitlistEmail } from "@/emails/welcome-waitlist-template";
@@ -197,17 +197,17 @@ export default function DesignSystemPage() {
                 <div>
                   <p className="ds-font-body mb-3 text-[13px] font-semibold uppercase tracking-[0.12em] text-[#7e889c]">Card & Invite HTML Email Preview</p>
                   <div className="flex justify-center bg-white p-8 rounded-xl overflow-hidden border border-[#252525]">
-                    <div 
+                    <div
                       className="w-full max-w-[600px] shadow-sm border border-gray-200"
                       dangerouslySetInnerHTML={{ __html: buildCardAndInviteEmail("Jane Doe", "https://www.travingat.com/explorercard") }}
                     />
                   </div>
                 </div>
-                
+
                 <div>
                   <p className="ds-font-body mb-3 text-[13px] font-semibold uppercase tracking-[0.12em] text-[#7e889c]">OTP Verification HTML Email Preview</p>
                   <div className="flex justify-center bg-white p-8 rounded-xl overflow-hidden border border-[#252525]">
-                    <div 
+                    <div
                       className="w-full max-w-[600px] shadow-sm border border-gray-200"
                       dangerouslySetInnerHTML={{ __html: buildOtpEmail("1234") }}
                     />
@@ -217,7 +217,7 @@ export default function DesignSystemPage() {
                 <div>
                   <p className="ds-font-body mb-3 text-[13px] font-semibold uppercase tracking-[0.12em] text-[#7e889c]">Waitlist Confirm HTML Email Preview</p>
                   <div className="flex justify-center bg-white p-8 rounded-xl overflow-hidden border border-[#252525]">
-                    <div 
+                    <div
                       className="w-full max-w-[600px]"
                       dangerouslySetInnerHTML={{ __html: buildWaitlistConfirmEmail("https://www.travingat.com/waitlist/confirm?token=123") }}
                     />
@@ -227,7 +227,7 @@ export default function DesignSystemPage() {
                 <div>
                   <p className="ds-font-body mb-3 text-[13px] font-semibold uppercase tracking-[0.12em] text-[#7e889c]">Welcome Waitlist HTML Email Preview</p>
                   <div className="flex justify-center bg-white p-8 rounded-xl overflow-hidden border border-[#252525]">
-                    <div 
+                    <div
                       className="w-full max-w-[600px]"
                       dangerouslySetInnerHTML={{ __html: buildWelcomeWaitlistEmail("https://www.travingat.com/explorercard") }}
                     />
@@ -237,7 +237,7 @@ export default function DesignSystemPage() {
                 <div>
                   <p className="ds-font-body mb-3 text-[13px] font-semibold uppercase tracking-[0.12em] text-[#7e889c]">Get Featured HTML Email Preview</p>
                   <div className="flex justify-center bg-white p-8 rounded-xl overflow-hidden border border-[#252525]">
-                    <div 
+                    <div
                       className="w-full max-w-[600px]"
                       dangerouslySetInnerHTML={{ __html: buildGetFeaturedEmail("https://www.travingat.com/confirm") }}
                     />

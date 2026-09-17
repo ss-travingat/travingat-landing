@@ -75,7 +75,7 @@ function useWaitlistForm(apiUrl: string) {
 }
 
 export default function WaitlistBar({
-  apiUrl = "https://www.travingat.com/api/waitlist",
+  apiUrl = "https://www.app.travingat.com/api/waitlist",
   inputPlaceholder = "Enter your email",
   submitLabel = "Get early access",
   loadingLabel = "Joining...",
