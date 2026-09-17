@@ -93,7 +93,7 @@ export default function AdminPage() {
               Profiles List
             </h3>
             <p className="text-white/40 text-sm leading-relaxed mb-4">
-              Manage admin users and their profile settings.
+              Manage all profiles.
             </p>
             <div className="flex items-center justify-end">
               <span className="text-[#5A45F9] text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity">
