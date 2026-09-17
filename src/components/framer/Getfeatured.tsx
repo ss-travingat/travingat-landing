@@ -21,6 +21,7 @@ const EmailVerificationForm = () => {
   const [firstName, setFirstName] = useState("")
   const [lastName, setLastName] = useState("")
   const [visitedCount, setVisitedCount] = useState("")
+  const [showLinkError, setShowLinkError] = useState(false)
   const inputRefs = useRef<(HTMLInputElement | null)[]>([])
   const [isLoading, setIsLoading] = useState(false)
 
@@ -32,9 +33,13 @@ const EmailVerificationForm = () => {
     c.name.toLowerCase().includes(countrySearchQuery.toLowerCase())
   )
 
+  const trimmedLink = linkInput.trim()
   const isLinkInputValid =
-    linkInput.trim().length === 0 ||
-    (linkInput.trim().includes(".") && !linkInput.trim().includes(" "))
+    trimmedLink.length === 0 ||
+    (trimmedLink.includes(".") &&
+      !trimmedLink.includes(" ") &&
+      !trimmedLink.startsWith(".") &&
+      !trimmedLink.endsWith("."))
 
   const isAppValid =
     firstName.trim().length > 0 &&
@@ -412,41 +417,46 @@ const EmailVerificationForm = () => {
           <div className={"tf-app-emailLabel"}>
             How many countries have you visited?
           </div>
-          <div className={"tf-app-fullNameInput"}>
-            <input
-              type="number"
-              placeholder="e.g. 10"
-              min={0}
-              max={195}
-              value={visitedCount}
-              onChange={(e) => setVisitedCount(e.target.value)}
-              style={{
-                background: "transparent",
-                border: "none",
-                outline: "none",
-                color: "white",
-                width: "100%",
-                fontFamily: "Inter",
-                fontSize: "16px",
-              }}
-            />
-          </div>
-          {visitedCount !== "" && parseInt(visitedCount) > 195 && (
+          <div className={"tf-app-emailInputContainer"}>
             <div
-              style={{
-                width: "100%",
-                color: "#989898",
-                fontSize: "14px",
-                fontFamily: "Inter",
-                fontWeight: "400",
-                lineHeight: "20px",
-                wordWrap: "break-word",
-                marginTop: "4px",
-              }}
+              className={"tf-app-fullNameInput"}
+              style={visitedCount !== "" && parseInt(visitedCount) > 195 ? { borderColor: "#EF4444" } : {}}
             >
-              Maximum number of countries is 195
+              <input
+                type="number"
+                placeholder="e.g. 10"
+                min={0}
+                max={195}
+                value={visitedCount}
+                onChange={(e) => setVisitedCount(e.target.value)}
+                style={{
+                  background: "transparent",
+                  border: "none",
+                  outline: "none",
+                  color: "white",
+                  width: "100%",
+                  fontFamily: "Inter",
+                  fontSize: "16px",
+                }}
+              />
             </div>
-          )}
+            {visitedCount !== "" && parseInt(visitedCount) > 195 && (
+              <div
+                style={{
+                  width: "100%",
+                  color: "#EF4444",
+                  fontSize: "14px",
+                  fontFamily: "Inter",
+                  fontWeight: "400",
+                  lineHeight: "20px",
+                  wordWrap: "break-word",
+                  marginTop: "4px",
+                }}
+              >
+                Maximum number of countries is 195
+              </div>
+            )}
+          </div>
         </div>
 
         <div className={"tf-app-emailField"}>
@@ -454,7 +464,10 @@ const EmailVerificationForm = () => {
             Share links to your travel photos
           </div>
           <div className={"tf-app-emailInputContainer"}>
-            <div className={"tf-app-emailInput4"}>
+            <div
+              className={"tf-app-emailInput4"}
+              style={showLinkError ? { borderColor: "#EF4444" } : {}}
+            >
               <div className={"tf-app-socialMediainstagram"} />
               <div className={"tf-app-emailPlaceholder4"}>
                 <input
@@ -465,9 +478,10 @@ const EmailVerificationForm = () => {
                       : "e.g. instagram.com/username"
                   }
                   value={linkInput}
-                  onChange={(e) =>
+                  onChange={(e) => {
                     setLinkInput(e.target.value)
-                  }
+                    if (showLinkError) setShowLinkError(false)
+                  }}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
                       e.preventDefault()
@@ -484,6 +498,9 @@ const EmailVerificationForm = () => {
                           linkInput.trim(),
                         ])
                         setLinkInput("")
+                        setShowLinkError(false)
+                      } else if (linkInput.trim() && !isLinkInputValid) {
+                        setShowLinkError(true)
                       }
                     }
                   }}
@@ -510,6 +527,9 @@ const EmailVerificationForm = () => {
                   ) {
                     setLinks([...links, linkInput.trim()])
                     setLinkInput("")
+                    setShowLinkError(false)
+                  } else if (linkInput.trim() && !isLinkInputValid) {
+                    setShowLinkError(true)
                   }
                 }}
                 style={{
@@ -548,23 +568,20 @@ const EmailVerificationForm = () => {
                 >{`Add`}</div>
               </div>
             </div>
-            {!isLinkInputValid && (
-              <div
-                style={{
-                  width: "100%",
-                  color: "#989898",
-                  fontSize: "14px",
-                  fontFamily: "Inter",
-                  fontWeight: "400",
-                  lineHeight: "20px",
-                  wordWrap: "break-word",
-                  marginTop: "4px",
-                }}
-              >
-                Enter a full link, e.g. instagram.com/username
-                or flickr.com/photos/username
-              </div>
-            )}
+            <div
+              style={{
+                width: "100%",
+                color: showLinkError ? "#EF4444" : "#989898",
+                fontSize: "14px",
+                fontFamily: "Inter",
+                fontWeight: "400",
+                lineHeight: "20px",
+                wordWrap: "break-word",
+                marginTop: "4px",
+              }}
+            >
+              Enter a full link, e.g. instagram.com/username
+            </div>
             {links.map((link, index) => (
               <div
                 key={index}
