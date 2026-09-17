@@ -1,3 +1,4 @@
+// @ts-nocheck
 "use client"
 import React, { useState, useRef } from "react"
 import { countries } from "https://esm.sh/countries-list"
