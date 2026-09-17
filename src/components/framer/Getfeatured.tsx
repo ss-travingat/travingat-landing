@@ -421,7 +421,12 @@ const EmailVerificationForm = () => {
           <div className={"tf-app-emailInputContainer"}>
             <div
               className={"tf-app-fullNameInput"}
-              style={visitedCount !== "" && parseInt(visitedCount) > 195 ? { borderColor: "#EF4444" } : {}}
+              style={
+                visitedCount !== "" &&
+                  parseInt(visitedCount) > 195
+                  ? { borderColor: "#EF4444" }
+                  : {}
+              }
             >
               <input
                 type="number"
@@ -429,7 +434,9 @@ const EmailVerificationForm = () => {
                 min={0}
                 max={195}
                 value={visitedCount}
-                onChange={(e) => setVisitedCount(e.target.value)}
+                onChange={(e) =>
+                  setVisitedCount(e.target.value)
+                }
                 style={{
                   background: "transparent",
                   border: "none",
@@ -441,22 +448,23 @@ const EmailVerificationForm = () => {
                 }}
               />
             </div>
-            {visitedCount !== "" && parseInt(visitedCount) > 195 && (
-              <div
-                style={{
-                  width: "100%",
-                  color: "#EF4444",
-                  fontSize: "14px",
-                  fontFamily: "Inter",
-                  fontWeight: "400",
-                  lineHeight: "20px",
-                  wordWrap: "break-word",
-                  marginTop: "4px",
-                }}
-              >
-                Maximum number of countries is 195
-              </div>
-            )}
+            {visitedCount !== "" &&
+              parseInt(visitedCount) > 195 && (
+                <div
+                  style={{
+                    width: "100%",
+                    color: "#EF4444",
+                    fontSize: "14px",
+                    fontFamily: "Inter",
+                    fontWeight: "400",
+                    lineHeight: "20px",
+                    wordWrap: "break-word",
+                    marginTop: "4px",
+                  }}
+                >
+                  Maximum number of countries is 195
+                </div>
+              )}
           </div>
         </div>
 
@@ -467,7 +475,9 @@ const EmailVerificationForm = () => {
           <div className={"tf-app-emailInputContainer"}>
             <div
               className={"tf-app-emailInput4"}
-              style={showLinkError ? { borderColor: "#EF4444" } : {}}
+              style={
+                showLinkError ? { borderColor: "#EF4444" } : {}
+              }
             >
               <div className={"tf-app-socialMediainstagram"} />
               <div className={"tf-app-emailPlaceholder4"}>
@@ -481,7 +491,8 @@ const EmailVerificationForm = () => {
                   value={linkInput}
                   onChange={(e) => {
                     setLinkInput(e.target.value)
-                    if (showLinkError) setShowLinkError(false)
+                    if (showLinkError)
+                      setShowLinkError(false)
                   }}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
@@ -500,7 +511,10 @@ const EmailVerificationForm = () => {
                         ])
                         setLinkInput("")
                         setShowLinkError(false)
-                      } else if (linkInput.trim() && !isLinkInputValid) {
+                      } else if (
+                        linkInput.trim() &&
+                        !isLinkInputValid
+                      ) {
                         setShowLinkError(true)
                       }
                     }
@@ -529,7 +543,10 @@ const EmailVerificationForm = () => {
                     setLinks([...links, linkInput.trim()])
                     setLinkInput("")
                     setShowLinkError(false)
-                  } else if (linkInput.trim() && !isLinkInputValid) {
+                  } else if (
+                    linkInput.trim() &&
+                    !isLinkInputValid
+                  ) {
                     setShowLinkError(true)
                   }
                 }}
