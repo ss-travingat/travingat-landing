@@ -70,7 +70,8 @@ export async function verifyOtpAction(email: string, otp: string, source?: strin
       return { error: 'Invalid OTP.' };
     }
 
-    if (new Date() > new Date(otpRecord.expiresAt)) {
+    const expiresAtStr = otpRecord.expiresAt.includes('Z') ? otpRecord.expiresAt : otpRecord.expiresAt.replace(' ', 'T') + 'Z';
+    if (new Date() > new Date(expiresAtStr)) {
       return { error: 'OTP has expired. Please request a new one.' };
     }
 

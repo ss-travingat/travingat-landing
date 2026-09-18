@@ -5,6 +5,7 @@ import { eq } from "drizzle-orm";
 import { ClassicCard, MinimalCard, AdventureCard } from "@/features/explorercard/cards";
 import countryData from "@/features/explorercard/countries.json";
 import ProfileFooter from "@/features/profilepages/components/ProfileFooter";
+import { ExplorerCardScaler } from "@/features/explorercard/ExplorerCardScaler";
 
 export const dynamicParams = true;
 export const fetchCache = "force-no-store";
@@ -107,19 +108,17 @@ export default async function SharedExplorerCardPage({
 
   return (
     <div className="min-h-screen bg-black flex flex-col">
-      <main className="flex-1 flex items-center justify-center pt-[40px] pb-[80px] lg:py-[120px] px-6 lg:px-12 w-full overflow-hidden max-w-[1400px] mx-auto">
+      <main className="flex-1 flex items-center justify-center px-6 lg:px-12 w-full overflow-hidden max-w-[1400px] mx-auto">
         {/* Centered Card */}
-        <div className="relative flex items-center justify-center lg:w-[450px] lg:h-[750px] sm:mb-[60px] lg:mb-0">
-          <div className="scale-100 sm:scale-110 lg:scale-125 origin-top lg:origin-center transition-transform">
-            {style === "minimal" ? (
-              <MinimalCard form={form} sampleFlags={sampleFlags} visitedArray={visitedArray} />
-            ) : style === "adventure" ? (
-              <AdventureCard form={form} sampleFlags={sampleFlags} visitedArray={visitedArray} />
-            ) : (
-              <ClassicCard form={form} sampleFlags={sampleFlags} visitedArray={visitedArray} />
-            )}
-          </div>
-        </div>
+        <ExplorerCardScaler>
+          {style === "minimal" ? (
+            <MinimalCard form={form} sampleFlags={sampleFlags} visitedArray={visitedArray} />
+          ) : style === "adventure" ? (
+            <AdventureCard form={form} sampleFlags={sampleFlags} visitedArray={visitedArray} />
+          ) : (
+            <ClassicCard form={form} sampleFlags={sampleFlags} visitedArray={visitedArray} />
+          )}
+        </ExplorerCardScaler>
       </main>
       <ProfileFooter />
     </div>

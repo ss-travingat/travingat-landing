@@ -5,11 +5,12 @@ import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { domToPng } from "modern-screenshot";
 import { ClassicCard, MinimalCard, AdventureCard, ImagePlaceholderIcon, AvatarPlaceholderIcon } from "./cards";
 import EmailVerificationForm from "@/components/getfeatured/EmailVerificationForm";
-import ProfileFooter from "@/features/profilepages/components/ProfileFooter";
+
 
 import countryData from "./countries.json";
 import { DesktopExplorerForm } from "./DesktopExplorerForm";
 import { MobileExplorerForm } from "./MobileExplorerForm";
+import { ExplorerCardScaler } from "./ExplorerCardScaler";
 
 const sampleFlags: Record<string, string> = {};
 const sortedEntries = Object.entries(countryData)
@@ -539,7 +540,7 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
   if (isCreated) {
     return (
       <div className="flex flex-col min-h-[100dvh] w-full bg-black relative">
-        <header className="sticky top-0 flex w-full justify-center pt-[16px] pb-[20px] lg:pt-[40px] lg:pb-[40px] bg-black shrink-0 z-[100]">
+        <header className="sticky top-0 flex w-full justify-center pt-[16px] pb-[16px] lg:pt-[20px] lg:pb-[20px] bg-black shrink-0 z-[100] border-b border-[#252525]">
           <div className="flex w-full px-[8px] lg:px-[64px] items-start lg:items-center justify-between">
             <div className="flex-1 flex items-start lg:items-center">
               <svg className="w-[28px] h-[28px] lg:w-[36px] lg:h-[36px]" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -566,9 +567,10 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
           </div>
         </header>
 
-        <main className="flex-1 flex flex-col items-center px-0 lg:px-6 pb-[100px] lg:pb-12 w-full pt-0 lg:pt-[24px]">
+        <main className="flex-1 flex flex-col items-center px-0 lg:px-6 pb-[100px] lg:pb-12 w-full pt-0 lg:pt-[24px] overflow-hidden">
 
         {/* Content Container */}
+        <ExplorerCardScaler innerClassName="w-full flex justify-center">
         <div className="w-full max-w-[1062px] lg:bg-[#111] bg-transparent lg:rounded-[20px] lg:p-[24px] lg:px-[32px] flex flex-col items-center gap-[17px] lg:gap-[20px]">
           {/* Container Header */}
           <div className="hidden lg:flex w-full items-center justify-between">
@@ -731,6 +733,7 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
             </div>
           </div>
         </div>
+        </ExplorerCardScaler>
 
         <div className="fixed lg:hidden bottom-0 left-0 right-0 pt-[24px] pb-[40px] px-[16px] bg-gradient-to-b from-transparent to-black/60 backdrop-blur-[2px] flex justify-center z-50">
           <div className="w-full max-w-[337px] flex gap-[6px] items-center justify-end relative">
@@ -855,7 +858,7 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
           </div>
         </div>
       </main>
-      <ProfileFooter />
+
       {readyToShareModal}
       </div>
     );
@@ -903,7 +906,7 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
             />
           </div>
         </main>
-        <ProfileFooter />
+
       </div>
     );
   }
@@ -1031,7 +1034,7 @@ return (
       </div>
       </div>
 
-      <ProfileFooter />
+
       {readyToShareModal}
     </div>
   );
