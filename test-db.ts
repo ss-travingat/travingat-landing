@@ -1,5 +1,5 @@
-import { getDrizzle } from "./src/lib/drizzle.ts";
-import { otps } from "./src/db/schema.ts";
+import { getDrizzle } from "./src/lib/drizzle";
+import { otps } from "./src/db/schema";
 import { desc } from "drizzle-orm";
 async function run() {
   const db = getDrizzle();
