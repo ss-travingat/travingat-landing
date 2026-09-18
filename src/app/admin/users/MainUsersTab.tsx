@@ -359,7 +359,7 @@ export function MainUsersTab() {
         {error && <p className="text-red-400 text-sm">{error}</p>}
 
         {!loading && !error && (
-          <div className="overflow-x-auto rounded-2xl border border-white/10 bg-[#121212]">
+          <div className={`rounded-2xl border border-white/10 bg-[#121212] ${openDropdownId !== null ? 'overflow-visible' : 'overflow-x-auto'}`}>
             <table className="w-full min-w-[1700px] text-sm">
               <thead className="text-white/60 border-b border-white/10">
                 <tr>

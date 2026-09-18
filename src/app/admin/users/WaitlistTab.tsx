@@ -239,7 +239,7 @@ export function WaitlistTab() {
             </p>
           </div>
         ) : (
-          <div className={`overflow-x-auto rounded-2xl border border-white/10 bg-[#151618] shadow-2xl transition-all ${openDropdownId !== null ? 'pb-40' : ''}`}>
+          <div className={`rounded-2xl border border-white/10 bg-[#151618] shadow-2xl transition-all ${openDropdownId !== null ? 'overflow-visible' : 'overflow-x-auto'}`}>
             <table className="w-full text-left text-[14px]">
               <thead>
                 <tr className="border-b border-white/5 bg-[#0a0a0c]">
