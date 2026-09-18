@@ -11,25 +11,25 @@ const BouncingDots = () => (
 );
 
 export default function AdminPage() {
-  const [userCount, setUserCount] = useState<number | null>(null);
-  const [waitlistCount, setWaitlistCount] = useState<number | null>(null);
+  const [explorerCardCount, setExplorerCardCount] = useState<number | null>(null);
+  const [featuredRequestsCount, setFeaturedRequestsCount] = useState<number | null>(null);
   const [profileCount, setProfileCount] = useState<number | null>(null);
 
   useEffect(() => {
-    fetch("/api/admin/users", { cache: "no-store" })
+    fetch("/api/admin/explorer-cards-count", { cache: "no-store" })
       .then((r) => r.json())
-      .then((d) => typeof d?.count === "number" && setUserCount(d.count))
-      .catch(() => {});
+      .then((d) => typeof d?.count === "number" && setExplorerCardCount(d.count))
+      .catch(() => { });
 
-    fetch("/api/waitlist", { cache: "no-store" })
+    fetch("/api/admin/featured-requests", { cache: "no-store" })
       .then((r) => r.json())
-      .then((d) => typeof d?.total === "number" && setWaitlistCount(d.total))
-      .catch(() => {});
+      .then((d) => typeof d?.total === "number" && setFeaturedRequestsCount(d.total))
+      .catch(() => { });
 
     fetch("/api/profiles")
       .then((r) => r.json())
       .then((d) => Array.isArray(d) && setProfileCount(d.length))
-      .catch(() => {});
+      .catch(() => { });
   }, []);
 
   return (
@@ -44,7 +44,7 @@ export default function AdminPage() {
 
         {/* Main Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          
+
           {/* Users & Waitlist Card (Spans 2 columns on large screens) */}
           <Link
             href="/admin/users"
@@ -57,16 +57,16 @@ export default function AdminPage() {
               <div className="flex items-center gap-6 bg-[#0f1116] border border-[#20242d] rounded-xl px-5 py-3">
                 <div className="text-center">
                   <div className="ds-font-display text-2xl font-semibold text-white tracking-tight flex items-center justify-center min-h-[36px]">
-                    {userCount !== null ? userCount.toLocaleString() : <BouncingDots />}
+                    {explorerCardCount !== null ? explorerCardCount.toLocaleString() : <BouncingDots />}
                   </div>
-                  <p className="ds-font-body text-[11px] font-semibold uppercase tracking-wider text-white/40 mt-1">Users</p>
+                  <p className="ds-font-body text-[11px] font-semibold uppercase tracking-wider text-white/40 mt-1">Explorer Cards</p>
                 </div>
                 <div className="w-px h-8 bg-white/10" />
                 <div className="text-center">
                   <div className="ds-font-display text-2xl font-semibold text-white tracking-tight flex items-center justify-center min-h-[36px]">
-                    {waitlistCount !== null ? waitlistCount.toLocaleString() : <BouncingDots />}
+                    {featuredRequestsCount !== null ? featuredRequestsCount.toLocaleString() : <BouncingDots />}
                   </div>
-                  <p className="ds-font-body text-[11px] font-semibold uppercase tracking-wider text-white/40 mt-1">Waitlist</p>
+                  <p className="ds-font-body text-[11px] font-semibold uppercase tracking-wider text-white/40 mt-1">Get featured</p>
                 </div>
               </div>
             </div>
@@ -85,7 +85,7 @@ export default function AdminPage() {
               <span className="material-symbols-rounded text-[20px] text-white/50 group-hover:text-white transition-all transform group-hover:translate-x-1">arrow_forward</span>
             </div>
           </Link>
-          
+
           {/* Profiles List */}
           <Link
             href="/admin-profiles"
@@ -195,7 +195,7 @@ export default function AdminPage() {
               <span className="material-symbols-rounded text-[18px] text-red-500 opacity-0 group-hover:opacity-100 transition-all transform group-hover:translate-x-1">arrow_forward</span>
             </div>
           </Link>
-          
+
         </div>
       </div>
     </div>
