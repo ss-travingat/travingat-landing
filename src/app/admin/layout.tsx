@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
+import AdminNavbar from "@/components/admin/AdminNavbar";
 
 export default function AdminLayout({
   children,
@@ -46,5 +47,12 @@ export default function AdminLayout({
     );
   }
 
-  return <>{children}</>;
+  return (
+    <div className="flex flex-col min-h-screen">
+      {pathname !== "/admin/login" && <AdminNavbar />}
+      <div className="flex-1 flex flex-col">
+        {children}
+      </div>
+    </div>
+  );
 }

@@ -42,9 +42,8 @@ export default function LandingLayout({
   const pathname = usePathname();
   const isProfileRoute = Boolean(pathname?.startsWith("/profiles/"));
   const isExplorerCardRoute = Boolean(pathname?.includes("/explorercard"));
-  const isAdminLoginRoute = pathname === "/admin/login";
-  const hideNavbar = pathname?.startsWith("/edit/explorercard") || pathname === "/explorercard" || pathname === "/join/explorercard";
-  // Show loader on first mount, hide after hydration + minimum display time
+  const isAdminRoute = pathname?.startsWith("/admin");
+  const hideNavbar = pathname?.startsWith("/edit/explorercard") || pathname === "/explorercard" || pathname === "/join/explorercard" || isAdminRoute;
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -62,7 +61,7 @@ export default function LandingLayout({
       <div className="animate-page-in">
         {children}
       </div>
-      {!isAdminLoginRoute && !isProfileRoute && !isExplorerCardRoute && <LandingFooter />}
+      {!isAdminRoute && !isProfileRoute && !isExplorerCardRoute && <LandingFooter />}
     </div>
   );
 }

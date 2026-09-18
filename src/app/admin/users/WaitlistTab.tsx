@@ -215,12 +215,7 @@ export function WaitlistTab() {
                   <th className="px-4 py-3 text-xs font-medium text-white/40">Source</th>
                   <th className="px-4 py-3 text-xs font-medium text-white/40">Explorer card</th>
                   <th className="px-4 py-3 text-xs font-medium text-white/40">Get featured</th>
-                  <th className="px-4 py-3 text-xs font-medium text-white/40">Countries</th>
-                  <th className="px-4 py-3 text-xs font-medium text-white/40">Card style</th>
                   <th className="px-4 py-3 text-xs font-medium text-white/40">Status</th>
-                  <th className="px-4 py-3 text-xs font-medium text-white/40">Device</th>
-                  <th className="px-4 py-3 text-xs font-medium text-white/40">Browser</th>
-                  <th className="px-4 py-3 text-xs font-medium text-white/40">Location</th>
                   <th className="px-4 py-3 text-xs font-medium text-white/40">Joined</th>
                   <th className="px-4 py-3 text-xs font-medium text-white/40 text-right">Actions</th>
                 </tr>
@@ -245,12 +240,6 @@ export function WaitlistTab() {
                     </td>
                     <td className="px-4 py-3 text-white/60 capitalize">
                       {entry.get_featured_status || "Not created"}
-                    </td>
-                    <td className="px-4 py-3 text-white/60">
-                      {entry.countries_count ?? "--"}
-                    </td>
-                    <td className="px-4 py-3 text-white/60 capitalize">
-                      {entry.card_style || "--"}
                     </td>
                     <td className="px-4 py-3">
                       {entry.confirmed ? (
@@ -280,19 +269,6 @@ export function WaitlistTab() {
                           Pending
                         </span>
                       )}
-                    </td>
-                    <td className="px-4 py-3">
-                      <span className="inline-flex items-center gap-1.5 text-white/60">
-                        <span className="material-symbols-rounded text-[16px]">
-                          {deviceIcon(entry.device)}
-                        </span>
-                        <span className="capitalize">{entry.device}</span>
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-white/60">{entry.browser}</td>
-                    <td className="px-4 py-3 text-white/60">
-                      {entry.city !== "Unknown" ? `${entry.city}, ` : ""}
-                      {entry.country}
                     </td>
                     <td className="px-4 py-3 text-white/40 whitespace-nowrap">
                       {new Date(entry.created_at).toLocaleDateString("en-US", {
