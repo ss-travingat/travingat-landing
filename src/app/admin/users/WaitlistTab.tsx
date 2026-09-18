@@ -5,6 +5,14 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 
+const BouncingDots = () => (
+  <div className="flex items-center gap-[3px] h-[40px]">
+    <div className="w-[5px] h-[5px] bg-white/70 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+    <div className="w-[5px] h-[5px] bg-white/70 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+    <div className="w-[5px] h-[5px] bg-white/70 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+  </div>
+);
+
 type WaitlistEntry = {
   id: number;
   email: string;
@@ -115,74 +123,94 @@ export function WaitlistTab() {
   return (
     <div className="flex-1 w-full relative">
 
-      <div className="max-w-5xl mx-auto px-6 py-8">
+      <div className="max-w-5xl mx-auto px-6 py-4">
         {/* Stats row */}
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 mb-8">
-          <div className="bg-[#141414] border border-white/10 rounded-xl p-5">
-            <p className="text-[28px] font-bold text-white">{total}</p>
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 mb-5">
+          <div className="bg-[#141414] border border-white/10 rounded-xl p-4">
+            <div className="text-[28px] font-bold text-white flex items-center min-h-[40px]">
+              {loading ? <BouncingDots /> : total}
+            </div>
             <p className="text-xs text-white/40 mt-1">Total signups</p>
           </div>
-          <div className="bg-[#141414] border border-[#163d22]/60 rounded-xl p-5">
-            <p className="text-[28px] font-bold text-[#4ade80]">{confirmedCount}</p>
+          <div className="bg-[#141414] border border-[#163d22]/60 rounded-xl p-4">
+            <div className="text-[28px] font-bold text-[#4ade80] flex items-center min-h-[40px]">
+              {loading ? <BouncingDots /> : confirmedCount}
+            </div>
             <p className="text-xs text-white/40 mt-1">Confirmed</p>
           </div>
-          <div className="bg-[#141414] border border-[#3d2e0e]/60 rounded-xl p-5">
-            <p className="text-[28px] font-bold text-[#fbbf24]">{unconfirmedCount}</p>
+          <div className="bg-[#141414] border border-[#3d2e0e]/60 rounded-xl p-4">
+            <div className="text-[28px] font-bold text-[#fbbf24] flex items-center min-h-[40px]">
+              {loading ? <BouncingDots /> : unconfirmedCount}
+            </div>
             <p className="text-xs text-white/40 mt-1">Not confirmed</p>
           </div>
-          <div className="bg-[#141414] border border-white/10 rounded-xl p-5">
-            <p className="text-[28px] font-bold text-white">
-              {total > 0 ? Math.round((confirmedCount / total) * 100) : 0}%
-            </p>
+          <div className="bg-[#141414] border border-white/10 rounded-xl p-4">
+            <div className="text-[28px] font-bold text-white flex items-center min-h-[40px]">
+              {loading ? <BouncingDots /> : `${total > 0 ? Math.round((confirmedCount / total) * 100) : 0}%`}
+            </div>
             <p className="text-xs text-white/40 mt-1">Confirm rate</p>
           </div>
-          <div className="bg-[#141414] border border-[#163d22]/60 rounded-xl p-5">
-            <p className="text-[28px] font-bold text-[#4ade80]">{explorerCardCount}</p>
+          <div className="bg-[#141414] border border-[#163d22]/60 rounded-xl p-4">
+            <div className="text-[28px] font-bold text-[#4ade80] flex items-center min-h-[40px]">
+              {loading ? <BouncingDots /> : explorerCardCount}
+            </div>
             <p className="text-xs text-white/40 mt-1">Explorer card</p>
           </div>
-          <div className="bg-[#141414] border border-[#163d22]/60 rounded-xl p-5">
-            <p className="text-[28px] font-bold text-[#4ade80]">{getFeaturedCount}</p>
+          <div className="bg-[#141414] border border-[#163d22]/60 rounded-xl p-4">
+            <div className="text-[28px] font-bold text-[#4ade80] flex items-center min-h-[40px]">
+              {loading ? <BouncingDots /> : getFeaturedCount}
+            </div>
             <p className="text-xs text-white/40 mt-1">Get featured</p>
           </div>
         </div>
 
         {/* Search + Filter */}
-        <div className="flex flex-col sm:flex-row gap-3 mb-6">
-          <Input
-            type="text"
-            placeholder="Search by email, country, or city..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="max-w-md border border-white/10 bg-[#141414] placeholder:text-white/30 focus:border-[#5A45F9]/50"
-          />
-          <div className="flex gap-2 items-center">
-            {(["all", "confirmed", "unconfirmed"] as Filter[]).map((f) => (
-              <Button
-                key={f}
-                type="button"
-                onClick={() => setFilter(f)}
-                variant="ghost"
-                className={`h-10 px-4 rounded-lg text-sm font-medium transition-colors capitalize ${filter === f
-                  ? "bg-white !text-black"
-                  : "bg-[#141414] text-white/50 border border-white/10 hover:text-white"
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-4">
+          <div className="relative w-full sm:max-w-md">
+            <svg className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            <Input
+              type="text"
+              placeholder="Search by email, country, or city..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full pl-10 pr-4 h-10 bg-[#151618] border border-white/10 rounded-xl text-[13px] placeholder:text-white/30 focus:border-white/30 focus:bg-[#1a1b1e] transition-all"
+            />
+          </div>
+
+          <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0 w-full sm:w-auto">
+            <div className="flex items-center bg-[#151618] p-1 rounded-xl border border-white/10">
+              {(["all", "confirmed", "unconfirmed"] as Filter[]).map((f) => (
+                <button
+                  key={f}
+                  type="button"
+                  onClick={() => setFilter(f)}
+                  className={`px-3 py-1.5 rounded-lg text-[13px] font-medium transition-all capitalize whitespace-nowrap ${
+                    filter === f
+                      ? "bg-white text-black shadow-sm"
+                      : "text-white/50 hover:text-white hover:bg-white/5"
                   }`}
-              >
-                {f}
-              </Button>
-            ))}
+                >
+                  {f}
+                </button>
+              ))}
+            </div>
+
             <div className="w-px h-6 bg-white/10 mx-1" />
 
             <button
               onClick={() => setIsFilterModalOpen(true)}
-              className={`h-10 px-4 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 border ${activeFiltersCount > 0
-                ? "bg-[#163d22] text-[#4ade80] border-[#4ade80]/30"
-                : "bg-[#141414] text-white/50 border-white/10 hover:text-white hover:border-white/30"
-                }`}
+              className={`h-10 px-3.5 rounded-xl text-[13px] font-medium transition-all flex items-center gap-2 shrink-0 ${
+                activeFiltersCount > 0
+                  ? "bg-white/10 text-white border border-white/20 hover:bg-white/15"
+                  : "bg-[#151618] text-white/60 border border-white/10 hover:text-white hover:border-white/20"
+              }`}
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" /></svg>
               Filter
               {activeFiltersCount > 0 && (
-                <span className="flex h-4 w-4 items-center justify-center rounded-full bg-[#4ade80] text-[10px] font-bold text-[#0a0a0a]">
+                <span className="flex h-4 w-4 items-center justify-center rounded-full bg-white text-black text-[10px] font-bold">
                   {activeFiltersCount}
                 </span>
               )}
@@ -190,7 +218,7 @@ export function WaitlistTab() {
 
             <Link
               href="/admin/recycle-bin"
-              className="h-10 px-4 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 bg-[#141414] text-white/50 border border-white/10 hover:text-white hover:border-white/30"
+              className="h-10 px-3.5 rounded-xl text-[13px] font-medium transition-all flex items-center gap-2 bg-[#151618] text-white/60 border border-white/10 hover:text-red-400 hover:border-red-500/30 hover:bg-red-500/10 shrink-0"
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18" /><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" /><line x1="10" y1="11" x2="10" y2="17" /><line x1="14" y1="11" x2="14" y2="17" /></svg>
               Recycle Bin
@@ -200,94 +228,83 @@ export function WaitlistTab() {
 
         {/* Table */}
         {loading ? (
-          <p className="text-sm text-white/40">Loading waitlist...</p>
+          <div className="flex items-center justify-center py-20 bg-[#151618] border border-white/10 rounded-2xl">
+            <BouncingDots />
+          </div>
         ) : filtered.length === 0 ? (
-          <div className="text-center py-16 text-white/30 text-sm">
-            {search || filter !== "all" ? "No matches found." : "No waitlist signups yet."}
+          <div className="text-center py-24 bg-[#151618] border border-white/10 rounded-2xl flex flex-col items-center justify-center">
+            <span className="material-symbols-rounded text-[48px] text-white/10 mb-4">search_off</span>
+            <p className="text-white/40 text-[15px]">
+              {search || filter !== "all" || activeFiltersCount > 0 ? "No matches found." : "No waitlist signups yet."}
+            </p>
           </div>
         ) : (
-          <div className={`overflow-x-auto rounded-xl border border-white/10 transition-all ${openDropdownId !== null ? 'pb-40' : ''}`}>
-            <table className="w-full text-left text-sm">
+          <div className={`overflow-x-auto rounded-2xl border border-white/10 bg-[#151618] shadow-2xl transition-all ${openDropdownId !== null ? 'pb-40' : ''}`}>
+            <table className="w-full text-left text-[14px]">
               <thead>
-                <tr className="border-b border-white/10 bg-[#141414]">
-                  <th className="px-4 py-3 text-xs font-medium text-white/40 sticky left-0 bg-[#141414] z-20 border-r border-white/5">#</th>
-                  <th className="px-4 py-3 text-xs font-medium text-white/40">Email</th>
-                  <th className="px-4 py-3 text-xs font-medium text-white/40">Source</th>
-                  <th className="px-4 py-3 text-xs font-medium text-white/40">Explorer card</th>
-                  <th className="px-4 py-3 text-xs font-medium text-white/40">Get featured</th>
-                  <th className="px-4 py-3 text-xs font-medium text-white/40">Status</th>
-                  <th className="px-4 py-3 text-xs font-medium text-white/40">Joined</th>
-                  <th className="px-4 py-3 text-xs font-medium text-white/40 text-right">Actions</th>
+                <tr className="border-b border-white/5 bg-[#0a0a0c]">
+                  <th className="px-4 py-3 text-[12px] font-semibold text-white/40 uppercase tracking-wider sticky left-0 bg-[#0a0a0c] z-20 border-r border-white/5">#</th>
+                  <th className="px-4 py-3 text-[12px] font-semibold text-white/40 uppercase tracking-wider">Email</th>
+                  <th className="px-4 py-3 text-[12px] font-semibold text-white/40 uppercase tracking-wider">Source</th>
+                  <th className="px-4 py-3 text-[12px] font-semibold text-white/40 uppercase tracking-wider">Explorer Card</th>
+                  <th className="px-4 py-3 text-[12px] font-semibold text-white/40 uppercase tracking-wider">Get Featured</th>
+                  <th className="px-4 py-3 text-[12px] font-semibold text-white/40 uppercase tracking-wider">Status</th>
+                  <th className="px-4 py-3 text-[12px] font-semibold text-white/40 uppercase tracking-wider">Joined</th>
+                  <th className="px-4 py-3 text-[12px] font-semibold text-white/40 uppercase tracking-wider text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="divide-y divide-white/5">
                 {filtered.map((entry, i) => (
                   <tr
                     key={entry.id}
-                    className="group border-b border-white/5 hover:bg-white/2 transition-colors"
+                    className="group hover:bg-white/[0.02] transition-colors"
                   >
-                    <td className="px-4 py-3 text-white font-bold sticky left-0 bg-[#0a0a0a] group-hover:bg-[#0f0f0f] z-10 border-r border-white/5">
+                    <td className="px-4 py-2.5 text-white/60 font-medium sticky left-0 bg-[#151618] group-hover:bg-[#1a1b1e] z-10 border-r border-white/5 transition-colors">
                       {i + 1}
                     </td>
-                    <td className="px-4 py-3 text-white font-medium">{entry.email}</td>
-                    <td className="px-4 py-3">
-                      <span className="inline-flex items-center bg-white/5 text-white/70 text-[10px] uppercase font-medium px-2 py-0.5 rounded border border-white/10 tracking-wider">
+                    <td className="px-4 py-2.5 text-white font-medium">{entry.email}</td>
+                    <td className="px-4 py-2.5">
+                      <span className="inline-flex items-center bg-white/5 text-white/70 text-[11px] font-semibold px-2.5 py-1 rounded-md border border-white/10 tracking-wide uppercase">
                         {entry.source || "Waitlist"}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-white/60 capitalize">
+                    <td className="px-4 py-2.5 text-white/60 capitalize">
                       {entry.explorer_card_status || "Not created"}
                     </td>
-                    <td className="px-4 py-3 text-white/60 capitalize">
+                    <td className="px-4 py-2.5 text-white/60 capitalize">
                       {entry.get_featured_status || "Not created"}
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="px-4 py-2.5">
                       {entry.confirmed ? (
-                        <span className="inline-flex items-center gap-1.5 bg-[#0e1c12] border border-[#163d22] text-[#4ade80] text-xs font-medium px-2.5 py-1 rounded-full">
-                          <span
-                            style={{
-                              width: 6,
-                              height: 6,
-                              borderRadius: "50%",
-                              background: "#4ade80",
-                              display: "inline-block",
-                            }}
-                          />
+                        <span className="inline-flex items-center gap-1.5 bg-[#4ade80]/10 border border-[#4ade80]/20 text-[#4ade80] text-[12px] font-medium px-2.5 py-1 rounded-full">
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#4ade80] shadow-[0_0_8px_rgba(74,222,128,0.5)]" />
                           Confirmed
                         </span>
                       ) : (
-                        <span className="inline-flex items-center gap-1.5 bg-[#1c1810] border border-[#3d2e0e] text-[#fbbf24] text-xs font-medium px-2.5 py-1 rounded-full">
-                          <span
-                            style={{
-                              width: 6,
-                              height: 6,
-                              borderRadius: "50%",
-                              background: "#fbbf24",
-                              display: "inline-block",
-                            }}
-                          />
+                        <span className="inline-flex items-center gap-1.5 bg-[#fbbf24]/10 border border-[#fbbf24]/20 text-[#fbbf24] text-[12px] font-medium px-2.5 py-1 rounded-full">
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#fbbf24] shadow-[0_0_8px_rgba(251,191,36,0.5)]" />
                           Pending
                         </span>
                       )}
                     </td>
-                    <td className="px-4 py-3 text-white/40 whitespace-nowrap">
+                    <td className="px-4 py-2.5 text-white/40 whitespace-nowrap text-[13px]">
                       {new Date(entry.created_at).toLocaleDateString("en-US", {
                         month: "short",
                         day: "numeric",
                         year: "numeric",
                       })}
                     </td>
-                    <td className={`px-4 py-3 text-right relative ${openDropdownId === entry.id ? 'z-[100]' : ''}`}>
+                    <td className={`px-4 py-2.5 text-right relative ${openDropdownId === entry.id ? 'z-[100]' : ''}`}>
                       <div className="relative inline-block">
                         <button
-                          className="p-1.5 rounded-md hover:bg-white/5 transition-colors"
+                          className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/10 transition-colors"
                           title="More actions"
                           onClick={() => setOpenDropdownId(openDropdownId === entry.id ? null : entry.id)}
                         >
-                          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" className="opacity-50 hover:opacity-100 transition-opacity">
-                            <circle cx="8" cy="3" r="1.5" fill="white" />
-                            <circle cx="8" cy="8" r="1.5" fill="white" />
-                            <circle cx="8" cy="13" r="1.5" fill="white" />
+                          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-white/50 group-hover:text-white/80 transition-colors">
+                            <circle cx="8" cy="3" r="1.5" fill="currentColor" />
+                            <circle cx="8" cy="8" r="1.5" fill="currentColor" />
+                            <circle cx="8" cy="13" r="1.5" fill="currentColor" />
                           </svg>
                         </button>
 
@@ -446,99 +463,90 @@ export function WaitlistTab() {
       {isFilterModalOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setIsFilterModalOpen(false)} />
-          <div className="bg-[#141414] border border-white/10 rounded-xl w-full max-w-lg p-6 relative z-10 shadow-2xl">
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-lg font-semibold text-white">Advanced Filters</h2>
-              <button onClick={() => setIsFilterModalOpen(false)} className="text-white/40 hover:text-white">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 6L6 18M6 6l12 12" /></svg>
+          <div className="bg-[#101115] border border-white/10 rounded-2xl w-full max-w-2xl overflow-hidden relative z-10 shadow-2xl flex flex-col">
+            <div className="flex justify-between items-center p-6 border-b border-white/5 bg-[#14151a]">
+              <h2 className="text-[16px] font-semibold text-white flex items-center gap-2">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" /></svg>
+                Advanced Filters
+              </h2>
+              <button onClick={() => setIsFilterModalOpen(false)} className="text-white/40 hover:text-white bg-white/5 hover:bg-white/10 rounded-md p-1.5 transition-colors">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6L6 18M6 6l12 12" /></svg>
               </button>
             </div>
 
-            <div className="grid grid-cols-2 gap-5">
-              {/* Source */}
-              <div>
-                <label className="block text-xs font-medium text-white/50 mb-1.5">Source</label>
-                <select
-                  className="w-full bg-[#0a0a0a] border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white focus:border-[#5A45F9]/50 focus:outline-none"
-                  value={advancedFilters.source}
-                  onChange={(e) => setAdvancedFilters({ ...advancedFilters, source: e.target.value })}
-                >
-                  <option value="">All Sources</option>
-                  {uniqueSources.map(s => <option key={s} value={s}>{s}</option>)}
-                </select>
-              </div>
-
+            <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-7">
               {/* Explorer Card Status */}
               <div>
-                <label className="block text-xs font-medium text-white/50 mb-1.5">Explorer Card</label>
-                <select
-                  className="w-full bg-[#0a0a0a] border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white focus:border-[#5A45F9]/50 focus:outline-none"
-                  value={advancedFilters.explorer_card_status}
-                  onChange={(e) => setAdvancedFilters({ ...advancedFilters, explorer_card_status: e.target.value })}
-                >
-                  <option value="">All</option>
-                  <option value="Created">Created</option>
-                  <option value="Not created">Not created</option>
-                </select>
+                <label className="block text-[13px] font-medium text-white/50 mb-2">Explorer Card</label>
+                <div className="flex bg-[#1a1b20] p-1 rounded-xl border border-white/5">
+                   {['', 'Created', 'Not created'].map(opt => (
+                      <button
+                         key={opt}
+                         onClick={() => setAdvancedFilters({...advancedFilters, explorer_card_status: opt})}
+                         className={`flex-1 py-1.5 text-[12px] font-medium rounded-lg transition-all capitalize ${advancedFilters.explorer_card_status === opt ? 'bg-white text-black shadow-sm' : 'text-white/50 hover:text-white hover:bg-white/5'}`}
+                      >
+                         {opt === '' ? 'Any' : opt}
+                      </button>
+                   ))}
+                </div>
               </div>
 
               {/* Get Featured Status */}
               <div>
-                <label className="block text-xs font-medium text-white/50 mb-1.5">Get Featured</label>
-                <select
-                  className="w-full bg-[#0a0a0a] border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white focus:border-[#5A45F9]/50 focus:outline-none"
-                  value={advancedFilters.get_featured_status}
-                  onChange={(e) => setAdvancedFilters({ ...advancedFilters, get_featured_status: e.target.value })}
-                >
-                  <option value="">All</option>
-                  <option value="Created">Created</option>
-                  <option value="Not created">Not created</option>
-                </select>
+                <label className="block text-[13px] font-medium text-white/50 mb-2">Get Featured</label>
+                <div className="flex bg-[#1a1b20] p-1 rounded-xl border border-white/5">
+                   {['', 'Created', 'Not created'].map(opt => (
+                      <button
+                         key={opt}
+                         onClick={() => setAdvancedFilters({...advancedFilters, get_featured_status: opt})}
+                         className={`flex-1 py-1.5 text-[12px] font-medium rounded-lg transition-all capitalize ${advancedFilters.get_featured_status === opt ? 'bg-white text-black shadow-sm' : 'text-white/50 hover:text-white hover:bg-white/5'}`}
+                      >
+                         {opt === '' ? 'Any' : opt}
+                      </button>
+                   ))}
+                </div>
               </div>
 
-              {/* Device */}
+              {/* Source */}
               <div>
-                <label className="block text-xs font-medium text-white/50 mb-1.5">Device</label>
-                <select
-                  className="w-full bg-[#0a0a0a] border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white focus:border-[#5A45F9]/50 focus:outline-none"
-                  value={advancedFilters.device}
-                  onChange={(e) => setAdvancedFilters({ ...advancedFilters, device: e.target.value })}
-                >
-                  <option value="">All Devices</option>
-                  {uniqueDevices.map(d => d && <option key={d} value={d}>{d}</option>)}
-                </select>
-              </div>
-
-              {/* Browser */}
-              <div>
-                <label className="block text-xs font-medium text-white/50 mb-1.5">Browser</label>
-                <select
-                  className="w-full bg-[#0a0a0a] border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white focus:border-[#5A45F9]/50 focus:outline-none"
-                  value={advancedFilters.browser}
-                  onChange={(e) => setAdvancedFilters({ ...advancedFilters, browser: e.target.value })}
-                >
-                  <option value="">All Browsers</option>
-                  {uniqueBrowsers.map(b => b && <option key={b} value={b}>{b}</option>)}
-                </select>
+                <label className="block text-[13px] font-medium text-white/50 mb-2">Source</label>
+                <div className="relative">
+                  <select
+                    className="w-full appearance-none bg-[#1a1b20] border border-white/10 rounded-xl px-4 py-2.5 text-[13px] font-medium text-white focus:border-white/30 focus:outline-none transition-all cursor-pointer"
+                    value={advancedFilters.source}
+                    onChange={(e) => setAdvancedFilters({ ...advancedFilters, source: e.target.value })}
+                  >
+                    <option value="">All Sources</option>
+                    {uniqueSources.map(s => <option key={s} value={s}>{s}</option>)}
+                  </select>
+                  <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-white/30">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                  </div>
+                </div>
               </div>
 
               {/* Country */}
               <div>
-                <label className="block text-xs font-medium text-white/50 mb-1.5">Country</label>
-                <select
-                  className="w-full bg-[#0a0a0a] border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white focus:border-[#5A45F9]/50 focus:outline-none"
-                  value={advancedFilters.country}
-                  onChange={(e) => setAdvancedFilters({ ...advancedFilters, country: e.target.value })}
-                >
-                  <option value="">All Countries</option>
-                  {uniqueCountries.map(c => c && <option key={c} value={c}>{c}</option>)}
-                </select>
+                <label className="block text-[13px] font-medium text-white/50 mb-2">Country</label>
+                <div className="relative">
+                  <select
+                    className="w-full appearance-none bg-[#1a1b20] border border-white/10 rounded-xl px-4 py-2.5 text-[13px] font-medium text-white focus:border-white/30 focus:outline-none transition-all cursor-pointer"
+                    value={advancedFilters.country}
+                    onChange={(e) => setAdvancedFilters({ ...advancedFilters, country: e.target.value })}
+                  >
+                    <option value="">All Countries</option>
+                    {uniqueCountries.map(c => c && <option key={c} value={c}>{c}</option>)}
+                  </select>
+                  <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-white/30">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                  </div>
+                </div>
               </div>
             </div>
 
-            <div className="mt-8 flex justify-end gap-3">
+            <div className="p-5 border-t border-white/5 flex justify-end gap-3 bg-[#14151a]">
               <button
-                className="px-4 py-2 text-sm font-medium text-white/60 hover:text-white transition-colors"
+                className="px-4 py-2 text-[13px] font-medium text-white/50 hover:text-white hover:bg-white/5 rounded-lg transition-colors"
                 onClick={() => setAdvancedFilters({
                   source: "",
                   explorer_card_status: "",
@@ -551,7 +559,7 @@ export function WaitlistTab() {
                 Clear all
               </button>
               <button
-                className="px-5 py-2 text-sm font-medium bg-[#5A45F9] text-white rounded-lg hover:bg-[#4b3ae0] transition-colors"
+                className="px-5 py-2 text-[13px] font-medium bg-white text-black rounded-lg hover:bg-gray-200 transition-colors"
                 onClick={() => setIsFilterModalOpen(false)}
               >
                 Apply Filters
