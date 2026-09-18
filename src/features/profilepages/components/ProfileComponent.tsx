@@ -20,6 +20,7 @@ import type { MasonryItemWithDimensions } from "@/hooks/useMasonryAdvanced";
 import { useMobileComingSoon } from "@/components/ui/MobileComingSoonToast";
 import { Tooltip, TooltipProvider } from "@/components/ui/Tooltip";
 import { getCountryName } from "@/lib/countries";
+import { CountriesPopup } from "@/components/ui/CountriesPopup";
 
 /* eslint-disable @next/next/no-img-element */
 
@@ -531,59 +532,6 @@ function JsMasonryGrid({
   const { showComingSoonToast } = useMobileComingSoon();
   const orderedItems = items;
 
-  const [resolvedImageDimensions, setResolvedImageDimensions] = useState<
-    Record<string, { width: number; height: number }>
-  >({});
-
-  useEffect(() => {
-    let cancelled = false;
-
-    const unresolvedImages = orderedItems.filter(
-      (item) =>
-        !item.isVideo &&
-        (!item.width || !item.height) &&
-        !resolvedImageDimensions[item.id]
-    );
-
-    if (unresolvedImages.length === 0) return;
-
-    unresolvedImages.forEach((item) => {
-      const img = new Image();
-      img.decoding = "async";
-      img.onload = () => {
-        if (cancelled) return;
-        const width = img.naturalWidth || 1200;
-        const height = img.naturalHeight || 1200;
-        setResolvedImageDimensions((prev) => {
-          if (prev[item.id]) return prev;
-          return { ...prev, [item.id]: { width, height } };
-        });
-      };
-      img.src = getThumbnailUrl(toLandingAssetUrl(item.fileUrl), 720);
-    });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [orderedItems, resolvedImageDimensions]);
-
-  // Convert media items to masonry items with dimensions.
-  const masonryItems: MasonryItemWithDimensions[] = useMemo(
-    () =>
-      orderedItems.map((item, index) => {
-        const resolved = resolvedImageDimensions[item.id];
-        return {
-          id: item.id,
-          url: item.fileUrl,
-          width: item.width || resolved?.width || 1200,
-          height: item.height || resolved?.height || 1200,
-          placeholderColor: "#111111",
-          alt: `Image ${index + 1}`,
-        };
-      }),
-    [orderedItems, resolvedImageDimensions]
-  );
-
   const markItemLoaded = (id: string) => {
     setLoadedItemIds((prev) => {
       if (prev.has(id)) return prev;
@@ -593,139 +541,130 @@ function JsMasonryGrid({
     });
   };
 
-  return (
-    <MasonryImageGrid
-      items={masonryItems}
-      gapX={8}
-      gapY={8}
-      minColumnWidth={200}
-      initialVisibleCount={10}
-      renderItem={(masonryItem, index) => {
-        const mediaItem = orderedItems.find((it) => String(it.id) === String(masonryItem.id)) || orderedItems[index];
-        if (!mediaItem) return null;
+  const renderMediaItem = (mediaItem: MediaItem, isMobile = false) => {
+    const originalIndex = allMediaItems.findIndex((it) => String(it.id) === String(mediaItem?.id));
+    const isMenuOpen = openContextMenuId === mediaItem.id;
+    const displayCountryCode = mediaItem.countryCode || profileFlagCode;
+    const collectionHref =
+      typeof mediaItem.collectionIndex === "number" && profile.collectionImages?.[mediaItem.collectionIndex]
+        ? `/profiles/${profile.handle.replace(/^@/, "")}/collection/${mediaItem.collectionIndex}`
+        : undefined;
+    const viewHref = collectionHref || (displayCountryCode
+      ? `/profiles/${profile.handle.replace(/^@/, "")}/country/${displayCountryCode.toUpperCase()}`
+      : undefined);
+    const viewLabel = collectionHref ? "View collection" : "View country";
+    const isLoaded = loadedItemIds.has(mediaItem.id);
 
-        const originalIndex = allMediaItems.findIndex((it) => String(it.id) === String(mediaItem?.id));
-        const isMenuOpen = openContextMenuId === mediaItem.id;
-        const displayCountryCode = mediaItem.countryCode || profileFlagCode;
-        const collectionHref =
-          typeof mediaItem.collectionIndex === "number" && profile.collectionImages?.[mediaItem.collectionIndex]
-            ? `/profiles/${profile.handle.replace(/^@/, "")}/collection/${mediaItem.collectionIndex}`
-            : undefined;
-        const viewHref = collectionHref || (displayCountryCode
-          ? `/profiles/${profile.handle.replace(/^@/, "")}/country/${displayCountryCode.toUpperCase()}`
-          : undefined);
-        const viewLabel = collectionHref ? "View collection" : "View country";
-        const isLoaded = loadedItemIds.has(mediaItem.id);
-
-        return (
-          <div className={`group h-full w-full relative ${isMenuOpen ? "z-40" : "z-0"}`}>
-            <div className="absolute inset-0 overflow-hidden rounded-lg md:rounded-2xl bg-black-800">
-              {/* Skeleton placeholder with correct aspect ratio */}
-              <div
-                className={`absolute inset-0 z-0 pointer-events-none transition-opacity duration-300 ${isLoaded ? "opacity-0" : "opacity-100"}`}
-                style={{ backgroundColor: "#1a1a1a" }}
+    return (
+      <div key={mediaItem.id} className={`group relative w-full ${isMobile ? "mb-[0.375rem] break-inside-avoid [-webkit-column-break-inside:avoid] inline-block" : ""}`}>
+        <div 
+          className="relative rounded-lg md:rounded-2xl overflow-hidden bg-[#151515] cursor-pointer"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            if (window.innerWidth < 811) {
+              showComingSoonToast();
+            } else {
+              openCarouselAt(originalIndex);
+            }
+          }}
+        >
+          {mediaItem.isVideo ? (
+            <>
+              <video
+                src={toLandingAssetUrl(mediaItem.fileUrl)}
+                muted
+                playsInline
+                loop
+                preload="metadata"
+                className="w-full h-auto block pointer-events-none"
+                onLoadedData={() => markItemLoaded(mediaItem.id)}
+                onCanPlay={() => markItemLoaded(mediaItem.id)}
+                onError={() => markItemLoaded(mediaItem.id)}
               />
+              <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
+                <span className="text-white text-3xl drop-shadow-lg">▶</span>
+              </div>
+            </>
+          ) : (
+            <LoadedImage
+              src={toLandingAssetUrl(mediaItem.fileUrl)}
+              thumbnailSrc={getThumbnailUrl(toLandingAssetUrl(mediaItem.fileUrl), 720)}
+              alt="Uploaded media"
+              className="w-full h-auto block"
+              containerClassName="w-full relative"
+              skeletonClassName="absolute inset-0 w-full h-full aspect-square bg-[#1a1a1a]"
+              onLoad={() => markItemLoaded(mediaItem.id)}
+            />
+          )}
+          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-200 pointer-events-none" />
+        </div>
 
-              {mediaItem.isVideo ? (
-                <>
-                  <video
-                    src={toLandingAssetUrl(mediaItem.fileUrl)}
-                    muted
-                    playsInline
-                    loop
-                    preload="metadata"
-                    className={`relative z-10 h-full w-full object-cover rounded-lg md:rounded-2xl cursor-pointer transition-opacity duration-300 ${isLoaded ? "opacity-100" : "opacity-0"}`}
-                    onLoadedData={() => markItemLoaded(mediaItem.id)}
-                    onCanPlay={() => markItemLoaded(mediaItem.id)}
-                    onError={() => markItemLoaded(mediaItem.id)}
-                    onMouseEnter={(e) => e.currentTarget.play().catch(() => { })}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.pause();
-                      e.currentTarget.currentTime = 0;
-                    }}
-                    onClick={(event) => {
-                      event.preventDefault();
-                      event.stopPropagation();
-                      if (window.innerWidth < 811) {
-                        showComingSoonToast();
-                      } else {
-                        openCarouselAt(originalIndex);
-                      }
-                    }}
+        <MoreOptionsButton
+          isOpen={isMenuOpen}
+          label="Open context menu"
+          size="sm"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            setOpenContextMenuId(isMenuOpen ? null : mediaItem.id);
+          }}
+        />
+
+        {/* Flag badge (visible after image loads) */}
+        {displayCountryCode && isLoaded ? (
+          <div className="absolute top-2 right-2 md:top-3 md:right-3 z-20 transition-opacity duration-200 opacity-100 pointer-events-auto">
+            <TooltipProvider delayDuration={100}>
+              <Tooltip 
+                content={getCountryName(displayCountryCode.toUpperCase()) || displayCountryCode} 
+                theme="light" 
+                side="top"
+              >
+                <div className="flex items-center drop-shadow-md cursor-pointer">
+                  <img
+                    src={toFlagAssetPath(displayCountryCode)}
+                    alt={displayCountryCode}
+                    className="h-3.5 w-5 rounded-xs object-cover"
                   />
-                  <div className="absolute top-3 left-3 group-hover:opacity-0 transition-opacity pointer-events-none">
-                    <span
-                      className="material-symbols-rounded text-2xl text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]"
-                      style={{ fontVariationSettings: "'FILL' 1, 'wght' 700, 'GRAD' 200, 'opsz' 24" }}
-                    >
-                      play_arrow
-                    </span>
-                  </div>
-                </>
-              ) : (
-                <LoadedImage
-                  src={toLandingAssetUrl(mediaItem.fileUrl)}
-                  thumbnailSrc={getThumbnailUrl(toLandingAssetUrl(mediaItem.fileUrl), 720)}
-                  alt="Uploaded media"
-                  className="h-full w-full object-cover rounded-lg md:rounded-2xl cursor-pointer"
-                  containerClassName="h-full w-full rounded-lg md:rounded-2xl"
-                  skeletonClassName="absolute inset-0 rounded-lg md:rounded-2xl"
-                  onLoad={() => markItemLoaded(mediaItem.id)}
+                </div>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
+        ) : null}
+
+        {isMenuOpen && (
+          <div
+            ref={contextMenuRef}
+            role="menu"
+            className="absolute right-3 bottom-14 z-50 w-[12.5rem] rounded-2xl border border-[#2e2e2e] bg-[#1a1a1a] p-4 shadow-[0_8px_30px_rgb(0,0,0,0.5)]"
+            onClick={(event) => { event.preventDefault(); event.stopPropagation(); }}
+          >
+            <div className="flex flex-col gap-4">
+              {viewHref && (
+                <Link
+                  href={viewHref}
+                  role="menuitem"
+                  className="flex w-full items-center gap-3 text-[0.9375rem] font-medium tracking-[-0.3px] text-white hover:text-[#d4d4d4] transition-colors"
                   onClick={(event) => {
-                    event.preventDefault();
-                    event.stopPropagation();
                     if (window.innerWidth < 811) {
-                      showComingSoonToast();
+                      event.preventDefault();
+                      showComingSoonToast("featureLaunch");
                     } else {
-                      openCarouselAt(originalIndex);
+                      setOpenContextMenuId(null);
                     }
                   }}
-                />
+                >
+                  <span className="material-symbols-rounded text-[1.375rem]">{collectionHref ? "collections" : "public"}</span>
+                  <span>{viewLabel}</span>
+                </Link>
               )}
-            </div>
-
-            {/* More options button */}
-            <MoreOptionsButton
-              isOpen={isMenuOpen}
-              label="Open media menu"
-              size="sm"
-              onClick={(event) => {
-                event.preventDefault();
-                event.stopPropagation();
-                setOpenContextMenuId(isMenuOpen ? null : mediaItem.id);
-              }}
-            />
-
-            {/* Flag badge (visible after image loads) */}
-            {displayCountryCode && isLoaded ? (
-              <div className="absolute top-2 right-2 md:top-3 md:right-3 z-20 transition-opacity duration-200 opacity-100 pointer-events-auto">
-                <TooltipProvider delayDuration={100}>
-                  <Tooltip 
-                    content={COUNTRY_LIST_LOOKUP[displayCountryCode.toUpperCase()] || displayCountryCode} 
-                    theme="light" 
-                    side="top"
-                  >
-                    <div className="flex items-center drop-shadow-md cursor-pointer">
-                      <img
-                        src={toFlagAssetPath(displayCountryCode)}
-                        alt={displayCountryCode}
-                        className="h-3.5 w-5 rounded-xs object-cover"
-                      />
-                    </div>
-                  </Tooltip>
-                </TooltipProvider>
-              </div>
-            ) : null}
-
-            {/* Context menu */}
-            {isMenuOpen ? (
-              <ContextMenu
-                kind="media"
-                viewLabel={viewLabel}
-                shareLabel="Share photo"
-                flagCode={collectionHref ? undefined : displayCountryCode}
-                viewHref={viewHref}
-                onShare={() => {
+              <button
+                type="button"
+                role="menuitem"
+                onClick={(event) => {
+                  event.preventDefault();
+                  event.stopPropagation();
+                  setOpenContextMenuId(null);
                   const shareUrl = new URL(window.location.origin);
                   if (collectionHref?.includes("/collection/")) {
                     shareUrl.pathname = collectionHref;
@@ -746,14 +685,35 @@ function JsMasonryGrid({
                     ownerAvatar: shareOwnerAvatar,
                   });
                 }}
-                onClose={() => setOpenContextMenuId(null)}
-                menuRef={contextMenuRef}
-              />
-            ) : null}
+                className="flex w-full items-center gap-3 text-[0.9375rem] font-medium tracking-[-0.3px] text-white hover:text-[#d4d4d4] transition-colors"
+              >
+                <span className="material-symbols-rounded text-[1.375rem]">share</span>
+                <span>Share media</span>
+              </button>
+            </div>
           </div>
-        );
-      }}
-    />
+        )}
+      </div>
+    );
+  };
+
+  return (
+    <div className="w-full">
+      {/* Desktop: 4 explicit flex columns */}
+      <div className="hidden lg:flex gap-[1.25rem] items-start w-full">
+        {[0, 1, 2, 3].map((colIdx) => (
+          <div key={colIdx} className="flex-1 min-w-0 flex flex-col gap-[1.25rem]">
+            {orderedItems
+              .filter((_, i) => i % 4 === colIdx)
+              .map((mediaItem) => renderMediaItem(mediaItem, false))}
+          </div>
+        ))}
+      </div>
+      {/* Mobile/tablet: 2-column CSS columns */}
+      <div className="lg:hidden columns-2 gap-[0.375rem] w-full">
+        {orderedItems.map((mediaItem) => renderMediaItem(mediaItem, true))}
+      </div>
+    </div>
   );
 }
 
@@ -1089,6 +1049,14 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
   const headerFlagCodes = useMemo(() => {
     const codes = profile.visitedCountryCodes ?? [];
     return codes.slice(0, 30).map((c) => c.toUpperCase());
+  }, [profile.visitedCountryCodes]);
+
+  const allVisitedCountries = useMemo(() => {
+    const codes = profile.visitedCountryCodes ?? [];
+    return codes.map((c) => ({
+      code: c.toUpperCase(),
+      name: getCountryName(c) || c
+    }));
   }, [profile.visitedCountryCodes]);
 
   const flagOverflowCount = Math.max(0, (profile.countries ?? 0) - headerFlagCodes.length);
@@ -1517,11 +1485,16 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                     })}
                   </TooltipProvider>
                   {flagOverflowCount > 0 && (
-                    <div className="flex h-3 w-4.5 lg:h-4 lg:w-6 xl:h-5 xl:w-7.5 shrink-0 items-center justify-center overflow-hidden rounded-xs bg-white">
-                      <span className="font-medium text-violet-600 text-[0.5rem] lg:text-[0.625rem] xl:text-xs text-center tracking-[-0.408px] whitespace-nowrap">
-                        +{flagOverflowCount}
-                      </span>
-                    </div>
+                    <CountriesPopup
+                      countries={allVisitedCountries}
+                      trigger={
+                        <div className="flex h-3 w-4.5 lg:h-4 lg:w-6 xl:h-5 xl:w-7.5 shrink-0 items-center justify-center overflow-hidden rounded-xs bg-white cursor-pointer hover:opacity-80 transition-opacity">
+                          <span className="font-medium text-violet-600 text-[0.5rem] lg:text-[0.625rem] xl:text-xs text-center tracking-[-0.408px] whitespace-nowrap">
+                            +{flagOverflowCount}
+                          </span>
+                        </div>
+                      }
+                    />
                   )}
                 </div>
 

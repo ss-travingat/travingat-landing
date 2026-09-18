@@ -1,6 +1,7 @@
 import React from "react";
 import LoadedImage from "@/components/ui/LoadedImage";
 import { toLandingAssetUrl } from "@/lib/landing-assets";
+import { CountriesPopup } from "@/components/ui/CountriesPopup";
 
 interface CardProps {
   form: {
@@ -163,9 +164,14 @@ export function ClassicCard({ form, sampleFlags, visitedArray, isPreview }: Card
                 </div>
               ))}
               {visitedArray.length > 35 && (
-                <div className="flex h-[13.333px] w-[20px] shrink-0 items-center justify-center bg-[#533df6] text-[8px] font-bold text-white tracking-[-0.408px] leading-none">
-                  +{visitedArray.length - 35}
-                </div>
+                <CountriesPopup
+                  countries={visitedArray.map((c) => ({ name: c, code: sampleFlags[c] || "" }))}
+                  trigger={
+                    <div className="flex h-[13.333px] w-[20px] shrink-0 items-center justify-center bg-[#533df6] text-[8px] font-bold text-white tracking-[-0.408px] leading-none cursor-pointer hover:opacity-80 transition-opacity">
+                      +{visitedArray.length - 35}
+                    </div>
+                  }
+                />
               )}
             </>
           ) : (
@@ -258,9 +264,14 @@ export function MinimalCard({ form, sampleFlags, visitedArray, isPreview }: Card
                     </div>
                  ))}
                  {visitedArray.length > 35 && (
-                    <div className="flex h-[18px] min-w-[26px] shrink-0 items-center justify-center rounded-[2px] bg-[#533df6] px-1 text-[11px] font-medium text-white">
-                      +{visitedArray.length - 35}
-                    </div>
+                    <CountriesPopup
+                      countries={visitedArray.map((c) => ({ name: c, code: sampleFlags[c] || "" }))}
+                      trigger={
+                        <div className="flex h-[18px] min-w-[26px] shrink-0 items-center justify-center rounded-[2px] bg-[#533df6] px-1 text-[11px] font-medium text-white cursor-pointer hover:opacity-80 transition-opacity">
+                          +{visitedArray.length - 35}
+                        </div>
+                      }
+                    />
                  )}
                </>
              ) : (
@@ -365,9 +376,14 @@ export function AdventureCard({ form, sampleFlags, visitedArray, isPreview }: Ca
                   </div>
                 ))}
                 {visitedArray.length > 35 && (
-                  <div className="flex h-[13.333px] min-w-[26px] shrink-0 items-center justify-center rounded-[2px] bg-[#533df6] px-1 text-[9px] font-medium text-white">
-                    +{visitedArray.length - 35}
-                  </div>
+                  <CountriesPopup
+                    countries={visitedArray.map((c) => ({ name: c, code: sampleFlags[c] || "" }))}
+                    trigger={
+                      <div className="flex h-[13.333px] min-w-[26px] shrink-0 items-center justify-center rounded-[2px] bg-[#533df6] px-1 text-[9px] font-medium text-white cursor-pointer hover:opacity-80 transition-opacity">
+                        +{visitedArray.length - 35}
+                      </div>
+                    }
+                  />
                 )}
               </>
             ) : (
