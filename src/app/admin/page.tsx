@@ -2,6 +2,13 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+const BouncingDots = () => (
+  <div className="flex items-center justify-center gap-[3px] h-[36px]">
+    <div className="w-[5px] h-[5px] bg-white/70 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+    <div className="w-[5px] h-[5px] bg-white/70 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+    <div className="w-[5px] h-[5px] bg-white/70 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+  </div>
+);
 
 export default function AdminPage() {
   const [userCount, setUserCount] = useState<number | null>(null);
@@ -35,59 +42,56 @@ export default function AdminPage() {
           Overview of platform activity, user management, and administrative tools.
         </p>
 
-        {/* Users & Waitlist Hero Card */}
-        <div className="mb-6">
+        {/* Main Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          
+          {/* Users & Waitlist Card (Spans 2 columns on large screens) */}
           <Link
             href="/admin/users"
-            className="group ds-shell flex flex-col md:flex-row md:items-center justify-between p-6 md:p-8 transition-all hover:border-[#5A45F9]/50 hover:shadow-[0_0_40px_rgba(90,69,249,0.15)] relative overflow-hidden"
+            className="group ds-card lg:col-span-2 p-7 transition-all hover:border-white/20 hover:bg-[#151618] hover:shadow-[0_0_30px_rgba(255,255,255,0.03)] flex flex-col relative overflow-hidden"
           >
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-[#5A45F9]/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-            
-            <div className="flex items-start gap-5 relative z-10">
-              <div className="w-14 h-14 rounded-2xl bg-[#5A45F9]/10 flex items-center justify-center shrink-0 border border-[#5A45F9]/20 shadow-[0_0_15px_rgba(90,69,249,0.2)] group-hover:shadow-[0_0_25px_rgba(90,69,249,0.4)] transition-all">
-                <span className="material-symbols-rounded text-[28px] text-[#5A45F9]">group</span>
+            <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-6 mb-6">
+              <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/5 flex items-center justify-center text-white/50 group-hover:text-white group-hover:bg-white/10 group-hover:border-white/10 transition-all">
+                <span className="material-symbols-rounded text-[24px]">group</span>
               </div>
-              <div className="pt-1">
-                <h3 className="ds-font-display text-[24px] font-semibold mb-1 text-white group-hover:text-[#5A45F9] transition-colors tracking-tight">
-                  Users & Waitlist
-                </h3>
-                <p className="ds-font-body text-[#798298] text-[14px] max-w-md leading-relaxed">
-                  View waitlist signups, registered users, activity patterns, and comprehensive admin controls.
-                </p>
+              <div className="flex items-center gap-6 bg-[#0f1116] border border-[#20242d] rounded-xl px-5 py-3">
+                <div className="text-center">
+                  <div className="ds-font-display text-2xl font-semibold text-white tracking-tight flex items-center justify-center min-h-[36px]">
+                    {userCount !== null ? userCount.toLocaleString() : <BouncingDots />}
+                  </div>
+                  <p className="ds-font-body text-[11px] font-semibold uppercase tracking-wider text-white/40 mt-1">Users</p>
+                </div>
+                <div className="w-px h-8 bg-white/10" />
+                <div className="text-center">
+                  <div className="ds-font-display text-2xl font-semibold text-white tracking-tight flex items-center justify-center min-h-[36px]">
+                    {waitlistCount !== null ? waitlistCount.toLocaleString() : <BouncingDots />}
+                  </div>
+                  <p className="ds-font-body text-[11px] font-semibold uppercase tracking-wider text-white/40 mt-1">Waitlist</p>
+                </div>
               </div>
             </div>
 
-            <div className="flex flex-col md:items-end gap-4 mt-6 md:mt-0 relative z-10 md:pl-8 border-t md:border-t-0 md:border-l border-[#2d2f37] pt-6 md:pt-0">
-              <div className="flex items-center gap-6 md:gap-8">
-                <div className="text-left md:text-right">
-                  <p className="ds-font-display text-3xl font-semibold text-white tracking-tight">
-                    {userCount !== null ? userCount.toLocaleString() : "..."}
-                  </p>
-                  <p className="ds-font-body text-[11px] font-semibold uppercase tracking-wider text-[#5A45F9] mt-1">Users</p>
-                </div>
-                <div className="text-left md:text-right">
-                  <p className="ds-font-display text-3xl font-semibold text-white tracking-tight">
-                    {waitlistCount !== null ? waitlistCount.toLocaleString() : "..."}
-                  </p>
-                  <p className="ds-font-body text-[11px] font-semibold uppercase tracking-wider text-[#5A45F9] mt-1">Waitlist</p>
-                </div>
-              </div>
-              <span className="text-[#5A45F9] text-[13px] font-medium opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1.5 ds-font-body mt-2 md:mt-0">
-                Manage accounts <span className="material-symbols-rounded text-[16px]">arrow_forward</span>
+            <h3 className="ds-font-display text-[24px] font-semibold mb-2 text-white transition-colors tracking-tight">
+              Users & Waitlist
+            </h3>
+            <p className="ds-font-body text-[#798298] text-[15px] leading-relaxed max-w-lg mb-8 flex-1">
+              View waitlist signups, registered users, activity patterns, and comprehensive admin controls.
+            </p>
+
+            <div className="flex items-center justify-between mt-auto pt-5 border-t border-[#20242d] group-hover:border-white/10 transition-colors">
+              <span className="ds-font-body text-white/70 group-hover:text-white text-[14px] font-medium transition-colors">
+                Manage accounts
               </span>
+              <span className="material-symbols-rounded text-[20px] text-white/50 group-hover:text-white transition-all transform group-hover:translate-x-1">arrow_forward</span>
             </div>
           </Link>
-        </div>
-
-        {/* Secondary Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           
           {/* Profiles List */}
           <Link
             href="/admin-profiles"
-            className="group ds-card p-7 transition-all hover:border-[#5A45F9]/50 hover:bg-[#151a26] hover:shadow-[0_0_30px_rgba(90,69,249,0.08)] flex flex-col h-full relative"
+            className="group ds-card p-7 transition-all hover:border-white/20 hover:bg-[#151618] hover:shadow-[0_0_30px_rgba(255,255,255,0.03)] flex flex-col h-full relative"
           >
-            <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center mb-6 text-white/70 group-hover:text-[#5A45F9] group-hover:bg-[#5A45F9]/10 group-hover:border-[#5A45F9]/20 transition-all">
+            <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/5 flex items-center justify-center mb-6 text-white/50 group-hover:text-white group-hover:bg-white/10 group-hover:border-white/10 transition-all">
               <span className="material-symbols-rounded text-[24px]">id_card</span>
             </div>
             <h3 className="ds-font-display text-[20px] font-semibold mb-2 text-white transition-colors tracking-tight">
@@ -96,20 +100,20 @@ export default function AdminPage() {
             <p className="ds-font-body text-[#798298] text-[14px] leading-relaxed flex-1">
               Browse and manage all traveler profiles currently active on the platform.
             </p>
-            <div className="flex items-center justify-between mt-8 pt-5 border-t border-[#20242d] group-hover:border-[#5A45F9]/20 transition-colors">
+            <div className="flex items-center justify-between mt-8 pt-5 border-t border-[#20242d] group-hover:border-white/10 transition-colors">
               <span className="ds-font-display text-[15px] font-semibold text-white/90">
                 {profileCount !== null ? `${profileCount} Profiles` : "Loading..."}
               </span>
-              <span className="material-symbols-rounded text-[18px] text-[#5A45F9] opacity-0 group-hover:opacity-100 transition-opacity transform group-hover:translate-x-1">arrow_forward</span>
+              <span className="material-symbols-rounded text-[18px] text-white/50 opacity-0 group-hover:opacity-100 transition-all transform group-hover:translate-x-1">arrow_forward</span>
             </div>
           </Link>
 
           {/* Featured Profiles */}
           <Link
             href="/admin/profiles"
-            className="group ds-card p-7 transition-all hover:border-[#5A45F9]/50 hover:bg-[#151a26] hover:shadow-[0_0_30px_rgba(90,69,249,0.08)] flex flex-col h-full relative"
+            className="group ds-card p-7 transition-all hover:border-white/20 hover:bg-[#151618] hover:shadow-[0_0_30px_rgba(255,255,255,0.03)] flex flex-col h-full relative"
           >
-            <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center mb-6 text-white/70 group-hover:text-[#5A45F9] group-hover:bg-[#5A45F9]/10 group-hover:border-[#5A45F9]/20 transition-all">
+            <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/5 flex items-center justify-center mb-6 text-white/50 group-hover:text-white group-hover:bg-white/10 group-hover:border-white/10 transition-all">
               <span className="material-symbols-rounded text-[24px]">public</span>
             </div>
             <h3 className="ds-font-display text-[20px] font-semibold mb-2 text-white transition-colors tracking-tight">
@@ -118,20 +122,20 @@ export default function AdminPage() {
             <p className="ds-font-body text-[#798298] text-[14px] leading-relaxed flex-1">
               Curate and highlight top traveler profiles. Control images, links, and featured status.
             </p>
-            <div className="flex items-center justify-between mt-8 pt-5 border-t border-[#20242d] group-hover:border-[#5A45F9]/20 transition-colors">
-              <span className="ds-font-body text-[#5A45F9] text-[13px] font-medium opacity-0 group-hover:opacity-100 transition-opacity">
+            <div className="flex items-center justify-between mt-8 pt-5 border-t border-[#20242d] group-hover:border-white/10 transition-colors">
+              <span className="ds-font-body text-white/70 group-hover:text-white text-[13px] font-medium transition-colors">
                 Manage featured
               </span>
-              <span className="material-symbols-rounded text-[18px] text-[#5A45F9] opacity-0 group-hover:opacity-100 transition-opacity transform group-hover:translate-x-1">arrow_forward</span>
+              <span className="material-symbols-rounded text-[18px] text-white/50 opacity-0 group-hover:opacity-100 transition-all transform group-hover:translate-x-1">arrow_forward</span>
             </div>
           </Link>
 
           {/* Featured Requests */}
           <Link
             href="/admin/featured-requests"
-            className="group ds-card p-7 transition-all hover:border-[#5A45F9]/50 hover:bg-[#151a26] hover:shadow-[0_0_30px_rgba(90,69,249,0.08)] flex flex-col h-full relative"
+            className="group ds-card p-7 transition-all hover:border-white/20 hover:bg-[#151618] hover:shadow-[0_0_30px_rgba(255,255,255,0.03)] flex flex-col h-full relative"
           >
-            <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center mb-6 text-white/70 group-hover:text-[#5A45F9] group-hover:bg-[#5A45F9]/10 group-hover:border-[#5A45F9]/20 transition-all">
+            <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/5 flex items-center justify-center mb-6 text-white/50 group-hover:text-white group-hover:bg-white/10 group-hover:border-white/10 transition-all">
               <span className="material-symbols-rounded text-[24px]">mark_email_unread</span>
             </div>
             <h3 className="ds-font-display text-[20px] font-semibold mb-2 text-white transition-colors tracking-tight">
@@ -140,20 +144,20 @@ export default function AdminPage() {
             <p className="ds-font-body text-[#798298] text-[14px] leading-relaxed flex-1">
               Review applications from users requesting to be featured on the platform.
             </p>
-            <div className="flex items-center justify-between mt-8 pt-5 border-t border-[#20242d] group-hover:border-[#5A45F9]/20 transition-colors">
-              <span className="ds-font-body text-[#5A45F9] text-[13px] font-medium opacity-0 group-hover:opacity-100 transition-opacity">
+            <div className="flex items-center justify-between mt-8 pt-5 border-t border-[#20242d] group-hover:border-white/10 transition-colors">
+              <span className="ds-font-body text-white/70 group-hover:text-white text-[13px] font-medium transition-colors">
                 Review queue
               </span>
-              <span className="material-symbols-rounded text-[18px] text-[#5A45F9] opacity-0 group-hover:opacity-100 transition-opacity transform group-hover:translate-x-1">arrow_forward</span>
+              <span className="material-symbols-rounded text-[18px] text-white/50 opacity-0 group-hover:opacity-100 transition-all transform group-hover:translate-x-1">arrow_forward</span>
             </div>
           </Link>
 
           {/* Design System */}
           <Link
             href="/designsystem"
-            className="group ds-card p-7 transition-all hover:border-[#5A45F9]/50 hover:bg-[#151a26] hover:shadow-[0_0_30px_rgba(90,69,249,0.08)] flex flex-col h-full relative"
+            className="group ds-card p-7 transition-all hover:border-white/20 hover:bg-[#151618] hover:shadow-[0_0_30px_rgba(255,255,255,0.03)] flex flex-col h-full relative"
           >
-            <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center mb-6 text-white/70 group-hover:text-[#5A45F9] group-hover:bg-[#5A45F9]/10 group-hover:border-[#5A45F9]/20 transition-all">
+            <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/5 flex items-center justify-center mb-6 text-white/50 group-hover:text-white group-hover:bg-white/10 group-hover:border-white/10 transition-all">
               <span className="material-symbols-rounded text-[24px]">palette</span>
             </div>
             <h3 className="ds-font-display text-[20px] font-semibold mb-2 text-white transition-colors tracking-tight">
@@ -162,11 +166,11 @@ export default function AdminPage() {
             <p className="ds-font-body text-[#798298] text-[14px] leading-relaxed flex-1">
               Browse the visual foundations, color palettes, typography, and core components.
             </p>
-            <div className="flex items-center justify-between mt-8 pt-5 border-t border-[#20242d] group-hover:border-[#5A45F9]/20 transition-colors">
-              <span className="ds-font-body text-[#5A45F9] text-[13px] font-medium opacity-0 group-hover:opacity-100 transition-opacity">
+            <div className="flex items-center justify-between mt-8 pt-5 border-t border-[#20242d] group-hover:border-white/10 transition-colors">
+              <span className="ds-font-body text-white/70 group-hover:text-white text-[13px] font-medium transition-colors">
                 View components
               </span>
-              <span className="material-symbols-rounded text-[18px] text-[#5A45F9] opacity-0 group-hover:opacity-100 transition-opacity transform group-hover:translate-x-1">arrow_forward</span>
+              <span className="material-symbols-rounded text-[18px] text-white/50 opacity-0 group-hover:opacity-100 transition-all transform group-hover:translate-x-1">arrow_forward</span>
             </div>
           </Link>
 
@@ -175,7 +179,7 @@ export default function AdminPage() {
             href="/admin/recycle-bin"
             className="group ds-card p-7 transition-all hover:border-red-500/50 hover:bg-[#1a1111] hover:shadow-[0_0_30px_rgba(239,68,68,0.08)] flex flex-col h-full relative"
           >
-            <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center mb-6 text-white/70 group-hover:text-red-500 group-hover:bg-red-500/10 group-hover:border-red-500/20 transition-all">
+            <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/5 flex items-center justify-center mb-6 text-white/50 group-hover:text-red-500 group-hover:bg-red-500/10 group-hover:border-red-500/20 transition-all">
               <span className="material-symbols-rounded text-[24px]">delete</span>
             </div>
             <h3 className="ds-font-display text-[20px] font-semibold mb-2 text-white transition-colors tracking-tight">
@@ -185,10 +189,10 @@ export default function AdminPage() {
               Recover or permanently purge soft-deleted records. Items are kept for 30 days.
             </p>
             <div className="flex items-center justify-between mt-8 pt-5 border-t border-[#20242d] group-hover:border-red-500/20 transition-colors">
-              <span className="ds-font-body text-red-500 text-[13px] font-medium opacity-0 group-hover:opacity-100 transition-opacity">
+              <span className="ds-font-body text-white/70 group-hover:text-red-500 text-[13px] font-medium transition-colors">
                 Manage deletions
               </span>
-              <span className="material-symbols-rounded text-[18px] text-red-500 opacity-0 group-hover:opacity-100 transition-opacity transform group-hover:translate-x-1">arrow_forward</span>
+              <span className="material-symbols-rounded text-[18px] text-red-500 opacity-0 group-hover:opacity-100 transition-all transform group-hover:translate-x-1">arrow_forward</span>
             </div>
           </Link>
           
