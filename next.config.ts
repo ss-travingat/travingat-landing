@@ -62,14 +62,13 @@ const nextConfig: NextConfig = {
     ];
   },
   async rewrites() {
-    return {
-      fallback: [
-        {
-          source: "/:username",
-          destination: "/profiles/:username",
-        },
-      ],
-    };
+    return [
+      {
+        // Negative lookahead to ensure we don't accidentally rewrite known pages and API routes
+        source: "/:username((?!api|admin|blog|pricing|templates|_next|static|favicon\\.ico).*)",
+        destination: "/profiles/:username",
+      },
+    ];
   },
 };
 

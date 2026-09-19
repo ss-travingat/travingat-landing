@@ -65,6 +65,7 @@ export default async function proxy(req: NextRequest) {
   const isExplorerCardApi = url.pathname === '/api/explorercard';
   const isAuthApi = url.pathname.startsWith('/api/auth');
   const isViewExplorerCard = url.pathname.startsWith('/view/explorercard');
+  const isPublicProfileFrontend = url.pathname.startsWith('/profiles/');
   const isPublicResourceApi = 
     url.pathname.startsWith('/api/blogs') ||
     url.pathname.startsWith('/api/profiles') ||
@@ -80,7 +81,7 @@ export default async function proxy(req: NextRequest) {
   const isEditExplorerCard = url.pathname.startsWith('/edit/explorercard');
 
   // Allow the public APIs and login routes without auth.
-  if (isWaitlistApi || isExplorerCardApi || isViewExplorerCard || isJoinExplorerCard || isEditExplorerCard || isAuthApi || isPublicResourceApi || isLoginPage || isAdminLoginApi) {
+  if (isWaitlistApi || isExplorerCardApi || isViewExplorerCard || isPublicProfileFrontend || isJoinExplorerCard || isEditExplorerCard || isAuthApi || isPublicResourceApi || isLoginPage || isAdminLoginApi) {
     return NextResponse.next({ request: { headers: requestHeaders } });
   }
 
