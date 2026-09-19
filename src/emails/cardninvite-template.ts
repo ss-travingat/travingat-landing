@@ -15,7 +15,7 @@ export function buildCardAndInviteEmail(name: string, editUrl: string): string {
           padding: 0;
           -webkit-font-smoothing: antialiased;
         }
-        .container {
+        .email-container {
           max-width: 600px;
           margin: 0 auto;
           background-color: #ffffff;
@@ -128,9 +128,7 @@ export function buildCardAndInviteEmail(name: string, editUrl: string): string {
           line-height: 1.5;
         }
         .footer {
-          margin-top: 48px;
-          padding-top: 32px;
-          border-top: 1px solid #E5E7EB;
+          padding-top: 40px;
           text-align: center;
         }
         .footer-logo img {
@@ -158,7 +156,7 @@ export function buildCardAndInviteEmail(name: string, editUrl: string): string {
           margin: 0;
         }
         @media only screen and (max-width: 600px) {
-          .container {
+          .email-container {
             padding: 32px 16px;
           }
           .feature-cell-left {
@@ -187,14 +185,13 @@ export function buildCardAndInviteEmail(name: string, editUrl: string): string {
             font-size: 14px;
           }
           .footer {
-            margin-top: 32px;
-            padding-top: 24px;
+            padding-top: 40px;
           }
         }
       </style>
     </head>
     <body>
-      <div class="container">
+      <div class="email-container">
         <div class="logo">
           <img src="https://cdn.travingat.com/landingpage-assets/emails/travingat-logo-black.png" alt="Travingat" width="131" height="25" style="display: block; border: 0; outline: none; text-decoration: none;" />
         </div>
