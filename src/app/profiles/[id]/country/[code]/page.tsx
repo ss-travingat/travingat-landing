@@ -1,4 +1,4 @@
-import { redirect, notFound } from "next/navigation";
+import { notFound } from "next/navigation";
 import { CountryDetailComponent } from "@/features/profilepages";
 import { getAllActiveProfiles, getProfileByHandle } from "@/lib/profiles";
 
@@ -35,7 +35,7 @@ export default async function CountryDetailPage({
   const profile = await getProfileByHandle(decodedId);
 
   if (!profile) {
-    redirect("https://travingat.com/");
+    notFound();
   }
 
   const countryEntry = profile.countryImages?.find(
@@ -55,7 +55,7 @@ export default async function CountryDetailPage({
     : null;
 
   if (!images) {
-    redirect(`/${decodedId}`);
+    notFound();
   }
 
   return (

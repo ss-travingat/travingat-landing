@@ -1,4 +1,4 @@
-import { redirect, notFound } from "next/navigation";
+import { notFound } from "next/navigation";
 import { CollectionDetailComponent } from "@/features/profilepages";
 import { getAllActiveProfiles, getProfileByHandle } from "@/lib/profiles";
 
@@ -33,14 +33,14 @@ export default async function CollectionDetailPage({
   const profile = await getProfileByHandle(decodedId);
 
   if (!profile) {
-    redirect("https://travingat.com/");
+    notFound();
   }
 
   const idx = parseInt(index, 10);
   const collectionEntry = profile.collectionImages?.[idx];
 
   if (!collectionEntry) {
-    redirect(`/${decodedId}`);
+    notFound();
   }
 
   return (

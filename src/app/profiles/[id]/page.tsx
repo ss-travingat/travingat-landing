@@ -1,4 +1,4 @@
-import { redirect, notFound } from "next/navigation";
+import { notFound } from "next/navigation";
 import { ProfileComponent } from "@/features/profilepages";
 import { getAllActiveProfiles, getProfileByHandle } from "@/lib/profiles";
 
@@ -25,7 +25,7 @@ export default async function ProfilePage({
   const profile = await getProfileByHandle(decodedId);
 
   if (!profile) {
-    redirect("https://travingat.com/");
+    notFound();
   }
 
   return <ProfileComponent profile={profile} />;
