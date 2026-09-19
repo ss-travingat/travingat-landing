@@ -61,6 +61,14 @@ const nextConfig: NextConfig = {
       }
     ];
   },
+  async rewrites() {
+    return [
+      {
+        source: "/:username",
+        destination: "/profiles/:username",
+      },
+    ];
+  },
 };
 
 export default nextConfig;
