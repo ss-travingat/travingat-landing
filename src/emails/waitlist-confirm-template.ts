@@ -24,7 +24,7 @@ export function buildWaitlistConfirmEmail(confirmUrl: string): string {
           max-width: 600px;
           margin: 0 auto;
           background-color: #ffffff;
-          padding: 60px 0 0 0;
+          padding: 60px 12px 0 12px;
         }
         .wc-logo-container {
           text-align: left;

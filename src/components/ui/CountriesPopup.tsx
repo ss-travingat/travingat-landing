@@ -40,10 +40,11 @@ export function CountriesPopup({ trigger, countries }: CountriesPopupProps) {
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0" />
         <Dialog.Content
-          className="fixed left-[50%] top-[50%] z-50 flex w-full max-w-[400px] max-h-[75vh] translate-x-[-50%] translate-y-[-50%] flex-col rounded-[20px] bg-[#1a1a1a] border border-white/5 shadow-2xl overflow-hidden data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] outline-none"
+          className="fixed bottom-4 left-4 z-50 flex w-[calc(100vw-32px)] max-h-[80vh] flex-col rounded-[20px] bg-[#1a1a1a] border border-white/5 shadow-2xl overflow-hidden outline-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:slide-out-to-bottom-[150%] data-[state=open]:slide-in-from-bottom-[150%] md:bottom-auto md:left-[50%] md:top-[50%] md:w-full md:max-w-[400px] md:max-h-[75vh] md:-translate-x-1/2 md:-translate-y-1/2 md:data-[state=closed]:zoom-out-95 md:data-[state=open]:zoom-in-95 md:data-[state=closed]:slide-out-to-left-1/2 md:data-[state=closed]:slide-out-to-top-[48%] md:data-[state=open]:slide-in-from-left-1/2 md:data-[state=open]:slide-in-from-top-[48%]"
           style={fontRenderingStyles}
         >
-          <div className="px-5 py-5 pb-3 shrink-0">
+          <div className="px-5 pt-3 pb-3 shrink-0">
+            <div className="mx-auto mb-4 h-1 w-8 rounded-full bg-white/20 md:hidden" />
             <Dialog.Title asChild>
               <span
                 className="block text-white text-left ds-font-display m-0 px-3"

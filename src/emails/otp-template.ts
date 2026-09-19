@@ -20,13 +20,12 @@ export function buildOtpEmail(otp: string): string {
           background-color: #111111;
           padding: 40px 0;
         }
-        .container {
+        .email-container {
           max-width: 520px;
           margin: 0 auto;
           background-color: #1a1a1a;
           border-radius: 16px;
           overflow: hidden;
-          box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
         }
         .header {
           text-align: center;
@@ -76,18 +75,18 @@ export function buildOtpEmail(otp: string): string {
           margin-left: 12px;
         }
         .footer {
+          padding-top: 40px;
           padding: 24px 40px;
           background-color: #1a1a1a;
           text-align: center;
           font-size: 13px;
           color: #737373;
-          border-top: 1px solid #262626;
-        }
+          }
       </style>
     </head>
     <body>
       <div class="wrapper">
-        <div class="container">
+        <div class="email-container">
           <div class="header">
             <div class="brand-mark" aria-label="Travingat logo">
               <svg width="150" height="29" viewBox="0 0 150 29" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Travingat">

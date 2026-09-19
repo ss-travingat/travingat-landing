@@ -23,8 +23,94 @@ import { buildCardAndInviteEmail } from "@/emails/cardninvite-template";
 import { buildWaitlistConfirmEmail } from "@/emails/waitlist-confirm-template";
 import { buildWelcomeWaitlistEmail } from "@/emails/welcome-waitlist-template";
 import { buildGetFeaturedEmail } from "@/emails/get-featured-template";
+import { buildFoundingExplorerInviteEmail } from "@/emails/founding-explorer-invite-template";
+
+
+const EyeIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
+    <circle cx="12" cy="12" r="3" />
+  </svg>
+);
+
+const EyeOffIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24" />
+    <path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68" />
+    <path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61" />
+    <line x1="2" x2="22" y1="2" y2="22" />
+  </svg>
+);
+
+const MonitorIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" x2="16" y1="21" y2="21"/><line x1="12" x2="12" y1="17" y2="21"/></svg>
+);
+
+const SmartphoneIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/></svg>
+);
+
+function EmailPreviewBox({ title, htmlContent }: { title: string, htmlContent: string }) {
+  const [showCode, setShowCode] = useState(false);
+  const [viewMode, setViewMode] = useState<'desktop' | 'mobile'>('desktop');
+
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-3">
+        <p className="ds-font-body text-[13px] font-semibold uppercase tracking-[0.12em] text-[#7e889c] m-0">
+          {title}
+        </p>
+        <div className="flex items-center gap-2">
+          {!showCode && (
+            <div className="flex items-center gap-1 mr-2 bg-[#1c212c] p-1 rounded-md">
+              <button 
+                onClick={() => setViewMode('desktop')}
+                className={`p-1.5 rounded-sm transition-colors ${viewMode === 'desktop' ? 'bg-[#2a3140] text-white shadow-sm' : 'text-[#7e889c] hover:text-white'}`}
+                title="Desktop View (600px)"
+              >
+                <MonitorIcon />
+              </button>
+              <button 
+                onClick={() => setViewMode('mobile')}
+                className={`p-1.5 rounded-sm transition-colors ${viewMode === 'mobile' ? 'bg-[#2a3140] text-white shadow-sm' : 'text-[#7e889c] hover:text-white'}`}
+                title="Mobile View (360px)"
+              >
+                <SmartphoneIcon />
+              </button>
+            </div>
+          )}
+          <button 
+            onClick={() => setShowCode(!showCode)}
+            className="text-[#7e889c] hover:text-white transition-colors flex items-center justify-center p-1.5 bg-[#1c212c] rounded-md shadow-sm"
+            title={showCode ? "Show Preview" : "Show HTML code"}
+          >
+            {showCode ? <EyeOffIcon /> : <EyeIcon />}
+          </button>
+        </div>
+      </div>
+      
+      {showCode ? (
+        <div className="p-4 bg-[#0f1116] rounded-xl border border-[#252525] overflow-auto max-h-[800px]">
+          <pre className="text-xs text-[#a1a1aa] whitespace-pre-wrap font-mono">
+            <code>{htmlContent}</code>
+          </pre>
+        </div>
+      ) : (
+        <div className="flex justify-center bg-white p-4 md:p-8 rounded-xl overflow-hidden border border-[#252525]">
+          <iframe
+            className={`w-full transition-all duration-300 ease-in-out origin-top border-0 ${viewMode === 'desktop' ? 'max-w-[600px]' : 'max-w-[360px]'}`}
+            style={{ height: '800px' }}
+            srcDoc={htmlContent}
+            title="Email Preview"
+          />
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default function DesignSystemPage() {
+
   const [isWaitlistOpen, setIsWaitlistOpen] = useState(false);
 
   return (
@@ -186,55 +272,35 @@ export default function DesignSystemPage() {
             <div className="rounded-2xl border border-[#1c212c] bg-[#0b0d13] p-6 lg:col-span-2">
               <h3 className="ds-font-display mb-4 text-[26px] font-semibold text-white">Email Templates</h3>
               <div className="space-y-8">
-                <div>
-                  <p className="ds-font-body mb-3 text-[13px] font-semibold uppercase tracking-[0.12em] text-[#7e889c]">Card & Invite HTML Email Preview</p>
-                  <div className="flex justify-center bg-white p-8 rounded-xl overflow-hidden border border-[#252525]">
-                    <div
-                      className="w-full max-w-[600px] shadow-sm border border-gray-200"
-                      dangerouslySetInnerHTML={{ __html: buildCardAndInviteEmail("Jane Doe", "https://www.travingat.com/explorercard") }}
-                    />
-                  </div>
-                </div>
+                <EmailPreviewBox 
+                  title="Card & Invite HTML Email Preview"
+                  htmlContent={buildCardAndInviteEmail("Jane Doe", "https://www.travingat.com/explorercard")}
+                />
+                
+                <EmailPreviewBox 
+                  title="OTP Verification HTML Email Preview"
+                  htmlContent={buildOtpEmail("1234")}
+                />
 
-                <div>
-                  <p className="ds-font-body mb-3 text-[13px] font-semibold uppercase tracking-[0.12em] text-[#7e889c]">OTP Verification HTML Email Preview</p>
-                  <div className="flex justify-center bg-white p-8 rounded-xl overflow-hidden border border-[#252525]">
-                    <div
-                      className="w-full max-w-[600px] shadow-sm border border-gray-200"
-                      dangerouslySetInnerHTML={{ __html: buildOtpEmail("1234") }}
-                    />
-                  </div>
-                </div>
+                <EmailPreviewBox 
+                  title="Waitlist Confirm HTML Email Preview"
+                  htmlContent={buildWaitlistConfirmEmail("https://www.travingat.com/waitlist/confirm?token=123")}
+                />
 
-                <div>
-                  <p className="ds-font-body mb-3 text-[13px] font-semibold uppercase tracking-[0.12em] text-[#7e889c]">Waitlist Confirm HTML Email Preview</p>
-                  <div className="flex justify-center bg-white p-8 rounded-xl overflow-hidden border border-[#252525]">
-                    <div
-                      className="w-full max-w-[600px]"
-                      dangerouslySetInnerHTML={{ __html: buildWaitlistConfirmEmail("https://www.travingat.com/waitlist/confirm?token=123") }}
-                    />
-                  </div>
-                </div>
+                <EmailPreviewBox 
+                  title="Welcome Waitlist HTML Email Preview"
+                  htmlContent={buildWelcomeWaitlistEmail("https://www.travingat.com/explorercard")}
+                />
 
-                <div>
-                  <p className="ds-font-body mb-3 text-[13px] font-semibold uppercase tracking-[0.12em] text-[#7e889c]">Welcome Waitlist HTML Email Preview</p>
-                  <div className="flex justify-center bg-white p-8 rounded-xl overflow-hidden border border-[#252525]">
-                    <div
-                      className="w-full max-w-[600px]"
-                      dangerouslySetInnerHTML={{ __html: buildWelcomeWaitlistEmail("https://www.travingat.com/explorercard") }}
-                    />
-                  </div>
-                </div>
+                <EmailPreviewBox 
+                  title="Get Featured HTML Email Preview"
+                  htmlContent={buildGetFeaturedEmail("https://www.travingat.com/confirm")}
+                />
 
-                <div>
-                  <p className="ds-font-body mb-3 text-[13px] font-semibold uppercase tracking-[0.12em] text-[#7e889c]">Get Featured HTML Email Preview</p>
-                  <div className="flex justify-center bg-white p-8 rounded-xl overflow-hidden border border-[#252525]">
-                    <div
-                      className="w-full max-w-[600px]"
-                      dangerouslySetInnerHTML={{ __html: buildGetFeaturedEmail("https://www.travingat.com/confirm") }}
-                    />
-                  </div>
-                </div>
+                <EmailPreviewBox 
+                  title="Founding Explorer Invite HTML Email Preview"
+                  htmlContent={buildFoundingExplorerInviteEmail("James", "https://www.travingat.com/upload")}
+                />
               </div>
             </div>
 
