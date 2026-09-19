@@ -9,6 +9,7 @@ const antonio = Antonio({
   subsets: ["latin"],
   variable: "--font-antonio",
   display: "swap",
+  preload: false,
 });
 
 const inter = localFont({
@@ -36,6 +37,7 @@ const inter = localFont({
   ],
   variable: "--font-inter",
   display: "swap",
+  preload: false,
 });
 
 const logoFont = localFont({
@@ -48,6 +50,7 @@ const logoFont = localFont({
   ],
   variable: "--font-logo",
   display: "swap",
+  preload: false,
 });
 
 const interDisplay = localFont({
@@ -75,6 +78,7 @@ const interDisplay = localFont({
   ],
   variable: "--font-inter-display",
   display: "swap",
+  preload: false,
 });
 
 const openSauceTwo = localFont({
@@ -87,12 +91,14 @@ const openSauceTwo = localFont({
   ],
   variable: "--font-open-sauce-two",
   display: "swap",
+  preload: false,
 });
 
 const interGoogle = Inter({
   subsets: ["latin"],
   variable: "--font-inter-google",
   display: "swap",
+  preload: false,
 });
 
 
