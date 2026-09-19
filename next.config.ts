@@ -62,12 +62,14 @@ const nextConfig: NextConfig = {
     ];
   },
   async rewrites() {
-    return [
-      {
-        source: "/:username",
-        destination: "/profiles/:username",
-      },
-    ];
+    return {
+      fallback: [
+        {
+          source: "/:username",
+          destination: "/profiles/:username",
+        },
+      ],
+    };
   },
 };
 

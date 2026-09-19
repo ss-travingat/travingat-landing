@@ -3,9 +3,10 @@ export default {
     const url = new URL(request.url);
     const path = url.pathname;
 
-    // Fast check: If the path has an extension (like .js, .png, .css),
-    // it's an asset. We let Framer handle it.
-    if (/\.[a-z0-9]+$/i.test(path)) {
+    // Fast check: If the path has a known asset extension (like .js, .png, .css),
+    // it's a file. We let Framer handle it. We explicitly list extensions so we
+    // don't accidentally block usernames that contain dots (like "carlos.sails").
+    if (/\.(js|css|png|jpg|jpeg|gif|svg|ico|txt|xml|json|woff|woff2|map)$/i.test(path)) {
       return fetch(request);
     }
 
