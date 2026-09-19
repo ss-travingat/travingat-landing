@@ -55,6 +55,7 @@ function UserActionsDropdown({
   isOpen,
   toggle,
   close,
+  onResendEmail,
 }: {
   user: AdminUser;
   onDelete: (u: AdminUser) => void;
@@ -65,6 +66,7 @@ function UserActionsDropdown({
   isOpen: boolean;
   toggle: () => void;
   close: () => void;
+  onResendEmail: (email: string, type: 'explorer' | 'waitlist' | 'profile') => void;
 }) {
   const ref = useRef<HTMLDivElement>(null);
 
@@ -132,7 +134,7 @@ function UserActionsDropdown({
                 <button
                   className="w-full px-5 py-2 text-[12px] text-white/70 hover:text-white hover:bg-white/5 text-left transition-colors"
                   onClick={() => {
-                    alert("Resend explorer card email (not yet wired)");
+                    onResendEmail(user.email, 'explorer');
                     close();
                   }}
                 >
@@ -180,7 +182,7 @@ function UserActionsDropdown({
             <button
               className="w-full px-5 py-2 text-[12px] text-white/70 hover:text-white hover:bg-white/5 text-left transition-colors"
               onClick={() => {
-                alert("Resend profile email (not yet wired)");
+                onResendEmail(user.email, 'profile');
                 close();
               }}
             >
@@ -206,7 +208,7 @@ function UserActionsDropdown({
                 <button
                   className="w-full px-5 py-2 text-[12px] text-white/70 hover:text-white hover:bg-white/5 text-left transition-colors"
                   onClick={() => {
-                    alert("Resend waitlist confirmation email (not yet wired)");
+                    onResendEmail(user.email, 'waitlist');
                     close();
                   }}
                 >
@@ -326,6 +328,24 @@ export function MainUsersTab() {
     window.location.href = "/admin/login";
   };
 
+  const handleResendEmail = async (email: string, type: 'explorer' | 'waitlist' | 'profile') => {
+    try {
+      const res = await fetch("/api/admin/waitlist/resend", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, type })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        alert(data.message || "Email sent successfully");
+      } else {
+        alert(data.error || "Failed to resend email");
+      }
+    } catch (err) {
+      alert("Network error while trying to resend email");
+    }
+  };
+
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     if (!q) return users;
@@ -434,9 +454,10 @@ export function MainUsersTab() {
                         toggle={() => setOpenDropdownId(openDropdownId === u.id ? null : u.id)}
                         close={() => setOpenDropdownId(null)}
                         onDelete={onDeleteUser}
-                        onToggleStatus={() => {}}
-                        processing={false}
+                        onToggleStatus={onToggleStatus}
+                        processing={processingUserID === u.id}
                         onViewDetails={(user) => setDetailsModalUser(user)}
+                        onResendEmail={handleResendEmail}
                       />
                     </td>
                   </tr>

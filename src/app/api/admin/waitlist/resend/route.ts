@@ -18,11 +18,17 @@ export async function POST(req: Request) {
   }
 
   try {
-    const { id, type } = await req.json();
+    const { id, email, type } = await req.json();
     const db = getDrizzle();
     
     // Fetch the waitlist entry
-    const existing = await db.select().from(waitlist).where(eq(waitlist.id, Number(id))).limit(1);
+    let existing: any[] = [];
+    if (id) {
+      existing = await db.select().from(waitlist).where(eq(waitlist.id, Number(id))).limit(1);
+    } else if (email) {
+      existing = await db.select().from(waitlist).where(eq(waitlist.email, email)).limit(1);
+    }
+    
     if (existing.length === 0) {
       return NextResponse.json({ error: "Waitlist entry not found" }, { status: 404 });
     }
@@ -38,7 +44,7 @@ export async function POST(req: Request) {
       await sendExplorerInviteEmail(entry.email, name);
       return NextResponse.json({ success: true, message: "Explorer card email sent" });
     } else if (type === 'profile') {
-      // TODO: implement profile resend
+      await sendConfirmationEmail(entry.email, entry.confirmation_token || "");
       return NextResponse.json({ success: true, message: "Profile email sent" });
     }
 

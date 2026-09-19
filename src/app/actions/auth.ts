@@ -141,7 +141,6 @@ export async function verifyOtpAction(email: string, otp: string, source?: strin
         .set({
           confirmed: true,
           confirmed_at: sql`COALESCE(${waitlist.confirmed_at}, NOW())`,
-          source: sql`CASE WHEN ${waitlist.source} = 'Waitlist' THEN ${waitlistSource} ELSE ${waitlist.source} END`,
           browser: sql`CASE WHEN ${waitlist.browser} = 'Unknown' OR ${waitlist.browser} IS NULL THEN ${browser} ELSE ${waitlist.browser} END`,
           device: sql`CASE WHEN ${waitlist.device} = 'Unknown' OR ${waitlist.device} IS NULL THEN ${device} ELSE ${waitlist.device} END`,
           country: sql`CASE WHEN ${waitlist.country} = 'Unknown' OR ${waitlist.country} IS NULL THEN ${country || 'Unknown'} ELSE ${waitlist.country} END`,
