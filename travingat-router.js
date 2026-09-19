@@ -3,10 +3,16 @@ export default {
     const url = new URL(request.url);
     const path = url.pathname;
 
-    // Fast check: If the path has a known asset extension (like .js, .png, .css),
-    // it's a file. We let Framer handle it. We explicitly list extensions so we
-    // don't accidentally block usernames that contain dots (like "carlos.sails").
-    if (/\.(js|css|png|jpg|jpeg|gif|svg|ico|txt|xml|json|woff|woff2|map)$/i.test(path)) {
+    // Fast checks: We want Framer to natively handle:
+    // 1. Asset extensions (files)
+    // 2. Non-GET requests (like POSTing a password form)
+    // 3. Framer's internal API/auth routes (starting with /__ or /_api)
+    if (
+      request.method !== 'GET' ||
+      path.startsWith('/__') ||
+      path.startsWith('/_api') ||
+      /\.(js|css|png|jpg|jpeg|gif|svg|ico|txt|xml|json|woff|woff2|map)$/i.test(path)
+    ) {
       return fetch(request);
     }
 
@@ -21,7 +27,8 @@ export default {
       '/privacy',
       '/terms',
       '/about',
-      '/blog'
+      '/blog',
+      '/404'
     ]);
 
     // Get the first segment of the path (e.g. "/johndoe" -> "/johndoe", "/blog/post-1" -> "/blog")
