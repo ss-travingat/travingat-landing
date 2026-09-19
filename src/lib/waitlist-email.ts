@@ -19,7 +19,7 @@ import { buildFoundingExplorerInviteEmail } from "@/emails/founding-explorer-inv
 
 export function buildConfirmationEmail(email: string, token: string) {
   const confirmUrl = `${BASE_URL}/waitlist/confirm?token=${encodeURIComponent(token)}`;
-  return buildWelcomeWaitlistEmail(confirmUrl);
+  return buildWaitlistConfirmEmail(confirmUrl);
 }
 
 export async function sendConfirmationEmail(email: string, token: string) {
@@ -47,7 +47,7 @@ export async function sendWelcomeWaitlistEmail(email: string) {
     return;
   }
 
-  const explorerCardUrl = `${BASE_URL}/explorercard`;
+  const explorerCardUrl = `${BASE_URL}/join/explorercard`;
   const html = buildWelcomeWaitlistEmail(explorerCardUrl);
 
   await getTransporter().sendMail({
