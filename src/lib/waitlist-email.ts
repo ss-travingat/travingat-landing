@@ -15,10 +15,11 @@ function getTransporter() {
 
 import { buildWaitlistConfirmEmail } from "@/emails/waitlist-confirm-template";
 import { buildWelcomeWaitlistEmail } from "@/emails/welcome-waitlist-template";
+import { buildFoundingExplorerInviteEmail } from "@/emails/founding-explorer-invite-template";
 
 export function buildConfirmationEmail(email: string, token: string) {
   const confirmUrl = `${BASE_URL}/waitlist/confirm?token=${encodeURIComponent(token)}`;
-  return buildWaitlistConfirmEmail(confirmUrl);
+  return buildWelcomeWaitlistEmail(confirmUrl);
 }
 
 export async function sendConfirmationEmail(email: string, token: string) {
@@ -55,6 +56,25 @@ export async function sendWelcomeWaitlistEmail(email: string) {
     to: email,
     subject: "Welcome to Travingat",
     text: `You're officially on the waitlist. While you wait, create your free Explorer Card and showcase the countries you've explored: ${explorerCardUrl}`,
+    html,
+  });
+}
+
+export async function sendExplorerInviteEmail(email: string, name: string = "Explorer") {
+  if (!process.env.SMTP_EMAIL || !process.env.SMTP_PASSWORD) {
+    console.warn("SMTP credentials not configured — skipping explorer invite email");
+    return;
+  }
+
+  const uploadUrl = `${BASE_URL}/upload`;
+  const html = buildFoundingExplorerInviteEmail(name, uploadUrl);
+
+  await getTransporter().sendMail({
+    from: `"Team Travingat" <${process.env.SMTP_EMAIL}>`,
+    replyTo: process.env.SMTP_EMAIL,
+    to: email,
+    subject: "You're invited to become a Founding Explorer",
+    text: `Hey ${name}, to receive your Founding Explorer badge, complete your featured travel profile by uploading your travel photos and videos at ${uploadUrl}`,
     html,
   });
 }

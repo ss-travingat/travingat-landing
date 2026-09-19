@@ -1,13 +1,13 @@
 import { NextResponse } from "next/server";
 import { getDrizzle } from "@/lib/drizzle";
-import { waitlist } from "@/db/schema";
+import { waitlist, users } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import {
   getAdminSessionCookieName,
   verifyAdminSessionToken,
 } from "@/lib/admin-session";
 import { cookies } from "next/headers";
-import { sendConfirmationEmail } from "@/lib/waitlist-email";
+import { sendConfirmationEmail, sendExplorerInviteEmail } from "@/lib/waitlist-email";
 
 export async function POST(req: Request) {
   const cookieStore = await cookies();
@@ -33,7 +33,9 @@ export async function POST(req: Request) {
       await sendConfirmationEmail(entry.email, entry.confirmation_token || "");
       return NextResponse.json({ success: true, message: "Waitlist email sent" });
     } else if (type === 'explorer') {
-      // TODO: implement explorer card resend
+      const user = await db.select().from(users).where(eq(users.email, entry.email)).limit(1);
+      const name = user.length > 0 && user[0].first_name ? user[0].first_name : "Explorer";
+      await sendExplorerInviteEmail(entry.email, name);
       return NextResponse.json({ success: true, message: "Explorer card email sent" });
     } else if (type === 'profile') {
       // TODO: implement profile resend
@@ -41,6 +43,7 @@ export async function POST(req: Request) {
     }
 
     return NextResponse.json({ error: "Invalid type" }, { status: 400 });
+
   } catch (error) {
     console.error("Failed to resend email:", error);
     return NextResponse.json({ error: "Database error" }, { status: 500 });
