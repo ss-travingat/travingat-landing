@@ -66,7 +66,7 @@ export async function sendExplorerInviteEmail(email: string, name: string = "Exp
     return;
   }
 
-  const uploadUrl = `${BASE_URL}/upload`;
+  const uploadUrl = `${BASE_URL}/join/explorercard`;
   const html = buildFoundingExplorerInviteEmail(name, uploadUrl);
 
   await getTransporter().sendMail({
