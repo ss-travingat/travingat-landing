@@ -65,7 +65,7 @@ const nextConfig: NextConfig = {
     return [
       {
         source: "/api/:path((?!media-engine).*)",
-        destination: "http://localhost:8000/api/:path",
+        destination: `${process.env.BACKEND_URL || "http://localhost:8000"}/api/:path`,
       },
       {
         // Negative lookahead to ensure we don't accidentally rewrite known pages and API routes
