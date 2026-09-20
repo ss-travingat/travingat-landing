@@ -7,7 +7,7 @@ type Props = {
 };
 
 export default function WaitlistBarFramer({
-  apiUrl = "https://travingat.com/api/waitlist",
+  apiUrl = "/api/waitlist",
   placeholder = "Enter your email",
   buttonText = "Join waitlist",
 }: Props) {
