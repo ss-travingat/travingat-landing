@@ -47,23 +47,9 @@ export default async function proxy(req: NextRequest) {
     return NextResponse.next({ request: { headers: requestHeaders } });
   }
 
-  // Require auth for every other route.
-  // Django sets admin_session or cms_session cookies upon successful login.
-  const hasAdminSession = req.cookies.has('admin_session');
-  const hasCmsSession = req.cookies.has('cms_session');
-  
-  const isAuthenticated = hasAdminSession || hasCmsSession;
-
-  if (isAuthenticated) {
-    return NextResponse.next({ request: { headers: requestHeaders } });
-  }
-
-  if (url.pathname.startsWith('/api/')) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
-
-  const loginUrl = new URL('/admin/login', req.url);
-  return NextResponse.redirect(loginUrl);
+  // Travingat Landing is purely public now (admin moved to travingat-admin repo).
+  // Return next to let Next.js handle 404s naturally instead of forcing auth.
+  return NextResponse.next({ request: { headers: requestHeaders } });
 }
 
 export const config = {
