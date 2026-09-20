@@ -1,7 +1,5 @@
 import { notFound } from "next/navigation";
-import { getDrizzle } from "@/lib/drizzle";
-import { explorerCards, users } from "@/db/schema";
-import { sql } from "drizzle-orm";
+
 import { ClassicCard, MinimalCard, AdventureCard } from "@/features/explorercard/cards";
 import countryData from "@/features/explorercard/countries.json";
 import ProfileFooter from "@/features/profilepages/components/ProfileFooter";
@@ -43,48 +41,24 @@ export default async function ShortExplorerCardPage({
   if (suffix === "b") style = "minimal";
   if (suffix === "c") style = "adventure";
 
-  const db = getDrizzle();
-  const searchPattern = `${shortId}%`;
-  
+  const BACKEND_URL = process.env.BACKEND_URL || "http://127.0.0.1:8000";
   let cardData: any = null;
   try {
-    const cards = await db.select()
-      .from(explorerCards)
-      .where(sql`${explorerCards.userId}::text LIKE ${searchPattern}`)
-      .limit(1);
-
-    if (cards && cards.length > 0) {
-      const data = cards[0];
+    const res = await fetch(`${BACKEND_URL}/api/explorercard/${shortId}`, { next: { revalidate: 0 } });
+    if (res.ok) {
+      const data = await res.json();
       const nameParts = (data.name || '').split(' ');
       cardData = {
         first_name: nameParts[0] || '',
         last_name: nameParts.slice(1).join(' ') || '',
         country: data.country,
-        visited_countries: data.visitedCountries,
-        profile_image_url: data.profileImageUrl,
-        cover_image_url: data.coverImageUrl
+        visited_countries: data.visited_countries,
+        profile_image_url: data.profile_image_url,
+        cover_image_url: data.cover_image_url
       };
-    } else {
-      // Fallback to users table
-      const userRows = await db.select()
-        .from(users)
-        .where(sql`${users.id}::text LIKE ${searchPattern}`)
-        .limit(1);
-        
-      if (userRows && userRows.length > 0) {
-        const data = userRows[0];
-        cardData = {
-          first_name: data.first_name,
-          last_name: data.last_name,
-          country: data.country,
-          visited_countries: data.visited_countries,
-          profile_image_url: data.avatar_url,
-          cover_image_url: data.cover_photo_url
-        };
-      }
     }
   } catch (err) {
-    console.error("DB error fetching short shared card:", err);
+    console.error("Fetch error fetching short shared card:", err);
     notFound();
   }
 
