@@ -305,6 +305,8 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
       if (profileFile) {
         const formData = new FormData();
         formData.append("file", profileFile);
+        formData.append("filename", profileFile.name);
+        formData.append("contentType", profileFile.type);
         formData.append("prefix", "explorercard/users");
         
         const uploadRes = await fetch("/api/upload/presign", {
@@ -313,6 +315,13 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
         });
         const uploadData = await uploadRes.json();
         if (uploadData.error) throw new Error(uploadData.error);
+        // PUT the file directly to R2 using the presigned URL
+        const r2Res = await fetch(uploadData.uploadUrl, {
+          method: "PUT",
+          body: profileFile,
+          headers: { "Content-Type": profileFile.type },
+        });
+        if (!r2Res.ok) throw new Error(`R2 upload failed: ${r2Res.status}`);
         finalProfileUrl = uploadData.publicUrl;
       }
       
@@ -320,6 +329,8 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
       if (coverFile) {
         const formData = new FormData();
         formData.append("file", coverFile);
+        formData.append("filename", coverFile.name);
+        formData.append("contentType", coverFile.type);
         formData.append("prefix", "explorercard/users");
         
         const uploadRes = await fetch("/api/upload/presign", {
@@ -328,6 +339,13 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
         });
         const uploadData = await uploadRes.json();
         if (uploadData.error) throw new Error(uploadData.error);
+        // PUT the file directly to R2 using the presigned URL
+        const r2Res = await fetch(uploadData.uploadUrl, {
+          method: "PUT",
+          body: coverFile,
+          headers: { "Content-Type": coverFile.type },
+        });
+        if (!r2Res.ok) throw new Error(`R2 upload failed: ${r2Res.status}`);
         finalCoverUrl = uploadData.publicUrl;
       }
 
@@ -382,6 +400,8 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
       if (profileFile) {
         const formData = new FormData();
         formData.append("file", profileFile);
+        formData.append("filename", profileFile.name);
+        formData.append("contentType", profileFile.type);
         formData.append("prefix", "explorercard/users");
         
         const uploadRes = await fetch("/api/upload/presign", {
@@ -390,6 +410,13 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
         });
         const uploadData = await uploadRes.json();
         if (uploadData.error) throw new Error(uploadData.error);
+        // PUT the file directly to R2 using the presigned URL
+        const r2Res = await fetch(uploadData.uploadUrl, {
+          method: "PUT",
+          body: profileFile,
+          headers: { "Content-Type": profileFile.type },
+        });
+        if (!r2Res.ok) throw new Error(`R2 upload failed: ${r2Res.status}`);
         finalProfileUrl = uploadData.publicUrl;
       }
       
@@ -397,6 +424,8 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
       if (coverFile) {
         const formData = new FormData();
         formData.append("file", coverFile);
+        formData.append("filename", coverFile.name);
+        formData.append("contentType", coverFile.type);
         formData.append("prefix", "explorercard/users");
         
         const uploadRes = await fetch("/api/upload/presign", {
@@ -405,6 +434,13 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
         });
         const uploadData = await uploadRes.json();
         if (uploadData.error) throw new Error(uploadData.error);
+        // PUT the file directly to R2 using the presigned URL
+        const r2Res = await fetch(uploadData.uploadUrl, {
+          method: "PUT",
+          body: coverFile,
+          headers: { "Content-Type": coverFile.type },
+        });
+        if (!r2Res.ok) throw new Error(`R2 upload failed: ${r2Res.status}`);
         finalCoverUrl = uploadData.publicUrl;
       }
 
