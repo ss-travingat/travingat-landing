@@ -132,7 +132,7 @@ export function buildCardAndInviteEmail(name: string, editUrl: string): string {
           text-align: center;
         }
         .footer-logo img {
-          height: 20px;
+          height: auto;
           margin-bottom: 16px;
         }
         .footer-text {
