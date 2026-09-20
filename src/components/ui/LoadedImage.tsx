@@ -29,6 +29,7 @@ export default function LoadedImage({
 }) {
   const [status, setStatus] = useState<"loading" | "loaded" | "error">("loading");
   const [retryCount, setRetryCount] = useState(0);
+  const [isHealing, setIsHealing] = useState(false);
   // Track whether we've fallen back from thumbnail to original
   const [useThumbnail, setUseThumbnail] = useState(!!thumbnailSrc);
   const maxRetries = 2;
@@ -37,7 +38,16 @@ export default function LoadedImage({
   const imgRef = useRef<HTMLImageElement | null>(null);
 
   // Determine which source to use: thumbnail (if available and not failed) or original
-  const activeSrc = useThumbnail && thumbnailSrc ? thumbnailSrc : src;
+  let activeSrc = useThumbnail && thumbnailSrc ? thumbnailSrc : src;
+
+  // If we are in a healing fallback state, rewrite the extension
+  if (isHealing) {
+    if (activeSrc.match(/\.(mp4|mov|m4v|3gp|3g2)$/i)) {
+      activeSrc = activeSrc.replace(/\.[^/.]+$/, ".webm");
+    } else {
+      activeSrc = activeSrc.replace(/\.[^/.]+$/, ".webp");
+    }
+  }
 
   // Add a query param on retries to bypass broken browser cache for the failed image
   let currentSrc = retryCount > 0 && !activeSrc.startsWith("blob:") && !activeSrc.startsWith("data:") 
@@ -51,6 +61,20 @@ export default function LoadedImage({
   const handleLoad = () => {
     if (maxLoadTimeoutRef.current) clearTimeout(maxLoadTimeoutRef.current);
     setStatus("loaded");
+    
+    // If we loaded successfully via fallback, tell the server to update the DB permanently
+    if (isHealing) {
+      fetch("/api/heal-image", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          originalUrl: src,
+          optimizedUrl: activeSrc
+        })
+      }).catch((e) => console.error("Failed to trigger image healing", e));
+      setIsHealing(false); // Prevent multiple triggers
+    }
+    
     onLoad?.();
   };
 
@@ -68,6 +92,14 @@ export default function LoadedImage({
         setStatus("loading");
       }, 1000 * (retryCount + 1));
     } else {
+      // Before giving up completely, if the image isn't already webp/webm, attempt to fallback to it.
+      if (!isHealing && !activeSrc.match(/\.(webp|webm)$/i) && !activeSrc.startsWith("blob:") && !activeSrc.startsWith("data:")) {
+        setIsHealing(true);
+        setRetryCount(0); // Reset retries for the new URL
+        setStatus("loading");
+        return;
+      }
+      
       if (maxLoadTimeoutRef.current) clearTimeout(maxLoadTimeoutRef.current);
       setStatus("error");
     }

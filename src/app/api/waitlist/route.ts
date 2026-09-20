@@ -142,8 +142,7 @@ export async function POST(req: NextRequest) {
         device,
         country: country || "Unknown",
         city: city || "Unknown",
-        ip,
-        source
+        ip
       }).where(eq(waitlist.id, entry.id));
     } else {
       await db.insert(waitlist).values({

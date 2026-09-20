@@ -186,11 +186,10 @@ export function WaitlistTab() {
                   key={f}
                   type="button"
                   onClick={() => setFilter(f)}
-                  className={`px-3 py-1.5 rounded-lg text-[13px] font-medium transition-all capitalize whitespace-nowrap ${
-                    filter === f
+                  className={`px-3 py-1.5 rounded-lg text-[13px] font-medium transition-all capitalize whitespace-nowrap ${filter === f
                       ? "bg-white text-black shadow-sm"
                       : "text-white/50 hover:text-white hover:bg-white/5"
-                  }`}
+                    }`}
                 >
                   {f}
                 </button>
@@ -201,11 +200,10 @@ export function WaitlistTab() {
 
             <button
               onClick={() => setIsFilterModalOpen(true)}
-              className={`h-10 px-3.5 rounded-xl text-[13px] font-medium transition-all flex items-center gap-2 shrink-0 ${
-                activeFiltersCount > 0
+              className={`h-10 px-3.5 rounded-xl text-[13px] font-medium transition-all flex items-center gap-2 shrink-0 ${activeFiltersCount > 0
                   ? "bg-white/10 text-white border border-white/20 hover:bg-white/15"
                   : "bg-[#151618] text-white/60 border border-white/10 hover:text-white hover:border-white/20"
-              }`}
+                }`}
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" /></svg>
               Filter
@@ -479,15 +477,15 @@ export function WaitlistTab() {
               <div>
                 <label className="block text-[13px] font-medium text-white/50 mb-2">Explorer Card</label>
                 <div className="flex bg-[#1a1b20] p-1 rounded-xl border border-white/5">
-                   {['', 'Created', 'Not created'].map(opt => (
-                      <button
-                         key={opt}
-                         onClick={() => setAdvancedFilters({...advancedFilters, explorer_card_status: opt})}
-                         className={`flex-1 py-1.5 text-[12px] font-medium rounded-lg transition-all capitalize ${advancedFilters.explorer_card_status === opt ? 'bg-white text-black shadow-sm' : 'text-white/50 hover:text-white hover:bg-white/5'}`}
-                      >
-                         {opt === '' ? 'Any' : opt}
-                      </button>
-                   ))}
+                  {['', 'Created', 'Not created'].map(opt => (
+                    <button
+                      key={opt}
+                      onClick={() => setAdvancedFilters({ ...advancedFilters, explorer_card_status: opt })}
+                      className={`flex-1 py-1.5 text-[12px] font-medium rounded-lg transition-all capitalize ${advancedFilters.explorer_card_status === opt ? 'bg-white text-black shadow-sm' : 'text-white/50 hover:text-white hover:bg-white/5'}`}
+                    >
+                      {opt === '' ? 'Any' : opt}
+                    </button>
+                  ))}
                 </div>
               </div>
 
@@ -495,15 +493,15 @@ export function WaitlistTab() {
               <div>
                 <label className="block text-[13px] font-medium text-white/50 mb-2">Get Featured</label>
                 <div className="flex bg-[#1a1b20] p-1 rounded-xl border border-white/5">
-                   {['', 'Created', 'Not created'].map(opt => (
-                      <button
-                         key={opt}
-                         onClick={() => setAdvancedFilters({...advancedFilters, get_featured_status: opt})}
-                         className={`flex-1 py-1.5 text-[12px] font-medium rounded-lg transition-all capitalize ${advancedFilters.get_featured_status === opt ? 'bg-white text-black shadow-sm' : 'text-white/50 hover:text-white hover:bg-white/5'}`}
-                      >
-                         {opt === '' ? 'Any' : opt}
-                      </button>
-                   ))}
+                  {['', 'Created', 'Not created'].map(opt => (
+                    <button
+                      key={opt}
+                      onClick={() => setAdvancedFilters({ ...advancedFilters, get_featured_status: opt })}
+                      className={`flex-1 py-1.5 text-[12px] font-medium rounded-lg transition-all capitalize ${advancedFilters.get_featured_status === opt ? 'bg-white text-black shadow-sm' : 'text-white/50 hover:text-white hover:bg-white/5'}`}
+                    >
+                      {opt === '' ? 'Any' : opt}
+                    </button>
+                  ))}
                 </div>
               </div>
 
@@ -520,7 +518,7 @@ export function WaitlistTab() {
                     {uniqueSources.map(s => <option key={s} value={s}>{s}</option>)}
                   </select>
                   <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-white/30">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6" /></svg>
                   </div>
                 </div>
               </div>
@@ -538,7 +536,7 @@ export function WaitlistTab() {
                     {uniqueCountries.map(c => c && <option key={c} value={c}>{c}</option>)}
                   </select>
                   <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-white/30">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6" /></svg>
                   </div>
                 </div>
               </div>
@@ -807,7 +805,7 @@ export function WaitlistTab() {
                     setResendType(null);
                   }
                 }}
-                className="bg-[#5A45F9] hover:bg-[#5A45F9]/80 text-white"
+                className="bg-[#5A45F9] hover:bg-[#5A45F9]/80 "
                 disabled={resendLoading}
               >
                 {resendLoading ? "Sending..." : "Resend Email"}

@@ -49,20 +49,7 @@ export function normalizeAssetHtml(html: string): string {
 }
 
 export function getOptimizedMediaUrl(assetUrl: string): string {
-  if (!assetUrl) return assetUrl;
-  
-  // If it's already an optimized extension, return as is
-  if (/\.(webp|webm)$/i.test(assetUrl)) return assetUrl;
-  
-  // Replace video extensions with .webm
-  if (/\.(mp4|mov|m4v|3gp|3g2)$/i.test(assetUrl)) {
-    return assetUrl.replace(/\.[^/.]+$/, ".webm");
-  }
-  
-  // Replace known image extensions with .webp
-  if (/\.(jpe?g|png|avif|heic|heif|gif)$/i.test(assetUrl)) {
-    return assetUrl.replace(/\.[^/.]+$/, ".webp");
-  }
-
+  // If the user uploaded a specific extension, respect it.
+  // We no longer force .webp or .webm overrides globally to ensure we use what's in the DB.
   return assetUrl;
 }

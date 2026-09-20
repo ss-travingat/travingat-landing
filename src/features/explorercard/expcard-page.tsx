@@ -303,36 +303,32 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
     try {
       let finalProfileUrl = form.profileImage;
       if (profileFile) {
-        const presignRes = await fetch("/api/upload/presign", {
+        const formData = new FormData();
+        formData.append("file", profileFile);
+        formData.append("prefix", "explorercard/users");
+        
+        const uploadRes = await fetch("/api/upload/presign", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ fileName: profileFile.name, fileType: profileFile.type, prefix: "explorercard/users" }),
+          body: formData,
         });
-        const presignData = await presignRes.json();
-        if (presignData.error) throw new Error(presignData.error);
-        await fetch(presignData.uploadUrl, { method: "PUT", headers: { "Content-Type": profileFile.type }, body: profileFile });
-        finalProfileUrl = presignData.publicUrl;
-        try {
-          const key = new URL(finalProfileUrl).pathname.substring(1);
-          await fetch("/api/media-engine/optimize", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ key, mediaType: "IMAGE" }) });
-        } catch (e) {}
+        const uploadData = await uploadRes.json();
+        if (uploadData.error) throw new Error(uploadData.error);
+        finalProfileUrl = uploadData.publicUrl;
       }
       
       let finalCoverUrl = form.coverImage;
       if (coverFile) {
-        const presignRes = await fetch("/api/upload/presign", {
+        const formData = new FormData();
+        formData.append("file", coverFile);
+        formData.append("prefix", "explorercard/users");
+        
+        const uploadRes = await fetch("/api/upload/presign", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ fileName: coverFile.name, fileType: coverFile.type, prefix: "explorercard/users" }),
+          body: formData,
         });
-        const presignData = await presignRes.json();
-        if (presignData.error) throw new Error(presignData.error);
-        await fetch(presignData.uploadUrl, { method: "PUT", headers: { "Content-Type": coverFile.type }, body: coverFile });
-        finalCoverUrl = presignData.publicUrl;
-        try {
-          const key = new URL(finalCoverUrl).pathname.substring(1);
-          await fetch("/api/media-engine/optimize", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ key, mediaType: "IMAGE" }) });
-        } catch (e) {}
+        const uploadData = await uploadRes.json();
+        if (uploadData.error) throw new Error(uploadData.error);
+        finalCoverUrl = uploadData.publicUrl;
       }
 
       // 1. Hit API to create user
@@ -384,36 +380,32 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
     try {
       let finalProfileUrl = form.profileImage;
       if (profileFile) {
-        const presignRes = await fetch("/api/upload/presign", {
+        const formData = new FormData();
+        formData.append("file", profileFile);
+        formData.append("prefix", "explorercard/users");
+        
+        const uploadRes = await fetch("/api/upload/presign", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ fileName: profileFile.name, fileType: profileFile.type, prefix: "explorercard/users" }),
+          body: formData,
         });
-        const presignData = await presignRes.json();
-        if (presignData.error) throw new Error(presignData.error);
-        await fetch(presignData.uploadUrl, { method: "PUT", headers: { "Content-Type": profileFile.type }, body: profileFile });
-        finalProfileUrl = presignData.publicUrl;
-        try {
-          const key = new URL(finalProfileUrl).pathname.substring(1);
-          await fetch("/api/media-engine/optimize", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ key, mediaType: "IMAGE" }) });
-        } catch (e) {}
+        const uploadData = await uploadRes.json();
+        if (uploadData.error) throw new Error(uploadData.error);
+        finalProfileUrl = uploadData.publicUrl;
       }
       
       let finalCoverUrl = form.coverImage;
       if (coverFile) {
-        const presignRes = await fetch("/api/upload/presign", {
+        const formData = new FormData();
+        formData.append("file", coverFile);
+        formData.append("prefix", "explorercard/users");
+        
+        const uploadRes = await fetch("/api/upload/presign", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ fileName: coverFile.name, fileType: coverFile.type, prefix: "explorercard/users" }),
+          body: formData,
         });
-        const presignData = await presignRes.json();
-        if (presignData.error) throw new Error(presignData.error);
-        await fetch(presignData.uploadUrl, { method: "PUT", headers: { "Content-Type": coverFile.type }, body: coverFile });
-        finalCoverUrl = presignData.publicUrl;
-        try {
-          const key = new URL(finalCoverUrl).pathname.substring(1);
-          await fetch("/api/media-engine/optimize", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ key, mediaType: "IMAGE" }) });
-        } catch (e) {}
+        const uploadData = await uploadRes.json();
+        if (uploadData.error) throw new Error(uploadData.error);
+        finalCoverUrl = uploadData.publicUrl;
       }
 
       const formData = new FormData();
