@@ -22,8 +22,8 @@ export default async function proxy(req: NextRequest) {
 
   const url = req.nextUrl;
 
-  const isWaitlistApi = url.pathname === '/api/waitlist';
-  const isExplorerCardApi = url.pathname === '/api/explorercard';
+  const isWaitlistApi = url.pathname.startsWith('/api/waitlist');
+  const isExplorerCardApi = url.pathname.startsWith('/api/explorercard');
   const isAuthApi = url.pathname.startsWith('/api/auth');
   const isViewExplorerCard = url.pathname.startsWith('/view/explorercard');
   const isPublicProfileFrontend = url.pathname.startsWith('/profiles/');
@@ -32,7 +32,8 @@ export default async function proxy(req: NextRequest) {
     url.pathname.startsWith('/api/profiles') ||
     url.pathname.startsWith('/api/testimonials') ||
     url.pathname.startsWith('/api/upload') ||
-    url.pathname.startsWith('/api/proxy-image');
+    url.pathname.startsWith('/api/proxy-image') ||
+    url.pathname.startsWith('/api/media-engine');
 
   const isLoginPage = url.pathname === '/admin/login';
   const isAdminLoginApi =
