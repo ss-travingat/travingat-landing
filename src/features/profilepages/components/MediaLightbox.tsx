@@ -229,7 +229,7 @@ export function MediaLightbox({
                   ) : (
                     <img
                       key={`img-${activeIndex}`}
-                      src={getOptimizedMediaUrl(toLandingAssetUrl(activeItem?.url || ""))}
+                      src={toLandingAssetUrl(activeItem?.url || "").startsWith("http") ? `/api/proxy-image?url=${encodeURIComponent(getOptimizedMediaUrl(toLandingAssetUrl(activeItem?.url || "")))}` : getOptimizedMediaUrl(toLandingAssetUrl(activeItem?.url || ""))}
                       alt="Carousel media"
                       className={`block max-h-full max-w-full object-contain carousel-image rounded-[0.75rem] mx-auto transition-opacity duration-300 ${mediaLoaded && !mediaError ? 'opacity-100' : 'opacity-0'}`}
                       onLoad={(e: SyntheticEvent<HTMLImageElement>) => {
@@ -238,7 +238,10 @@ export function MediaLightbox({
                       }}
                       onError={(e: SyntheticEvent<HTMLImageElement>) => {
                         const target = e.currentTarget;
-                        const originalUrl = toLandingAssetUrl(activeItem?.url || "");
+                        let originalUrl = toLandingAssetUrl(activeItem?.url || "");
+                        if (originalUrl.startsWith("http")) {
+                          originalUrl = `${window.location.origin}/api/proxy-image?url=${encodeURIComponent(originalUrl)}`;
+                        }
                         if (target.src !== originalUrl) {
                           target.src = originalUrl;
                         } else {
