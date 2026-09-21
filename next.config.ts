@@ -69,7 +69,7 @@ const nextConfig: NextConfig = {
       },
       {
         // Negative lookahead to ensure we don't accidentally rewrite known pages and API routes
-        source: "/:username((?!api|admin|blog|pricing|templates|_next|static|favicon\\.ico).*)",
+        source: "/:username((?!api|admin|blog|pricing|templates|_next|static|favicon\\.ico|waitlist|designsystem|join|featured-profiles|ec|explorercard|edit|getfeatured|view|profiles).*)",
         destination: "/profiles/:username",
       },
     ];
