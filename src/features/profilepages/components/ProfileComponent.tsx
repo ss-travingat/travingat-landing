@@ -1437,7 +1437,6 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                       className="h-full w-full object-cover rounded-[1.25rem]"
                       skeletonClassName="absolute inset-0 bg-[#1a1a1a]"
                       containerClassName="w-full h-full"
-                      priority
                     />
                   </div>
 
@@ -1588,7 +1587,6 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                   className="absolute inset-0 w-full h-full object-cover rounded-3xl lg:rounded-[1.5rem] xl:rounded-[2rem]"
                   skeletonClassName="absolute inset-0 bg-[#1a1a1a]"
                   containerClassName="absolute inset-0 w-full h-full"
-                  priority
                 />
               </div>
             </div>
@@ -1710,7 +1708,6 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                                   src={toLandingAssetUrl(src)} 
                                   thumbnailSrc={getThumbnailUrl(toLandingAssetUrl(src), 720)}
                                   alt={`Country preview ${idx + 1}`} 
-                                  priority
                                   className="w-full h-full object-cover" 
                                   containerClassName="w-full h-full"
                                   skeletonClassName="absolute inset-0"
@@ -1829,7 +1826,6 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                                   src={toLandingAssetUrl(src)} 
                                   thumbnailSrc={getThumbnailUrl(toLandingAssetUrl(src), 720)}
                                   alt={`Collection preview ${idx + 1}`} 
-                                  priority
                                   className="w-full h-full object-cover" 
                                   containerClassName="w-full h-full"
                                   skeletonClassName="absolute inset-0"
