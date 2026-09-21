@@ -698,7 +698,22 @@ function JsMasonryGrid({
   };
 
   return (
-    <div className="w-full">
+    <div className="w-full relative">
+      {/* Hidden preloader to force browser to queue image requests horizontally (row-by-row) before parsing vertical columns */}
+      <div className="absolute w-0 h-0 overflow-hidden pointer-events-none opacity-0 z-[-1]" aria-hidden="true">
+        {orderedItems.slice(0, 16).map((item) => {
+          if (item.isVideo) return null;
+          return (
+            <img 
+              key={`preload-${item.id}`} 
+              src={getThumbnailUrl(toLandingAssetUrl(item.fileUrl), 720)} 
+              alt="" 
+              loading="eager" 
+              fetchPriority="high" 
+            />
+          );
+        })}
+      </div>
       {/* Desktop: 4 explicit flex columns */}
       <div className="hidden lg:flex gap-[1.25rem] items-start w-full">
         {[0, 1, 2, 3].map((colIdx) => (
@@ -1002,17 +1017,20 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
       }
     }
 
-    // 2. Round-robin interleave the remaining items
+    // 2. Round-robin interleave the remaining items (with offset to avoid vertical grouping in flex columns)
     const items: MediaItem[] = [];
+    let offset = 0;
     let found = true;
     while (found) {
       found = false;
       for (let i = 0; i < buckets.length; i++) {
-        if (buckets[i].length > 0) {
-          items.push(buckets[i].shift()!);
+        const idx = (i + offset) % buckets.length;
+        if (buckets[idx].length > 0) {
+          items.push(buckets[idx].shift()!);
           found = true;
         }
       }
+      offset++;
     }
 
     // 3. Append the deferred first items at the end
