@@ -391,7 +391,7 @@ export default function CountryDetailComponent({
                   containerClassName="w-full h-full relative"
                 />
               </div>
-              <Link href={`/profiles/${profile.handle.replace(/^@/, "")}`} className="text-[1rem] text-white leading-[1.5rem] tracking-[-0.096px] font-normal hover:underline">
+              <Link href={`/${profile.handle.replace(/^@/, "")}`} className="text-[1rem] text-white leading-[1.5rem] tracking-[-0.096px] font-normal hover:underline">
                 {profile.handle}
               </Link>
             </div>
@@ -419,9 +419,9 @@ export default function CountryDetailComponent({
               {showMenu && (
                 <ContextMenu
                   kind="country"
-                  viewLabel="View country"
+                  viewLabel="View main profile"
                   shareLabel="Share country"
-                  viewHref={`/profiles/${profile.handle.replace(/^@/, "")}`}
+                  viewHref={`/${profile.handle.replace(/^@/, "")}`}
                   showViewAction={false}
                   onShare={() => {
                     navigator.clipboard.writeText(window.location.href).catch(() => { });
