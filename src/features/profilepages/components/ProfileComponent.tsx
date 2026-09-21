@@ -1708,7 +1708,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                               <div key={src} className="w-19 h-19 md:w-25 md:h-25 rounded-[0.625rem] overflow-hidden">
                                 <LoadedImage 
                                   src={toLandingAssetUrl(src)} 
-                                  thumbnailSrc={getThumbnailUrl(toLandingAssetUrl(src), 320)}
+                                  thumbnailSrc={getThumbnailUrl(toLandingAssetUrl(src), 720)}
                                   alt={`Country preview ${idx + 1}`} 
                                   priority
                                   className="w-full h-full object-cover" 
@@ -1827,7 +1827,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                               <div key={src} className="w-19 h-19 md:w-25 md:h-25 rounded-[0.625rem] overflow-hidden">
                                 <LoadedImage 
                                   src={toLandingAssetUrl(src)} 
-                                  thumbnailSrc={getThumbnailUrl(toLandingAssetUrl(src), 320)}
+                                  thumbnailSrc={getThumbnailUrl(toLandingAssetUrl(src), 720)}
                                   alt={`Collection preview ${idx + 1}`} 
                                   priority
                                   className="w-full h-full object-cover" 
@@ -1956,7 +1956,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                             {aboutPhotos.length > 0 ? (
                               aboutPhotos.map((src, idx) => (
                                 <div key={`${src}-${idx}`} className="w-[10rem] md:w-auto md:flex-1 shrink-0 min-w-0 rounded-[0.5rem] md:rounded-[0.75rem] overflow-hidden bg-[#151515] aspect-square snap-start">
-                                  <ThumbnailImage originalSrc={toLandingAssetUrl(src)} size={320} alt={`About photo ${idx + 1}`} loading="eager" decoding="async" draggable={false} className="w-full h-full object-cover pointer-events-none select-none" />
+                                  <ThumbnailImage originalSrc={toLandingAssetUrl(src)} size={720} alt={`About photo ${idx + 1}`} loading="eager" decoding="async" draggable={false} className="w-full h-full object-cover pointer-events-none select-none" />
                                 </div>
                               ))
                             ) : (

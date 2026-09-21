@@ -27,7 +27,7 @@ export async function POST(request: Request) {
 
     const payload = {
       media_type: mediaType,
-      thumbnails: [320, 480, 720],
+      thumbnails: [720],
       remote_credentials: {
         bucket,
         key,

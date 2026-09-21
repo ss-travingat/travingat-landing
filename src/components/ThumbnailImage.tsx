@@ -2,10 +2,10 @@ import React, { useState, useEffect, ImgHTMLAttributes } from 'react';
 
 interface ThumbnailImageProps extends ImgHTMLAttributes<HTMLImageElement> {
   originalSrc: string;
-  size?: 320 | 480 | 720;
+  size?: 720;
 }
 
-export function getThumbnailUrl(originalUrl: string, size: number = 320): string {
+export function getThumbnailUrl(originalUrl: string, size: number = 720): string {
   if (!originalUrl) return originalUrl;
   try {
     const urlObj = new URL(originalUrl);
@@ -22,7 +22,7 @@ export function getThumbnailUrl(originalUrl: string, size: number = 320): string
   }
 }
 
-export function ThumbnailImage({ originalSrc, size = 320, ...props }: ThumbnailImageProps) {
+export function ThumbnailImage({ originalSrc, size = 720, ...props }: ThumbnailImageProps) {
   const [src, setSrc] = useState<string>(getThumbnailUrl(originalSrc, size));
 
   useEffect(() => {

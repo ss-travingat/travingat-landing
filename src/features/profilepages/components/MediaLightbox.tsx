@@ -325,7 +325,7 @@ export function MediaLightbox({
                       </>
                     ) : (
                       <>
-                        <ThumbnailImage originalSrc={toLandingAssetUrl(item.url)} size={320}
+                        <ThumbnailImage originalSrc={toLandingAssetUrl(item.url)} size={720}
                           alt={`Carousel thumbnail ${idx + 1}`}
                           className="h-full w-full object-cover"
                         />
