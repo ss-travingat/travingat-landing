@@ -547,19 +547,18 @@ function JsMasonryGrid({
     const displayCountryCode = mediaItem.countryCode || profileFlagCode;
     const collectionHref =
       typeof mediaItem.collectionIndex === "number" && profile.collectionImages?.[mediaItem.collectionIndex]
-        ? `/${profile.handle.replace(/^@/, "")}/collection/${mediaItem.collectionIndex}`
+        ? `/profiles/${profile.handle.replace(/^@/, "")}/collection/${mediaItem.collectionIndex}`
         : undefined;
     const viewHref = collectionHref || (displayCountryCode
-      ? `/${profile.handle.replace(/^@/, "")}/country/${displayCountryCode.toUpperCase()}`
+      ? `/profiles/${profile.handle.replace(/^@/, "")}/country/${displayCountryCode.toUpperCase()}`
       : undefined);
     const viewLabel = collectionHref ? "View collection" : "View country";
     const isLoaded = loadedItemIds.has(mediaItem.id);
 
     return (
       <div key={mediaItem.id} className={`group relative w-full ${isMobile ? "mb-[0.375rem] break-inside-avoid [-webkit-column-break-inside:avoid] inline-block" : ""}`}>
-        <div
+        <div 
           className="relative rounded-lg md:rounded-2xl overflow-hidden bg-[#151515] cursor-pointer"
-          style={{ aspectRatio: mediaItem.width && mediaItem.height ? `${mediaItem.width}/${mediaItem.height}` : "1/1" }}
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
@@ -593,8 +592,8 @@ function JsMasonryGrid({
               thumbnailSrc={getThumbnailUrl(toLandingAssetUrl(mediaItem.fileUrl), 720)}
               alt="Uploaded media"
               className="w-full h-auto block"
-              containerClassName="w-full h-full relative"
-              skeletonClassName="absolute inset-0 w-full h-full bg-[#1a1a1a]"
+              containerClassName="w-full relative"
+              skeletonClassName="absolute inset-0 w-full h-full aspect-square bg-[#1a1a1a]"
               onLoad={() => markItemLoaded(mediaItem.id)}
             />
           )}
@@ -616,9 +615,9 @@ function JsMasonryGrid({
         {displayCountryCode && isLoaded ? (
           <div className="absolute top-2 right-2 md:top-3 md:right-3 z-20 transition-opacity duration-200 opacity-100 pointer-events-auto">
             <TooltipProvider delayDuration={100}>
-              <Tooltip
-                content={getCountryName(displayCountryCode.toUpperCase()) || displayCountryCode}
-                theme="light"
+              <Tooltip 
+                content={getCountryName(displayCountryCode.toUpperCase()) || displayCountryCode} 
+                theme="light" 
                 side="top"
               >
                 <div className="flex items-center drop-shadow-md cursor-pointer">
@@ -670,9 +669,9 @@ function JsMasonryGrid({
                   if (collectionHref?.includes("/collection/")) {
                     shareUrl.pathname = collectionHref;
                   } else if (displayCountryCode) {
-                    shareUrl.pathname = `/${profile.handle.replace(/^@/, "")}/country/${displayCountryCode.toUpperCase()}`;
+                    shareUrl.pathname = `/profiles/${profile.handle.replace(/^@/, "")}/country/${displayCountryCode.toUpperCase()}`;
                   } else {
-                    shareUrl.pathname = `/${profile.handle.replace(/^@/, "")}`;
+                    shareUrl.pathname = `/profiles/${profile.handle.replace(/^@/, "")}`;
                   }
                   shareUrl.searchParams.set("image", btoa(unescape(encodeURIComponent(mediaItem.fileUrl))));
                   openShareCard({
@@ -701,9 +700,9 @@ function JsMasonryGrid({
   return (
     <div className="w-full">
       {/* Desktop: 4 explicit flex columns */}
-      <div className="hidden lg:flex w-full gap-[0.5rem] xl:gap-[0.75rem]">
+      <div className="hidden lg:flex gap-[1.25rem] items-start w-full">
         {[0, 1, 2, 3].map((colIdx) => (
-          <div key={colIdx} className="flex flex-col gap-[0.5rem] xl:gap-[0.75rem] flex-1 min-w-0">
+          <div key={colIdx} className="flex-1 min-w-0 flex flex-col gap-[1.25rem]">
             {orderedItems
               .filter((_, i) => i % 4 === colIdx)
               .map((mediaItem) => renderMediaItem(mediaItem, false))}
@@ -723,7 +722,9 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
   const router = useRouter();
 
   const [activeTab, setActiveTab] = useState<TabKey>("all");
+  const [visibleLimit, setVisibleLimit] = useState(15);
   const [loadedItemIds, setLoadedItemIds] = useState<Set<string>>(() => new Set());
+  const loadMoreRef = useRef<HTMLDivElement>(null);
   const [swipeOffset, setSwipeOffset] = useState(0);
 
   const [headerHeight, setHeaderHeight] = useState(0);
@@ -740,6 +741,20 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
     window.addEventListener("resize", updateHeaderHeight);
     return () => window.removeEventListener("resize", updateHeaderHeight);
   }, []);
+
+  useEffect(() => {
+    if (typeof IntersectionObserver === "undefined" || !loadMoreRef.current) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          setVisibleLimit((prev) => prev + 10);
+        }
+      },
+      { rootMargin: "100px" }
+    );
+    observer.observe(loadMoreRef.current);
+    return () => observer.disconnect();
+  }, [visibleLimit]);
 
   // Read initial tab from URL on mount
   useEffect(() => {
@@ -778,18 +793,18 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
     (window as any).__isProgrammaticScroll = true;
     const scrollBefore = window.scrollY;
     setActiveTab(tab);
-
+    
     setTimeout(() => {
       const isDesktop = window.innerWidth >= 1200;
       const sentinelId = isDesktop ? "desktop-tabs-sentinel" : "mobile-tabs-sentinel";
       const sentinelEl = document.getElementById(sentinelId);
-
+      
       if (sentinelEl) {
         const rect = sentinelEl.getBoundingClientRect();
         const absoluteTop = rect.top + window.scrollY;
-
+        
         let targetScrollY = 0;
-
+        
         if (isDesktop) {
           let predictedTarget = absoluteTop - 0;
           if (predictedTarget > 100) {
@@ -807,13 +822,13 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
           // The formula: absoluteTop - 72 (sticky offset) - navbarVisualTop.
           targetScrollY = absoluteTop - 72 - navbarVisualTop;
         }
-
+        
         // Only jump if the user was scrolled past the tabs BEFORE the tab change triggered native browser scrolling
         if (scrollBefore > targetScrollY) {
           window.scrollTo({ top: targetScrollY, behavior: "instant" });
         }
       }
-
+      
       setTimeout(() => {
         (window as any).__isProgrammaticScroll = false;
         // Dispatch a final scroll event so Desktop LandingHeader re-evaluates the absolute scroll position
@@ -987,7 +1002,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
       }
     }
 
-    // 2. Round-robin interleave the remaining items exactly (A2, B2, C2, A3, B3, C3...)
+    // 2. Round-robin interleave the remaining items
     const items: MediaItem[] = [];
     let found = true;
     while (found) {
@@ -1422,6 +1437,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                       className="h-full w-full object-cover rounded-[1.25rem]"
                       skeletonClassName="absolute inset-0 bg-[#1a1a1a]"
                       containerClassName="w-full h-full"
+                      priority
                     />
                   </div>
 
@@ -1572,6 +1588,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                   className="absolute inset-0 w-full h-full object-cover rounded-3xl lg:rounded-[1.5rem] xl:rounded-[2rem]"
                   skeletonClassName="absolute inset-0 bg-[#1a1a1a]"
                   containerClassName="absolute inset-0 w-full h-full"
+                  priority
                 />
               </div>
             </div>
@@ -1579,12 +1596,12 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
 
           {/* Desktop: pill tabs with text */}
           <div id="desktop-tabs-sentinel" className="w-full h-0 min-[75rem]:mt-12 min-[90rem]:mt-16" />
-          <div
-            id="profile-desktop-tabs"
+          <div 
+            id="profile-desktop-tabs" 
             className={`hidden min-[75rem]:flex items-center justify-center gap-2 flex-wrap sticky z-header py-6 -mx-4 px-4 lg:-mx-8 lg:px-8 xl:-mx-10 xl:px-10 transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] top-[7.5rem] [.header-hidden_&]:top-0`}
           >
             {/* Background gradient and progressive blur */}
-            <div
+            <div 
               className="absolute inset-0 pointer-events-none"
               style={{
                 zIndex: -1,
@@ -1656,7 +1673,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                       </div>
                     ) : (
                       <JsMasonryGrid
-                        items={allMediaItems}
+                        items={allMediaItems.slice(0, visibleLimit)}
                         allMediaItems={allMediaItems}
                         profileFlagCode={profileFlagCode}
                         profile={profile}
@@ -1672,7 +1689,10 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                         shareOwnerAvatar={shareOwnerAvatar}
                       />
                     )}
-
+                    <div
+                      ref={loadMoreRef}
+                      className={`h-px w-full ${visibleLimit < allMediaItems.length ? "block" : "hidden"}`}
+                    />
                   </section>
                 }
               </div>
@@ -1686,11 +1706,12 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                           <div className="flex items-center gap-3">
                             {COUNTRIES_EMPTY_PREVIEW_IMAGES.map((src, idx) => (
                               <div key={src} className="w-19 h-19 md:w-25 md:h-25 rounded-[0.625rem] overflow-hidden">
-                                <LoadedImage
-                                  src={toLandingAssetUrl(src)}
-                                  thumbnailSrc={getThumbnailUrl(toLandingAssetUrl(src), 720)}
-                                  alt={`Country preview ${idx + 1}`}
-                                  className="w-full h-full object-cover"
+                                <LoadedImage 
+                                  src={toLandingAssetUrl(src)} 
+                                  thumbnailSrc={getThumbnailUrl(toLandingAssetUrl(src), 320)}
+                                  alt={`Country preview ${idx + 1}`} 
+                                  priority
+                                  className="w-full h-full object-cover" 
                                   containerClassName="w-full h-full"
                                   skeletonClassName="absolute inset-0"
                                 />
@@ -1710,11 +1731,11 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                         {countryCards.map((country) => {
                           const contextMenuId = `country-${country.code}`;
                           const isMenuOpen = openContextMenuId === contextMenuId;
-                          const countryHref = `/${profile.handle.replace(/^@/, "")}/country/${country.flagCode.toUpperCase()}`;
+                          const countryHref = `/profiles/${profile.handle.replace(/^@/, "")}/country/${country.flagCode.toUpperCase()}`;
                           return (
-                            <Link
-                              key={country.code}
-                              href={countryHref}
+                            <Link 
+                              key={country.code} 
+                              href={countryHref} 
                               className="flex flex-col gap-2.5"
                               onClick={(e) => {
                                 if (window.innerWidth < 811) {
@@ -1804,11 +1825,12 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                           <div className="flex items-center gap-3">
                             {COLLECTIONS_EMPTY_PREVIEW_IMAGES.map((src, idx) => (
                               <div key={src} className="w-19 h-19 md:w-25 md:h-25 rounded-[0.625rem] overflow-hidden">
-                                <LoadedImage
-                                  src={toLandingAssetUrl(src)}
-                                  thumbnailSrc={getThumbnailUrl(toLandingAssetUrl(src), 720)}
-                                  alt={`Collection preview ${idx + 1}`}
-                                  className="w-full h-full object-cover"
+                                <LoadedImage 
+                                  src={toLandingAssetUrl(src)} 
+                                  thumbnailSrc={getThumbnailUrl(toLandingAssetUrl(src), 320)}
+                                  alt={`Collection preview ${idx + 1}`} 
+                                  priority
+                                  className="w-full h-full object-cover" 
                                   containerClassName="w-full h-full"
                                   skeletonClassName="absolute inset-0"
                                 />
@@ -1827,7 +1849,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                     ) : (
                       <div className="grid grid-cols-1 gap-x-5 gap-y-8 sm:gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                         {collectionCards.map((collection, idx) => {
-                          const collectionHref = `/${profile.handle.replace(/^@/, "")}/collection/${idx}`;
+                          const collectionHref = `/profiles/${profile.handle.replace(/^@/, "")}/collection/${idx}`;
                           const contextMenuId = `collection-${collection.id}`;
                           const isMenuOpen = openContextMenuId === contextMenuId;
                           return (
@@ -1934,7 +1956,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                             {aboutPhotos.length > 0 ? (
                               aboutPhotos.map((src, idx) => (
                                 <div key={`${src}-${idx}`} className="w-[10rem] md:w-auto md:flex-1 shrink-0 min-w-0 rounded-[0.5rem] md:rounded-[0.75rem] overflow-hidden bg-[#151515] aspect-square snap-start">
-                                  <ThumbnailImage originalSrc={toLandingAssetUrl(src)} size={720} alt={`About photo ${idx + 1}`} loading="eager" decoding="async" draggable={false} className="w-full h-full object-cover pointer-events-none select-none" />
+                                  <ThumbnailImage originalSrc={toLandingAssetUrl(src)} size={320} alt={`About photo ${idx + 1}`} loading="eager" decoding="async" draggable={false} className="w-full h-full object-cover pointer-events-none select-none" />
                                 </div>
                               ))
                             ) : (
@@ -1969,8 +1991,8 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                           <div className="flex flex-col gap-1">
                             <p className="ds-font-display text-white text-lg font-medium leading-6.5 tracking-[-0.198px]">{handle}</p>
                             <div className="flex gap-1.5 items-center">
-                              <p className="text-[#656565] text-sm truncate tracking-[-0.41px]">travingat.com/{handle.replace(/^@/, "")}</p>
-                              <CopyButton text={`travingat.com/${handle.replace(/^@/, "")}`} />
+                              <p className="text-[#656565] text-sm truncate tracking-[-0.41px]">travingat.com/profiles/{handle.replace(/^@/, "")}</p>
+                              <CopyButton text={`travingat.com/profiles/${handle.replace(/^@/, "")}`} />
                             </div>
                           </div>
                         </div>
