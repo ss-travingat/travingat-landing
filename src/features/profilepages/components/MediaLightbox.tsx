@@ -5,6 +5,7 @@ import { toLandingAssetUrl, getOptimizedMediaUrl } from "@/lib/landing-assets";
 import { useMobileComingSoon } from "@/components/ui/MobileComingSoonToast";
 import { ThumbnailImage, getThumbnailUrl } from "@/components/ThumbnailImage";
 import LoadedImage from "@/components/ui/LoadedImage";
+import { useImagePreloader } from "@/hooks/useImagePreloader";
 
 export type LightboxItem = {
   id?: string;
@@ -55,6 +56,23 @@ export function MediaLightbox({
   const activeItem = items[activeIndex];
   const totalCount = items.length;
   const displayIndex = activeIndex + 1;
+
+  // Preload 1 behind and 2 ahead to avoid blocking the browser's connection limit (max 6 concurrent)
+  const urlsToPreload = [];
+  const preloadIndices = [activeIndex - 1, activeIndex + 1, activeIndex + 2];
+  
+  for (const i of preloadIndices) {
+    if (i >= 0 && i < totalCount && i !== activeIndex && items[i] && !items[i].isVideo) {
+      const originalUrl = toLandingAssetUrl(items[i].url);
+      const optimizedUrl = getOptimizedMediaUrl(originalUrl);
+      urlsToPreload.push(
+        originalUrl.startsWith("http") 
+          ? `/api/proxy-image?url=${encodeURIComponent(optimizedUrl)}` 
+          : optimizedUrl
+      );
+    }
+  }
+  useImagePreloader(urlsToPreload);
 
   useEffect(() => {
     if (scrollContainerRef.current && !showBrowser) {
