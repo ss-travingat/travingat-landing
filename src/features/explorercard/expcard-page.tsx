@@ -302,52 +302,7 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
 
     try {
       let finalProfileUrl = form.profileImage;
-      if (profileFile) {
-        const formData = new FormData();
-        formData.append("file", profileFile);
-        formData.append("filename", profileFile.name);
-        formData.append("contentType", profileFile.type);
-        formData.append("prefix", "explorercard/users");
-
-        const uploadRes = await fetch("/api/upload/presign", {
-          method: "POST",
-          body: formData,
-        });
-        const uploadData = await uploadRes.json();
-        if (uploadData.error) throw new Error(uploadData.error);
-        // PUT the file directly to R2 using the presigned URL
-        const r2Res = await fetch(uploadData.uploadUrl, {
-          method: "PUT",
-          body: profileFile,
-          headers: { "Content-Type": profileFile.type },
-        });
-        if (!r2Res.ok) throw new Error(`R2 upload failed: ${r2Res.status}`);
-        finalProfileUrl = uploadData.publicUrl;
-      }
-
       let finalCoverUrl = form.coverImage;
-      if (coverFile) {
-        const formData = new FormData();
-        formData.append("file", coverFile);
-        formData.append("filename", coverFile.name);
-        formData.append("contentType", coverFile.type);
-        formData.append("prefix", "explorercard/users");
-
-        const uploadRes = await fetch("/api/upload/presign", {
-          method: "POST",
-          body: formData,
-        });
-        const uploadData = await uploadRes.json();
-        if (uploadData.error) throw new Error(uploadData.error);
-        // PUT the file directly to R2 using the presigned URL
-        const r2Res = await fetch(uploadData.uploadUrl, {
-          method: "PUT",
-          body: coverFile,
-          headers: { "Content-Type": coverFile.type },
-        });
-        if (!r2Res.ok) throw new Error(`R2 upload failed: ${r2Res.status}`);
-        finalCoverUrl = uploadData.publicUrl;
-      }
 
       // 1. Hit API to create user
       const formData = new FormData();
@@ -356,10 +311,15 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
       formData.append("email", form.email);
       formData.append("country", form.country);
       formData.append("visitedCountries", JSON.stringify(visited));
-      if (finalProfileUrl && !finalProfileUrl.startsWith('data:')) {
+      if (profileFile) {
+        formData.append("profileImage", profileFile);
+      } else if (finalProfileUrl && !finalProfileUrl.startsWith('data:')) {
         formData.append("existingProfileImage", finalProfileUrl);
       }
-      if (finalCoverUrl && !finalCoverUrl.startsWith('data:')) {
+
+      if (coverFile) {
+        formData.append("coverImage", coverFile);
+      } else if (finalCoverUrl && !finalCoverUrl.startsWith('data:')) {
         formData.append("existingCoverImage", finalCoverUrl);
       }
       formData.append("cardStyle", tab);
@@ -397,52 +357,7 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
     setIsSubmitting(true);
     try {
       let finalProfileUrl = form.profileImage;
-      if (profileFile) {
-        const formData = new FormData();
-        formData.append("file", profileFile);
-        formData.append("filename", profileFile.name);
-        formData.append("contentType", profileFile.type);
-        formData.append("prefix", "explorercard/users");
-
-        const uploadRes = await fetch("/api/upload/presign", {
-          method: "POST",
-          body: formData,
-        });
-        const uploadData = await uploadRes.json();
-        if (uploadData.error) throw new Error(uploadData.error);
-        // PUT the file directly to R2 using the presigned URL
-        const r2Res = await fetch(uploadData.uploadUrl, {
-          method: "PUT",
-          body: profileFile,
-          headers: { "Content-Type": profileFile.type },
-        });
-        if (!r2Res.ok) throw new Error(`R2 upload failed: ${r2Res.status}`);
-        finalProfileUrl = uploadData.publicUrl;
-      }
-
       let finalCoverUrl = form.coverImage;
-      if (coverFile) {
-        const formData = new FormData();
-        formData.append("file", coverFile);
-        formData.append("filename", coverFile.name);
-        formData.append("contentType", coverFile.type);
-        formData.append("prefix", "explorercard/users");
-
-        const uploadRes = await fetch("/api/upload/presign", {
-          method: "POST",
-          body: formData,
-        });
-        const uploadData = await uploadRes.json();
-        if (uploadData.error) throw new Error(uploadData.error);
-        // PUT the file directly to R2 using the presigned URL
-        const r2Res = await fetch(uploadData.uploadUrl, {
-          method: "PUT",
-          body: coverFile,
-          headers: { "Content-Type": coverFile.type },
-        });
-        if (!r2Res.ok) throw new Error(`R2 upload failed: ${r2Res.status}`);
-        finalCoverUrl = uploadData.publicUrl;
-      }
 
       const formData = new FormData();
       formData.append("firstName", form.firstName);
@@ -450,10 +365,15 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
       formData.append("email", form.email);
       formData.append("country", form.country);
       formData.append("visitedCountries", JSON.stringify(visited));
-      if (finalProfileUrl && !finalProfileUrl.startsWith('data:')) {
+      if (profileFile) {
+        formData.append("profileImage", profileFile);
+      } else if (finalProfileUrl && !finalProfileUrl.startsWith('data:')) {
         formData.append("existingProfileImage", finalProfileUrl);
       }
-      if (finalCoverUrl && !finalCoverUrl.startsWith('data:')) {
+      
+      if (coverFile) {
+        formData.append("coverImage", coverFile);
+      } else if (finalCoverUrl && !finalCoverUrl.startsWith('data:')) {
         formData.append("existingCoverImage", finalCoverUrl);
       }
       formData.append("cardStyle", tab);
