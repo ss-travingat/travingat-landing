@@ -364,7 +364,7 @@ export default function CountryDetailComponent({
               <span className="text-[1rem] text-white leading-[1.5rem] tracking-[-0.096px] font-normal">By</span>
               <div className="h-[1.25rem] w-[1.25rem] overflow-hidden rounded-[0.375rem] shrink-0">
                 <LoadedImage
-                  src={toLandingAssetUrl(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url)}
+                  src={getOptimizedMediaUrl(toLandingAssetUrl(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url))}
                   thumbnailSrc={getOptimizedMediaUrl(toLandingAssetUrl(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url))}
                   alt={profile.name}
                   className="w-full h-full object-cover"
@@ -473,7 +473,7 @@ export default function CountryDetailComponent({
                               {isVideo ? (
                                 <>
                                   <video
-                                    src={toLandingAssetUrl(imgUrl)}
+                                    src={getOptimizedMediaUrl(toLandingAssetUrl(imgUrl))}
                                     muted
                                     playsInline
                                     loop
@@ -486,7 +486,7 @@ export default function CountryDetailComponent({
                                 </>
                               ) : (
                                 <LoadedImage
-                                  src={toLandingAssetUrl(imgUrl)}
+                                  src={getOptimizedMediaUrl(toLandingAssetUrl(imgUrl))}
                                   thumbnailSrc={getThumbnailUrl(toLandingAssetUrl(imgUrl), 720)}
                                   alt={`${countryName} photo ${globalIndex + 1}`}
                                   priority={globalIndex < 4}
@@ -576,7 +576,7 @@ export default function CountryDetailComponent({
                         {isVideo ? (
                           <>
                             <video
-                              src={toLandingAssetUrl(imgUrl)}
+                              src={getOptimizedMediaUrl(toLandingAssetUrl(imgUrl))}
                               muted
                               playsInline
                               loop
@@ -589,7 +589,7 @@ export default function CountryDetailComponent({
                           </>
                         ) : (
                           <LoadedImage
-                            src={toLandingAssetUrl(imgUrl)}
+                            src={getOptimizedMediaUrl(toLandingAssetUrl(imgUrl))}
                             thumbnailSrc={getThumbnailUrl(toLandingAssetUrl(imgUrl), 720)}
                             alt={`${countryName} photo ${globalIndex + 1}`}
                             priority={globalIndex < 4}

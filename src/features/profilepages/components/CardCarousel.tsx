@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { toLandingAssetUrl } from "@/lib/landing-assets";
+import { getOptimizedMediaUrl, toLandingAssetUrl } from "@/lib/landing-assets";
 import LoadedImage from "@/components/ui/LoadedImage";
 import { getThumbnailUrl } from "@/components/ThumbnailImage";
 
@@ -60,7 +60,7 @@ export default function CardCarousel({
         {displayImages.map((src, i) => (
           <div key={`${src}-${i}`} className="w-full h-full flex-shrink-0 overflow-hidden relative">
             <LoadedImage
-              src={toLandingAssetUrl(src)}
+              src={getOptimizedMediaUrl(toLandingAssetUrl(src))}
               thumbnailSrc={getThumbnailUrl(toLandingAssetUrl(src), 720)}
               alt={`${alt} ${i + 1}`}
               priority={priority && i === 0}

@@ -156,7 +156,7 @@ export function MediaLightbox({
                     <>
                       <video className="h-auto w-full">
                         <source src={getOptimizedMediaUrl(toLandingAssetUrl(item.url))} type="video/webm" />
-                        <source src={toLandingAssetUrl(item.url)} type="video/mp4" />
+                        <source src={getOptimizedMediaUrl(toLandingAssetUrl(item.url))} type="video/mp4" />
                       </video>
                       <div className="absolute left-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-black/55 text-white">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
@@ -166,7 +166,7 @@ export function MediaLightbox({
                     </>
                   ) : (
                     <LoadedImage
-                      src={toLandingAssetUrl(item.url)}
+                      src={getOptimizedMediaUrl(toLandingAssetUrl(item.url))}
                       thumbnailSrc={getThumbnailUrl(toLandingAssetUrl(item.url), 720)}
                       alt={`Gallery thumbnail ${idx + 1}`}
                       className="h-auto w-full"
@@ -259,7 +259,7 @@ export function MediaLightbox({
                 className={`block w-full h-full object-contain carousel-image rounded-[0.75rem] mx-auto transition-opacity duration-300 ${mediaLoaded ? 'opacity-100' : 'opacity-0'}`}
               >
                 <source src={getOptimizedMediaUrl(toLandingAssetUrl(activeItem.url))} type="video/webm" />
-                <source src={toLandingAssetUrl(activeItem.url)} type="video/mp4" />
+                <source src={getOptimizedMediaUrl(toLandingAssetUrl(activeItem.url))} type="video/mp4" />
               </video>
             ) : (
               <img
