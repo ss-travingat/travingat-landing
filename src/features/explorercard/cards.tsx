@@ -44,8 +44,8 @@ export function CountryNotch({ form, sampleFlags, fill = "#000000", emptyBg = "b
       <svg width="34" height="18" viewBox="0 0 34 18" fill="none" xmlns="http://www.w3.org/2000/svg" className="shrink-0 relative z-20 overflow-visible">
         <path d="M35 0H0L15.8765 0.44712C25.5527 0.719623 33.4182 8.33753 34 18H35V0Z" fill={fill} />
       </svg>
-      {/* Center Rectangle - Exact Figma Layout: padding: 1px 12px 6px 12px, plus 1px for anti-aliasing bleed fix */}
-      <div className="relative z-10 flex items-center justify-center rounded-b-[12px] pt-[2px] pb-[6px] px-[12px] pointer-events-auto" style={{ backgroundColor: fill }}>
+      {/* Center Rectangle - Exact Figma Layout: padding: 1px 12px 5px 12px, plus 1px for anti-aliasing bleed fix */}
+      <div className="relative z-10 flex items-center justify-center rounded-b-[12px] pt-[2px] pb-[5px] px-[12px] pointer-events-auto" style={{ backgroundColor: fill }}>
         <div className="flex items-center justify-center gap-[6px] -translate-y-[2.8px]">
           <div className="h-[9px] w-[14px] shrink-0 overflow-hidden rounded-[2px] bg-[#161616]">
             {form.country && sampleFlags[form.country] ? (
