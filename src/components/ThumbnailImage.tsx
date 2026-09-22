@@ -1,3 +1,4 @@
+"use client";
 import React, { useState, useEffect, ImgHTMLAttributes } from 'react';
 
 interface ThumbnailImageProps extends ImgHTMLAttributes<HTMLImageElement> {
@@ -5,21 +6,10 @@ interface ThumbnailImageProps extends ImgHTMLAttributes<HTMLImageElement> {
   size?: 720;
 }
 
+import { MediaResolver } from "@/lib/media-resolver";
+
 export function getThumbnailUrl(originalUrl: string, size: number = 720): string {
-  if (!originalUrl) return originalUrl;
-  try {
-    const urlObj = new URL(originalUrl);
-    // If it's a relative URL or not on our CDN, just return original
-    if (!urlObj.hostname.includes('travingat.com') && !urlObj.hostname.includes('r2.cloudflarestorage.com')) {
-      return originalUrl;
-    }
-    const path = urlObj.pathname.replace(/^\/+/, "");
-    const pathWithoutExt = path.replace(/\.[^/.]+$/, "");
-    urlObj.pathname = `/thumbnails/${pathWithoutExt}_${size}.webp`;
-    return urlObj.toString();
-  } catch (e) {
-    return originalUrl;
-  }
+  return MediaResolver.getThumbnail(originalUrl, size);
 }
 
 export function ThumbnailImage({ originalSrc, size = 720, ...props }: ThumbnailImageProps) {

@@ -1,10 +1,10 @@
 "use client";
+import { MediaResolver } from "@/lib/media-resolver";
 import { useRouter } from "next/navigation";
 
 import Link from "next/link";
 import { useState, useRef, useEffect, useCallback } from "react";
 
-import { toLandingAssetUrl } from "@/lib/landing-assets";
 import { sampleProfiles, type SampleProfile } from "../data/profile-data";
 import { ContextMenu } from "./ProfileComponent";
 import { MediaLightbox } from "./MediaLightbox";
@@ -13,8 +13,6 @@ import { MoreOptionsButton } from "@/components/ui/MoreOptionsButton";
 import { Tooltip, TooltipProvider } from "@/components/ui/Tooltip";
 import { COUNTRY_LIST } from "@/lib/countries";
 import LoadedImage from "@/components/ui/LoadedImage";
-import { getOptimizedMediaUrl } from "@/lib/landing-assets";
-import { getThumbnailUrl } from "@/components/ThumbnailImage";
 import { useMobileComingSoon } from "@/components/ui/MobileComingSoonToast";
 
 /* eslint-disable @next/next/no-img-element */
@@ -54,7 +52,7 @@ function CollectionLightbox({
 }) {
   const totalCount = items.length;
   const displayIndex = activeIndex + 1;
-  const avatarSrc = toLandingAssetUrl(profileAvatar);
+  const avatarSrc = MediaResolver.getBase(profileAvatar);
 
   const { showComingSoonToast } = useMobileComingSoon();
 
@@ -77,7 +75,7 @@ function CollectionLightbox({
         >
           <div className="flex items-start justify-between">
             <div className="h-[4.5rem] w-[4.5rem] overflow-hidden rounded-2xl">
-              <LoadedImage src={avatarSrc} thumbnailSrc={getThumbnailUrl(avatarSrc, 720)} alt={profileName} className="h-full w-full object-cover" />
+              <LoadedImage src={avatarSrc} thumbnailSrc={MediaResolver.getThumbnail(avatarSrc, 720)} alt={profileName} className="h-full w-full object-cover" />
             </div>
             <button
               type="button"
@@ -305,8 +303,8 @@ export default function CollectionDetailComponent({
               <span className="text-[1rem] text-white leading-[1.5rem] tracking-[-0.096px] font-normal">By</span>
               <div className="h-[1.25rem] w-[1.25rem] overflow-hidden rounded-[0.375rem] shrink-0">
                 <LoadedImage
-                  src={getOptimizedMediaUrl(toLandingAssetUrl(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url))}
-                  thumbnailSrc={getThumbnailUrl(toLandingAssetUrl(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url), 720)}
+                  src={MediaResolver.getOptimized(MediaResolver.getBase(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url))}
+                  thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url), 720)}
                   alt={profile.name}
                   className="w-full h-full object-cover"
                   skeletonClassName="absolute inset-0 bg-[#2a2a2a]"
@@ -412,7 +410,7 @@ export default function CollectionDetailComponent({
                               {isVideo ? (
                                 <>
                                   <video
-                                    src={getOptimizedMediaUrl(toLandingAssetUrl(imgUrl))}
+                                    src={MediaResolver.getOptimized(MediaResolver.getBase(imgUrl))}
                                     muted
                                     playsInline
                                     loop
@@ -425,8 +423,8 @@ export default function CollectionDetailComponent({
                                 </>
                               ) : (
                                 <LoadedImage
-                                  src={getOptimizedMediaUrl(toLandingAssetUrl(imgUrl))}
-                                  thumbnailSrc={getThumbnailUrl(toLandingAssetUrl(imgUrl), 720)}
+                                  src={MediaResolver.getOptimized(MediaResolver.getBase(imgUrl))}
+                                  thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(imgUrl), 720)}
                                   alt={`${title} photo ${globalIndex + 1}`}
                                   className="w-full h-auto block"
                                   containerClassName="w-full"
@@ -465,7 +463,7 @@ export default function CollectionDetailComponent({
                         {isVideo ? (
                           <>
                             <video
-                              src={getOptimizedMediaUrl(toLandingAssetUrl(imgUrl))}
+                              src={MediaResolver.getOptimized(MediaResolver.getBase(imgUrl))}
                               muted
                               playsInline
                               loop
@@ -478,8 +476,8 @@ export default function CollectionDetailComponent({
                           </>
                         ) : (
                           <LoadedImage
-                            src={getOptimizedMediaUrl(toLandingAssetUrl(imgUrl))}
-                            thumbnailSrc={getThumbnailUrl(toLandingAssetUrl(imgUrl), 720)}
+                            src={MediaResolver.getOptimized(MediaResolver.getBase(imgUrl))}
+                            thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(imgUrl), 720)}
                             alt={`${title} photo ${globalIndex + 1}`}
                             className="w-full h-auto block"
                             containerClassName="w-full"

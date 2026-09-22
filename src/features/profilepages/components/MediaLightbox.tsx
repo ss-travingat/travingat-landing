@@ -1,9 +1,9 @@
 "use client";
+import { MediaResolver } from "@/lib/media-resolver";
 
 import { useState, useRef, useEffect, type SyntheticEvent } from "react";
-import { toLandingAssetUrl, getOptimizedMediaUrl } from "@/lib/landing-assets";
 import { useMobileComingSoon } from "@/components/ui/MobileComingSoonToast";
-import { ThumbnailImage, getThumbnailUrl } from "@/components/ThumbnailImage";
+import { ThumbnailImage } from "@/components/ThumbnailImage";
 import LoadedImage from "@/components/ui/LoadedImage";
 import { useImagePreloader } from "@/hooks/useImagePreloader";
 
@@ -70,8 +70,8 @@ export function MediaLightbox({
 
   for (const i of preloadIndices) {
     if (i >= 0 && i < totalCount && items[i] && !items[i].isVideo) {
-      const originalUrl = toLandingAssetUrl(items[i].url);
-      const optimizedUrl = getOptimizedMediaUrl(originalUrl);
+      const originalUrl = MediaResolver.getBase(items[i].url);
+      const optimizedUrl = MediaResolver.getOptimized(originalUrl);
       urlsToPreload.push(optimizedUrl);
     }
   }
@@ -99,11 +99,11 @@ export function MediaLightbox({
 
   let currentImgSrc = "";
   if (activeItem && !activeItem.isVideo) {
-    let base = toLandingAssetUrl(activeItem.url || "");
+    let base = MediaResolver.getBase(activeItem.url || "");
     if (fallbackLevel === 0) {
-      currentImgSrc = getOptimizedMediaUrl(base);
+      currentImgSrc = MediaResolver.getOptimized(base);
     } else if (fallbackLevel === 1) {
-      currentImgSrc = getThumbnailUrl(base, 720);
+      currentImgSrc = MediaResolver.getThumbnail(base, 720);
     } else {
       currentImgSrc = base;
     }
@@ -156,8 +156,8 @@ export function MediaLightbox({
                   {item.isVideo ? (
                     <>
                       <video className="h-auto w-full">
-                        <source src={getOptimizedMediaUrl(toLandingAssetUrl(item.url))} type="video/webm" />
-                        <source src={getOptimizedMediaUrl(toLandingAssetUrl(item.url))} type="video/mp4" />
+                        <source src={MediaResolver.getOptimized(MediaResolver.getBase(item.url))} type="video/webm" />
+                        <source src={MediaResolver.getOptimized(MediaResolver.getBase(item.url))} type="video/mp4" />
                       </video>
                       <div className="absolute left-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-black/55 text-white">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
@@ -167,8 +167,8 @@ export function MediaLightbox({
                     </>
                   ) : (
                     <LoadedImage
-                      src={getOptimizedMediaUrl(toLandingAssetUrl(item.url))}
-                      thumbnailSrc={getThumbnailUrl(toLandingAssetUrl(item.url), 720)}
+                      src={MediaResolver.getOptimized(MediaResolver.getBase(item.url))}
+                      thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(item.url), 720)}
                       alt={`Gallery thumbnail ${idx + 1}`}
                       className="h-auto w-full"
                     />
@@ -255,8 +255,8 @@ export function MediaLightbox({
                 }}
                 className={`block w-full h-full object-contain carousel-image rounded-[0.75rem] mx-auto transition-opacity duration-300 ${mediaLoaded ? 'opacity-100' : 'opacity-0'}`}
               >
-                <source src={getOptimizedMediaUrl(toLandingAssetUrl(activeItem.url))} type="video/webm" />
-                <source src={getOptimizedMediaUrl(toLandingAssetUrl(activeItem.url))} type="video/mp4" />
+                <source src={MediaResolver.getOptimized(MediaResolver.getBase(activeItem.url))} type="video/webm" />
+                <source src={MediaResolver.getOptimized(MediaResolver.getBase(activeItem.url))} type="video/mp4" />
               </video>
             ) : (
               <img
@@ -343,7 +343,7 @@ export function MediaLightbox({
               {item.isVideo ? (
                 <>
                   <video
-                    src={getOptimizedMediaUrl(toLandingAssetUrl(item.url))}
+                    src={MediaResolver.getOptimized(MediaResolver.getBase(item.url))}
                     className="h-full w-full object-cover"
                   />
                   <div className="absolute inset-0 flex items-center justify-center bg-black/40">
@@ -352,7 +352,7 @@ export function MediaLightbox({
                 </>
               ) : (
                 <>
-                  <ThumbnailImage originalSrc={toLandingAssetUrl(item.url)} size={720}
+                  <ThumbnailImage originalSrc={MediaResolver.getBase(item.url)} size={720}
                     alt={`Carousel thumbnail ${idx + 1}`}
                     className="h-full w-full object-cover"
                   />

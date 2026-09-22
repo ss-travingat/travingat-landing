@@ -1,12 +1,12 @@
 "use client";
+import { MediaResolver } from "@/lib/media-resolver";
 import { useRouter } from "next/navigation";
 
 import Link from "next/link";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import type { MouseEvent as ReactMouseEvent } from "react";
 
-import { toLandingAssetUrl, normalizeAssetHtml, getOptimizedMediaUrl } from "@/lib/landing-assets";
-import { ThumbnailImage, getThumbnailUrl } from "@/components/ThumbnailImage";
+import { ThumbnailImage } from "@/components/ThumbnailImage";
 import { sampleProfiles, type SampleProfile } from "../data/profile-data";
 import { MediaLightbox, type LightboxItem } from "./MediaLightbox";
 import { MoreOptionsButton } from "@/components/ui/MoreOptionsButton";
@@ -367,7 +367,7 @@ function PhotoCarouselModal({
   quote?: string;
 }) {
   const { showComingSoonToast } = useMobileComingSoon();
-  const avatarSrc = toLandingAssetUrl(profileAvatar);
+  const avatarSrc = MediaResolver.getBase(profileAvatar);
   const profileFlagSrc = toFlagAssetPath(profileFlagCode);
   const countryFlagSrc = toFlagAssetPath(countryFlagCode);
   return (
@@ -393,7 +393,7 @@ function PhotoCarouselModal({
           {/* Avatar + close */}
           <div className="flex items-start justify-between">
             <div className="h-18 w-18 overflow-hidden rounded-2xl">
-              <LoadedImage src={avatarSrc} thumbnailSrc={getThumbnailUrl(avatarSrc, 720)} alt={profileName} className="h-full w-full object-cover" />
+              <LoadedImage src={avatarSrc} thumbnailSrc={MediaResolver.getThumbnail(avatarSrc, 720)} alt={profileName} className="h-full w-full object-cover" />
             </div>
             <button
               type="button"
@@ -553,7 +553,7 @@ function JsMasonryGrid({
           {mediaItem.isVideo ? (
             <>
               <video
-                src={getOptimizedMediaUrl(toLandingAssetUrl(mediaItem.fileUrl))}
+                src={MediaResolver.getOptimized(MediaResolver.getBase(mediaItem.fileUrl))}
                 muted
                 playsInline
                 loop
@@ -569,8 +569,8 @@ function JsMasonryGrid({
             </>
           ) : (
             <LoadedImage
-              src={getOptimizedMediaUrl(toLandingAssetUrl(mediaItem.fileUrl))}
-              thumbnailSrc={getThumbnailUrl(toLandingAssetUrl(mediaItem.fileUrl), 720)}
+              src={MediaResolver.getOptimized(MediaResolver.getBase(mediaItem.fileUrl))}
+              thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(mediaItem.fileUrl), 720)}
               alt="Uploaded media"
               className="w-full h-auto block"
               containerClassName="w-full h-full relative"
@@ -1396,8 +1396,8 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                 <div className="flex flex-col items-start gap-3 lg:gap-4 xl:gap-8 w-full">
                   <div className="relative size-16 lg:size-[6.25rem] xl:size-[7.5rem] shrink-0 overflow-hidden rounded-[1.25rem] bg-[#151515]">
                     <LoadedImage
-                      src={getOptimizedMediaUrl(toLandingAssetUrl(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url))}
-                      thumbnailSrc={getThumbnailUrl(toLandingAssetUrl(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url), 720)}
+                      src={MediaResolver.getOptimized(MediaResolver.getBase(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url))}
+                      thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url), 720)}
                       alt="Profile avatar"
                       className="h-full w-full object-cover rounded-[1.25rem]"
                       skeletonClassName="absolute inset-0 bg-[#1a1a1a]"
@@ -1547,8 +1547,8 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
               >
                 <div className="absolute inset-0 overflow-hidden rounded-3xl lg:rounded-[1.5rem] xl:rounded-[2rem]">
                   <LoadedImage
-                    src={getOptimizedMediaUrl(toLandingAssetUrl(typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url))}
-                    thumbnailSrc={getThumbnailUrl(toLandingAssetUrl(typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url), 720)}
+                    src={MediaResolver.getOptimized(MediaResolver.getBase(typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url))}
+                    thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url), 720)}
                     alt="Profile cover"
                     className="absolute inset-0 w-full h-full object-cover rounded-3xl lg:rounded-[1.5rem] xl:rounded-[2rem]"
                     skeletonClassName="absolute inset-0 bg-[#1a1a1a]"
@@ -1693,8 +1693,8 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                             {COUNTRIES_EMPTY_PREVIEW_IMAGES.map((src, idx) => (
                               <div key={src} className="w-19 h-19 md:w-25 md:h-25 rounded-[0.625rem] overflow-hidden">
                                 <LoadedImage
-                                  src={getOptimizedMediaUrl(toLandingAssetUrl(src))}
-                                  thumbnailSrc={getThumbnailUrl(toLandingAssetUrl(src), 720)}
+                                  src={MediaResolver.getOptimized(MediaResolver.getBase(src))}
+                                  thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(src), 720)}
                                   alt={`Country preview ${idx + 1}`}
                                   className="w-full h-full object-cover"
                                   containerClassName="w-full h-full"
@@ -1759,7 +1759,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                                       openShareCard({
                                         kind: "country",
                                         title: `Share ${country.name}`,
-                                        imageUrl: toLandingAssetUrl(country.previewImages[0] || country.thumbnailUrl),
+                                        imageUrl: MediaResolver.getBase(country.previewImages[0] || country.thumbnailUrl),
                                         shareUrl: toShareUrl(countryHref),
                                         flagCode: country.flagCode,
                                         ownerName: shareOwnerName,
@@ -1812,8 +1812,8 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                             {COLLECTIONS_EMPTY_PREVIEW_IMAGES.map((src, idx) => (
                               <div key={src} className="w-19 h-19 md:w-25 md:h-25 rounded-[0.625rem] overflow-hidden">
                                 <LoadedImage
-                                  src={getOptimizedMediaUrl(toLandingAssetUrl(src))}
-                                  thumbnailSrc={getThumbnailUrl(toLandingAssetUrl(src), 720)}
+                                  src={MediaResolver.getOptimized(MediaResolver.getBase(src))}
+                                  thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(src), 720)}
                                   alt={`Collection preview ${idx + 1}`}
                                   className="w-full h-full object-cover"
                                   containerClassName="w-full h-full"
@@ -1877,7 +1877,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                                       openShareCard({
                                         kind: "collection",
                                         title: `Share ${collection.title}`,
-                                        imageUrl: toLandingAssetUrl(collection.previewImages[0] || collection.thumbnailUrl),
+                                        imageUrl: MediaResolver.getBase(collection.previewImages[0] || collection.thumbnailUrl),
                                         shareUrl: toShareUrl(collectionHref),
                                         ownerName: shareOwnerName,
                                         ownerHandle: shareOwnerHandle,
@@ -1941,7 +1941,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                             {aboutPhotos.length > 0 ? (
                               aboutPhotos.map((src, idx) => (
                                 <div key={`${src}-${idx}`} className="w-[10rem] md:w-auto md:flex-1 shrink-0 min-w-0 rounded-[0.5rem] md:rounded-[0.75rem] overflow-hidden bg-[#151515] aspect-square snap-start">
-                                  <ThumbnailImage originalSrc={toLandingAssetUrl(src)} size={720} alt={`About photo ${idx + 1}`} loading="eager" decoding="async" draggable={false} className="w-full h-full object-cover pointer-events-none select-none" />
+                                  <ThumbnailImage originalSrc={MediaResolver.getBase(src)} size={720} alt={`About photo ${idx + 1}`} loading="eager" decoding="async" draggable={false} className="w-full h-full object-cover pointer-events-none select-none" />
                                 </div>
                               ))
                             ) : (
@@ -2096,8 +2096,8 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
               <div className="flex flex-col items-center pb-8 w-full">
                 <div className="-mb-8 h-48.5 w-50 overflow-hidden rounded-xl shrink-0 bg-[#151515]">
                   <LoadedImage
-                    src={getOptimizedMediaUrl(toLandingAssetUrl(typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url))}
-                    thumbnailSrc={getThumbnailUrl(toLandingAssetUrl(typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url), 720)}
+                    src={MediaResolver.getOptimized(MediaResolver.getBase(typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url))}
+                    thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url), 720)}
                     alt="Cover preview"
                     className="h-full w-full object-cover"
                     skeletonClassName="absolute inset-0 bg-[#1a1a1a]"
@@ -2106,8 +2106,8 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                 </div>
                 <div className="-mb-8 h-15 w-15 overflow-hidden rounded-xl shadow-[8px_8px_12px_0px_rgba(0,0,0,0.25)] shrink-0 bg-[#151515]">
                   <LoadedImage
-                    src={getOptimizedMediaUrl(toLandingAssetUrl(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url))}
-                    thumbnailSrc={getThumbnailUrl(toLandingAssetUrl(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url), 720)}
+                    src={MediaResolver.getOptimized(MediaResolver.getBase(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url))}
+                    thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url), 720)}
                     alt={profile.name}
                     className="h-full w-full object-cover"
                     skeletonClassName="absolute inset-0 bg-[#1a1a1a]"

@@ -1,13 +1,11 @@
 "use client";
+import { MediaResolver } from "@/lib/media-resolver";
 import React, { useState, useEffect, useRef } from "react";
 import { Tooltip, TooltipProvider } from "@/components/ui/Tooltip";
 import { getCountryName } from "@/lib/countries";
 import Link from "next/link";
-import { toLandingAssetUrl } from "@/lib/landing-assets";
 import { type SampleProfile } from "../data/profile-data";
 import LoadedImage from "@/components/ui/LoadedImage";
-import { getOptimizedMediaUrl } from "@/lib/landing-assets";
-import { getThumbnailUrl } from "@/components/ThumbnailImage";
 import { useMobileComingSoon } from "@/components/ui/MobileComingSoonToast";
 
 // Shared Types
@@ -132,8 +130,8 @@ export function MobileProfileNavbar({ profile }: { profile?: any }) {
           {isScrolled && profile ? (
             <div className="flex items-center gap-2">
               <LoadedImage
-                src={getOptimizedMediaUrl(toLandingAssetUrl(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url))}
-                thumbnailSrc={getThumbnailUrl(toLandingAssetUrl(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url), 720)}
+                src={MediaResolver.getOptimized(MediaResolver.getBase(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url))}
+                thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url), 720)}
                 alt="Avatar"
                 className="w-8 h-8 rounded-full object-cover"
                 skeletonClassName="absolute inset-0 bg-[#2a2a2a]"
@@ -225,8 +223,8 @@ export function MobileHero({
           <div className="relative w-full aspect-[377/248] -mb-[2.25rem]">
             <div className="w-full h-full rounded-2xl overflow-hidden bg-[#151515]">
               <LoadedImage
-                src={getOptimizedMediaUrl(toLandingAssetUrl(typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url))}
-                thumbnailSrc={getThumbnailUrl(toLandingAssetUrl(typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url), 720)}
+                src={MediaResolver.getOptimized(MediaResolver.getBase(typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url))}
+                thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url), 720)}
                 alt="Profile cover"
                 className="w-full h-full object-cover"
                 skeletonClassName="absolute inset-0 bg-[#1a1a1a]"
@@ -260,8 +258,8 @@ export function MobileHero({
           </div>
           <div className="relative z-10 mx-auto w-[5rem] h-[5rem] rounded-2xl ring-4 ring-black bg-[#151515]">
             <LoadedImage
-              src={getOptimizedMediaUrl(toLandingAssetUrl(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url))}
-              thumbnailSrc={getThumbnailUrl(toLandingAssetUrl(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url), 720)}
+              src={MediaResolver.getOptimized(MediaResolver.getBase(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url))}
+              thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url), 720)}
               alt="Profile avatar"
               className="w-full h-full object-cover rounded-2xl"
               skeletonClassName="absolute inset-0 bg-[#1a1a1a] rounded-2xl"

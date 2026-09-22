@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { MediaResolver } from "@/lib/media-resolver";
 
 export default function LoadedImage({ 
   src, 
@@ -54,11 +55,7 @@ export default function LoadedImage({
 
   // If we are in a healing fallback state, rewrite the extension
   if (isHealing) {
-    if (activeSrc.match(/\.(mp4|mov|m4v|3gp|3g2)$/i)) {
-      activeSrc = activeSrc.replace(/\.[^/.]+$/, ".webm");
-    } else {
-      activeSrc = activeSrc.replace(/\.[^/.]+$/, ".webp");
-    }
+    activeSrc = MediaResolver.getOptimized(activeSrc);
   }
 
   // Add a query param on retries to bypass broken browser cache for the failed image
