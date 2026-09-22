@@ -57,6 +57,9 @@ export default function ImageCropperModal({
     }
   }, [calculatedMinZoom, zoom]);
 
+  const maxZoomValue = Math.max(3, calculatedMinZoom + 2);
+  const zoomPercentage = ((zoom - calculatedMinZoom) / (maxZoomValue - calculatedMinZoom)) * 100 || 0;
+
   const onCropComplete = useCallback((croppedArea: any, croppedAreaPixels: any) => {
     setCroppedAreaPixels(croppedAreaPixels);
   }, []);
@@ -110,14 +113,18 @@ export default function ImageCropperModal({
         )}
 
         {/* Cropper Container */}
-        <div className="relative h-[400px] w-full overflow-hidden rounded-[16px] bg-black">
+        <div className="relative h-[400px] w-full overflow-hidden rounded-[16px] bg-[#1a1a1a]">
           <Cropper
             image={imageSrc}
             crop={crop}
             zoom={zoom}
             aspect={aspectRatio}
             minZoom={calculatedMinZoom}
-            maxZoom={Math.max(3, calculatedMinZoom + 2)}
+            maxZoom={maxZoomValue}
+            showGrid={false}
+            style={{
+              cropAreaStyle: { border: '1.5px dashed rgba(255, 255, 255, 0.8)' }
+            }}
             onCropChange={setCrop}
             onCropComplete={onCropComplete}
             onZoomChange={setZoom}
@@ -127,19 +134,58 @@ export default function ImageCropperModal({
         </div>
 
         {/* Controls */}
-        <div className="mt-6 flex items-center gap-4 px-2">
-          <span className="material-symbols-rounded text-white-400 text-[20px]">zoom_out</span>
+        <style>{`
+          .custom-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 24px;
+            width: 24px;
+            border-radius: 50%;
+            background: #5a45f9;
+            border: 2px solid white;
+            cursor: pointer;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+          }
+          .custom-slider::-moz-range-thumb {
+            height: 24px;
+            width: 24px;
+            border-radius: 50%;
+            background: #5a45f9;
+            border: 2px solid white;
+            cursor: pointer;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+          }
+        `}</style>
+        <div className="mt-6 flex items-center gap-[12px] px-2 w-full justify-center">
+          <button type="button" onClick={() => setZoom(Math.max(calculatedMinZoom, zoom - 0.1))} className="flex items-center justify-center p-[6px] shrink-0 text-[#999] hover:text-white transition-colors">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              <line x1="8" y1="11" x2="14" y2="11"></line>
+            </svg>
+          </button>
+          
           <input
             type="range"
             value={zoom}
             min={calculatedMinZoom}
-            max={Math.max(3, calculatedMinZoom + 2)}
+            max={maxZoomValue}
             step={0.01}
             aria-label="Zoom"
             onChange={(e) => setZoom(Number(e.target.value))}
-            className="h-1 flex-1 cursor-pointer appearance-none rounded-full bg-white-200 accent-[#533df6]"
+            className="custom-slider h-[6px] w-[350px] cursor-pointer appearance-none rounded-[30px]"
+            style={{
+              background: `linear-gradient(to right, #5a45f9 0%, #5a45f9 ${zoomPercentage}%, #404040 ${zoomPercentage}%, #404040 100%)`
+            }}
           />
-          <span className="material-symbols-rounded text-white-400 text-[20px]">zoom_in</span>
+
+          <button type="button" onClick={() => setZoom(Math.min(maxZoomValue, zoom + 0.1))} className="flex items-center justify-center p-[6px] shrink-0 text-[#999] hover:text-white transition-colors">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              <line x1="11" y1="8" x2="11" y2="14"></line>
+              <line x1="8" y1="11" x2="14" y2="11"></line>
+            </svg>
+          </button>
         </div>
 
         {/* Actions */}
