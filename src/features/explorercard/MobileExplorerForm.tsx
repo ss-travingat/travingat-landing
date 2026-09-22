@@ -17,6 +17,8 @@ interface MobileExplorerFormProps {
   isSubmitting: boolean;
   handleChange: (e: any) => void;
   handleFile: (e: any, key: "coverImage" | "profileImage") => void;
+  handleEditCrop: (key: "coverImage" | "profileImage") => void;
+  handleRemoveImage: (key: "coverImage" | "profileImage") => void;
   handleCreate: (e: any) => void;
   sampleFlags: Record<string, string>;
   countryMatches: string[];
@@ -41,6 +43,8 @@ export function MobileExplorerForm({
   isSubmitting,
   handleChange,
   handleFile,
+  handleEditCrop,
+  handleRemoveImage,
   handleCreate,
   sampleFlags,
   countryMatches,
@@ -208,10 +212,16 @@ export function MobileExplorerForm({
 
               <div ref={profileImageRef}>
                 <Field label="Profile photo">
-                  <div className={`flex h-[80px] w-[80px] cursor-pointer items-center justify-center overflow-hidden rounded-[12px] border bg-black relative ${errors.profileImage ? 'border-red-500' : 'border-[#1e1e1e]'}`}>
-                    {form.profileImage ? (
-                      <img src={form.profileImage} alt="profile" className="h-full w-full object-cover" />
-                    ) : (
+                  <div className="relative inline-block w-max group">
+                    <div className={`group flex h-[80px] w-[80px] cursor-pointer items-center justify-center overflow-hidden rounded-[12px] border bg-black relative ${errors.profileImage ? 'border-red-500' : 'border-[#1e1e1e]'}`}>
+                      {form.profileImage ? (
+                        <>
+                          <img src={form.profileImage} alt="profile" className="h-full w-full object-cover" />
+                          <div className="absolute inset-0 z-20 flex items-center justify-center bg-black/50 opacity-0 transition-opacity group-hover:opacity-100" onClick={(e) => { e.preventDefault(); handleEditCrop("profileImage"); }}>
+                            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
+                          </div>
+                        </>
+                      ) : (
                       <div className="relative w-[48px] h-[48px]">
                         <AvatarPlaceholderIcon className="w-full h-full object-cover" />
                         <div className="absolute left-[30px] w-[11px] h-[11px] top-[31.7px] pointer-events-none z-0">
@@ -223,19 +233,37 @@ export function MobileExplorerForm({
                     )}
                     <input type="file" accept="image/*" onChange={(e) => { handleFile(e, "profileImage"); setErrors(prev => ({ ...prev, profileImage: '' })); }} className="absolute inset-0 opacity-0 cursor-pointer z-10" />
                   </div>
+                  {form.profileImage && (
+                    <button type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleRemoveImage("profileImage"); }} className="absolute -top-1.5 -right-1.5 z-30 flex h-4 w-4 items-center justify-center rounded-full bg-[#8b0000] text-white shadow-md hover:bg-[#6b0000] opacity-0 transition-opacity group-hover:opacity-100">
+                      <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" /></svg>
+                    </button>
+                  )}
+                  </div>
                   <ErrorMsg field="profileImage" />
                 </Field>
               </div>
 
               <div ref={coverImageRef}>
                 <Field label="Cover photo">
-                  <div className={`flex aspect-[344/226] w-full cursor-pointer items-center justify-center overflow-hidden rounded-[12px] border bg-black relative ${errors.coverImage ? 'border-red-500' : 'border-[#1e1e1e]'}`}>
-                    {form.coverImage ? (
-                      <img src={form.coverImage} alt="cover" className="h-full w-full object-cover" />
-                    ) : (
+                  <div className="relative inline-block w-full group">
+                    <div className={`group flex aspect-[344/226] w-full cursor-pointer items-center justify-center overflow-hidden rounded-[12px] border bg-black relative ${errors.coverImage ? 'border-red-500' : 'border-[#1e1e1e]'}`}>
+                      {form.coverImage ? (
+                        <>
+                          <img src={form.coverImage} alt="cover" className="h-full w-full object-cover" />
+                          <div className="absolute inset-0 z-20 flex items-center justify-center bg-black/50 opacity-0 transition-opacity group-hover:opacity-100" onClick={(e) => { e.preventDefault(); handleEditCrop("coverImage"); }}>
+                            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
+                          </div>
+                        </>
+                      ) : (
                       <ImagePlaceholderIcon />
                     )}
-                    <input type="file" accept="image/*" onChange={(e) => { handleFile(e, "coverImage"); setErrors(prev => ({ ...prev, coverImage: '' })); }} className="absolute inset-0 opacity-0 cursor-pointer" />
+                    <input type="file" accept="image/*" onChange={(e) => { handleFile(e, "coverImage"); setErrors(prev => ({ ...prev, coverImage: '' })); }} className="absolute inset-0 opacity-0 cursor-pointer z-10" />
+                  </div>
+                  {form.coverImage && (
+                    <button type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleRemoveImage("coverImage"); }} className="absolute -top-1.5 -right-1.5 z-30 flex h-4 w-4 items-center justify-center rounded-full bg-[#8b0000] text-white shadow-md hover:bg-[#6b0000] opacity-0 transition-opacity group-hover:opacity-100">
+                      <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" /></svg>
+                    </button>
+                  )}
                   </div>
                   <ErrorMsg field="coverImage" />
                 </Field>

@@ -1,10 +1,10 @@
 "use client";
+import { MediaResolver } from "@/lib/media-resolver";
 import { useRouter } from "next/navigation";
 
 import Link from "next/link";
 import { useState, useRef, useEffect, useCallback } from "react";
 
-import { toLandingAssetUrl } from "@/lib/landing-assets";
 import { sampleProfiles, type SampleProfile } from "../data/profile-data";
 import { ContextMenu } from "./ProfileComponent";
 import { MediaLightbox } from "./MediaLightbox";
@@ -12,38 +12,16 @@ import ProfileFooter from "./ProfileFooter";
 import { MoreOptionsButton } from "@/components/ui/MoreOptionsButton";
 import { WaitlistPopup } from "@/components/ui/WaitlistPopup";
 import LoadedImage from "@/components/ui/LoadedImage";
-import { getOptimizedMediaUrl } from "@/lib/landing-assets";
 import { useMobileComingSoon } from "@/components/ui/MobileComingSoonToast";
-import { getThumbnailUrl } from "@/components/ThumbnailImage";
+import { COUNTRY_LIST } from "@/lib/countries";
 
 /* eslint-disable @next/next/no-img-element */
 
 const STATIC_LAST_UPDATED_LABEL = "27 Dec 2025";
 
-const COUNTRY_LIST_LOOKUP: Record<string, string> = {
-  AF: "Afghanistan", AL: "Albania", DZ: "Algeria", AR: "Argentina", AM: "Armenia",
-  AU: "Australia", AT: "Austria", AZ: "Azerbaijan", BS: "Bahamas", BD: "Bangladesh",
-  BE: "Belgium", BZ: "Belize", BO: "Bolivia", BA: "Bosnia and Herzegovina", BR: "Brazil",
-  BG: "Bulgaria", KH: "Cambodia", CA: "Canada", CL: "Chile", CN: "China",
-  CO: "Colombia", CR: "Costa Rica", HR: "Croatia", CU: "Cuba", CY: "Cyprus",
-  CZ: "Czech Republic", DK: "Denmark", DO: "Dominican Republic", EC: "Ecuador", EG: "Egypt",
-  SV: "El Salvador", EE: "Estonia", ET: "Ethiopia", FI: "Finland", FR: "France",
-  GE: "Georgia", DE: "Germany", GH: "Ghana", GR: "Greece", GT: "Guatemala",
-  HT: "Haiti", HN: "Honduras", HK: "Hong Kong", HU: "Hungary", IS: "Iceland",
-  IN: "India", ID: "Indonesia", IR: "Iran", IQ: "Iraq", IE: "Ireland",
-  IL: "Israel", IT: "Italy", JM: "Jamaica", JP: "Japan", JO: "Jordan",
-  KZ: "Kazakhstan", KE: "Kenya", KR: "South Korea", KW: "Kuwait", LA: "Laos",
-  LV: "Latvia", LB: "Lebanon", LT: "Lithuania", LU: "Luxembourg", MY: "Malaysia",
-  MV: "Maldives", MT: "Malta", MX: "Mexico", MA: "Morocco", MM: "Myanmar",
-  NP: "Nepal", NL: "Netherlands", NZ: "New Zealand", NI: "Nicaragua", NG: "Nigeria",
-  NO: "Norway", OM: "Oman", PK: "Pakistan", PA: "Panama", PY: "Paraguay",
-  PE: "Peru", PH: "Philippines", PL: "Poland", PT: "Portugal", QA: "Qatar",
-  RO: "Romania", RU: "Russia", SA: "Saudi Arabia", RS: "Serbia", SG: "Singapore",
-  SK: "Slovakia", SI: "Slovenia", ZA: "South Africa", ES: "Spain", LK: "Sri Lanka",
-  SE: "Sweden", CH: "Switzerland", TW: "Taiwan", TZ: "Tanzania", TH: "Thailand",
-  TR: "Turkey", UA: "Ukraine", AE: "United Arab Emirates", GB: "United Kingdom",
-  US: "United States", UY: "Uruguay", UZ: "Uzbekistan", VE: "Venezuela", VN: "Vietnam",
-};
+const COUNTRY_LIST_LOOKUP: Record<string, string> = Object.fromEntries(
+  COUNTRY_LIST.map(c => [c.code.toUpperCase(), c.name])
+);
 
 type MediaTab = "all" | "photos" | "videos" | "about";
 
@@ -94,13 +72,14 @@ function PhotoLightbox({
   const { showComingSoonToast } = useMobileComingSoon();
   const totalCount = items.length;
   const displayIndex = activeIndex + 1;
-  const avatarSrc = toLandingAssetUrl(profileAvatar);
+  const avatarSrc = MediaResolver.getBase(profileAvatar);
   const countryFlagSrc = toFlagAssetPath(countryCode);
   const profileFlagSrc = toFlagAssetPath(profileFlagCode);
 
   return (
     <MediaLightbox
       items={items.map((url: string) => ({
+        id: url,
         url,
         isVideo: isVideoAsset(url),
       }))}
@@ -117,7 +96,7 @@ function PhotoLightbox({
           {/* Avatar + close */}
           <div className="flex items-start justify-between">
             <div className="h-[4.5rem] w-[4.5rem] overflow-hidden rounded-2xl">
-              <LoadedImage src={avatarSrc} thumbnailSrc={getOptimizedMediaUrl(avatarSrc)} alt={profileName} className="h-full w-full object-cover" />
+              <LoadedImage src={avatarSrc} thumbnailSrc={MediaResolver.getThumbnail(avatarSrc, 720)} alt={profileName} className="h-full w-full object-cover" />
             </div>
             <button
               type="button"
@@ -172,7 +151,7 @@ function PhotoLightbox({
               {countryFlagSrc ? (
                 <img src={countryFlagSrc} alt="" className="h-[1.3125rem] w-[2rem] rounded-[0.204375rem] object-cover shadow-sm" />
               ) : null}
-              <p className="text-[1.5rem] font-semibold tracking-[-0.5px] text-white leading-[2rem]">
+              <p className="text-center font-display text-[1.5rem] font-semibold not-italic leading-[2rem] tracking-[-0.03125rem] text-white">
                 {countryName}
               </p>
             </div>
@@ -383,15 +362,15 @@ export default function CountryDetailComponent({
               <span className="text-[1rem] text-white leading-[1.5rem] tracking-[-0.096px] font-normal">By</span>
               <div className="h-[1.25rem] w-[1.25rem] overflow-hidden rounded-[0.375rem] shrink-0">
                 <LoadedImage
-                  src={toLandingAssetUrl(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url)}
-                  thumbnailSrc={getOptimizedMediaUrl(toLandingAssetUrl(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url))}
+                  src={MediaResolver.getOptimized(MediaResolver.getBase(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url))}
+                  thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url), 720)}
                   alt={profile.name}
                   className="w-full h-full object-cover"
                   skeletonClassName="absolute inset-0 bg-[#2a2a2a]"
                   containerClassName="w-full h-full relative"
                 />
               </div>
-              <Link href={`/profiles/${profile.handle.replace(/^@/, "")}`} className="text-[1rem] text-white leading-[1.5rem] tracking-[-0.096px] font-normal hover:underline">
+              <Link href={`/${profile.handle.replace(/^@/, "")}`} className="text-[1rem] text-white leading-[1.5rem] tracking-[-0.096px] font-normal hover:underline">
                 {profile.handle}
               </Link>
             </div>
@@ -419,9 +398,9 @@ export default function CountryDetailComponent({
               {showMenu && (
                 <ContextMenu
                   kind="country"
-                  viewLabel="View country"
+                  viewLabel="View main profile"
                   shareLabel="Share country"
-                  viewHref={`/profiles/${profile.handle.replace(/^@/, "")}`}
+                  viewHref={`/${profile.handle.replace(/^@/, "")}`}
                   showViewAction={false}
                   onShare={() => {
                     navigator.clipboard.writeText(window.location.href).catch(() => { });
@@ -468,9 +447,9 @@ export default function CountryDetailComponent({
           ) : (
             <div className="w-full">
               {/* Desktop: 4 explicit flex columns — matches Figma layout */}
-              <div className="hidden lg:flex gap-[1.25rem] items-start">
+              <div className="hidden lg:flex w-full gap-[0.5rem] xl:gap-[0.75rem]">
                 {[0, 1, 2, 3].map((colIdx) => (
-                  <div key={colIdx} className="flex-1 min-w-0 flex flex-col gap-[1.25rem]">
+                  <div key={colIdx} className="flex flex-col gap-[0.5rem] xl:gap-[0.75rem] flex-1 min-w-0">
                     {items
                       .filter((_, i) => i % 4 === colIdx)
                       .map(({ url: imgUrl, globalIndex }) => {
@@ -492,7 +471,7 @@ export default function CountryDetailComponent({
                               {isVideo ? (
                                 <>
                                   <video
-                                    src={toLandingAssetUrl(imgUrl)}
+                                    src={MediaResolver.getOptimized(MediaResolver.getBase(imgUrl))}
                                     muted
                                     playsInline
                                     loop
@@ -505,9 +484,10 @@ export default function CountryDetailComponent({
                                 </>
                               ) : (
                                 <LoadedImage
-                                  src={toLandingAssetUrl(imgUrl)}
-                                  thumbnailSrc={getThumbnailUrl(toLandingAssetUrl(imgUrl), 720)}
+                                  src={MediaResolver.getOptimized(MediaResolver.getBase(imgUrl))}
+                                  thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(imgUrl), 720)}
                                   alt={`${countryName} photo ${globalIndex + 1}`}
+                                  priority={globalIndex < 4}
                                   className="w-full h-auto block"
                                   containerClassName="w-full"
                                   skeletonClassName="w-full aspect-square"
@@ -594,7 +574,7 @@ export default function CountryDetailComponent({
                         {isVideo ? (
                           <>
                             <video
-                              src={toLandingAssetUrl(imgUrl)}
+                              src={MediaResolver.getOptimized(MediaResolver.getBase(imgUrl))}
                               muted
                               playsInline
                               loop
@@ -607,9 +587,10 @@ export default function CountryDetailComponent({
                           </>
                         ) : (
                           <LoadedImage
-                            src={toLandingAssetUrl(imgUrl)}
-                            thumbnailSrc={getThumbnailUrl(toLandingAssetUrl(imgUrl), 720)}
+                            src={MediaResolver.getOptimized(MediaResolver.getBase(imgUrl))}
+                            thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(imgUrl), 720)}
                             alt={`${countryName} photo ${globalIndex + 1}`}
+                            priority={globalIndex < 4}
                             className="w-full h-auto block"
                             containerClassName="w-full"
                             skeletonClassName="w-full aspect-square"

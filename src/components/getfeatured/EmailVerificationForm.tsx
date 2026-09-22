@@ -1,11 +1,10 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from 'react';
-import type { NextPage } from 'next';
 import Image from "next/image";
 import { countries } from 'countries-list';
 import styles from './form.module.css';
-import { requestOtpAction, verifyOtpAction, submitApplicationAction } from '@/app/actions/auth';
+
 
 const countryOptions = Object.entries(countries)
   .map(([code, data]) => ({
@@ -62,14 +61,18 @@ const EmailVerificationForm = ({ onVerified, initialSessionUser, source }: Props
       setIsLoading(true);
       setError(null);
       const ua = typeof navigator !== 'undefined' ? navigator.userAgent : '';
-      const res = await requestOtpAction(email, ua);
+      const res = await fetch("/api/auth/request-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email })
+      }).then(r => r.json()).catch(() => ({ error: "Network error" }));
       setIsLoading(false);
-      
+
       if (res.error) {
         alert(res.error);
         return;
       }
-      
+
       setStep('otp');
     }
   };
@@ -79,14 +82,18 @@ const EmailVerificationForm = ({ onVerified, initialSessionUser, source }: Props
       setIsLoading(true);
       setError(null);
       const ua = typeof navigator !== 'undefined' ? navigator.userAgent : '';
-      const res = await requestOtpAction(email, ua);
+      const res = await fetch("/api/auth/request-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email })
+      }).then(r => r.json()).catch(() => ({ error: "Network error" }));
       setIsLoading(false);
-      
+
       if (res.error) {
         alert(res.error);
         return;
       }
-      
+
       alert('Code resent successfully!');
     }
   };
@@ -95,21 +102,25 @@ const EmailVerificationForm = ({ onVerified, initialSessionUser, source }: Props
     setIsLoading(true);
     setError(null);
     const otpString = otp.join('');
-    const res = await verifyOtpAction(email, otpString, source);
+    const res = await fetch("/api/auth/verify-otp", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, otp: otpString, source: source || 'Get Featured' })
+    }).then(r => r.json()).catch(() => ({ error: "Network error" }));
     setIsLoading(false);
-    
+
     if (res.error) {
       setError(res.error);
       return;
     }
-    
+
     if (onVerified) {
       onVerified(email, res.user, res.explorerCard);
     } else {
       if (res.user || res.explorerCard) {
         const u: any = res.user || {};
         const ec: any = res.explorerCard || {};
-        
+
         let fname = u.first_name;
         let lname = u.last_name;
         if (!fname && !lname && ec.name) {
@@ -117,13 +128,13 @@ const EmailVerificationForm = ({ onVerified, initialSessionUser, source }: Props
           fname = parts[0];
           lname = parts.slice(1).join(' ');
         }
-        
+
         if (fname) setFirstName(fname);
         if (lname) setLastName(lname);
-        
+
         const bestCountry = u.country || ec.country;
         if (bestCountry) setSelectedCountry(bestCountry);
-        
+
         let count = u.visited_count;
         const ecVisited = ec.visitedCountries || ec.visited_countries;
         if (!count && ecVisited) {
@@ -133,7 +144,7 @@ const EmailVerificationForm = ({ onVerified, initialSessionUser, source }: Props
           }
         }
         if (count) setVisitedCount(count.toString());
-        
+
         if (Array.isArray(u.links)) setLinks(u.links);
       }
       setStep('application');
@@ -190,16 +201,16 @@ const EmailVerificationForm = ({ onVerified, initialSessionUser, source }: Props
           <div className="flex flex-col gap-[16px] items-center relative shrink-0 w-full">
             <div className="relative rounded-[16.81px] shrink-0 w-[100px] h-[100px]">
               <div className="absolute left-[50%] top-[50%] -translate-x-1/2 -translate-y-1/2 w-[152.625px] h-[121.557px] shrink-0" style={{ aspectRatio: '113/90' }}>
-                <Image 
-                  className="absolute inset-0 w-full h-full object-cover pointer-events-none max-w-none" 
-                  width={153} 
-                  height={122} 
-                  alt="Email Icon" 
-                  src="/icons/img.png" 
+                <Image
+                  className="absolute inset-0 w-full h-full object-cover pointer-events-none max-w-none"
+                  width={153}
+                  height={122}
+                  alt="Email Icon"
+                  src="/icons/img.png"
                 />
               </div>
             </div>
-            
+
             <div className="flex flex-col items-center gap-[4px] min-w-full">
               <p className="ds-font-display font-medium text-[24px] leading-[32px] tracking-[-0.5px] text-center text-white">
                 Verify your email
@@ -234,9 +245,8 @@ const EmailVerificationForm = ({ onVerified, initialSessionUser, source }: Props
 
           <div className="flex flex-col gap-[24px] items-center relative shrink-0 w-full">
             <button
-              className={`flex items-center justify-center px-[16px] py-[10px] rounded-[999px] w-full font-sans font-medium text-[14px] leading-[20px] tracking-[-0.154px] transition-all ${
-                !isLoading && otp.every((digit) => digit.trim() !== '') ? 'bg-[#5a45f9] text-white hover:opacity-90 cursor-pointer' : 'bg-[#c0caff] text-[#ecf0ff] cursor-not-allowed'
-              }`}
+              className={`flex items-center justify-center px-[16px] py-[10px] rounded-[999px] w-full font-sans font-medium text-[14px] leading-[20px] tracking-[-0.154px] transition-all ${!isLoading && otp.every((digit) => digit.trim() !== '') ? 'bg-[#5a45f9] text-white hover:opacity-90 cursor-pointer' : 'bg-[#c0caff] text-[#ecf0ff] cursor-not-allowed'
+                }`}
               disabled={isLoading || !otp.every((digit) => digit.trim() !== '')}
               onClick={handleVerifyOtp}
             >
@@ -247,8 +257,8 @@ const EmailVerificationForm = ({ onVerified, initialSessionUser, source }: Props
                 {error}
               </div>
             )}
-            <button 
-              onClick={handleResendCode} 
+            <button
+              onClick={handleResendCode}
               disabled={isLoading}
               className="ds-font-body font-normal text-[14px] leading-[20px] tracking-[-0.084px] text-center text-[#7c7c7c] hover:text-white transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             >
@@ -306,21 +316,21 @@ const EmailVerificationForm = ({ onVerified, initialSessionUser, source }: Props
                   />
                 </>
               ) : (
-                <div style={{width: '100%', paddingLeft: 16, paddingRight: 16, paddingTop: 12, paddingBottom: 12, position: 'relative', background: 'black', borderRadius: 10, outline: '1px #989898 solid', outlineOffset: '-1px', display: 'flex', alignItems: 'center', gap: 12}}>
-                    <div style={{width: 24, height: 24, position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M19.6 21L13.3 14.7C12.8 15.1 12.225 15.4167 11.575 15.65C10.925 15.8833 10.2333 16 9.5 16C7.68333 16 6.14583 15.3708 4.8875 14.1125C3.62917 12.8542 3 11.3167 3 9.5C3 7.68333 3.62917 6.14583 4.8875 4.8875C6.14583 3.62917 7.68333 3 9.5 3C11.3167 3 12.8542 3.62917 14.1125 4.8875C15.3708 6.14583 16 7.68333 16 9.5C16 10.2333 15.8833 10.925 15.65 11.575C15.4167 12.225 15.1 12.8 14.7 13.3L21 19.6L19.6 21ZM9.5 14C10.75 14 11.8125 13.5625 12.6875 12.6875C13.5625 11.8125 14 10.75 14 9.5C14 8.25 13.5625 7.1875 12.6875 6.3125C11.8125 5.4375 10.75 5 9.5 5C8.25 5 7.1875 5.4375 6.3125 6.3125C5.4375 7.1875 5 8.25 5 9.5C5 10.75 5.4375 11.8125 6.3125 12.6875C7.1875 13.5625 8.25 14 9.5 14Z" fill="#7C7C7C"/>
-                        </svg>
-                    </div>
-                    <div style={{width: 1, height: 24, background: 'white', opacity: 0.2}}></div>
-                    <input 
-                        autoFocus
-                        type="text"
-                        placeholder="Search country"
-                        value={countrySearchQuery}
-                        onChange={(e) => setCountrySearchQuery(e.target.value)}
-                        style={{background: 'transparent', border: 'none', outline: 'none', color: 'white', fontSize: 16, fontFamily: 'Inter', fontWeight: '400', lineHeight: '24px', width: '100%'}}
-                    />
+                <div style={{ width: '100%', paddingLeft: 16, paddingRight: 16, paddingTop: 12, paddingBottom: 12, position: 'relative', background: 'black', borderRadius: 10, outline: '1px #989898 solid', outlineOffset: '-1px', display: 'flex', alignItems: 'center', gap: 12 }}>
+                  <div style={{ width: 24, height: 24, position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M19.6 21L13.3 14.7C12.8 15.1 12.225 15.4167 11.575 15.65C10.925 15.8833 10.2333 16 9.5 16C7.68333 16 6.14583 15.3708 4.8875 14.1125C3.62917 12.8542 3 11.3167 3 9.5C3 7.68333 3.62917 6.14583 4.8875 4.8875C6.14583 3.62917 7.68333 3 9.5 3C11.3167 3 12.8542 3.62917 14.1125 4.8875C15.3708 6.14583 16 7.68333 16 9.5C16 10.2333 15.8833 10.925 15.65 11.575C15.4167 12.225 15.1 12.8 14.7 13.3L21 19.6L19.6 21ZM9.5 14C10.75 14 11.8125 13.5625 12.6875 12.6875C13.5625 11.8125 14 10.75 14 9.5C14 8.25 13.5625 7.1875 12.6875 6.3125C11.8125 5.4375 10.75 5 9.5 5C8.25 5 7.1875 5.4375 6.3125 6.3125C5.4375 7.1875 5 8.25 5 9.5C5 10.75 5.4375 11.8125 6.3125 12.6875C7.1875 13.5625 8.25 14 9.5 14Z" fill="#7C7C7C" />
+                    </svg>
+                  </div>
+                  <div style={{ width: 1, height: 24, background: 'white', opacity: 0.2 }}></div>
+                  <input
+                    autoFocus
+                    type="text"
+                    placeholder="Search country"
+                    value={countrySearchQuery}
+                    onChange={(e) => setCountrySearchQuery(e.target.value)}
+                    style={{ background: 'transparent', border: 'none', outline: 'none', color: 'white', fontSize: 16, fontFamily: 'Inter', fontWeight: '400', lineHeight: '24px', width: '100%' }}
+                  />
                 </div>
               )}
 
@@ -400,7 +410,7 @@ const EmailVerificationForm = ({ onVerified, initialSessionUser, source }: Props
             </div>
           </div>
           {!isLinkInputValid && (
-            <div style={{width: '100%', color: '#989898', fontSize: '12px', fontFamily: 'Inter', fontWeight: '400', lineHeight: '16px', wordWrap: 'break-word', marginTop: '4px'}}>
+            <div style={{ width: '100%', color: '#989898', fontSize: '12px', fontFamily: 'Inter', fontWeight: '400', lineHeight: '16px', wordWrap: 'break-word', marginTop: '4px' }}>
               Enter a full link, e.g. instagram.com/username or flickr.com/photos/username
             </div>
           )}
@@ -423,20 +433,25 @@ const EmailVerificationForm = ({ onVerified, initialSessionUser, source }: Props
           disabled={!isAppValid || isLoading}
           onClick={async () => {
             setIsLoading(true);
-            const res = await submitApplicationAction(email, {
-              firstName,
-              lastName,
-              country: selectedCountry || '',
-              visitedCount: parseInt(visitedCount) || 0,
-              links
-            });
+            const res = await fetch("/api/auth/submit-application", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                firstName,
+                lastName,
+                country: selectedCountry || 'Unknown',
+                visitedCount: Number(visitedCount),
+                links: links.map(l => l.startsWith('http') ? l : `https://${l}`)
+              })
+            }).then(r => r.json()).catch(() => ({ error: "Network error" }));
             setIsLoading(false);
-            
-            if (res.error) {
-              alert(res.error);
+
+            if (!res.success) {
+              const errorMsg = res.error || res.detail || (typeof res === 'object' ? Object.values(res).flat().join('\\n') : "Submission failed");
+              alert("Error: " + errorMsg);
               return;
             }
-            
+
             alert('Your application has been submitted successfully!');
             // Reset form state to return to home page view
             setStep('email');
@@ -466,12 +481,12 @@ const EmailVerificationForm = ({ onVerified, initialSessionUser, source }: Props
         <div className="flex flex-col gap-[16px] items-center relative shrink-0 w-full">
           <div className="relative rounded-[16.81px] shrink-0 w-[100px] h-[100px]">
             <div className="absolute left-[50%] top-[50%] -translate-x-1/2 -translate-y-1/2 w-[152.625px] h-[121.557px] shrink-0" style={{ aspectRatio: '113/90' }}>
-              <Image 
-                className="absolute inset-0 w-full h-full object-cover pointer-events-none max-w-none" 
-                width={153} 
-                height={122} 
-                alt="Email Icon" 
-                src="/icons/img.png" 
+              <Image
+                className="absolute inset-0 w-full h-full object-cover pointer-events-none max-w-none"
+                width={153}
+                height={122}
+                alt="Email Icon"
+                src="/icons/img.png"
               />
             </div>
           </div>
@@ -502,9 +517,8 @@ const EmailVerificationForm = ({ onVerified, initialSessionUser, source }: Props
         {/* Button + text group */}
         <div className="flex flex-col gap-[24px] items-center relative shrink-0 w-full">
           <button
-            className={`flex items-center justify-center px-[16px] py-[10px] rounded-[999px] w-full font-sans font-medium text-[14px] leading-[20px] tracking-[-0.154px] transition-all ${
-              isValidEmail && !isLoading ? 'bg-[#5a45f9] text-white hover:opacity-90 cursor-pointer' : 'bg-[#c0caff] text-[#ecf0ff] cursor-not-allowed'
-            }`}
+            className={`flex items-center justify-center px-[16px] py-[10px] rounded-[999px] w-full font-sans font-medium text-[14px] leading-[20px] tracking-[-0.154px] transition-all ${isValidEmail && !isLoading ? 'bg-[#5a45f9] text-white hover:opacity-90 cursor-pointer' : 'bg-[#c0caff] text-[#ecf0ff] cursor-not-allowed'
+              }`}
             disabled={!isValidEmail || isLoading}
             onClick={handleSendCode}
           >
@@ -516,7 +530,7 @@ const EmailVerificationForm = ({ onVerified, initialSessionUser, source }: Props
               {email.trim().length > 0 ? (
                 <>We&apos;ll send you a code to verify your email</>
               ) : (
-                <>We&apos;ll verify your email before creating your<br/>explorer card</>
+                <>We&apos;ll verify your email before creating your<br />explorer card</>
               )}
             </p>
             {/* Mobile text */}

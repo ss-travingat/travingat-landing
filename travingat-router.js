@@ -11,6 +11,7 @@ export default {
       request.method !== 'GET' ||
       path.startsWith('/__') ||
       path.startsWith('/_api') ||
+      path.startsWith('/api') ||
       /\.(js|css|png|jpg|jpeg|gif|svg|ico|txt|xml|json|woff|woff2|map|webp|webm|mp4|heic|avif)$/i.test(path)
     ) {
       return fetch(request);

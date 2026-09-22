@@ -11,16 +11,11 @@
     "start": "next start",
     "lint": "next lint",
     "fonts:sync": "node scripts/sync-inter-display-fonts.mjs",
-    "upload:assets:r2": "node scripts/upload-public-assets-to-r2.mjs",
-    "db:push": "drizzle-kit push",
-    "db:pull": "drizzle-kit pull",
-    "db:generate": "drizzle-kit generate",
-    "db:migrate": "drizzle-kit migrate"
+    "upload:assets:r2": "node scripts/upload-public-assets-to-r2.mjs"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.922.0",
     "@aws-sdk/s3-request-presigner": "^3.1083.0",
-    "@neondatabase/serverless": "^1.0.2",
     "@radix-ui/react-dialog": "^1.1.23",
     "@radix-ui/react-popover": "^1.1.23",
     "@radix-ui/react-tabs": "^1.1.13",
@@ -29,7 +24,6 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "countries-list": "^3.4.1",
-    "drizzle-orm": "^0.45.2",
     "flag-icons": "^7.5.0",
     "html-to-image": "^1.11.13",
     "html2canvas": "^1.4.1",
@@ -39,6 +33,7 @@
     "nodemailer": "^8.0.4",
     "react": "19.2.3",
     "react-dom": "19.2.3",
+    "react-easy-crop": "^6.2.3",
     "uuid": "^14.0.2"
   },
   "devDependencies": {
@@ -49,7 +44,6 @@
     "@types/react-dom": "^19",
     "@types/sharp": "^0.32.0",
     "dotenv": "^17.4.2",
-    "drizzle-kit": "^0.31.10",
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
     "playwright": "^1.60.0",

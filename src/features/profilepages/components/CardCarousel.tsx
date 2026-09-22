@@ -1,20 +1,21 @@
 "use client";
+import { MediaResolver } from "@/lib/media-resolver";
 
 import { useState, useEffect } from "react";
-import { toLandingAssetUrl } from "@/lib/landing-assets";
 import LoadedImage from "@/components/ui/LoadedImage";
-import { getThumbnailUrl } from "@/components/ThumbnailImage";
 
 export default function CardCarousel({
   images,
   alt,
   maxImages = 10,
   containerClassName = "aspect-square",
+  priority = false,
 }: {
   images: string[];
   alt: string;
   maxImages?: number;
   containerClassName?: string;
+  priority?: boolean;
 }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
@@ -46,7 +47,7 @@ export default function CardCarousel({
   if (displayImages.length === 0) return null;
 
   return (
-    <div 
+    <div
       className={`relative w-full overflow-hidden rounded-[0.5rem] md:rounded-2xl bg-[#151515] group ${containerClassName}`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
@@ -58,9 +59,10 @@ export default function CardCarousel({
         {displayImages.map((src, i) => (
           <div key={`${src}-${i}`} className="w-full h-full flex-shrink-0 overflow-hidden relative">
             <LoadedImage
-              src={toLandingAssetUrl(src)}
-              thumbnailSrc={getThumbnailUrl(toLandingAssetUrl(src), 720)}
+              src={MediaResolver.getOptimized(MediaResolver.getBase(src))}
+              thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(src), 720)}
               alt={`${alt} ${i + 1}`}
+              priority={priority && i === 0}
               className="w-full h-full object-cover block transition-transform duration-300 group-hover:scale-[1.03]"
               containerClassName="w-full h-full"
             />
@@ -92,9 +94,8 @@ export default function CardCarousel({
             {displayImages.map((_, i) => (
               <div
                 key={i}
-                className={`transition-all duration-300 rounded-full bg-white shadow-sm ${
-                  i === currentIndex ? "w-1.5 h-1.5 opacity-100" : "w-1 h-1 opacity-50"
-                }`}
+                className={`transition-all duration-300 rounded-full bg-white shadow-sm ${i === currentIndex ? "w-1.5 h-1.5 opacity-100" : "w-1 h-1 opacity-50"
+                  }`}
               />
             ))}
           </div>

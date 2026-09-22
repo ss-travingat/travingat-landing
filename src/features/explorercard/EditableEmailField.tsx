@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { Field } from './expcard-page';
-import { requestOtpAction, verifyOtpAction } from '@/app/actions/auth';
+
 
 interface EditableEmailFieldProps {
   email: string;
@@ -30,7 +30,11 @@ export function EditableEmailField({ email, onVerified }: EditableEmailFieldProp
 
     setIsLoading(true);
     setError(null);
-    const res = await requestOtpAction(draftEmail);
+    const res = await fetch("/api/auth/request-otp", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: draftEmail })
+    }).then(r => r.json()).catch(() => ({ error: "Network error" }));
     setIsLoading(false);
 
     if (res?.error) {
@@ -45,7 +49,11 @@ export function EditableEmailField({ email, onVerified }: EditableEmailFieldProp
     setIsLoading(true);
     setError(null);
     const otpString = otp.join('');
-    const res = await verifyOtpAction(draftEmail, otpString, 'Explorer Card');
+    const res = await fetch("/api/auth/verify-otp", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: draftEmail, otp: otpString, source: 'Explorer Card' })
+    }).then(r => r.json()).catch(() => ({ error: "Network error" }));
     setIsLoading(false);
 
     if (res?.error) {

@@ -8,7 +8,7 @@ export const revalidate = 60;
 export async function generateStaticParams() {
   try {
     const profiles = await getAllActiveProfiles();
-    return profiles.map((profile) => ({ id: profile.handle.replace(/^@/, "") }));
+    return profiles.map((profile: any) => ({ id: profile.handle.replace(/^@/, "") }));
   } catch {
     return [];
   }

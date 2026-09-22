@@ -29,6 +29,14 @@ export function MasonryImageGrid<T extends MasonryItemWithDimensions>({
   initialVisibleCount = 10,
 }: MasonryImageGridProps<T>) {
   const [visibleCount, setVisibleCount] = useState(initialVisibleCount);
+  const [prevItemsLength, setPrevItemsLength] = useState(items.length);
+  const [prevInitialCount, setPrevInitialCount] = useState(initialVisibleCount);
+
+  if (items.length !== prevItemsLength || initialVisibleCount !== prevInitialCount) {
+    setPrevItemsLength(items.length);
+    setPrevInitialCount(initialVisibleCount);
+    setVisibleCount(Math.min(initialVisibleCount, items.length));
+  }
   const visibleItems = items.slice(0, visibleCount);
   
   const effectiveGapX = typeof gapX === "number" ? gapX : gap;
@@ -40,10 +48,6 @@ export function MasonryImageGrid<T extends MasonryItemWithDimensions>({
     effectiveGapY,
     minColumnWidth
   );
-
-  useEffect(() => {
-    setVisibleCount(Math.min(initialVisibleCount, items.length));
-  }, [items.length, initialVisibleCount]);
 
   useEffect(() => {
     if (visibleCount >= items.length) return;

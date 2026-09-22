@@ -86,14 +86,18 @@ const BADGE_SVG = `
 `
 
 function usePrefersReducedMotion() {
-    const [reducedMotion, setReducedMotion] = React.useState(false)
+    const [reducedMotion, setReducedMotion] = React.useState(() => {
+        if (typeof window !== "undefined" && window.matchMedia) {
+            return window.matchMedia("(prefers-reduced-motion: reduce)").matches
+        }
+        return false
+    })
 
     React.useEffect(() => {
         if (typeof window === "undefined" || !window.matchMedia) return
 
         const query = window.matchMedia("(prefers-reduced-motion: reduce)")
         const update = () => setReducedMotion(query.matches)
-        update()
         query.addEventListener?.("change", update)
 
         return () => query.removeEventListener?.("change", update)

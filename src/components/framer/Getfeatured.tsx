@@ -26,7 +26,7 @@ const EmailVerificationForm = () => {
   const inputRefs = useRef<(HTMLInputElement | null)[]>([])
   const [isLoading, setIsLoading] = useState(false)
 
-  const backendUrl = "https://app.travingat.com"
+  const backendUrl = ""
   // Basic email validation regex
   const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
 

@@ -1,46 +1,7 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-function getSessionSecret() {
-  return process.env.ADMIN_SESSION_SECRET || 'change-this-admin-session-secret';
-}
 
-async function verifyAdminSessionTokenEdge(token: string) {
-  if (!token) return false;
-  const parts = token.split('.');
-  if (parts.length !== 3) return false;
-
-  const expRaw = parts[0];
-  const nonce = parts[1];
-  const providedSig = parts[2];
-
-  const exp = Number(expRaw);
-  if (!Number.isFinite(exp) || exp <= Math.floor(Date.now() / 1000)) {
-    return false;
-  }
-
-  const payload = `${expRaw}.${nonce}`;
-  const secret = getSessionSecret();
-
-  try {
-    const encoder = new TextEncoder();
-    const key = await crypto.subtle.importKey(
-      'raw',
-      encoder.encode(secret),
-      { name: 'HMAC', hash: 'SHA-256' },
-      false,
-      ['verify']
-    );
-
-    const sigBytes = new Uint8Array(
-      providedSig.match(/.{1,2}/g)?.map((byte) => parseInt(byte, 16)) || []
-    );
-
-    return await crypto.subtle.verify('HMAC', key, sigBytes, encoder.encode(payload));
-  } catch (e) {
-    return false;
-  }
-}
 
 export default async function proxy(req: NextRequest) {
   const requestHeaders = new Headers(req.headers);
@@ -61,8 +22,8 @@ export default async function proxy(req: NextRequest) {
 
   const url = req.nextUrl;
 
-  const isWaitlistApi = url.pathname === '/api/waitlist';
-  const isExplorerCardApi = url.pathname === '/api/explorercard';
+  const isWaitlistApi = url.pathname.startsWith('/api/waitlist');
+  const isExplorerCardApi = url.pathname.startsWith('/api/explorercard');
   const isAuthApi = url.pathname.startsWith('/api/auth');
   const isViewExplorerCard = url.pathname.startsWith('/view/explorercard');
   const isPublicProfileFrontend = url.pathname.startsWith('/profiles/');
@@ -71,7 +32,7 @@ export default async function proxy(req: NextRequest) {
     url.pathname.startsWith('/api/profiles') ||
     url.pathname.startsWith('/api/testimonials') ||
     url.pathname.startsWith('/api/upload') ||
-    url.pathname.startsWith('/api/proxy-image');
+    url.pathname.startsWith('/api/media-engine');
 
   const isLoginPage = url.pathname === '/admin/login';
   const isAdminLoginApi =
@@ -85,23 +46,9 @@ export default async function proxy(req: NextRequest) {
     return NextResponse.next({ request: { headers: requestHeaders } });
   }
 
-  // Require auth for every other route.
-  const SESSION_COOKIE_NAME = 'travingat_cms_session';
-  const sessionCookie = req.cookies.get(SESSION_COOKIE_NAME)?.value || '';
-  const isAuthenticated = sessionCookie
-    ? await verifyAdminSessionTokenEdge(sessionCookie)
-    : false;
-
-  if (isAuthenticated) {
-    return NextResponse.next({ request: { headers: requestHeaders } });
-  }
-
-  if (url.pathname.startsWith('/api/')) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
-
-  const loginUrl = new URL('/admin/login', req.url);
-  return NextResponse.redirect(loginUrl);
+  // Travingat Landing is purely public now (admin moved to travingat-admin repo).
+  // Return next to let Next.js handle 404s naturally instead of forcing auth.
+  return NextResponse.next({ request: { headers: requestHeaders } });
 }
 
 export const config = {

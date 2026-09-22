@@ -1,10 +1,9 @@
 import ExplorerCardPage from "@/features/explorercard/expcard-page";
 import { Metadata } from "next";
 import { getSessionUser } from "@/lib/user-session";
-import { getDrizzle } from "@/lib/drizzle";
-import { explorerCards } from "@/db/schema";
-import { eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
+
+const BACKEND_URL = process.env.BACKEND_URL || "http://127.0.0.1:8000";
 
 export const dynamic = "force-dynamic";
 export const fetchCache = "force-no-store";
@@ -23,14 +22,21 @@ export default async function Page() {
   }
 
   let explorerCard = null;
-  try {
-    const db = getDrizzle();
-    const cards = await db.select().from(explorerCards).where(eq(explorerCards.userId, sessionUser.id)).limit(1);
-    if (cards && cards.length > 0) {
-      explorerCard = cards[0];
+  if (sessionUser.explorerCardId) {
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/explorercard/${sessionUser.explorerCardId}`, { next: { revalidate: 0 } });
+      if (res.ok) {
+        const data = await res.json();
+        explorerCard = {
+          ...data,
+          profileImageUrl: data.profile_image_url,
+          coverImageUrl: data.cover_image_url,
+          visitedCountries: data.visited_countries
+        };
+      }
+    } catch (err) {
+      console.error("Failed to fetch explorer card", err);
     }
-  } catch (err) {
-    console.error("Failed to fetch explorer card", err);
   }
 
   if (!explorerCard) {

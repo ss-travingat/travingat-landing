@@ -1,7 +1,6 @@
-import { getDrizzle } from "@/lib/drizzle";
-import { featuredProfiles } from "@/db/schema";
-import { desc, isNull, eq } from "drizzle-orm";
 import { toLandingAssetUrl } from "@/lib/landing-assets";
+
+const BACKEND_URL = process.env.BACKEND_URL || "http://127.0.0.1:8000";
 
 function resolveImageAsset(img: any) {
   return typeof img === "string" ? img : img?.url ?? "";
@@ -22,6 +21,8 @@ export function normalizeProfile(p: any) {
     currentlyIn: p.currently_in,
     isExplorerCard: p.is_explorer_card,
     isFeaturedProfile: p.is_featured_profile,
+    showBadge: p.show_badge,
+    isSampleProfile: p.is_sample_profile,
     images: {
       cover: toLandingAssetUrl(resolveImageAsset(images.cover)),
       avatar: toLandingAssetUrl(resolveImageAsset(images.avatar)),
@@ -31,29 +32,25 @@ export function normalizeProfile(p: any) {
 }
 
 export async function getAllActiveProfiles() {
-  const db = getDrizzle();
-  const profiles = await db
-    .select()
-    .from(featuredProfiles)
-    .where(isNull(featuredProfiles.deleted_at))
-    .orderBy(desc(featuredProfiles.created_at));
-  
-  return profiles.map(normalizeProfile);
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/profiles`, { next: { revalidate: 60 } });
+    if (!res.ok) return [];
+    const profiles = await res.json();
+    return profiles.map(normalizeProfile);
+  } catch (err) {
+    console.error("Failed to fetch profiles:", err);
+    return [];
+  }
 }
 
 export async function getProfileByHandle(handle: string) {
-  const db = getDrizzle();
-  const handleWithAt = handle.startsWith("@") ? handle : `@${handle}`;
-  
-  const profiles = await db
-    .select()
-    .from(featuredProfiles)
-    .where(eq(featuredProfiles.handle, handleWithAt))
-    .limit(1);
-    
-  if (profiles.length === 0 || profiles[0].deleted_at) {
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/profiles/${handle}`, { next: { revalidate: 60 } });
+    if (!res.ok) return null;
+    const profile = await res.json();
+    return normalizeProfile(profile);
+  } catch (err) {
+    console.error("Failed to fetch profile by handle:", err);
     return null;
   }
-  
-  return normalizeProfile(profiles[0]);
 }

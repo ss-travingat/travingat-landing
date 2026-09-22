@@ -64,8 +64,12 @@ const nextConfig: NextConfig = {
   async rewrites() {
     return [
       {
+        source: "/api/:path((?!media-engine).*)",
+        destination: `${process.env.BACKEND_URL || "http://localhost:8000"}/api/:path`,
+      },
+      {
         // Negative lookahead to ensure we don't accidentally rewrite known pages and API routes
-        source: "/:username((?!api|admin|blog|pricing|templates|_next|static|favicon\\.ico).*)",
+        source: "/:username((?!api|admin|blog|pricing|templates|_next|static|favicon\\.ico|waitlist|designsystem|join|featured-profiles|ec|explorercard|edit|getfeatured|view|profiles).*)",
         destination: "/profiles/:username",
       },
     ];

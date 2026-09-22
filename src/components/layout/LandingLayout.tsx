@@ -40,7 +40,13 @@ export default function LandingLayout({
   children: React.ReactNode;
 }>) {
   const pathname = usePathname();
-  const isProfileRoute = Boolean(pathname?.startsWith("/profiles/"));
+  const nonProfileRoots = ["/api", "/admin", "/blog", "/pricing", "/templates", "/_next", "/static", "/explorercard", "/login", "/join", "/edit"];
+  const isProfileRoute = Boolean(
+    pathname && 
+    pathname !== "/" && 
+    pathname !== "/favicon.ico" && 
+    !nonProfileRoots.some(root => pathname.startsWith(root))
+  );
   const isExplorerCardRoute = Boolean(pathname?.includes("/explorercard"));
   const isAdminRoute = pathname?.startsWith("/admin");
   const hideNavbar = pathname?.startsWith("/edit/explorercard") || pathname === "/explorercard" || pathname === "/join/explorercard" || isAdminRoute;
