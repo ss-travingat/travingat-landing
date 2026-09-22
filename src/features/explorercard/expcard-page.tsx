@@ -163,9 +163,7 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
           bypassingCache: true,
           requestInit: { cache: "force-cache" },
         },
-        onFetchError: (url, err) => {
-          console.warn("[domToPng] fetch error for", url, err);
-        },
+
         // Rewrite CDN URLs through our same-origin proxy so canvas can draw them
         fetchFn: async (url: string): Promise<string | false> => {
           const isCdn =
@@ -1126,6 +1124,7 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
             removeCountry={removeCountry}
             isEditMode={isEditMode}
             hasChanged={hasChanged}
+            handleRemoveImage={handleRemoveImage}
           />
         </div>
       </div>
