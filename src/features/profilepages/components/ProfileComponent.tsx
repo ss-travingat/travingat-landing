@@ -1542,17 +1542,43 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
             {/* Cover image — maintains exact aspect ratio */}
             <div className="w-full max-w-[48%] shrink-0 flex justify-end self-end">
               <div
-                className="relative w-full max-w-[40rem] shrink-0 overflow-hidden rounded-3xl lg:rounded-[1.5rem] xl:rounded-[2rem] aspect-[640/662] bg-[#151515]"
+                className="relative w-full max-w-[40rem] shrink-0 overflow-visible rounded-3xl lg:rounded-[1.5rem] xl:rounded-[2rem] aspect-[640/662] bg-[#151515]"
                 style={strictDesktopStyle ? { width: `${interpolatedCoverWidth}px`, maxWidth: `${interpolatedCoverWidth}px` } : undefined}
               >
-                <LoadedImage
-                  src={toLandingAssetUrl(typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url)}
-                  thumbnailSrc={getOptimizedMediaUrl(toLandingAssetUrl(typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url))}
-                  alt="Profile cover"
-                  className="absolute inset-0 w-full h-full object-cover rounded-3xl lg:rounded-[1.5rem] xl:rounded-[2rem]"
-                  skeletonClassName="absolute inset-0 bg-[#1a1a1a]"
-                  containerClassName="absolute inset-0 w-full h-full"
-                />
+                <div className="absolute inset-0 overflow-hidden rounded-3xl lg:rounded-[1.5rem] xl:rounded-[2rem]">
+                  <LoadedImage
+                    src={toLandingAssetUrl(typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url)}
+                    thumbnailSrc={getOptimizedMediaUrl(toLandingAssetUrl(typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url))}
+                    alt="Profile cover"
+                    className="absolute inset-0 w-full h-full object-cover rounded-3xl lg:rounded-[1.5rem] xl:rounded-[2rem]"
+                    skeletonClassName="absolute inset-0 bg-[#1a1a1a]"
+                    containerClassName="absolute inset-0 w-full h-full"
+                  />
+                </div>
+                {/* Founding Explorer badge — half outside the left edge of the cover */}
+                {profile.showBadge && (
+                  <img
+                    src="/icons/badge.svg"
+                    alt="Founding Explorer"
+                    className="absolute z-10 w-[9.375rem] h-[9.375rem] pointer-events-none select-none drop-shadow-[0_4px_24px_rgba(0,0,0,0.45)]"
+                    style={{ top: "40px", left: "0", transform: "translateX(-50%)" }}
+                    draggable={false}
+                  />
+                )}
+                
+                {/* Sample Profile Indicator */}
+                {profile.isSampleProfile && (
+                  <div
+                    className="absolute z-10 text-white pointer-events-none select-none font-medium leading-none whitespace-nowrap drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)]"
+                    style={{
+                      fontSize: "14px",
+                      bottom: "20px",
+                      right: "20px",
+                    }}
+                  >
+                    Sample Profile
+                  </div>
+                )}
               </div>
             </div>
           </section>

@@ -221,15 +221,41 @@ export function MobileHero({
       <div className="flex flex-col items-center gap-[1.25rem] rounded-[1.5rem] w-full relative">
         <MobileProfileNavbar profile={profile} />
         <div className="w-full min-[50.625rem]:max-w-[25rem] min-[50.625rem]:mx-auto flex flex-col items-center">
-          <div className="w-full aspect-[377/248] -mb-[2.25rem] rounded-2xl overflow-hidden bg-[#151515]">
-            <LoadedImage
-              src={toLandingAssetUrl(typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url)}
-              thumbnailSrc={getOptimizedMediaUrl(toLandingAssetUrl(typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url))}
-              alt="Profile cover"
-              className="w-full h-full object-cover"
-              skeletonClassName="absolute inset-0 bg-[#1a1a1a]"
-              containerClassName="w-full h-full"
-            />
+          <div className="relative w-full aspect-[377/248] -mb-[2.25rem]">
+            <div className="w-full h-full rounded-2xl overflow-hidden bg-[#151515]">
+              <LoadedImage
+                src={toLandingAssetUrl(typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url)}
+                thumbnailSrc={getOptimizedMediaUrl(toLandingAssetUrl(typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url))}
+                alt="Profile cover"
+                className="w-full h-full object-cover"
+                skeletonClassName="absolute inset-0 bg-[#1a1a1a]"
+                containerClassName="w-full h-full"
+              />
+            </div>
+            {/* Founding Explorer badge — half outside left edge */}
+            {profile.showBadge && (
+              <img
+                src="/icons/badge.svg"
+                alt="Founding Explorer"
+                className="absolute z-10 w-24 h-24 pointer-events-none select-none drop-shadow-[0_4px_16px_rgba(0,0,0,0.5)]"
+                style={{ top: "24px", left: "0", transform: "translateX(-50%)" }}
+                draggable={false}
+              />
+            )}
+            
+            {/* Sample Profile Indicator */}
+            {profile.isSampleProfile && (
+              <div
+                className="absolute z-10 text-white pointer-events-none select-none font-medium leading-none whitespace-nowrap drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)]"
+                style={{
+                  fontSize: "14px",
+                  bottom: "16px",
+                  right: "16px",
+                }}
+              >
+                Sample Profile
+              </div>
+            )}
           </div>
           <div className="relative z-10 mx-auto w-[5rem] h-[5rem] rounded-2xl ring-4 ring-black bg-[#151515]">
             <LoadedImage

@@ -21,6 +21,8 @@ export function normalizeProfile(p: any) {
     currentlyIn: p.currently_in,
     isExplorerCard: p.is_explorer_card,
     isFeaturedProfile: p.is_featured_profile,
+    showBadge: p.show_badge,
+    isSampleProfile: p.is_sample_profile,
     images: {
       cover: toLandingAssetUrl(resolveImageAsset(images.cover)),
       avatar: toLandingAssetUrl(resolveImageAsset(images.avatar)),
