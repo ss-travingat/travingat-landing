@@ -158,7 +158,34 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
         quality: 0.9,
         width: node.offsetWidth,
         height: node.offsetHeight,
-        fetch: { bypassingCache: false },
+        fetch: {
+          bypassingCache: true,
+          requestInit: { cache: "force-cache" },
+        },
+        onFetchError: (url, err) => {
+          console.warn("[domToPng] fetch error for", url, err);
+        },
+        // Rewrite CDN URLs through our same-origin proxy so canvas can draw them
+        fetchFn: async (url: string): Promise<string | false> => {
+          const isCdn =
+            url.includes("cdn.travingat.com") ||
+            url.includes("r2.cloudflarestorage.com");
+          if (!isCdn) return false; // fall back to default fetch for non-CDN
+          try {
+            const proxyUrl = `/api/image-proxy?url=${encodeURIComponent(url)}`;
+            const res = await fetch(proxyUrl, { cache: "force-cache" });
+            if (!res.ok) return false;
+            const blob = await res.blob();
+            return await new Promise<string>((resolve, reject) => {
+              const reader = new FileReader();
+              reader.onload = () => resolve(reader.result as string);
+              reader.onerror = reject;
+              reader.readAsDataURL(blob);
+            });
+          } catch {
+            return false;
+          }
+        },
         filter: (n) => {
           if (n instanceof HTMLElement && n.classList?.contains('hide-on-download')) {
             return false;
