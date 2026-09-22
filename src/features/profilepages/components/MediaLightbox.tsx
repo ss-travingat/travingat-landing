@@ -70,11 +70,7 @@ export function MediaLightbox({
     if (i >= 0 && i < totalCount && items[i] && !items[i].isVideo) {
       const originalUrl = toLandingAssetUrl(items[i].url);
       const optimizedUrl = getOptimizedMediaUrl(originalUrl);
-      urlsToPreload.push(
-        originalUrl.startsWith("http")
-          ? `/api/proxy-image?url=${encodeURIComponent(optimizedUrl)}`
-          : optimizedUrl
-      );
+      urlsToPreload.push(optimizedUrl);
     }
   }
   useImagePreloader(urlsToPreload);
@@ -103,10 +99,10 @@ export function MediaLightbox({
   if (activeItem && !activeItem.isVideo) {
     let base = toLandingAssetUrl(activeItem.url || "");
     if (useFallback) {
-      currentImgSrc = base.startsWith("http") ? `/api/proxy-image?url=${encodeURIComponent(base)}` : base;
+      currentImgSrc = base;
     } else {
       let optimized = getOptimizedMediaUrl(base);
-      currentImgSrc = base.startsWith("http") ? `/api/proxy-image?url=${encodeURIComponent(optimized)}` : optimized;
+      currentImgSrc = optimized;
     }
   }
 
@@ -260,6 +256,7 @@ export function MediaLightbox({
               </video>
             ) : (
               <img
+                key={currentImgSrc}
                 src={currentImgSrc}
                 alt="Carousel media"
                 className={`block w-full h-full object-contain carousel-image rounded-[0.75rem] mx-auto transition-opacity duration-300 ${mediaLoaded && !mediaError ? 'opacity-100' : 'opacity-0'}`}

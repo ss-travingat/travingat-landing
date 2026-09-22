@@ -10,11 +10,13 @@ export default function CardCarousel({
   alt,
   maxImages = 10,
   containerClassName = "aspect-square",
+  priority = false,
 }: {
   images: string[];
   alt: string;
   maxImages?: number;
   containerClassName?: string;
+  priority?: boolean;
 }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
@@ -46,7 +48,7 @@ export default function CardCarousel({
   if (displayImages.length === 0) return null;
 
   return (
-    <div 
+    <div
       className={`relative w-full overflow-hidden rounded-[0.5rem] md:rounded-2xl bg-[#151515] group ${containerClassName}`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
@@ -61,6 +63,7 @@ export default function CardCarousel({
               src={toLandingAssetUrl(src)}
               thumbnailSrc={getThumbnailUrl(toLandingAssetUrl(src), 720)}
               alt={`${alt} ${i + 1}`}
+              priority={priority && i === 0}
               className="w-full h-full object-cover block transition-transform duration-300 group-hover:scale-[1.03]"
               containerClassName="w-full h-full"
             />
@@ -92,9 +95,8 @@ export default function CardCarousel({
             {displayImages.map((_, i) => (
               <div
                 key={i}
-                className={`transition-all duration-300 rounded-full bg-white shadow-sm ${
-                  i === currentIndex ? "w-1.5 h-1.5 opacity-100" : "w-1 h-1 opacity-50"
-                }`}
+                className={`transition-all duration-300 rounded-full bg-white shadow-sm ${i === currentIndex ? "w-1.5 h-1.5 opacity-100" : "w-1 h-1 opacity-50"
+                  }`}
               />
             ))}
           </div>

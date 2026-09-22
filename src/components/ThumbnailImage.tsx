@@ -39,6 +39,8 @@ export function ThumbnailImage({ originalSrc, size = 720, ...props }: ThumbnailI
   return (
     <img 
       src={src} 
+      loading="lazy"
+      decoding="async"
       onError={handleError} 
       {...props} 
     />

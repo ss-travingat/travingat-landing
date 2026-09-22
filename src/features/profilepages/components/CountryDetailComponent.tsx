@@ -489,6 +489,7 @@ export default function CountryDetailComponent({
                                   src={toLandingAssetUrl(imgUrl)}
                                   thumbnailSrc={getThumbnailUrl(toLandingAssetUrl(imgUrl), 720)}
                                   alt={`${countryName} photo ${globalIndex + 1}`}
+                                  priority={globalIndex < 4}
                                   className="w-full h-auto block"
                                   containerClassName="w-full"
                                   skeletonClassName="w-full aspect-square"
@@ -591,6 +592,7 @@ export default function CountryDetailComponent({
                             src={toLandingAssetUrl(imgUrl)}
                             thumbnailSrc={getThumbnailUrl(toLandingAssetUrl(imgUrl), 720)}
                             alt={`${countryName} photo ${globalIndex + 1}`}
+                            priority={globalIndex < 4}
                             className="w-full h-auto block"
                             containerClassName="w-full"
                             skeletonClassName="w-full aspect-square"

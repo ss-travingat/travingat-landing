@@ -1687,7 +1687,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                       </div>
                     ) : (
                       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-x-2 gap-y-4 md:gap-x-5 md:gap-y-10">
-                        {countryCards.map((country) => {
+                        {countryCards.map((country, index) => {
                           const contextMenuId = `country-${country.code}`;
                           const isMenuOpen = openContextMenuId === contextMenuId;
                           const countryHref = `/${profile.handle.replace(/^@/, "")}/country/${country.flagCode.toUpperCase()}`;
@@ -1708,6 +1708,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                                 <CardCarousel
                                   images={country.previewImages.length > 0 ? country.previewImages : [country.thumbnailUrl]}
                                   alt={country.name}
+                                  priority={index < 4}
                                 />
 
                                 <MoreOptionsButton

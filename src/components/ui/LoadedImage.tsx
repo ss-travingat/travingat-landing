@@ -54,10 +54,6 @@ export default function LoadedImage({
     ? `${activeSrc}${activeSrc.includes("?") ? "&" : "?"}retry=${retryCount}` 
     : activeSrc;
 
-  if (currentSrc.startsWith("http")) {
-    currentSrc = `/api/proxy-image?url=${encodeURIComponent(currentSrc)}`;
-  }
-
   const handleLoad = () => {
     if (maxLoadTimeoutRef.current) clearTimeout(maxLoadTimeoutRef.current);
     setStatus("loaded");
@@ -86,23 +82,17 @@ export default function LoadedImage({
       setStatus("loading");
       return;
     }
-    if (retryCount < maxRetries) {
-      timeoutRef.current = setTimeout(() => {
-        setRetryCount((prev) => prev + 1);
-        setStatus("loading");
-      }, 1000 * (retryCount + 1));
-    } else {
-      // Before giving up completely, if the image isn't already webp/webm, attempt to fallback to it.
-      if (!isHealing && !activeSrc.match(/\.(webp|webm)$/i) && !activeSrc.startsWith("blob:") && !activeSrc.startsWith("data:")) {
-        setIsHealing(true);
-        setRetryCount(0); // Reset retries for the new URL
-        setStatus("loading");
-        return;
-      }
-      
-      if (maxLoadTimeoutRef.current) clearTimeout(maxLoadTimeoutRef.current);
-      setStatus("error");
+    
+    // Before giving up completely, if the image isn't already webp/webm, attempt to fallback to it.
+    if (!isHealing && !activeSrc.match(/\\.(webp|webm)$/i) && !activeSrc.startsWith("blob:") && !activeSrc.startsWith("data:")) {
+      setIsHealing(true);
+      setRetryCount(0); // Reset retries for the new URL
+      setStatus("loading");
+      return;
     }
+    
+    if (maxLoadTimeoutRef.current) clearTimeout(maxLoadTimeoutRef.current);
+    setStatus("error");
   };
 
   useEffect(() => {
@@ -155,6 +145,7 @@ export default function LoadedImage({
         className={`relative z-10 transition-all duration-700 ${status === "loaded" ? "opacity-100 blur-none" : "opacity-0 blur-lg"} ${className}`}
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         {...(priority ? { fetchPriority: "high" as any, loading: "eager" } : { loading: "lazy" })}
+        decoding="async"
         onClick={onClick}
         onLoad={handleLoad}
         onError={handleError}
