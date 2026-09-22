@@ -32,7 +32,6 @@ export default async function proxy(req: NextRequest) {
     url.pathname.startsWith('/api/profiles') ||
     url.pathname.startsWith('/api/testimonials') ||
     url.pathname.startsWith('/api/upload') ||
-    url.pathname.startsWith('/api/proxy-image') ||
     url.pathname.startsWith('/api/media-engine');
 
   const isLoginPage = url.pathname === '/admin/login';
