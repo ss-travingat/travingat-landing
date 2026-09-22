@@ -64,10 +64,10 @@ export function MediaLightbox({
 
   // Preload 1 behind and 2 ahead to avoid blocking the browser's connection limit (max 6 concurrent)
   const urlsToPreload = [];
-  const preloadIndices = [activeIndex - 1, activeIndex + 1, activeIndex + 2];
+  const preloadIndices = [activeIndex - 1, activeIndex, activeIndex + 1, activeIndex + 2];
 
   for (const i of preloadIndices) {
-    if (i >= 0 && i < totalCount && i !== activeIndex && items[i] && !items[i].isVideo) {
+    if (i >= 0 && i < totalCount && items[i] && !items[i].isVideo) {
       const originalUrl = toLandingAssetUrl(items[i].url);
       const optimizedUrl = getOptimizedMediaUrl(originalUrl);
       urlsToPreload.push(
@@ -260,7 +260,6 @@ export function MediaLightbox({
               </video>
             ) : (
               <img
-                key={`img-${activeIndex}`}
                 src={currentImgSrc}
                 alt="Carousel media"
                 className={`block w-full h-full object-contain carousel-image rounded-[0.75rem] mx-auto transition-opacity duration-300 ${mediaLoaded && !mediaError ? 'opacity-100' : 'opacity-0'}`}
