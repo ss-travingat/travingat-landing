@@ -1387,7 +1387,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
           />
 
 
-          <section className="hidden min-[75rem]:flex items-end justify-between gap-6 w-full">
+          <section className="hidden min-[75rem]:flex items-end justify-between gap-6 w-full pb-8">
             <div
               className="w-full max-w-[48%] lg:max-w-[31.25rem] xl:max-w-[33.5625rem] shrink flex flex-col items-start justify-start gap-6 lg:gap-8 xl:gap-10 pt-6 lg:pt-10 xl:pt-12"
               style={strictDesktopStyle ? { width: `${interpolatedLeftWidth}px`, maxWidth: `${interpolatedLeftWidth}px` } : undefined}
@@ -1558,10 +1558,10 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
           </section>
 
           {/* Desktop: pill tabs with text */}
-          <div id="desktop-tabs-sentinel" className="w-full h-0 min-[75rem]:mt-12 min-[90rem]:mt-16" />
+          <div id="desktop-tabs-sentinel" className="w-full h-0" />
           <div
             id="profile-desktop-tabs"
-            className={`hidden min-[75rem]:flex items-center justify-center gap-2 flex-wrap sticky z-header py-6 -mx-4 px-4 lg:-mx-8 lg:px-8 xl:-mx-10 xl:px-10 transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] top-[7.5rem] [.header-hidden_&]:top-0`}
+            className={`hidden min-[75rem]:flex items-center justify-center gap-2 flex-wrap sticky z-header pt-8 pb-8 -mx-4 px-4 lg:-mx-8 lg:px-8 xl:-mx-10 xl:px-10 transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] top-[7.5rem] [.header-hidden_&]:top-0`}
           >
             {/* Background gradient and progressive blur */}
             <div
@@ -1613,7 +1613,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
             </button>
           </div>
 
-          <div className="flex flex-col gap-3 w-full min-[75rem]:mt-4 min-[90rem]:mt-8">
+          <div className="flex flex-col gap-3 w-full">
             {/* Mobile/iPad: icon-only tabs with sliding underline indicator */}
             <div id="mobile-tabs-sentinel" className="w-full h-0" />
             <MobileTabs activeTab={activeTab} setActiveTab={handleTabChange} swipeOffset={swipeOffset} />

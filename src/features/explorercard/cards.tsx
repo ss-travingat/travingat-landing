@@ -229,7 +229,7 @@ export function MinimalCard({ form, sampleFlags, visitedArray, isPreview }: Card
           
           {/* Profile info */}
           <div className="flex h-full w-full flex-col items-start justify-end gap-[12px] rounded-[16px] bg-[#111111] p-[16px]">
-            <div className="relative h-[36px] w-[36px] shrink-0 overflow-hidden rounded-[10px] bg-[#2a2a2a]">
+            <div className="relative h-[48px] w-[48px] shrink-0 overflow-hidden rounded-[10px] bg-[#2a2a2a]">
               {form.profileImage ? (
                 <LoadedImage priority src={getOptimizedMediaUrl(toLandingAssetUrl(form.profileImage))} alt="profile" containerClassName="h-full w-full" className="h-full w-full object-cover" />
               ) : (
@@ -325,11 +325,11 @@ export function AdventureCard({ form, sampleFlags, visitedArray, isPreview }: Ca
               maskImage: 'linear-gradient(to bottom, transparent 45%, black 60%, black 100%)'
             }}
           >
-            <LoadedImage 
-              priority 
-              src={getOptimizedMediaUrl(toLandingAssetUrl(form.coverImage))} 
-              alt="cover blur" 
-              containerClassName="h-full w-full" 
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img 
+              src={toLandingAssetUrl(form.coverImage)} 
+              alt="" 
+              aria-hidden="true"
               className="h-full w-full object-cover blur-[16px] scale-[1.05]" 
             />
             {/* Dark overlay to make text highly readable over the blur */}
@@ -344,7 +344,7 @@ export function AdventureCard({ form, sampleFlags, visitedArray, isPreview }: Ca
         <div className="relative z-20 mt-auto flex w-full flex-col items-center gap-[16px] pb-[32px] px-[8px]">
 
           {/* Profile Picture */}
-          <div className="relative z-10 flex h-[48px] w-[48px] shrink-0 items-center justify-center overflow-hidden rounded-[12px] border-[3px] border-white bg-[#2a2a2a] shadow-[0_4px_16px_rgba(0,0,0,0.35)]">
+          <div className="relative z-10 flex h-[60px] w-[60px] shrink-0 items-center justify-center overflow-hidden rounded-[12px] border-[3px] border-white bg-[#2a2a2a] shadow-[0_4px_16px_rgba(0,0,0,0.35)]">
             {form.profileImage ? (
               <LoadedImage priority src={getOptimizedMediaUrl(toLandingAssetUrl(form.profileImage))} alt="profile" containerClassName="h-full w-full" className="h-full w-full object-cover" />
             ) : (
