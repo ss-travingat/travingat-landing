@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef, useCallback, Suspense } from "react
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { domToPng } from "modern-screenshot";
 import { ClassicCard, MinimalCard, AdventureCard, ImagePlaceholderIcon, AvatarPlaceholderIcon } from "./cards";
+import ImageCropperModal from "@/components/ui/ImageCropperModal";
 import EmailVerificationForm from "@/components/getfeatured/EmailVerificationForm";
 
 
@@ -272,6 +273,12 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
     }
   }, [getStyleDataUrl]);
 
+  const [cropConfig, setCropConfig] = useState<{ src: string; type: "coverImage" | "profileImage"; originalFile?: File; initialCrop?: {x: number; y: number}; initialZoom?: number; initialAspectRatio?: number; } | null>(null);
+  const [profileCropData, setProfileCropData] = useState<any>(null);
+  const [coverCropData, setCoverCropData] = useState<any>(null);
+  const [originalProfileFile, setOriginalProfileFile] = useState<File | null>(null);
+  const [originalCoverFile, setOriginalCoverFile] = useState<File | null>(null);
+
   function handleChange(
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) {
@@ -289,22 +296,111 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
       return;
     }
 
-    try {
-      const ext = originalFile.name.split('.').pop() || "jpg";
-      const baseName = originalFile.name.replace(/\.[^/.]+$/, "");
-      const file = new File([originalFile], `${key}-${Date.now()}-${baseName}.${ext}`, { type: originalFile.type });
+    const reader = new FileReader();
+    reader.onload = () => {
+      setCropConfig({ src: String(reader.result), type: key, originalFile });
+    };
+    reader.readAsDataURL(originalFile);
+    e.target.value = ""; // Reset input so same file can be selected again
+  }
+  
+  const handleEditCrop = (key: "coverImage" | "profileImage") => {
+    const origFile = key === "coverImage" ? originalCoverFile : originalProfileFile;
+    const existingData = key === "coverImage" ? coverCropData : profileCropData;
+    
+    if (origFile && existingData) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        setCropConfig({
+          src: String(reader.result),
+          type: key,
+          originalFile: origFile,
+          initialCrop: existingData.crop,
+          initialZoom: existingData.zoom,
+          initialAspectRatio: existingData.aspectRatio,
+        });
+      };
+      reader.readAsDataURL(origFile);
+    } else if (form[key]) {
+      // Fallback: If we don't have the original uncropped file (e.g. loaded from DB),
+      // we can just re-crop the currently displayed image.
+      const url = form[key];
+      const isCdn = url.includes("cdn.travingat.com") || url.includes("r2.cloudflarestorage.com");
+      const srcToUse = isCdn ? `/api/image-proxy?url=${encodeURIComponent(url)}` : url;
+      
+      setCropConfig({
+        src: srcToUse,
+        type: key,
+      });
+    } else {
+      alert("Please upload a new image to edit its crop.");
+    }
+  };
 
-      if (key === "profileImage") setProfileFile(file);
-      if (key === "coverImage") setCoverFile(file);
+  const handleRemoveImage = (key: "coverImage" | "profileImage") => {
+    setForm((s) => ({ ...s, [key]: "" }));
+    if (key === "coverImage") {
+      setCoverFile(null);
+      setOriginalCoverFile(null);
+      setCoverCropData(null);
+    } else {
+      setProfileFile(null);
+      setOriginalProfileFile(null);
+      setProfileCropData(null);
+    }
+  };
+
+  const handleCropSave = (croppedFile: File, cropData: any) => {
+    if (!cropConfig) return;
+    const { type, originalFile } = cropConfig;
+
+    try {
+      const ext = croppedFile.name.split('.').pop() || "webp";
+      const baseName = originalFile ? originalFile.name.replace(/\.[^/.]+$/, "") : "image";
+      const file = new File([croppedFile], `${type}-${Date.now()}-${baseName}.${ext}`, { type: croppedFile.type });
+
+      if (type === "profileImage") {
+        setProfileFile(file);
+        setProfileCropData(cropData);
+        if (originalFile) setOriginalProfileFile(originalFile);
+      }
+      if (type === "coverImage") {
+        setCoverFile(file);
+        setCoverCropData(cropData);
+        if (originalFile) setOriginalCoverFile(originalFile);
+      }
 
       const reader = new FileReader();
-      reader.onload = () => setForm((s) => ({ ...s, [key]: String(reader.result) }));
+      reader.onload = () => setForm((s) => ({ ...s, [type]: String(reader.result) }));
       reader.readAsDataURL(file);
     } catch (err) {
       console.error("File processing failed", err);
-      alert("Failed to process image. Please try again.");
-      e.target.value = "";
+      alert("Failed to process cropped image. Please try again.");
+    } finally {
+      setCropConfig(null);
     }
+  };
+
+  async function uploadFileToR2(file: File) {
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("filename", file.name);
+    formData.append("contentType", file.type);
+    formData.append("prefix", "explorercard/users");
+
+    const uploadRes = await fetch("/api/upload/presign", {
+      method: "POST",
+      body: formData,
+    });
+    const uploadData = await uploadRes.json();
+    if (uploadData.error) throw new Error(uploadData.error);
+    const r2Res = await fetch(uploadData.uploadUrl, {
+      method: "PUT",
+      body: file,
+      headers: { "Content-Type": file.type },
+    });
+    if (!r2Res.ok) throw new Error(`R2 upload failed: ${r2Res.status}`);
+    return uploadData.publicUrl;
   }
 
   async function handleCreate(e?: React.FormEvent) {
@@ -329,52 +425,16 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
 
     try {
       let finalProfileUrl = form.profileImage;
-      if (profileFile) {
-        const formData = new FormData();
-        formData.append("file", profileFile);
-        formData.append("filename", profileFile.name);
-        formData.append("contentType", profileFile.type);
-        formData.append("prefix", "explorercard/users");
-
-        const uploadRes = await fetch("/api/upload/presign", {
-          method: "POST",
-          body: formData,
-        });
-        const uploadData = await uploadRes.json();
-        if (uploadData.error) throw new Error(uploadData.error);
-        // PUT the file directly to R2 using the presigned URL
-        const r2Res = await fetch(uploadData.uploadUrl, {
-          method: "PUT",
-          body: profileFile,
-          headers: { "Content-Type": profileFile.type },
-        });
-        if (!r2Res.ok) throw new Error(`R2 upload failed: ${r2Res.status}`);
-        finalProfileUrl = uploadData.publicUrl;
-      }
+      if (profileFile) finalProfileUrl = await uploadFileToR2(profileFile);
 
       let finalCoverUrl = form.coverImage;
-      if (coverFile) {
-        const formData = new FormData();
-        formData.append("file", coverFile);
-        formData.append("filename", coverFile.name);
-        formData.append("contentType", coverFile.type);
-        formData.append("prefix", "explorercard/users");
+      if (coverFile) finalCoverUrl = await uploadFileToR2(coverFile);
 
-        const uploadRes = await fetch("/api/upload/presign", {
-          method: "POST",
-          body: formData,
-        });
-        const uploadData = await uploadRes.json();
-        if (uploadData.error) throw new Error(uploadData.error);
-        // PUT the file directly to R2 using the presigned URL
-        const r2Res = await fetch(uploadData.uploadUrl, {
-          method: "PUT",
-          body: coverFile,
-          headers: { "Content-Type": coverFile.type },
-        });
-        if (!r2Res.ok) throw new Error(`R2 upload failed: ${r2Res.status}`);
-        finalCoverUrl = uploadData.publicUrl;
-      }
+      let finalOriginalProfileUrl = "";
+      if (originalProfileFile) finalOriginalProfileUrl = await uploadFileToR2(originalProfileFile);
+
+      let finalOriginalCoverUrl = "";
+      if (originalCoverFile) finalOriginalCoverUrl = await uploadFileToR2(originalCoverFile);
 
       // 1. Hit API to create user
       const formData = new FormData();
@@ -388,6 +448,14 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
       }
       if (finalCoverUrl && !finalCoverUrl.startsWith('data:')) {
         formData.append("existingCoverImage", finalCoverUrl);
+      }
+      if (finalOriginalProfileUrl) {
+        formData.append("originalProfileImage", finalOriginalProfileUrl);
+        formData.append("profileCropData", JSON.stringify(profileCropData));
+      }
+      if (finalOriginalCoverUrl) {
+        formData.append("originalCoverImage", finalOriginalCoverUrl);
+        formData.append("coverCropData", JSON.stringify(coverCropData));
       }
       formData.append("cardStyle", tab);
 
@@ -424,52 +492,16 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
     setIsSubmitting(true);
     try {
       let finalProfileUrl = form.profileImage;
-      if (profileFile) {
-        const formData = new FormData();
-        formData.append("file", profileFile);
-        formData.append("filename", profileFile.name);
-        formData.append("contentType", profileFile.type);
-        formData.append("prefix", "explorercard/users");
-
-        const uploadRes = await fetch("/api/upload/presign", {
-          method: "POST",
-          body: formData,
-        });
-        const uploadData = await uploadRes.json();
-        if (uploadData.error) throw new Error(uploadData.error);
-        // PUT the file directly to R2 using the presigned URL
-        const r2Res = await fetch(uploadData.uploadUrl, {
-          method: "PUT",
-          body: profileFile,
-          headers: { "Content-Type": profileFile.type },
-        });
-        if (!r2Res.ok) throw new Error(`R2 upload failed: ${r2Res.status}`);
-        finalProfileUrl = uploadData.publicUrl;
-      }
+      if (profileFile) finalProfileUrl = await uploadFileToR2(profileFile);
 
       let finalCoverUrl = form.coverImage;
-      if (coverFile) {
-        const formData = new FormData();
-        formData.append("file", coverFile);
-        formData.append("filename", coverFile.name);
-        formData.append("contentType", coverFile.type);
-        formData.append("prefix", "explorercard/users");
+      if (coverFile) finalCoverUrl = await uploadFileToR2(coverFile);
 
-        const uploadRes = await fetch("/api/upload/presign", {
-          method: "POST",
-          body: formData,
-        });
-        const uploadData = await uploadRes.json();
-        if (uploadData.error) throw new Error(uploadData.error);
-        // PUT the file directly to R2 using the presigned URL
-        const r2Res = await fetch(uploadData.uploadUrl, {
-          method: "PUT",
-          body: coverFile,
-          headers: { "Content-Type": coverFile.type },
-        });
-        if (!r2Res.ok) throw new Error(`R2 upload failed: ${r2Res.status}`);
-        finalCoverUrl = uploadData.publicUrl;
-      }
+      let finalOriginalProfileUrl = "";
+      if (originalProfileFile) finalOriginalProfileUrl = await uploadFileToR2(originalProfileFile);
+
+      let finalOriginalCoverUrl = "";
+      if (originalCoverFile) finalOriginalCoverUrl = await uploadFileToR2(originalCoverFile);
 
       const formData = new FormData();
       formData.append("firstName", form.firstName);
@@ -482,6 +514,14 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
       }
       if (finalCoverUrl && !finalCoverUrl.startsWith('data:')) {
         formData.append("existingCoverImage", finalCoverUrl);
+      }
+      if (finalOriginalProfileUrl) {
+        formData.append("originalProfileImage", finalOriginalProfileUrl);
+        formData.append("profileCropData", JSON.stringify(profileCropData));
+      }
+      if (finalOriginalCoverUrl) {
+        formData.append("originalCoverImage", finalOriginalCoverUrl);
+        formData.append("coverCropData", JSON.stringify(coverCropData));
       }
       formData.append("cardStyle", tab);
 
@@ -1012,6 +1052,8 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
               isSubmitting={isSubmitting}
               handleChange={handleChange}
               handleFile={handleFile}
+              handleEditCrop={handleEditCrop}
+              handleRemoveImage={handleRemoveImage}
               handleCreate={handleCreate}
               sampleFlags={sampleFlags}
               countryMatches={countryMatches}
@@ -1076,6 +1118,7 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
             isSubmitting={isSubmitting}
             handleChange={handleChange}
             handleFile={handleFile}
+            handleEditCrop={handleEditCrop}
             handleCreate={handleCreate}
             sampleFlags={sampleFlags}
             countryMatches={countryMatches}
@@ -1087,6 +1130,18 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
         </div>
       </div>
 
+      {cropConfig && (
+        <ImageCropperModal
+          imageSrc={cropConfig.src}
+          title={cropConfig.type === "coverImage" ? "Cover Image" : "Profile Photo"}
+          type={cropConfig.type}
+          initialCrop={cropConfig.initialCrop}
+          initialZoom={cropConfig.initialZoom}
+          initialAspectRatio={cropConfig.initialAspectRatio}
+          onSave={handleCropSave}
+          onCancel={() => setCropConfig(null)}
+        />
+      )}
 
       {readyToShareModal}
     </div>
