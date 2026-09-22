@@ -24,10 +24,14 @@ export function getThumbnailUrl(originalUrl: string, size: number = 720): string
 
 export function ThumbnailImage({ originalSrc, size = 720, ...props }: ThumbnailImageProps) {
   const [src, setSrc] = useState<string>(getThumbnailUrl(originalSrc, size));
+  const [prevOriginalSrc, setPrevOriginalSrc] = useState(originalSrc);
+  const [prevSize, setPrevSize] = useState(size);
 
-  useEffect(() => {
+  if (originalSrc !== prevOriginalSrc || size !== prevSize) {
+    setPrevOriginalSrc(originalSrc);
+    setPrevSize(size);
     setSrc(getThumbnailUrl(originalSrc, size));
-  }, [originalSrc, size]);
+  }
 
   const handleError = () => {
     if (src !== originalSrc) {

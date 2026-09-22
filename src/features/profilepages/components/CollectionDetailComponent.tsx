@@ -153,6 +153,12 @@ export default function CollectionDetailComponent({
   const [showMenu, setShowMenu] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+  const [prevActiveTab, setPrevActiveTab] = useState<MediaTab>("all");
+  
+  if (activeTab !== prevActiveTab) {
+    setPrevActiveTab(activeTab);
+    setLightboxIndex(null);
+  }
   const didReadFromUrl = useRef(false);
 
   const photos = imageUrls.filter((url) => !isVideoAsset(url));
@@ -201,10 +207,6 @@ export default function CollectionDetailComponent({
   }, [lightboxIndex]);
 
   const items = displayImages.map((url, index) => ({ url, globalIndex: index }));
-
-  useEffect(() => {
-    setLightboxIndex(null);
-  }, [activeTab]);
 
   useEffect(() => {
     if (typeof window === "undefined" || didReadFromUrl.current) return;

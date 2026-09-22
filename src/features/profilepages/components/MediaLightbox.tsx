@@ -43,10 +43,11 @@ export function MediaLightbox({
   const [mediaError, setMediaError] = useState(false);
   const [naturalAspectRatio, setNaturalAspectRatio] = useState<number | null>(null);
   const [useFallback, setUseFallback] = useState(false);
-
-  const activeItemUrl = items[activeIndex]?.url;
-
-  useEffect(() => {
+  
+  const [prevActiveIndex, setPrevActiveIndex] = useState(activeIndex);
+  
+  if (activeIndex !== prevActiveIndex) {
+    setPrevActiveIndex(activeIndex);
     setMediaLoaded(false);
     setMediaError(false);
     setUseFallback(false);
@@ -55,8 +56,9 @@ export function MediaLightbox({
         ? items[activeIndex]!.width! / items[activeIndex]!.height!
         : null
     );
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeIndex, activeItemUrl]);
+  }
+
+  const activeItemUrl = items[activeIndex]?.url;
 
   const activeItem = items[activeIndex];
   const totalCount = items.length;
