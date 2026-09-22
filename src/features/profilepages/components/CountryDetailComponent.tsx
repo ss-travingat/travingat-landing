@@ -153,7 +153,7 @@ function PhotoLightbox({
               {countryFlagSrc ? (
                 <img src={countryFlagSrc} alt="" className="h-[1.3125rem] w-[2rem] rounded-[0.204375rem] object-cover shadow-sm" />
               ) : null}
-              <p className="text-[1.5rem] font-semibold tracking-[-0.5px] text-white leading-[2rem]">
+              <p className="text-center font-display text-[1.5rem] font-semibold not-italic leading-[2rem] tracking-[-0.03125rem] text-white">
                 {countryName}
               </p>
             </div>

@@ -453,7 +453,7 @@ function PhotoCarouselModal({
               {countryFlagSrc ? (
                 <img src={countryFlagSrc} alt="" className="h-[1.33125rem] w-8 rounded-[0.204375rem] object-cover" />
               ) : null}
-              <p className="text-2xl font-semibold leading-[2rem] tracking-[-0.5px] text-[#ededed] font-display">
+              <p className="text-center font-display text-[1.5rem] font-semibold not-italic leading-[2rem] tracking-[-0.03125rem] text-white">
                 {countryName || ""}
               </p>
             </div>
