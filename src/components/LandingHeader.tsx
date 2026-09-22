@@ -59,8 +59,18 @@ export default function LandingHeader({
     className = "",
 }: TravingatHeaderProps) {
     const [menuOpen, setMenuOpen] = useState(false)
-    const [pathname, setPathname] = useState("")
-    const [isDesktopActiveEnabled, setIsDesktopActiveEnabled] = useState(false)
+    const [isDesktopActiveEnabled, setIsDesktopActiveEnabled] = useState(() => {
+        if (typeof window !== "undefined") {
+            return window.matchMedia("(min-width: 1200px)").matches
+        }
+        return false
+    })
+    const [pathname, setPathname] = useState(() => {
+        if (typeof window !== "undefined") {
+            return normalizePath(window.location.pathname)
+        }
+        return ""
+    })
     const [hidden, setHidden] = useState(false)
     const [isScrolled, setIsScrolled] = useState(false)
     const searchParams = useSearchParams()
@@ -110,8 +120,6 @@ export default function LandingHeader({
             lastScrollY = currentScrollY
         }
 
-        readPath()
-        readDesktopActive()
 
         window.addEventListener("popstate", readPath)
         window.addEventListener("hashchange", readPath)
