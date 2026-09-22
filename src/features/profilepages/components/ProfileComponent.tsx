@@ -18,6 +18,7 @@ import LoadedImage from "@/components/ui/LoadedImage";
 import { MasonryImageGrid } from "@/components/ui/MasonryImageGrid";
 import type { MasonryItemWithDimensions } from "@/hooks/useMasonryAdvanced";
 import { useMobileComingSoon } from "@/components/ui/MobileComingSoonToast";
+import { COUNTRY_LIST } from "@/lib/countries";
 import { Tooltip, TooltipProvider } from "@/components/ui/Tooltip";
 import { getCountryName } from "@/lib/countries";
 import { CountriesPopup } from "@/components/ui/CountriesPopup";
@@ -54,30 +55,9 @@ const COLLECTIONS_EMPTY_PREVIEW_IMAGES = [
   "/images/collection-hiking-figma.png",
 ] as const;
 
-const COUNTRY_LIST_LOOKUP: Record<string, string> = {
-  AF: "Afghanistan", AL: "Albania", DZ: "Algeria", AR: "Argentina", AM: "Armenia",
-  AU: "Australia", AT: "Austria", AZ: "Azerbaijan", BS: "Bahamas", BD: "Bangladesh",
-  BE: "Belgium", BZ: "Belize", BO: "Bolivia", BA: "Bosnia and Herzegovina", BR: "Brazil",
-  BG: "Bulgaria", KH: "Cambodia", CA: "Canada", CL: "Chile", CN: "China",
-  CO: "Colombia", CR: "Costa Rica", HR: "Croatia", CU: "Cuba", CY: "Cyprus",
-  CZ: "Czech Republic", DK: "Denmark", DO: "Dominican Republic", EC: "Ecuador", EG: "Egypt",
-  SV: "El Salvador", EE: "Estonia", ET: "Ethiopia", FI: "Finland", FR: "France",
-  GE: "Georgia", DE: "Germany", GH: "Ghana", GR: "Greece", GT: "Guatemala",
-  HT: "Haiti", HN: "Honduras", HK: "Hong Kong", HU: "Hungary", IS: "Iceland",
-  IN: "India", ID: "Indonesia", IR: "Iran", IQ: "Iraq", IE: "Ireland",
-  IL: "Israel", IT: "Italy", JM: "Jamaica", JP: "Japan", JO: "Jordan",
-  KZ: "Kazakhstan", KE: "Kenya", KR: "South Korea", KW: "Kuwait", LA: "Laos",
-  LV: "Latvia", LB: "Lebanon", LT: "Lithuania", LU: "Luxembourg", MY: "Malaysia",
-  MV: "Maldives", MT: "Malta", MX: "Mexico", MA: "Morocco", MM: "Myanmar",
-  NP: "Nepal", NL: "Netherlands", NZ: "New Zealand", NI: "Nicaragua", NG: "Nigeria",
-  NO: "Norway", OM: "Oman", PK: "Pakistan", PA: "Panama", PY: "Paraguay",
-  PE: "Peru", PH: "Philippines", PL: "Poland", PT: "Portugal", QA: "Qatar",
-  RO: "Romania", RU: "Russia", SA: "Saudi Arabia", RS: "Serbia", SG: "Singapore",
-  SK: "Slovakia", SI: "Slovenia", ZA: "South Africa", ES: "Spain", LK: "Sri Lanka",
-  SE: "Sweden", CH: "Switzerland", TW: "Taiwan", TZ: "Tanzania", TH: "Thailand",
-  TR: "Turkey", UA: "Ukraine", AE: "United Arab Emirates", GB: "United Kingdom",
-  US: "United States", UY: "Uruguay", UZ: "Uzbekistan", VE: "Venezuela", VN: "Vietnam",
-};
+const COUNTRY_LIST_LOOKUP: Record<string, string> = Object.fromEntries(
+  COUNTRY_LIST.map(c => [c.code.toUpperCase(), c.name])
+);
 
 type TabKey = "all" | "countries" | "collections" | "about";
 
