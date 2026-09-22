@@ -96,7 +96,7 @@ export default function LoadedImage({
     }
     
     // Before giving up completely, if the image isn't already webp/webm, attempt to fallback to it.
-    if (!isHealing && !activeSrc.match(/\\.(webp|webm)$/i) && !activeSrc.startsWith("blob:") && !activeSrc.startsWith("data:")) {
+    if (!isHealing && !activeSrc.match(/\.(webp|webm)$/i) && !activeSrc.startsWith("blob:") && !activeSrc.startsWith("data:")) {
       setIsHealing(true);
       setRetryCount(0); // Reset retries for the new URL
       setStatus("loading");
