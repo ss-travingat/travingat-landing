@@ -49,7 +49,19 @@ export function normalizeAssetHtml(html: string): string {
 }
 
 export function getOptimizedMediaUrl(assetUrl: string): string {
-  // If the user uploaded a specific extension, respect it.
-  // We no longer force .webp or .webm overrides globally to ensure we use what's in the DB.
-  return assetUrl;
+  if (!assetUrl) return assetUrl;
+  
+  try {
+    const urlObj = new URL(assetUrl);
+    if (!urlObj.hostname.includes('travingat.com') && !urlObj.hostname.includes('r2.cloudflarestorage.com')) {
+      return assetUrl;
+    }
+  } catch (e) {
+    // Proceed if it's a relative path
+  }
+
+  // The backend MediaEngine converts all images to .webp and videos to .webm
+  // We must force the correct extension because the original raw uploads are deleted
+  const isVideo = /\.(mp4|mov|m4v|3gp|3g2|webm)$/i.test(assetUrl);
+  return assetUrl.replace(/\.[^/.]+$/, isVideo ? ".webm" : ".webp");
 }
