@@ -271,7 +271,7 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
     }
   }, [getStyleDataUrl]);
 
-  const [cropConfig, setCropConfig] = useState<{ src: string; type: "coverImage" | "profileImage"; originalFile?: File; initialCrop?: {x: number; y: number}; initialZoom?: number; initialAspectRatio?: number; } | null>(null);
+  const [cropConfig, setCropConfig] = useState<{ src: string; type: "coverImage" | "profileImage"; originalFile?: File; initialCrop?: { x: number; y: number }; initialZoom?: number; initialAspectRatio?: number; } | null>(null);
   const [profileCropData, setProfileCropData] = useState<any>(null);
   const [coverCropData, setCoverCropData] = useState<any>(null);
   const [originalProfileFile, setOriginalProfileFile] = useState<File | null>(null);
@@ -301,11 +301,11 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
     reader.readAsDataURL(originalFile);
     e.target.value = ""; // Reset input so same file can be selected again
   }
-  
+
   const handleEditCrop = (key: "coverImage" | "profileImage") => {
     const origFile = key === "coverImage" ? originalCoverFile : originalProfileFile;
     const existingData = key === "coverImage" ? coverCropData : profileCropData;
-    
+
     if (origFile && existingData) {
       const reader = new FileReader();
       reader.onload = () => {
@@ -325,7 +325,7 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
       const url = form[key];
       const isCdn = url.includes("cdn.travingat.com") || url.includes("r2.cloudflarestorage.com");
       const srcToUse = isCdn ? `/api/image-proxy?url=${encodeURIComponent(url)}` : url;
-      
+
       setCropConfig({
         src: srcToUse,
         type: key,
@@ -1116,6 +1116,7 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
             isSubmitting={isSubmitting}
             handleChange={handleChange}
             handleFile={handleFile}
+            handleRemoveImage={handleRemoveImage}
             handleEditCrop={handleEditCrop}
             handleCreate={handleCreate}
             sampleFlags={sampleFlags}
@@ -1124,7 +1125,6 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
             removeCountry={removeCountry}
             isEditMode={isEditMode}
             hasChanged={hasChanged}
-            handleRemoveImage={handleRemoveImage}
           />
         </div>
       </div>
