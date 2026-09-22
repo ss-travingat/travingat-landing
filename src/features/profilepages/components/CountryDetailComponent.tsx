@@ -101,6 +101,7 @@ function PhotoLightbox({
   return (
     <MediaLightbox
       items={items.map((url: string) => ({
+        id: url,
         url,
         isVideo: isVideoAsset(url),
       }))}

@@ -42,16 +42,21 @@ export function MediaLightbox({
   const [mediaLoaded, setMediaLoaded] = useState(false);
   const [mediaError, setMediaError] = useState(false);
   const [naturalAspectRatio, setNaturalAspectRatio] = useState<number | null>(null);
+  const [useFallback, setUseFallback] = useState(false);
+
+  const activeItemUrl = items[activeIndex]?.url;
 
   useEffect(() => {
     setMediaLoaded(false);
     setMediaError(false);
+    setUseFallback(false);
     setNaturalAspectRatio(
       items[activeIndex]?.width && items[activeIndex]?.height
         ? items[activeIndex]!.width! / items[activeIndex]!.height!
         : null
     );
-  }, [activeIndex, items]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeIndex, activeItemUrl]);
 
   const activeItem = items[activeIndex];
   const totalCount = items.length;
@@ -93,6 +98,17 @@ export function MediaLightbox({
       }, 50);
     }
   }, [activeIndex, showBrowser]);
+
+  let currentImgSrc = "";
+  if (activeItem && !activeItem.isVideo) {
+    let base = toLandingAssetUrl(activeItem.url || "");
+    if (useFallback) {
+      currentImgSrc = base.startsWith("http") ? `/api/proxy-image?url=${encodeURIComponent(base)}` : base;
+    } else {
+      let optimized = getOptimizedMediaUrl(base);
+      currentImgSrc = base.startsWith("http") ? `/api/proxy-image?url=${encodeURIComponent(optimized)}` : optimized;
+    }
+  }
 
   return (
     <div
@@ -245,7 +261,7 @@ export function MediaLightbox({
             ) : (
               <img
                 key={`img-${activeIndex}`}
-                src={toLandingAssetUrl(activeItem?.url || "").startsWith("http") ? `/api/proxy-image?url=${encodeURIComponent(getOptimizedMediaUrl(toLandingAssetUrl(activeItem?.url || "")))}` : getOptimizedMediaUrl(toLandingAssetUrl(activeItem?.url || ""))}
+                src={currentImgSrc}
                 alt="Carousel media"
                 className={`block w-full h-full object-contain carousel-image rounded-[0.75rem] mx-auto transition-opacity duration-300 ${mediaLoaded && !mediaError ? 'opacity-100' : 'opacity-0'}`}
                 onLoad={(e: SyntheticEvent<HTMLImageElement>) => {
@@ -253,13 +269,8 @@ export function MediaLightbox({
                   setNaturalAspectRatio(e.currentTarget.naturalWidth / e.currentTarget.naturalHeight);
                 }}
                 onError={(e: SyntheticEvent<HTMLImageElement>) => {
-                  const target = e.currentTarget;
-                  let originalUrl = toLandingAssetUrl(activeItem?.url || "");
-                  if (originalUrl.startsWith("http")) {
-                    originalUrl = `${window.location.origin}/api/proxy-image?url=${encodeURIComponent(originalUrl)}`;
-                  }
-                  if (target.src !== originalUrl) {
-                    target.src = originalUrl;
+                  if (!useFallback) {
+                    setUseFallback(true);
                   } else {
                     setMediaError(true);
                     setMediaLoaded(true); // Fallback failed too, stop skeleton

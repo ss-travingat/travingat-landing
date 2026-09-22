@@ -61,6 +61,7 @@ function CollectionLightbox({
   return (
     <MediaLightbox
       items={items.map((url) => ({
+        id: url,
         url,
         isVideo: isVideoAsset(url),
       }))}
