@@ -393,7 +393,7 @@ function PhotoCarouselModal({
           {/* Avatar + close */}
           <div className="flex items-start justify-between">
             <div className="h-18 w-18 overflow-hidden rounded-2xl">
-              <LoadedImage src={avatarSrc} thumbnailSrc={getOptimizedMediaUrl(avatarSrc)} alt={profileName} className="h-full w-full object-cover" />
+              <LoadedImage src={avatarSrc} thumbnailSrc={getThumbnailUrl(avatarSrc, 720)} alt={profileName} className="h-full w-full object-cover" />
             </div>
             <button
               type="button"
@@ -1397,7 +1397,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                   <div className="relative size-16 lg:size-[6.25rem] xl:size-[7.5rem] shrink-0 overflow-hidden rounded-[1.25rem] bg-[#151515]">
                     <LoadedImage
                       src={getOptimizedMediaUrl(toLandingAssetUrl(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url))}
-                      thumbnailSrc={getOptimizedMediaUrl(toLandingAssetUrl(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url))}
+                      thumbnailSrc={getThumbnailUrl(toLandingAssetUrl(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url), 720)}
                       alt="Profile avatar"
                       className="h-full w-full object-cover rounded-[1.25rem]"
                       skeletonClassName="absolute inset-0 bg-[#1a1a1a]"
@@ -1548,7 +1548,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                 <div className="absolute inset-0 overflow-hidden rounded-3xl lg:rounded-[1.5rem] xl:rounded-[2rem]">
                   <LoadedImage
                     src={getOptimizedMediaUrl(toLandingAssetUrl(typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url))}
-                    thumbnailSrc={getOptimizedMediaUrl(toLandingAssetUrl(typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url))}
+                    thumbnailSrc={getThumbnailUrl(toLandingAssetUrl(typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url), 720)}
                     alt="Profile cover"
                     className="absolute inset-0 w-full h-full object-cover rounded-3xl lg:rounded-[1.5rem] xl:rounded-[2rem]"
                     skeletonClassName="absolute inset-0 bg-[#1a1a1a]"
@@ -2097,7 +2097,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                 <div className="-mb-8 h-48.5 w-50 overflow-hidden rounded-xl shrink-0 bg-[#151515]">
                   <LoadedImage
                     src={getOptimizedMediaUrl(toLandingAssetUrl(typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url))}
-                    thumbnailSrc={getOptimizedMediaUrl(toLandingAssetUrl(typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url))}
+                    thumbnailSrc={getThumbnailUrl(toLandingAssetUrl(typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url), 720)}
                     alt="Cover preview"
                     className="h-full w-full object-cover"
                     skeletonClassName="absolute inset-0 bg-[#1a1a1a]"
@@ -2107,7 +2107,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                 <div className="-mb-8 h-15 w-15 overflow-hidden rounded-xl shadow-[8px_8px_12px_0px_rgba(0,0,0,0.25)] shrink-0 bg-[#151515]">
                   <LoadedImage
                     src={getOptimizedMediaUrl(toLandingAssetUrl(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url))}
-                    thumbnailSrc={getOptimizedMediaUrl(toLandingAssetUrl(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url))}
+                    thumbnailSrc={getThumbnailUrl(toLandingAssetUrl(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url), 720)}
                     alt={profile.name}
                     className="h-full w-full object-cover"
                     skeletonClassName="absolute inset-0 bg-[#1a1a1a]"

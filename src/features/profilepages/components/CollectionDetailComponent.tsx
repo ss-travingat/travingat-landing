@@ -77,7 +77,7 @@ function CollectionLightbox({
         >
           <div className="flex items-start justify-between">
             <div className="h-[4.5rem] w-[4.5rem] overflow-hidden rounded-2xl">
-              <LoadedImage src={avatarSrc} thumbnailSrc={getOptimizedMediaUrl(avatarSrc)} alt={profileName} className="h-full w-full object-cover" />
+              <LoadedImage src={avatarSrc} thumbnailSrc={getThumbnailUrl(avatarSrc, 720)} alt={profileName} className="h-full w-full object-cover" />
             </div>
             <button
               type="button"
@@ -306,7 +306,7 @@ export default function CollectionDetailComponent({
               <div className="h-[1.25rem] w-[1.25rem] overflow-hidden rounded-[0.375rem] shrink-0">
                 <LoadedImage
                   src={getOptimizedMediaUrl(toLandingAssetUrl(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url))}
-                  thumbnailSrc={getOptimizedMediaUrl(toLandingAssetUrl(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url))}
+                  thumbnailSrc={getThumbnailUrl(toLandingAssetUrl(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url), 720)}
                   alt={profile.name}
                   className="w-full h-full object-cover"
                   skeletonClassName="absolute inset-0 bg-[#2a2a2a]"
