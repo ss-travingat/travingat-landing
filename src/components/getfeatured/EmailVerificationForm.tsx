@@ -441,13 +441,14 @@ const EmailVerificationForm = ({ onVerified, initialSessionUser, source }: Props
                 lastName,
                 country: selectedCountry || 'Unknown',
                 visitedCount: Number(visitedCount),
-                links
+                links: links.map(l => l.startsWith('http') ? l : `https://${l}`)
               })
             }).then(r => r.json()).catch(() => ({ error: "Network error" }));
             setIsLoading(false);
 
-            if (res.error) {
-              alert(res.error);
+            if (!res.success) {
+              const errorMsg = res.error || res.detail || (typeof res === 'object' ? Object.values(res).flat().join('\\n') : "Submission failed");
+              alert("Error: " + errorMsg);
               return;
             }
 
