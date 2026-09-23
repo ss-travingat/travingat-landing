@@ -25,6 +25,7 @@ export default function LoadedImage({
   /** Optional thumbnail URL to display instead of the full-size image.
    *  Falls back to `src` if the thumbnail fails to load. */
   thumbnailSrc?: string;
+  originalSrc?: string;
   onClick?: (event: React.MouseEvent<HTMLImageElement>) => void;
   onLoad?: () => void;
 }) {
@@ -53,9 +54,10 @@ export default function LoadedImage({
   // Determine which source to use: thumbnail (if available and not failed) or original
   let activeSrc = useThumbnail && thumbnailSrc ? thumbnailSrc : src;
 
-  // If we are in a healing fallback state, rewrite the extension
+  // If we are in a healing fallback state, use the original source from the DB if available,
+  // or rewrite the extension to the optimized fallback if originalSrc isn't passed.
   if (isHealing) {
-    activeSrc = MediaResolver.getOptimized(activeSrc);
+    activeSrc = originalSrc ? originalSrc : MediaResolver.getOptimized(activeSrc);
   }
 
   // Add a query param on retries to bypass broken browser cache for the failed image
@@ -69,14 +71,17 @@ export default function LoadedImage({
     
     // If we loaded successfully via fallback, tell the server to update the DB permanently
     if (isHealing) {
-      fetch("/api/heal-image", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          originalUrl: src,
-          optimizedUrl: activeSrc
-        })
-      }).catch((e) => console.error("Failed to trigger image healing", e));
+      // Only heal if we fell back to an optimized image format, not if we fell back to the original DB format while processing
+      if (!originalSrc) {
+        fetch("/api/heal-image", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            originalUrl: src,
+            optimizedUrl: activeSrc
+          })
+        }).catch((e) => console.error("Failed to trigger image healing", e));
+      }
       setIsHealing(false); // Prevent multiple triggers
     }
     

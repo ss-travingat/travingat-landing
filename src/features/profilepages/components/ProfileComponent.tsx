@@ -553,7 +553,7 @@ function JsMasonryGrid({
           {mediaItem.isVideo ? (
             <>
               <video
-                src={MediaResolver.getOptimized(MediaResolver.getBase(mediaItem.fileUrl))}
+                originalSrc={MediaResolver.getBase(mediaItem.fileUrl)} src={MediaResolver.getOptimized(MediaResolver.getBase(mediaItem.fileUrl))}
                 muted
                 playsInline
                 loop
@@ -569,7 +569,7 @@ function JsMasonryGrid({
             </>
           ) : (
             <LoadedImage
-              src={MediaResolver.getOptimized(MediaResolver.getBase(mediaItem.fileUrl))}
+              originalSrc={MediaResolver.getBase(mediaItem.fileUrl)} src={MediaResolver.getOptimized(MediaResolver.getBase(mediaItem.fileUrl))}
               thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(mediaItem.fileUrl), 720)}
               alt="Uploaded media"
               className="w-full h-auto block"
@@ -1396,7 +1396,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                 <div className="flex flex-col items-start gap-3 lg:gap-4 xl:gap-8 w-full">
                   <div className="relative size-16 lg:size-[6.25rem] xl:size-[7.5rem] shrink-0 overflow-hidden rounded-[1.25rem] bg-[#151515]">
                     <LoadedImage
-                      src={MediaResolver.getOptimized(MediaResolver.getBase(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url))}
+                      originalSrc={MediaResolver.getBase(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url)} src={MediaResolver.getOptimized(MediaResolver.getBase(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url))}
                       thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url), 720)}
                       alt="Profile avatar"
                       className="h-full w-full object-cover rounded-[1.25rem]"
@@ -1547,7 +1547,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
               >
                 <div className="absolute inset-0 overflow-hidden rounded-3xl lg:rounded-[1.5rem] xl:rounded-[2rem]">
                   <LoadedImage
-                    src={MediaResolver.getOptimized(MediaResolver.getBase(typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url))}
+                    originalSrc={MediaResolver.getBase(typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url)} src={MediaResolver.getOptimized(MediaResolver.getBase(typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url))}
                     thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url), 720)}
                     alt="Profile cover"
                     className="absolute inset-0 w-full h-full object-cover rounded-3xl lg:rounded-[1.5rem] xl:rounded-[2rem]"
@@ -1693,7 +1693,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                             {COUNTRIES_EMPTY_PREVIEW_IMAGES.map((src, idx) => (
                               <div key={src} className="w-19 h-19 md:w-25 md:h-25 rounded-[0.625rem] overflow-hidden">
                                 <LoadedImage
-                                  src={MediaResolver.getOptimized(MediaResolver.getBase(src))}
+                                  originalSrc={MediaResolver.getBase(src)} src={MediaResolver.getOptimized(MediaResolver.getBase(src))}
                                   thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(src), 720)}
                                   alt={`Country preview ${idx + 1}`}
                                   className="w-full h-full object-cover"
@@ -1812,7 +1812,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                             {COLLECTIONS_EMPTY_PREVIEW_IMAGES.map((src, idx) => (
                               <div key={src} className="w-19 h-19 md:w-25 md:h-25 rounded-[0.625rem] overflow-hidden">
                                 <LoadedImage
-                                  src={MediaResolver.getOptimized(MediaResolver.getBase(src))}
+                                  originalSrc={MediaResolver.getBase(src)} src={MediaResolver.getOptimized(MediaResolver.getBase(src))}
                                   thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(src), 720)}
                                   alt={`Collection preview ${idx + 1}`}
                                   className="w-full h-full object-cover"
@@ -2096,7 +2096,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
               <div className="flex flex-col items-center pb-8 w-full">
                 <div className="-mb-8 h-48.5 w-50 overflow-hidden rounded-xl shrink-0 bg-[#151515]">
                   <LoadedImage
-                    src={MediaResolver.getOptimized(MediaResolver.getBase(typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url))}
+                    originalSrc={MediaResolver.getBase(typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url)} src={MediaResolver.getOptimized(MediaResolver.getBase(typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url))}
                     thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url), 720)}
                     alt="Cover preview"
                     className="h-full w-full object-cover"
@@ -2106,7 +2106,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                 </div>
                 <div className="-mb-8 h-15 w-15 overflow-hidden rounded-xl shadow-[8px_8px_12px_0px_rgba(0,0,0,0.25)] shrink-0 bg-[#151515]">
                   <LoadedImage
-                    src={MediaResolver.getOptimized(MediaResolver.getBase(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url))}
+                    originalSrc={MediaResolver.getBase(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url)} src={MediaResolver.getOptimized(MediaResolver.getBase(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url))}
                     thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url), 720)}
                     alt={profile.name}
                     className="h-full w-full object-cover"

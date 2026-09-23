@@ -167,7 +167,7 @@ export function MediaLightbox({
                     </>
                   ) : (
                     <LoadedImage
-                      src={MediaResolver.getOptimized(MediaResolver.getBase(item.url))}
+                      originalSrc={MediaResolver.getBase(item.url)} src={MediaResolver.getOptimized(MediaResolver.getBase(item.url))}
                       thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(item.url), 720)}
                       alt={`Gallery thumbnail ${idx + 1}`}
                       className="h-auto w-full"
@@ -343,7 +343,7 @@ export function MediaLightbox({
               {item.isVideo ? (
                 <>
                   <video
-                    src={MediaResolver.getOptimized(MediaResolver.getBase(item.url))}
+                    originalSrc={MediaResolver.getBase(item.url)} src={MediaResolver.getOptimized(MediaResolver.getBase(item.url))}
                     className="h-full w-full object-cover"
                   />
                   <div className="absolute inset-0 flex items-center justify-center bg-black/40">

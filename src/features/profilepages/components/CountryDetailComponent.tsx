@@ -362,7 +362,7 @@ export default function CountryDetailComponent({
               <span className="text-[1rem] text-white leading-[1.5rem] tracking-[-0.096px] font-normal">By</span>
               <div className="h-[1.25rem] w-[1.25rem] overflow-hidden rounded-[0.375rem] shrink-0">
                 <LoadedImage
-                  src={MediaResolver.getOptimized(MediaResolver.getBase(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url))}
+                  originalSrc={MediaResolver.getBase(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url)} src={MediaResolver.getOptimized(MediaResolver.getBase(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url))}
                   thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url), 720)}
                   alt={profile.name}
                   className="w-full h-full object-cover"
@@ -471,7 +471,7 @@ export default function CountryDetailComponent({
                               {isVideo ? (
                                 <>
                                   <video
-                                    src={MediaResolver.getOptimized(MediaResolver.getBase(imgUrl))}
+                                    originalSrc={MediaResolver.getBase(imgUrl)} src={MediaResolver.getOptimized(MediaResolver.getBase(imgUrl))}
                                     muted
                                     playsInline
                                     loop
@@ -484,7 +484,7 @@ export default function CountryDetailComponent({
                                 </>
                               ) : (
                                 <LoadedImage
-                                  src={MediaResolver.getOptimized(MediaResolver.getBase(imgUrl))}
+                                  originalSrc={MediaResolver.getBase(imgUrl)} src={MediaResolver.getOptimized(MediaResolver.getBase(imgUrl))}
                                   thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(imgUrl), 720)}
                                   alt={`${countryName} photo ${globalIndex + 1}`}
                                   priority={globalIndex < 4}
@@ -574,7 +574,7 @@ export default function CountryDetailComponent({
                         {isVideo ? (
                           <>
                             <video
-                              src={MediaResolver.getOptimized(MediaResolver.getBase(imgUrl))}
+                              originalSrc={MediaResolver.getBase(imgUrl)} src={MediaResolver.getOptimized(MediaResolver.getBase(imgUrl))}
                               muted
                               playsInline
                               loop
@@ -587,7 +587,7 @@ export default function CountryDetailComponent({
                           </>
                         ) : (
                           <LoadedImage
-                            src={MediaResolver.getOptimized(MediaResolver.getBase(imgUrl))}
+                            originalSrc={MediaResolver.getBase(imgUrl)} src={MediaResolver.getOptimized(MediaResolver.getBase(imgUrl))}
                             thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(imgUrl), 720)}
                             alt={`${countryName} photo ${globalIndex + 1}`}
                             priority={globalIndex < 4}

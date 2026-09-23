@@ -59,7 +59,7 @@ export default function CardCarousel({
         {displayImages.map((src, i) => (
           <div key={`${src}-${i}`} className="w-full h-full flex-shrink-0 overflow-hidden relative">
             <LoadedImage
-              src={MediaResolver.getOptimized(MediaResolver.getBase(src))}
+              originalSrc={MediaResolver.getBase(src)} src={MediaResolver.getOptimized(MediaResolver.getBase(src))}
               thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(src), 720)}
               alt={`${alt} ${i + 1}`}
               priority={priority && i === 0}
