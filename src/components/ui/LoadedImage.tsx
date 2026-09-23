@@ -92,8 +92,8 @@ export default function LoadedImage({
       return;
     }
     
-    // Before giving up completely, if the image isn't already webp/webm, attempt to fallback to it.
-    if (!isHealing && !activeSrc.match(/\.(webp|webm)$/i) && !activeSrc.startsWith("blob:") && !activeSrc.startsWith("data:")) {
+    // Before giving up completely, if the image isn't already avif/webm, attempt to fallback to it.
+    if (!isHealing && !activeSrc.match(/\.(avif|webm)$/i) && !activeSrc.startsWith("blob:") && !activeSrc.startsWith("data:")) {
       setIsHealing(true);
       setRetryCount(0); // Reset retries for the new URL
       setStatus("loading");
