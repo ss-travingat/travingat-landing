@@ -107,8 +107,17 @@ export default function LoadedImage({
     }
     
     if (retryCount < maxRetries) {
-      setRetryCount((prev) => prev + 1);
+      // Delay before retrying to give the backend time to heal the image
+      // First retry after 2 seconds, second retry after 4 seconds
+      const delay = retryCount === 0 ? 2000 : 4000;
+      
       setStatus("loading");
+      
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+      timeoutRef.current = setTimeout(() => {
+        setRetryCount((prev) => prev + 1);
+      }, delay);
+      
       return;
     }
 
