@@ -106,6 +106,12 @@ export default function LoadedImage({
       return;
     }
     
+    if (retryCount < maxRetries) {
+      setRetryCount((prev) => prev + 1);
+      setStatus("loading");
+      return;
+    }
+
     if (maxLoadTimeoutRef.current) clearTimeout(maxLoadTimeoutRef.current);
     setStatus("error");
   };
