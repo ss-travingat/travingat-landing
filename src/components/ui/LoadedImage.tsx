@@ -11,6 +11,7 @@ export default function LoadedImage({
   skeletonClassName = "absolute inset-0",
   priority = false,
   thumbnailSrc,
+  originalSrc,
   onClick,
   onLoad,
 }: { 

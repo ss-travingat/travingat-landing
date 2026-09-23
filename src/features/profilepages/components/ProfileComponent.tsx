@@ -553,7 +553,7 @@ function JsMasonryGrid({
           {mediaItem.isVideo ? (
             <>
               <video
-                originalSrc={MediaResolver.getBase(mediaItem.fileUrl)} src={MediaResolver.getOptimized(MediaResolver.getBase(mediaItem.fileUrl))}
+                data-original-src={MediaResolver.getBase(mediaItem.fileUrl)} src={MediaResolver.getOptimized(MediaResolver.getBase(mediaItem.fileUrl))}
                 muted
                 playsInline
                 loop
@@ -1565,7 +1565,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                     draggable={false}
                   />
                 )}
-                
+
                 {/* Sample Profile Indicator */}
                 {profile.isSampleProfile && (
                   <div

@@ -423,8 +423,8 @@ export default function CountryDetailComponent({
                 key={tab.label}
                 onClick={() => setActiveTab(tab.key as MediaTab)}
                 className={`rounded-[62.4375rem] px-[1.5rem] py-[0.5rem] text-[1rem] leading-[1.5rem] tracking-[-0.096px] transition ${activeTab === tab.key
-                    ? "bg-[#1e1e1e] border border-white text-white font-medium"
-                    : "bg-[#161616] border border-transparent text-[#bdbdbd] font-normal"
+                  ? "bg-[#1e1e1e] border border-white text-white font-medium"
+                  : "bg-[#161616] border border-transparent text-[#bdbdbd] font-normal"
                   }`}
               >
                 {tab.label}
@@ -470,8 +470,7 @@ export default function CountryDetailComponent({
                             >
                               {isVideo ? (
                                 <>
-                                  <video
-                                    originalSrc={MediaResolver.getBase(imgUrl)} src={MediaResolver.getOptimized(MediaResolver.getBase(imgUrl))}
+                                  <video data-data-original-src={MediaResolver.getBase(imgUrl)} src={MediaResolver.getOptimized(MediaResolver.getBase(imgUrl))}
                                     muted
                                     playsInline
                                     loop
@@ -574,7 +573,7 @@ export default function CountryDetailComponent({
                         {isVideo ? (
                           <>
                             <video
-                              originalSrc={MediaResolver.getBase(imgUrl)} src={MediaResolver.getOptimized(MediaResolver.getBase(imgUrl))}
+                              data-original-src={MediaResolver.getBase(imgUrl)} src={MediaResolver.getOptimized(MediaResolver.getBase(imgUrl))}
                               muted
                               playsInline
                               loop
