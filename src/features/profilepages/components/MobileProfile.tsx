@@ -241,7 +241,7 @@ export function MobileHero({
                 draggable={false}
               />
             )}
-            
+
             {/* Sample Profile Indicator */}
             {profile.isSampleProfile && (
               <div
