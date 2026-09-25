@@ -110,8 +110,8 @@ export function MediaLightbox({
     } else {
       currentImgSrc = base;
     }
-    // Tiny 320px thumbnail for blur-up preview
-    blurPreviewSrc = MediaResolver.getThumbnail(base, 320);
+    // Use 720p thumbnail for blur preview — it's likely cached from the grid
+    blurPreviewSrc = MediaResolver.getThumbnail(base, 720);
   }
 
   return (
@@ -203,20 +203,26 @@ export function MediaLightbox({
                 width: naturalAspectRatio ? 'auto' : 'fit-content'
               }}
             >
-              {/* Blurred thumbnail — same container as real image so it matches dimensions perfectly */}
+              {/* Blurred thumbnail — stays visible underneath, main image covers it at z-10 */}
               {blurPreviewSrc && !activeItem?.isVideo && (
                 <img
                   key={`blur-${activeIndex}`}
                   src={blurPreviewSrc}
                   alt=""
                   aria-hidden="true"
-                  className={`absolute inset-0 w-full h-full object-cover z-[1] transition-opacity duration-500 ease-out ${
-                    mediaLoaded ? 'opacity-0 pointer-events-none' : blurPreviewLoaded ? 'opacity-100' : 'opacity-0'
+                  className={`absolute inset-0 w-full h-full object-cover z-[1] transition-opacity duration-300 ${
+                    blurPreviewLoaded ? 'opacity-100' : 'opacity-0'
                   }`}
                   style={{ filter: 'blur(40px)', transform: 'scale(1.2)' }}
                   loading="eager"
                   decoding="async"
-                  onLoad={() => setBlurPreviewLoaded(true)}
+                  onLoad={(e: SyntheticEvent<HTMLImageElement>) => {
+                    setBlurPreviewLoaded(true);
+                    // Set aspect ratio early from thumbnail so container is sized before full image loads
+                    if (!naturalAspectRatio && e.currentTarget.naturalWidth > 0) {
+                      setNaturalAspectRatio(e.currentTarget.naturalWidth / e.currentTarget.naturalHeight);
+                    }
+                  }}
                   onError={() => { /* blur preview failed, stay on skeleton */ }}
                 />
               )}
@@ -274,17 +280,17 @@ export function MediaLightbox({
                 </video>
               ) : (
                 <img
-                  key={currentImgSrc}
                   src={currentImgSrc}
                   alt="Carousel media"
-                  className={`relative z-10 block w-full h-full object-contain carousel-image rounded-[0.75rem] mx-auto transition-all duration-700 ease-out ${
-                    mediaLoaded && !mediaError ? 'opacity-100 blur-0 scale-100' : 'opacity-0 blur-sm scale-[1.02]'
+                  className={`relative z-10 block w-full h-full object-contain carousel-image rounded-[0.75rem] mx-auto transition-opacity duration-500 ease-out ${
+                    mediaLoaded && !mediaError ? 'opacity-100' : 'opacity-0'
                   }`}
                   onLoad={(e: SyntheticEvent<HTMLImageElement>) => {
                     setMediaLoaded(true);
+                    // Refine aspect ratio with full-res dimensions
                     setNaturalAspectRatio(e.currentTarget.naturalWidth / e.currentTarget.naturalHeight);
                   }}
-                  onError={(e: SyntheticEvent<HTMLImageElement>) => {
+                  onError={() => {
                     if (fallbackLevel < 2) {
                       setFallbackLevel((prev) => prev + 1);
                     } else {
