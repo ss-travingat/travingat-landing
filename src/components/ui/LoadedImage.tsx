@@ -30,7 +30,10 @@ export default function LoadedImage({
   onClick?: (event: React.MouseEvent<HTMLImageElement>) => void;
   onLoad?: () => void;
 }) {
-  const [status, setStatus] = useState<"loading" | "loaded" | "error">("loading");
+  // --- Phase tracking ---
+  // "skeleton" → "blurPreview" → "loaded" → done
+  // "error" is a terminal state
+  const [phase, setPhase] = useState<"skeleton" | "blurPreview" | "loaded" | "error">("skeleton");
   const [retryCount, setRetryCount] = useState(0);
   const [isHealing, setIsHealing] = useState(false);
   // Track whether we've fallen back from thumbnail to original
@@ -42,7 +45,7 @@ export default function LoadedImage({
   if (src !== prevSrc || thumbnailSrc !== prevThumbnailSrc) {
     setPrevSrc(src);
     setPrevThumbnailSrc(thumbnailSrc);
-    setStatus("loading");
+    setPhase("skeleton");
     setRetryCount(0);
     setUseThumbnail(!!thumbnailSrc);
     setIsHealing(false);
@@ -66,9 +69,27 @@ export default function LoadedImage({
     ? `${activeSrc}${activeSrc.includes("?") ? "&" : "?"}retry=${retryCount}` 
     : activeSrc;
 
+  // --- Tiny blur preview URL (320px thumbnail) ---
+  // We use the smallest available thumbnail as a blur preview placeholder
+  const blurPreviewSrc = (() => {
+    // For blobs/data URLs, skip blur preview
+    if (src.startsWith("blob:") || src.startsWith("data:")) return "";
+    
+    // Get the base URL to generate a tiny thumbnail from
+    const baseForTiny = originalSrc || src;
+    try {
+      const tinyUrl = MediaResolver.getThumbnail(baseForTiny, 320);
+      // Make sure it's different from the main src to actually be useful
+      if (tinyUrl && tinyUrl !== currentSrc) return tinyUrl;
+    } catch {
+      // Fall through
+    }
+    return "";
+  })();
+
   const handleLoad = () => {
     if (maxLoadTimeoutRef.current) clearTimeout(maxLoadTimeoutRef.current);
-    setStatus("loaded");
+    setPhase("loaded");
     
     // If we loaded successfully via fallback, tell the server to update the DB permanently
     if (isHealing) {
@@ -94,7 +115,7 @@ export default function LoadedImage({
     if (useThumbnail && thumbnailSrc) {
       setUseThumbnail(false);
       setRetryCount(0);
-      setStatus("loading");
+      setPhase("skeleton");
       return;
     }
     
@@ -102,7 +123,7 @@ export default function LoadedImage({
     if (!isHealing && !activeSrc.match(/\.(avif|webm)$/i) && !activeSrc.startsWith("blob:") && !activeSrc.startsWith("data:")) {
       setIsHealing(true);
       setRetryCount(0); // Reset retries for the new URL
-      setStatus("loading");
+      setPhase("skeleton");
       return;
     }
     
@@ -111,7 +132,7 @@ export default function LoadedImage({
       // First retry after 2 seconds, second retry after 4 seconds
       const delay = retryCount === 0 ? 2000 : 4000;
       
-      setStatus("loading");
+      setPhase("skeleton");
       
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
       timeoutRef.current = setTimeout(() => {
@@ -122,13 +143,13 @@ export default function LoadedImage({
     }
 
     if (maxLoadTimeoutRef.current) clearTimeout(maxLoadTimeoutRef.current);
-    setStatus("error");
+    setPhase("error");
   };
 
   useEffect(() => {
     // Force error state if image hangs for more than 1 minute
     maxLoadTimeoutRef.current = setTimeout(() => {
-      setStatus("error");
+      setPhase("error");
     }, 60000);
 
     return () => {
@@ -149,10 +170,22 @@ export default function LoadedImage({
     }
   }, [currentSrc]);
 
+  // Handle blur preview loaded
+  const handleBlurPreviewLoad = () => {
+    // Only transition to blurPreview if we haven't already fully loaded
+    if (phase === "skeleton") {
+      setPhase("blurPreview");
+    }
+  };
+
+  const handleBlurPreviewError = () => {
+    // Blur preview failed, that's fine — stay on skeleton until real image loads
+  };
+
   return (
     <div className={`relative overflow-hidden ${containerClassName}`}>
-      {/* Skeleton placeholder while the real image is loading */}
-      {status === "loading" && (
+      {/* Skeleton placeholder — visible only during skeleton phase */}
+      {phase === "skeleton" && (
         <div className={`z-0 pointer-events-none bg-[#1a1a1a] animate-pulse rounded-[inherit] flex items-center justify-center ${skeletonClassName}`}>
           <svg width="48" height="48" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" className="opacity-30">
             <path fillRule="evenodd" clipRule="evenodd" d="M20.9973 21.0011C23.5339 18.4645 27.6719 18.4899 30.2399 21.0579L53.2668 44.0848C55.8347 46.6527 55.8601 50.7908 53.3235 53.3274C50.7869 55.864 46.6489 55.8386 44.0809 53.2706L21.054 30.2437C18.4861 27.6758 18.4607 23.5377 20.9973 21.0011ZM27.0272 30.093L30.391 30.3376L30.146 26.9742L26.7826 26.7292L27.0272 30.093ZM23.0197 27.8352C22.5366 28.3184 22.5414 29.1066 23.0305 29.5957C23.5197 30.0848 24.3079 30.0897 24.791 29.6065C25.2742 29.1233 25.2693 28.3351 24.7802 27.846C24.2911 27.3569 23.5029 27.352 23.0197 27.8352ZM27.8313 23.0236C27.3482 23.5067 27.353 24.2949 27.8422 24.7841C28.3313 25.2732 29.1195 25.278 29.6026 24.7949C30.0858 24.3117 30.081 23.5235 29.5918 23.0344C29.1027 22.5453 28.3145 22.5404 27.8313 23.0236Z" fill="white"/>
@@ -164,12 +197,31 @@ export default function LoadedImage({
         </div>
       )}
 
-      {/* Real image stays hidden until loaded, preserving skeleton-first UX. */}
+      {/* Tiny blurred thumbnail preview — loads fast, shown blurred behind real image */}
+      {blurPreviewSrc && phase !== "error" && (
+        <img
+          src={blurPreviewSrc}
+          alt=""
+          aria-hidden="true"
+          className={`absolute inset-0 w-full h-full object-cover rounded-[inherit] z-[1] transition-opacity duration-500 ${
+            phase === "loaded" ? "opacity-0" : "opacity-100"
+          }`}
+          style={{ filter: phase === "loaded" ? "blur(0px)" : "blur(20px)", transform: "scale(1.1)" }}
+          loading="eager"
+          decoding="async"
+          onLoad={handleBlurPreviewLoad}
+          onError={handleBlurPreviewError}
+        />
+      )}
+
+      {/* Real image — fades in and sharpens over the blur preview */}
       <img
         ref={imgRef}
         src={currentSrc}
         alt={alt}
-        className={`relative z-10 transition-all duration-700 ${status === "loaded" ? "opacity-100 blur-none" : "opacity-0 blur-lg"} ${className}`}
+        className={`relative z-10 transition-all duration-700 ease-out ${
+          phase === "loaded" ? "opacity-100 blur-none scale-100" : "opacity-0 blur-sm scale-[1.02]"
+        } ${className}`}
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         {...(priority ? { fetchPriority: "high" as any, loading: "eager" } : { loading: "lazy" })}
         decoding="async"
@@ -179,7 +231,7 @@ export default function LoadedImage({
       />
 
       {/* Fallback Error State — shown when all retries fail */}
-      {status === "error" && (
+      {phase === "error" && (
         <div className={`absolute inset-0 z-20 bg-[#151515] flex items-center justify-center rounded-[inherit] ${skeletonClassName}`}>
           <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path fillRule="evenodd" clipRule="evenodd" d="M20.9973 21.0011C23.5339 18.4645 27.6719 18.4899 30.2399 21.0579L53.2668 44.0848C55.8347 46.6527 55.8601 50.7908 53.3235 53.3274C50.7869 55.864 46.6489 55.8386 44.0809 53.2706L21.054 30.2437C18.4861 27.6758 18.4607 23.5377 20.9973 21.0011ZM27.0272 30.093L30.391 30.3376L30.146 26.9742L26.7826 26.7292L27.0272 30.093ZM23.0197 27.8352C22.5366 28.3184 22.5414 29.1066 23.0305 29.5957C23.5197 30.0848 24.3079 30.0897 24.791 29.6065C25.2742 29.1233 25.2693 28.3351 24.7802 27.846C24.2911 27.3569 23.5029 27.352 23.0197 27.8352ZM27.8313 23.0236C27.3482 23.5067 27.353 24.2949 27.8422 24.7841C28.3313 25.2732 29.1195 25.278 29.6026 24.7949C30.0858 24.3117 30.081 23.5235 29.5918 23.0344C29.1027 22.5453 28.3145 22.5404 27.8313 23.0236Z" fill="#212121"/>

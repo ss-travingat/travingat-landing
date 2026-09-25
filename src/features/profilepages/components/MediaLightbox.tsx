@@ -41,6 +41,7 @@ export function MediaLightbox({
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [mediaLoaded, setMediaLoaded] = useState(false);
   const [mediaError, setMediaError] = useState(false);
+  const [blurPreviewLoaded, setBlurPreviewLoaded] = useState(false);
   const [naturalAspectRatio, setNaturalAspectRatio] = useState<number | null>(null);
   const [fallbackLevel, setFallbackLevel] = useState(0);
 
@@ -50,6 +51,7 @@ export function MediaLightbox({
     setPrevActiveIndex(activeIndex);
     setMediaLoaded(false);
     setMediaError(false);
+    setBlurPreviewLoaded(false);
     setFallbackLevel(0);
     setNaturalAspectRatio(
       items[activeIndex]?.width && items[activeIndex]?.height
@@ -98,6 +100,7 @@ export function MediaLightbox({
   }, [activeIndex, showBrowser]);
 
   let currentImgSrc = "";
+  let blurPreviewSrc = "";
   if (activeItem && !activeItem.isVideo) {
     let base = MediaResolver.getBase(activeItem.url || "");
     if (fallbackLevel === 0) {
@@ -107,6 +110,8 @@ export function MediaLightbox({
     } else {
       currentImgSrc = base;
     }
+    // Tiny 320px thumbnail for blur-up preview
+    blurPreviewSrc = MediaResolver.getThumbnail(base, 320);
   }
 
   return (
@@ -183,8 +188,8 @@ export function MediaLightbox({
         <div className={`relative flex-1 min-h-0 mb-[2.25rem] overflow-hidden ${!showBrowser ? '' : 'hidden'}`}>
           {/* Main image */}
           <div className="absolute inset-0 flex items-center justify-center px-10">
-            {/* Loading Skeleton */}
-            {!mediaLoaded && (
+            {/* Loading Skeleton — only visible until blur preview loads */}
+            {!mediaLoaded && !blurPreviewLoaded && (
               <div className="absolute inset-x-10 inset-y-0 z-10 flex items-center justify-center rounded-[0.75rem] bg-[#0a0a0a] overflow-hidden">
                 <div className="absolute inset-0 bg-black/20" />
                 <svg width="48" height="48" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" className="opacity-50 animate-pulse z-20">
@@ -194,6 +199,24 @@ export function MediaLightbox({
                   <path d="M51.1119 15.6847L41.4887 25.308C40.2808 26.5159 40.2929 28.4864 41.5157 29.7092L48.6009 36.7944L51.2254 34.1699C56.2986 29.0967 56.2478 20.8206 51.1119 15.6847Z" fill="white" />
                   <path d="M49.967 8.41595C48.3773 6.82627 45.8157 6.81054 44.2454 8.38082L34.2695 18.3567C33.1356 19.4907 33.1469 21.3404 34.2948 22.4884L37.9731 26.1666L50.0021 14.1375C51.5724 12.5673 51.5567 10.0056 49.967 8.41595Z" fill="white" />
                 </svg>
+              </div>
+            )}
+
+            {/* Blurred thumbnail preview — loads fast, shown behind main image */}
+            {blurPreviewSrc && !activeItem?.isVideo && !mediaLoaded && (
+              <div className="absolute inset-x-10 inset-y-0 z-[11] flex items-center justify-center rounded-[0.75rem] overflow-hidden">
+                <img
+                  key={`blur-${activeIndex}`}
+                  src={blurPreviewSrc}
+                  alt=""
+                  aria-hidden="true"
+                  className={`block w-full h-full object-contain carousel-image rounded-[0.75rem] mx-auto transition-opacity duration-500 ${blurPreviewLoaded ? 'opacity-100' : 'opacity-0'}`}
+                  style={{ filter: 'blur(24px)', transform: 'scale(1.1)' }}
+                  loading="eager"
+                  decoding="async"
+                  onLoad={() => setBlurPreviewLoaded(true)}
+                  onError={() => { /* blur preview failed, stay on skeleton */ }}
+                />
               </div>
             )}
 
@@ -263,7 +286,9 @@ export function MediaLightbox({
                   key={currentImgSrc}
                   src={currentImgSrc}
                   alt="Carousel media"
-                  className={`block w-full h-full object-contain carousel-image rounded-[0.75rem] mx-auto transition-opacity duration-300 ${mediaLoaded && !mediaError ? 'opacity-100' : 'opacity-0'}`}
+                  className={`block w-full h-full object-contain carousel-image rounded-[0.75rem] mx-auto transition-all duration-700 ease-out ${
+                    mediaLoaded && !mediaError ? 'opacity-100 blur-0 scale-100' : 'opacity-0 blur-sm scale-[1.02]'
+                  }`}
                   onLoad={(e: SyntheticEvent<HTMLImageElement>) => {
                     setMediaLoaded(true);
                     setNaturalAspectRatio(e.currentTarget.naturalWidth / e.currentTarget.naturalHeight);
