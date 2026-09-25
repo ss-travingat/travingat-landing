@@ -70,22 +70,13 @@ export default function LoadedImage({
     : activeSrc;
 
   // --- Blur preview URL ---
-  // Use the thumbnailSrc (usually 720px) as a blur preview since it loads fast.
-  // If no thumbnailSrc, compute a 720px thumbnail from the base URL.
+  // Use the thumbnailSrc as a blur preview since it loads fast.
   const blurPreviewSrc = (() => {
     if (src.startsWith("blob:") || src.startsWith("data:")) return "";
     
     // If thumbnailSrc is provided and differs from the main active source, use it
     if (thumbnailSrc && thumbnailSrc !== currentSrc) return thumbnailSrc;
     
-    // Otherwise compute a 720px thumbnail (320px doesn't exist on server)
-    const baseForTiny = originalSrc || src;
-    try {
-      const tinyUrl = MediaResolver.getThumbnail(baseForTiny, 720);
-      if (tinyUrl && tinyUrl !== currentSrc) return tinyUrl;
-    } catch {
-      // Fall through
-    }
     return "";
   })();
 
