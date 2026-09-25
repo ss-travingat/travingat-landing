@@ -41,7 +41,7 @@ export function MediaLightbox({
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [mediaLoaded, setMediaLoaded] = useState(false);
   const [mediaError, setMediaError] = useState(false);
-  const [blurPreviewLoaded, setBlurPreviewLoaded] = useState(false);
+  const [fullResReady, setFullResReady] = useState(false);
   const [naturalAspectRatio, setNaturalAspectRatio] = useState<number | null>(null);
   const [fallbackLevel, setFallbackLevel] = useState(0);
 
@@ -51,7 +51,7 @@ export function MediaLightbox({
     setPrevActiveIndex(activeIndex);
     setMediaLoaded(false);
     setMediaError(false);
-    setBlurPreviewLoaded(false);
+    setFullResReady(false);
     setFallbackLevel(0);
     setNaturalAspectRatio(
       items[activeIndex]?.width && items[activeIndex]?.height
@@ -99,20 +99,44 @@ export function MediaLightbox({
     }
   }, [activeIndex, showBrowser]);
 
-  let currentImgSrc = "";
-  let blurPreviewSrc = "";
+  // Thumbnail URL (already cached from the grid — shows instantly)
+  // Full-res URL (loaded in background, fades in on top)
+  let thumbnailSrc = "";
+  let fullResSrc = "";
   if (activeItem && !activeItem.isVideo) {
-    let base = MediaResolver.getBase(activeItem.url || "");
+    const base = MediaResolver.getBase(activeItem.url || "");
+    thumbnailSrc = MediaResolver.getThumbnail(base, 720);
     if (fallbackLevel === 0) {
-      currentImgSrc = MediaResolver.getOptimized(base);
+      fullResSrc = MediaResolver.getOptimized(base);
     } else if (fallbackLevel === 1) {
-      currentImgSrc = MediaResolver.getThumbnail(base, 720);
+      // Thumbnail is already showing, skip straight to original
+      fullResSrc = base;
     } else {
-      currentImgSrc = base;
+      fullResSrc = base;
     }
-    // Use 720p thumbnail for blur preview — it's likely cached from the grid
-    blurPreviewSrc = MediaResolver.getThumbnail(base, 720);
   }
+
+  // Preload the full-res image in the background
+  useEffect(() => {
+    if (!fullResSrc || !activeItem || activeItem.isVideo) return;
+    // If full-res is same as thumbnail, mark ready immediately
+    if (fullResSrc === thumbnailSrc) {
+      setFullResReady(true);
+      return;
+    }
+    const img = new Image();
+    img.onload = () => setFullResReady(true);
+    img.onerror = () => {
+      if (fallbackLevel < 2) {
+        setFallbackLevel((prev) => prev + 1);
+      } else {
+        setMediaError(true);
+      }
+    };
+    img.src = fullResSrc;
+    return () => { img.onload = null; img.onerror = null; };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fullResSrc, activeIndex]);
 
   return (
     <div
@@ -188,8 +212,8 @@ export function MediaLightbox({
         <div className={`relative flex-1 min-h-0 mb-[2.25rem] overflow-hidden ${!showBrowser ? '' : 'hidden'}`}>
           {/* Main image */}
           <div className="absolute inset-0 flex items-center justify-center px-10">
-            {/* Loading Skeleton — only visible until blur preview or image loads */}
-            {!mediaLoaded && !blurPreviewLoaded && (
+            {/* Loading Skeleton — only visible until thumbnail loads */}
+            {!mediaLoaded && (
               <div className="absolute inset-x-10 inset-y-0 z-10 rounded-[0.75rem] bg-[#0a0a0a] overflow-hidden animate-pulse" />
             )}
 
@@ -203,30 +227,6 @@ export function MediaLightbox({
                 width: naturalAspectRatio ? 'auto' : 'fit-content'
               }}
             >
-              {/* Blurred thumbnail — stays visible underneath, main image covers it at z-10 */}
-              {blurPreviewSrc && !activeItem?.isVideo && (
-                <img
-                  key={`blur-${activeIndex}`}
-                  src={blurPreviewSrc}
-                  alt=""
-                  aria-hidden="true"
-                  className={`absolute inset-0 w-full h-full object-cover z-[1] transition-opacity duration-300 ${
-                    blurPreviewLoaded ? 'opacity-100' : 'opacity-0'
-                  }`}
-                  style={{ filter: 'blur(40px)', transform: 'scale(1.2)' }}
-                  loading="eager"
-                  decoding="async"
-                  onLoad={(e: SyntheticEvent<HTMLImageElement>) => {
-                    setBlurPreviewLoaded(true);
-                    // Set aspect ratio early from thumbnail so container is sized before full image loads
-                    if (!naturalAspectRatio && e.currentTarget.naturalWidth > 0) {
-                      setNaturalAspectRatio(e.currentTarget.naturalWidth / e.currentTarget.naturalHeight);
-                    }
-                  }}
-                  onError={() => { /* blur preview failed, stay on skeleton */ }}
-                />
-              )}
-
               {/* Hover Buttons */}
               <div className="absolute top-3 right-3 z-20 flex items-center gap-1 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
                 <button
@@ -279,26 +279,39 @@ export function MediaLightbox({
                   <source src={MediaResolver.getOptimized(MediaResolver.getBase(activeItem.url))} type="video/mp4" />
                 </video>
               ) : (
-                <img
-                  src={currentImgSrc}
-                  alt="Carousel media"
-                  className={`relative z-10 block w-full h-full object-contain carousel-image rounded-[0.75rem] mx-auto transition-opacity duration-500 ease-out ${
-                    mediaLoaded && !mediaError ? 'opacity-100' : 'opacity-0'
-                  }`}
-                  onLoad={(e: SyntheticEvent<HTMLImageElement>) => {
-                    setMediaLoaded(true);
-                    // Refine aspect ratio with full-res dimensions
-                    setNaturalAspectRatio(e.currentTarget.naturalWidth / e.currentTarget.naturalHeight);
-                  }}
-                  onError={() => {
-                    if (fallbackLevel < 2) {
-                      setFallbackLevel((prev) => prev + 1);
-                    } else {
+                <>
+                  {/* Base layer: 720p thumbnail — already cached from the grid, shows instantly */}
+                  <img
+                    key={`thumb-${activeIndex}`}
+                    src={thumbnailSrc}
+                    alt="Carousel media"
+                    className={`block w-full h-full object-contain carousel-image rounded-[0.75rem] mx-auto transition-opacity duration-300 ${
+                      mediaLoaded ? 'opacity-100' : 'opacity-0'
+                    }`}
+                    onLoad={(e: SyntheticEvent<HTMLImageElement>) => {
+                      setMediaLoaded(true);
+                      if (!naturalAspectRatio && e.currentTarget.naturalWidth > 0) {
+                        setNaturalAspectRatio(e.currentTarget.naturalWidth / e.currentTarget.naturalHeight);
+                      }
+                    }}
+                    onError={() => {
+                      // Thumbnail failed, try showing optimized directly
                       setMediaError(true);
-                      setMediaLoaded(true); // Fallback failed too, stop skeleton
-                    }
-                  }}
-                />
+                      setMediaLoaded(true);
+                    }}
+                  />
+                  {/* Top layer: full-res optimized — preloaded in background, fades in on top */}
+                  {fullResReady && fullResSrc !== thumbnailSrc && (
+                    <img
+                      src={fullResSrc}
+                      alt="Carousel media"
+                      className="absolute inset-0 z-[2] block w-full h-full object-contain carousel-image rounded-[0.75rem] mx-auto"
+                      onLoad={(e: SyntheticEvent<HTMLImageElement>) => {
+                        setNaturalAspectRatio(e.currentTarget.naturalWidth / e.currentTarget.naturalHeight);
+                      }}
+                    />
+                  )}
+                </>
               )}
 
               {/* Fallback Error State */}
