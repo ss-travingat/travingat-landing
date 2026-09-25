@@ -76,7 +76,13 @@ export class MediaResolver {
     }
 
     const isVideo = /\.(mp4|mov|m4v|3gp|3g2|webm)$/i.test(baseUrl);
-    return baseUrl.replace(/\.[^/.]+$/, isVideo ? ".webm" : ".avif");
+    
+    if (isVideo) {
+      // Backend uploads HLS streams to <original_name_without_ext>/master.m3u8
+      return baseUrl.replace(/\.[^/.]+$/, "/master.m3u8");
+    }
+    
+    return baseUrl.replace(/\.[^/.]+$/, ".avif");
   }
 
   /**

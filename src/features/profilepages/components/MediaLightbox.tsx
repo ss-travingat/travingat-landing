@@ -6,6 +6,9 @@ import { useMobileComingSoon } from "@/components/ui/MobileComingSoonToast";
 import { ThumbnailImage } from "@/components/ThumbnailImage";
 import LoadedImage from "@/components/ui/LoadedImage";
 import { useImagePreloader } from "@/hooks/useImagePreloader";
+import dynamic from 'next/dynamic';
+
+const ReactPlayer = dynamic(() => import('react-player'), { ssr: false }) as any;
 
 export type LightboxItem = {
   id?: string;
@@ -184,10 +187,17 @@ export function MediaLightbox({
                 <div className="relative">
                   {item.isVideo ? (
                     <>
-                      <video className="h-auto w-full">
-                        <source src={MediaResolver.getOptimized(MediaResolver.getBase(item.url))} type="video/webm" />
-                        <source src={MediaResolver.getOptimized(MediaResolver.getBase(item.url))} type="video/mp4" />
-                      </video>
+                      <div className="relative w-full aspect-square pointer-events-none">
+                        <ReactPlayer
+                          url={MediaResolver.getOptimized(MediaResolver.getBase(item.url))}
+                          playing={false}
+                          controls={false}
+                          width="100%"
+                          height="100%"
+                          config={({ file: { forceHLS: true } }) as any}
+                          style={{ objectFit: 'cover' }}
+                        />
+                      </div>
                       <div className="absolute left-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-black/55 text-white">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
                           <path d="M8 5v14l11-7z" />
@@ -265,19 +275,21 @@ export function MediaLightbox({
                 </button>
               </div>
               {activeItem?.isVideo ? (
-                <video
-                  key={`video-${activeIndex}`}
-                  controls
-                  autoPlay
-                  onLoadedData={(e: SyntheticEvent<HTMLVideoElement>) => {
-                    setMediaLoaded(true);
-                    setNaturalAspectRatio(e.currentTarget.videoWidth / e.currentTarget.videoHeight);
-                  }}
-                  className={`block w-full h-full object-contain carousel-image rounded-[0.75rem] mx-auto transition-opacity duration-300 ${mediaLoaded ? 'opacity-100' : 'opacity-0'}`}
-                >
-                  <source src={MediaResolver.getOptimized(MediaResolver.getBase(activeItem.url))} type="video/webm" />
-                  <source src={MediaResolver.getOptimized(MediaResolver.getBase(activeItem.url))} type="video/mp4" />
-                </video>
+                <div className={`w-full h-full mx-auto transition-opacity duration-300 ${mediaLoaded ? 'opacity-100' : 'opacity-0'}`}>
+                  <ReactPlayer
+                    key={`video-${activeIndex}`}
+                    url={MediaResolver.getOptimized(MediaResolver.getBase(activeItem.url))}
+                    controls
+                    playing
+                    width="100%"
+                    height="100%"
+                    config={({ file: { forceHLS: true } }) as any}
+                    onReady={() => {
+                      setMediaLoaded(true);
+                      setNaturalAspectRatio(16 / 9); // default assumption for HLS
+                    }}
+                  />
+                </div>
               ) : (
                 <>
                   {/* Base layer: 720p thumbnail — already cached from the grid, shows instantly */}
@@ -377,10 +389,17 @@ export function MediaLightbox({
               >
                 {item.isVideo ? (
                   <>
-                    <video
-                      data-original-src={MediaResolver.getBase(item.url)} src={MediaResolver.getOptimized(MediaResolver.getBase(item.url))}
-                      className="h-full w-full object-cover"
-                    />
+                    <div className="relative w-full h-full pointer-events-none">
+                      <ReactPlayer
+                        url={MediaResolver.getOptimized(MediaResolver.getBase(item.url))}
+                        playing={false}
+                        controls={false}
+                        width="100%"
+                        height="100%"
+                        config={({ file: { forceHLS: true } }) as any}
+                        style={{ objectFit: 'cover' }}
+                      />
+                    </div>
                     <div className="absolute inset-0 flex items-center justify-center bg-black/40">
                       <span className="material-symbols-rounded text-white text-[1.25rem]">play_circle</span>
                     </div>

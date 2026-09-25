@@ -552,19 +552,17 @@ function JsMasonryGrid({
         >
           {mediaItem.isVideo ? (
             <>
-              <video
-                data-original-src={MediaResolver.getBase(mediaItem.fileUrl)} src={MediaResolver.getOptimized(MediaResolver.getBase(mediaItem.fileUrl))}
-                muted
-                playsInline
-                loop
-                preload="metadata"
-                className="w-full h-auto block pointer-events-none"
-                onLoadedData={() => markItemLoaded(mediaItem.id)}
-                onCanPlay={() => markItemLoaded(mediaItem.id)}
-                onError={() => markItemLoaded(mediaItem.id)}
+              <LoadedImage
+                originalSrc={MediaResolver.getBase(mediaItem.fileUrl)} src={MediaResolver.getThumbnail(MediaResolver.getBase(mediaItem.fileUrl), 720)}
+                thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(mediaItem.fileUrl), 320)}
+                alt="Video thumbnail"
+                className="w-full h-auto block"
+                containerClassName="w-full h-full relative"
+                skeletonClassName="absolute inset-0 w-full h-full bg-[#1a1a1a]"
+                onLoad={() => markItemLoaded(mediaItem.id)}
               />
-              <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
-                <span className="text-white text-3xl drop-shadow-lg">▶</span>
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
+                <span className="text-white/80 text-3xl drop-shadow-lg opacity-80 group-hover:opacity-100 transition-opacity">▶</span>
               </div>
             </>
           ) : (
