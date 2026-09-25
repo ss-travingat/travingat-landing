@@ -188,32 +188,13 @@ export function MediaLightbox({
         <div className={`relative flex-1 min-h-0 mb-[2.25rem] overflow-hidden ${!showBrowser ? '' : 'hidden'}`}>
           {/* Main image */}
           <div className="absolute inset-0 flex items-center justify-center px-10">
-            {/* Loading Skeleton — only visible until blur preview loads */}
+            {/* Loading Skeleton — only visible until blur preview or image loads */}
             {!mediaLoaded && !blurPreviewLoaded && (
               <div className="absolute inset-x-10 inset-y-0 z-10 rounded-[0.75rem] bg-[#0a0a0a] overflow-hidden animate-pulse" />
-
-            )}
-
-            {/* Blurred thumbnail preview — loads fast, shown behind main image */}
-            {blurPreviewSrc && !activeItem?.isVideo && !mediaLoaded && (
-              <div className="absolute inset-x-10 inset-y-0 z-[11] flex items-center justify-center rounded-[0.75rem] overflow-hidden">
-                <img
-                  key={`blur-${activeIndex}`}
-                  src={blurPreviewSrc}
-                  alt=""
-                  aria-hidden="true"
-                  className={`block w-full h-full object-contain carousel-image rounded-[0.75rem] mx-auto transition-opacity duration-500 ${blurPreviewLoaded ? 'opacity-100' : 'opacity-0'}`}
-                  style={{ filter: 'blur(24px)', transform: 'scale(1.1)' }}
-                  loading="eager"
-                  decoding="async"
-                  onLoad={() => setBlurPreviewLoaded(true)}
-                  onError={() => { /* blur preview failed, stay on skeleton */ }}
-                />
-              </div>
             )}
 
             <div
-              className="relative group mx-auto my-auto"
+              className="relative group mx-auto my-auto overflow-hidden rounded-[0.75rem]"
               style={{
                 maxHeight: '100%',
                 maxWidth: '100%',
@@ -222,6 +203,24 @@ export function MediaLightbox({
                 width: naturalAspectRatio ? 'auto' : 'fit-content'
               }}
             >
+              {/* Blurred thumbnail — same container as real image so it matches dimensions perfectly */}
+              {blurPreviewSrc && !activeItem?.isVideo && (
+                <img
+                  key={`blur-${activeIndex}`}
+                  src={blurPreviewSrc}
+                  alt=""
+                  aria-hidden="true"
+                  className={`absolute inset-0 w-full h-full object-cover z-[1] transition-opacity duration-500 ease-out ${
+                    mediaLoaded ? 'opacity-0 pointer-events-none' : blurPreviewLoaded ? 'opacity-100' : 'opacity-0'
+                  }`}
+                  style={{ filter: 'blur(40px)', transform: 'scale(1.2)' }}
+                  loading="eager"
+                  decoding="async"
+                  onLoad={() => setBlurPreviewLoaded(true)}
+                  onError={() => { /* blur preview failed, stay on skeleton */ }}
+                />
+              )}
+
               {/* Hover Buttons */}
               <div className="absolute top-3 right-3 z-20 flex items-center gap-1 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
                 <button
@@ -278,7 +277,7 @@ export function MediaLightbox({
                   key={currentImgSrc}
                   src={currentImgSrc}
                   alt="Carousel media"
-                  className={`block w-full h-full object-contain carousel-image rounded-[0.75rem] mx-auto transition-all duration-700 ease-out ${
+                  className={`relative z-10 block w-full h-full object-contain carousel-image rounded-[0.75rem] mx-auto transition-all duration-700 ease-out ${
                     mediaLoaded && !mediaError ? 'opacity-100 blur-0 scale-100' : 'opacity-0 blur-sm scale-[1.02]'
                   }`}
                   onLoad={(e: SyntheticEvent<HTMLImageElement>) => {
