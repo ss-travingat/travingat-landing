@@ -36,18 +36,13 @@ export default function LoadedImage({
   const [phase, setPhase] = useState<"skeleton" | "blurPreview" | "loaded" | "error">("skeleton");
   const [retryCount, setRetryCount] = useState(0);
   const [isHealing, setIsHealing] = useState(false);
-  // Track whether we've fallen back from thumbnail to original
-  const [useThumbnail, setUseThumbnail] = useState(!!thumbnailSrc);
 
   const [prevSrc, setPrevSrc] = useState(src);
-  const [prevThumbnailSrc, setPrevThumbnailSrc] = useState(thumbnailSrc);
 
-  if (src !== prevSrc || thumbnailSrc !== prevThumbnailSrc) {
+  if (src !== prevSrc) {
     setPrevSrc(src);
-    setPrevThumbnailSrc(thumbnailSrc);
     setPhase("skeleton");
     setRetryCount(0);
-    setUseThumbnail(!!thumbnailSrc);
     setIsHealing(false);
   }
   const maxRetries = 2;
@@ -55,8 +50,8 @@ export default function LoadedImage({
   const maxLoadTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const imgRef = useRef<HTMLImageElement | null>(null);
 
-  // Determine which source to use: thumbnail (if available and not failed) or original
-  let activeSrc = useThumbnail && thumbnailSrc ? thumbnailSrc : src;
+  // The main image we are trying to load
+  let activeSrc = src;
 
   // If we are in a healing fallback state, use the original source from the DB if available,
   // or rewrite the extension to the optimized fallback if originalSrc isn't passed.
@@ -73,10 +68,8 @@ export default function LoadedImage({
   // Use the thumbnailSrc as a blur preview since it loads fast.
   const blurPreviewSrc = (() => {
     if (src.startsWith("blob:") || src.startsWith("data:")) return "";
-    
-    // If thumbnailSrc is provided and differs from the main active source, use it
+    // If thumbnailSrc is provided, use it as the blur preview while the main image loads
     if (thumbnailSrc && thumbnailSrc !== currentSrc) return thumbnailSrc;
-    
     return "";
   })();
 
@@ -104,14 +97,6 @@ export default function LoadedImage({
   };
 
   const handleError = () => {
-    // If thumbnail failed, fall back to the original src
-    if (useThumbnail && thumbnailSrc) {
-      setUseThumbnail(false);
-      setRetryCount(0);
-      setPhase("skeleton");
-      return;
-    }
-    
     // Before giving up completely, if the image isn't already avif/webm, attempt to fallback to it.
     if (!isHealing && !activeSrc.match(/\.(avif|webm)$/i) && !activeSrc.startsWith("blob:") && !activeSrc.startsWith("data:")) {
       setIsHealing(true);
