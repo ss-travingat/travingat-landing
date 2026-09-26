@@ -6,6 +6,7 @@ import { getCountryName } from "@/lib/countries";
 import Link from "next/link";
 import { type SampleProfile } from "../data/profile-data";
 import LoadedImage from "@/components/ui/LoadedImage";
+import FoundingExplorer from "@/components/ui/FoundingExplorerBadge";
 import { useMobileComingSoon } from "@/components/ui/MobileComingSoonToast";
 
 // Shared Types
@@ -220,8 +221,8 @@ export function MobileHero({
       <div className="flex flex-col items-center gap-[1.25rem] rounded-[1.5rem] w-full relative">
         <MobileProfileNavbar profile={profile} />
         <div className="w-full min-[50.625rem]:max-w-[25rem] min-[50.625rem]:mx-auto flex flex-col items-center">
-          <div className="relative w-full aspect-[377/248] -mb-[2.25rem]">
-            <div className="w-full h-full rounded-2xl overflow-hidden bg-[#151515]">
+          <div className="relative flex w-full aspect-[339/223] p-[2rem] justify-end items-end gap-[0.625rem] -mb-[2.25rem]">
+            <div className="absolute inset-0 rounded-[1rem] overflow-hidden bg-[#151515]">
               <LoadedImage
                 originalSrc={MediaResolver.getBase(typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url)} src={MediaResolver.getOptimized(MediaResolver.getBase(typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url))}
                 thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url), 720)}
@@ -230,27 +231,23 @@ export function MobileHero({
                 skeletonClassName="absolute inset-0 bg-[#1a1a1a]"
                 containerClassName="w-full h-full"
               />
+              <div className="absolute inset-0 pointer-events-none bg-gradient-to-b from-[rgba(0,0,0,0.6)] from-0% to-transparent to-[60.167%]" aria-hidden="true" />
             </div>
-            {/* Founding Explorer badge — half outside left edge */}
+            {/* Founding Explorer badge — half outside bottom-left edge */}
             {profile.showBadge && (
-              <img
-                src="/icons/badge.svg"
-                alt="Founding Explorer"
-                className="absolute z-10 w-24 h-24 pointer-events-none select-none drop-shadow-[0_4px_16px_rgba(0,0,0,0.5)]"
-                style={{ top: "24px", left: "0", transform: "translateX(-50%)" }}
-                draggable={false}
-              />
+              <div
+                className="absolute z-10 w-[4.5rem] h-[4.5rem] pointer-events-none select-none shadow-[0_4px_16px_rgba(0,0,0,0.5)] rounded-full"
+                style={{ bottom: "-2.25rem", left: "0.75rem" }}
+              >
+                <FoundingExplorer />
+              </div>
             )}
 
             {/* Sample Profile Indicator */}
             {profile.isSampleProfile && (
               <div
-                className="absolute z-10 text-white pointer-events-none select-none font-medium leading-none whitespace-nowrap drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)]"
-                style={{
-                  fontSize: "14px",
-                  bottom: "16px",
-                  right: "16px",
-                }}
+                className="relative z-10 text-white pointer-events-none select-none font-medium leading-none whitespace-nowrap drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)]"
+                style={{ fontSize: "0.875rem" }}
               >
                 Sample Profile
               </div>

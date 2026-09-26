@@ -15,6 +15,7 @@ import { MobileHero, MobileTabs, MobileActionBar } from "./MobileProfile";
 import ProfileFooter from "./ProfileFooter";
 import CardCarousel from "./CardCarousel";
 import LoadedImage from "@/components/ui/LoadedImage";
+import FoundingExplorer from "@/components/ui/FoundingExplorerBadge";
 import { MasonryImageGrid } from "@/components/ui/MasonryImageGrid";
 import type { MasonryItemWithDimensions } from "@/hooks/useMasonryAdvanced";
 import { useMobileComingSoon } from "@/components/ui/MobileComingSoonToast";
@@ -1557,13 +1558,12 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                 </div>
                 {/* Founding Explorer badge — half outside the left edge of the cover */}
                 {profile.showBadge && (
-                  <img
-                    src="/icons/badge.svg"
-                    alt="Founding Explorer"
-                    className="absolute z-10 w-[9.375rem] h-[9.375rem] pointer-events-none select-none drop-shadow-[0_4px_24px_rgba(0,0,0,0.45)]"
+                  <div
+                    className="absolute z-10 w-[9.375rem] h-[9.375rem] pointer-events-none select-none shadow-[0_4px_24px_rgba(0,0,0,0.45)] rounded-full"
                     style={{ top: "40px", left: "0", transform: "translateX(-50%)" }}
-                    draggable={false}
-                  />
+                  >
+                    <FoundingExplorer />
+                  </div>
                 )}
 
                 {/* Sample Profile Indicator */}

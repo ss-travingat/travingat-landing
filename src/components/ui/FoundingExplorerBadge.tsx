@@ -10,14 +10,16 @@ import * as React from "react"
  */
 
 type FoundingExplorerProps = {
-    outerRotationDuration: number
-    innerRotationDuration: number
-    outerRotationEnabled: boolean
-    innerRotationEnabled: boolean
-    startOnHoverOnly: boolean
-    blurAmount: number 
-    glassTint: string
-    glassOpacity: number
+    outerRotationDuration?: number
+    innerRotationDuration?: number
+    outerRotationEnabled?: boolean
+    innerRotationEnabled?: boolean
+    startOnHoverOnly?: boolean
+    blurAmount?: number 
+    glassTint?: string
+    glassOpacity?: number
+    borderWidth?: number
+    borderColor?: string
     style?: React.CSSProperties
 }
 
@@ -85,9 +87,11 @@ export default function FoundingExplorer(props: FoundingExplorerProps) {
         outerRotationEnabled = true,
         innerRotationEnabled = true,
         startOnHoverOnly = false,
-        blurAmount = 14,
-        glassTint = "#080A0F",
-        glassOpacity = 0.18,
+        blurAmount = 7.998656749725342,
+        glassTint = "#000000",
+        glassOpacity = 0.30,
+        borderWidth = 2,
+        borderColor = "#FFF",
         style,
     } = props
 
@@ -186,6 +190,7 @@ export default function FoundingExplorer(props: FoundingExplorerProps) {
                     margin: 0,
                     borderRadius: "50%",
                     backgroundColor: colorWithOpacity(glassTint, glassOpacity),
+                    border: borderWidth > 0 ? `${borderWidth}px solid ${borderColor}` : undefined,
                     backdropFilter: `blur(${Math.max(0, blurAmount)}px)`,
                     WebkitBackdropFilter: `blur(${Math.max(0, blurAmount)}px)`,
                     pointerEvents: "none",
