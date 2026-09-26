@@ -82,20 +82,27 @@ export default async function SharedExplorerCardPage({
 
 
   return (
-    <div className="min-h-screen bg-black flex flex-col">
-      <main className="flex-1 flex items-center justify-center px-6 lg:px-12 w-full overflow-hidden max-w-[1400px] mx-auto">
+    <div className="min-h-screen bg-black flex flex-col relative">
+      <main className="fixed inset-0 flex items-center justify-center px-6 lg:px-12 w-full max-w-[87.5rem] mx-auto pointer-events-none z-10">
         {/* Centered Card */}
-        <ExplorerCardScaler>
-          {style === "minimal" ? (
-            <MinimalCard form={form} sampleFlags={sampleFlags} visitedArray={visitedArray} />
-          ) : style === "adventure" ? (
-            <AdventureCard form={form} sampleFlags={sampleFlags} visitedArray={visitedArray} />
-          ) : (
-            <ClassicCard form={form} sampleFlags={sampleFlags} visitedArray={visitedArray} />
-          )}
-        </ExplorerCardScaler>
+        <div className="pointer-events-auto w-full flex justify-center">
+          <ExplorerCardScaler>
+            {style === "minimal" ? (
+              <MinimalCard form={form} sampleFlags={sampleFlags} visitedArray={visitedArray} />
+            ) : style === "adventure" ? (
+              <AdventureCard form={form} sampleFlags={sampleFlags} visitedArray={visitedArray} />
+            ) : (
+              <ClassicCard form={form} sampleFlags={sampleFlags} visitedArray={visitedArray} />
+            )}
+          </ExplorerCardScaler>
+        </div>
       </main>
-      <ProfileFooter />
+      
+      {/* Spacer to push footer to bottom, since main is fixed */}
+      <div className="flex-1" />
+      <div className="relative z-20 pointer-events-auto">
+        <ProfileFooter />
+      </div>
     </div>
   );
 }

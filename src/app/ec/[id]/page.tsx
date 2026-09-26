@@ -4,6 +4,8 @@ import { ClassicCard, MinimalCard, AdventureCard } from "@/features/explorercard
 import countryData from "@/features/explorercard/countries.json";
 import ProfileFooter from "@/features/profilepages/components/ProfileFooter";
 
+import { ExplorerCardScaler } from "@/features/explorercard/ExplorerCardScaler";
+
 export const dynamicParams = true;
 export const fetchCache = "force-no-store";
 export const revalidate = 0; // Disable cache entirely to prevent stale DB reads
@@ -90,11 +92,11 @@ export default async function ShortExplorerCardPage({
 
 
   return (
-    <div className="min-h-screen bg-black flex flex-col">
-      <main className="flex-1 flex items-center justify-center pt-[40px] pb-[80px] lg:py-[120px] px-6 lg:px-12 w-full overflow-hidden max-w-[1400px] mx-auto">
+    <div className="min-h-screen bg-black flex flex-col relative">
+      <main className="fixed inset-0 flex items-center justify-center px-6 lg:px-12 w-full max-w-[87.5rem] mx-auto pointer-events-none z-10">
         {/* Centered Card */}
-        <div className="relative flex items-center justify-center lg:w-[450px] lg:h-[750px] sm:mb-[60px] lg:mb-0">
-          <div className="scale-100 sm:scale-110 lg:scale-125 origin-top lg:origin-center transition-transform">
+        <div className="pointer-events-auto w-full flex justify-center">
+          <ExplorerCardScaler>
             {style === "minimal" ? (
               <MinimalCard form={form} sampleFlags={sampleFlags} visitedArray={visitedArray} />
             ) : style === "adventure" ? (
@@ -102,10 +104,15 @@ export default async function ShortExplorerCardPage({
             ) : (
               <ClassicCard form={form} sampleFlags={sampleFlags} visitedArray={visitedArray} />
             )}
-          </div>
+          </ExplorerCardScaler>
         </div>
       </main>
-      <ProfileFooter />
+      
+      {/* Spacer to push footer to bottom, since main is fixed */}
+      <div className="flex-1" />
+      <div className="relative z-20 pointer-events-auto">
+        <ProfileFooter />
+      </div>
     </div>
   );
 }
