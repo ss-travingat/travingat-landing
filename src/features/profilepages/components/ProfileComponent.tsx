@@ -1569,7 +1569,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                 {/* Sample Profile Indicator */}
                 {profile.isSampleProfile && (
                   <div
-                    className="absolute z-10 text-white pointer-events-none select-none font-medium leading-none whitespace-nowrap drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)]"
+                    className="absolute z-10 text-white/80 pointer-events-none select-none font-medium leading-none whitespace-nowrap drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)]"
                     style={{
                       fontSize: "14px",
                       bottom: "20px",
