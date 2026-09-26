@@ -221,7 +221,7 @@ export function MobileHero({
       <div className="flex flex-col items-center gap-[1.25rem] rounded-[1.5rem] w-full relative">
         <MobileProfileNavbar profile={profile} />
         <div className="w-full min-[50.625rem]:max-w-[25rem] min-[50.625rem]:mx-auto flex flex-col items-center">
-          <div className="relative flex w-full aspect-[339/223] p-[2rem] justify-end items-end gap-[0.625rem] -mb-[2.25rem]">
+          <div className="relative flex w-full aspect-[339/223] p-[1rem] justify-end items-end gap-[0.625rem] -mb-[2.25rem]">
             <div className="absolute inset-0 rounded-[1rem] overflow-hidden bg-[#151515]">
               <LoadedImage
                 originalSrc={MediaResolver.getBase(typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url)} src={MediaResolver.getOptimized(MediaResolver.getBase(typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url))}
@@ -247,7 +247,7 @@ export function MobileHero({
             {profile.isSampleProfile && (
               <div
                 className="relative z-10 text-white/80 pointer-events-none select-none font-medium leading-none whitespace-nowrap drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)]"
-                style={{ fontSize: "0.875rem" }}
+                style={{ fontSize: "0.75rem" }}
               >
                 Sample Profile
               </div>
