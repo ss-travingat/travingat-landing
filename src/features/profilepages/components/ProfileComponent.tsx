@@ -1571,9 +1571,9 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                   <div
                     className="absolute z-10 text-white/80 pointer-events-none select-none font-medium leading-none whitespace-nowrap drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)]"
                     style={{
-                      fontSize: "14px",
-                      bottom: "20px",
-                      right: "20px",
+                      fontSize: "0.875rem",
+                      bottom: "1.25rem",
+                      right: "1.25rem",
                     }}
                   >
                     Sample Profile
