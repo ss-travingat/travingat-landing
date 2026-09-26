@@ -34,6 +34,7 @@
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "react-easy-crop": "^6.2.3",
+    "react-player": "^3.4.0",
     "uuid": "^14.0.2"
   },
   "devDependencies": {

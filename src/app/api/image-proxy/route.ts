@@ -32,7 +32,7 @@ export async function GET(req: NextRequest) {
       return new NextResponse("Upstream fetch failed", { status: upstream.status });
     }
 
-    const contentType = upstream.headers.get("content-type") ?? "image/webp";
+    const contentType = upstream.headers.get("content-type") ?? "image/avif";
     const buffer = await upstream.arrayBuffer();
 
     return new NextResponse(buffer, {

@@ -123,11 +123,11 @@ function CollectionLightbox({
             <p className="text-[1.375rem] font-semibold tracking-[-0.5px] text-[#ededed]">
               {collectionTitle}
             </p>
-          {description ? (
-            <p className="text-[0.9375rem] leading-[1.6] tracking-[-0.3px] text-[#a0a0a0]">{description}</p>
-          ) : null}
-        </div>
-      </aside>
+            {description ? (
+              <p className="text-[0.9375rem] leading-[1.6] tracking-[-0.3px] text-[#a0a0a0]">{description}</p>
+            ) : null}
+          </div>
+        </aside>
       }
     />
   );
@@ -152,7 +152,7 @@ export default function CollectionDetailComponent({
   const menuRef = useRef<HTMLDivElement>(null);
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const [prevActiveTab, setPrevActiveTab] = useState<MediaTab>("all");
-  
+
   if (activeTab !== prevActiveTab) {
     setPrevActiveTab(activeTab);
     setLightboxIndex(null);
@@ -166,8 +166,8 @@ export default function CollectionDetailComponent({
 
   const displayImages =
     activeTab === "photos" ? photos :
-    activeTab === "videos" ? videos :
-    imageUrls;
+      activeTab === "videos" ? videos :
+        imageUrls;
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -221,9 +221,9 @@ export default function CollectionDetailComponent({
           return;
         }
         setLightboxIndex(0);
-      } catch (e) {}
+      } catch (e) { }
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -303,7 +303,7 @@ export default function CollectionDetailComponent({
               <span className="text-[1rem] text-white leading-[1.5rem] tracking-[-0.096px] font-normal">By</span>
               <div className="h-[1.25rem] w-[1.25rem] overflow-hidden rounded-[0.375rem] shrink-0">
                 <LoadedImage
-                  src={MediaResolver.getOptimized(MediaResolver.getBase(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url))}
+                  originalSrc={MediaResolver.getBase(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url)} src={MediaResolver.getOptimized(MediaResolver.getBase(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url))}
                   thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url), 720)}
                   alt={profile.name}
                   className="w-full h-full object-cover"
@@ -341,7 +341,7 @@ export default function CollectionDetailComponent({
                   viewHref={`/${profile.handle.replace(/^@/, "")}`}
                   showViewAction={false}
                   onShare={() => {
-                    navigator.clipboard.writeText(window.location.href).catch(() => {});
+                    navigator.clipboard.writeText(window.location.href).catch(() => { });
                     setShowMenu(false);
                   }}
                   onClose={() => setShowMenu(false)}
@@ -360,11 +360,10 @@ export default function CollectionDetailComponent({
               <button
                 key={tab.label}
                 onClick={() => setActiveTab(tab.key as MediaTab)}
-                className={`rounded-[62.4375rem] px-[1.5rem] py-[0.5rem] text-[1rem] leading-[1.5rem] tracking-[-0.096px] transition ${
-                  activeTab === tab.key
+                className={`rounded-[62.4375rem] px-[1.5rem] py-[0.5rem] text-[1rem] leading-[1.5rem] tracking-[-0.096px] transition ${activeTab === tab.key
                     ? "bg-[#1e1e1e] border border-white text-white font-medium"
                     : "bg-[#161616] border border-transparent text-[#bdbdbd] font-normal"
-                }`}
+                  }`}
               >
                 {tab.label}
               </button>
@@ -410,7 +409,7 @@ export default function CollectionDetailComponent({
                               {isVideo ? (
                                 <>
                                   <video
-                                    src={MediaResolver.getOptimized(MediaResolver.getBase(imgUrl))}
+                                    data-original-src={MediaResolver.getBase(imgUrl)} src={MediaResolver.getOptimized(MediaResolver.getBase(imgUrl))}
                                     muted
                                     playsInline
                                     loop
@@ -423,7 +422,7 @@ export default function CollectionDetailComponent({
                                 </>
                               ) : (
                                 <LoadedImage
-                                  src={MediaResolver.getOptimized(MediaResolver.getBase(imgUrl))}
+                                  originalSrc={MediaResolver.getBase(imgUrl)} src={MediaResolver.getOptimized(MediaResolver.getBase(imgUrl))}
                                   thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(imgUrl), 720)}
                                   alt={`${title} photo ${globalIndex + 1}`}
                                   className="w-full h-auto block"
@@ -463,7 +462,7 @@ export default function CollectionDetailComponent({
                         {isVideo ? (
                           <>
                             <video
-                              src={MediaResolver.getOptimized(MediaResolver.getBase(imgUrl))}
+                              data-original-src={MediaResolver.getBase(imgUrl)} src={MediaResolver.getOptimized(MediaResolver.getBase(imgUrl))}
                               muted
                               playsInline
                               loop
@@ -476,7 +475,7 @@ export default function CollectionDetailComponent({
                           </>
                         ) : (
                           <LoadedImage
-                            src={MediaResolver.getOptimized(MediaResolver.getBase(imgUrl))}
+                            originalSrc={MediaResolver.getBase(imgUrl)} src={MediaResolver.getOptimized(MediaResolver.getBase(imgUrl))}
                             thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(imgUrl), 720)}
                             alt={`${title} photo ${globalIndex + 1}`}
                             className="w-full h-auto block"

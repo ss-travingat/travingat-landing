@@ -76,7 +76,7 @@ export class MediaResolver {
     }
 
     const isVideo = /\.(mp4|mov|m4v|3gp|3g2|webm)$/i.test(baseUrl);
-    return baseUrl.replace(/\.[^/.]+$/, isVideo ? ".webm" : ".webp");
+    return baseUrl.replace(/\.[^/.]+$/, isVideo ? ".webm" : ".avif");
   }
 
   /**
@@ -101,7 +101,7 @@ export class MediaResolver {
       }
 
       const pathWithoutExt = path.replace(/\.[^/.]+$/, "");
-      urlObj.pathname = `/thumbnails/${pathWithoutExt}_${size}.webp`;
+      urlObj.pathname = `/thumbnails/${pathWithoutExt}_${size}.avif`;
       return urlObj.toString();
     } catch (e) {
       return baseUrl;
