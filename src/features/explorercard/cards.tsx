@@ -330,7 +330,7 @@ export function AdventureCard({ form, sampleFlags, visitedArray, isPreview }: Ca
               src={toLandingAssetUrl(form.coverImage)} 
               alt="" 
               aria-hidden="true"
-              className="h-full w-full object-cover blur-[16px] scale-[1.05]" 
+              className="h-full w-full object-cover blur-[16px] scale-[1.15]" 
             />
             {/* Dark overlay to make text highly readable over the blur */}
             <div className="absolute inset-0 bg-black/40" />

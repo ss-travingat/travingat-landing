@@ -812,7 +812,7 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
                   ))}
                 </div>
 
-                <div className="relative flex items-center justify-center shrink-0 overflow-hidden pb-[16px]">
+                <div className="relative flex items-center justify-center shrink-0 overflow-hidden pb-[16px] min-h-[640px]">
                   <div ref={classicRef} className={tab === "Classic" ? "relative" : "absolute top-[-9999px] left-[-9999px] pointer-events-none"}>
                     <ClassicCard form={{ ...form, fullName: `${form.firstName} ${form.lastName}`.trim() }} sampleFlags={sampleFlags} visitedArray={visitedArray} />
                   </div>
