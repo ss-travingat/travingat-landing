@@ -380,15 +380,14 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
   };
 
   async function uploadFileToR2(file: File) {
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("filename", file.name);
-    formData.append("contentType", file.type);
-    formData.append("prefix", "explorercard/users");
-
+    // Only send metadata to presign — the actual file goes directly to R2
     const uploadRes = await fetch("/api/upload/presign", {
       method: "POST",
-      body: formData,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        contentType: file.type,
+        prefix: "explorercard/users",
+      }),
     });
     const uploadData = await uploadRes.json();
     if (uploadData.error) throw new Error(uploadData.error);
