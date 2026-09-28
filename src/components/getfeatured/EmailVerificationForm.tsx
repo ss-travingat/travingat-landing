@@ -19,11 +19,20 @@ interface Props {
   source?: string;
 }
 
+const getInitialCountryCode = (countryValue: string | null) => {
+  if (!countryValue) return null;
+  if (countryValue.length === 2 && countryOptions.some(c => c.code === countryValue)) {
+    return countryValue;
+  }
+  const match = countryOptions.find(c => c.name.toLowerCase() === countryValue.toLowerCase());
+  return match ? match.code : null;
+};
+
 const EmailVerificationForm = ({ onVerified, initialSessionUser, source }: Props = {}) => {
   const [email, setEmail] = useState(initialSessionUser?.email || '');
   const [step, setStep] = useState<'email' | 'otp' | 'application'>(initialSessionUser ? 'application' : 'email');
   const [otp, setOtp] = useState(['', '', '', '']);
-  const [selectedCountry, setSelectedCountry] = useState<string | null>(initialSessionUser?.country || null);
+  const [selectedCountry, setSelectedCountry] = useState<string | null>(getInitialCountryCode(initialSessionUser?.country));
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [countrySearchQuery, setCountrySearchQuery] = useState('');
   const [linkInput, setLinkInput] = useState('');
@@ -133,7 +142,10 @@ const EmailVerificationForm = ({ onVerified, initialSessionUser, source }: Props
         if (lname) setLastName(lname);
 
         const bestCountry = u.country || ec.country;
-        if (bestCountry) setSelectedCountry(bestCountry);
+        if (bestCountry) {
+          const matchedCode = getInitialCountryCode(bestCountry);
+          setSelectedCountry(matchedCode || bestCountry);
+        }
 
         let count = u.visited_count;
         const ecVisited = ec.visitedCountries || ec.visited_countries;
@@ -272,6 +284,28 @@ const EmailVerificationForm = ({ onVerified, initialSessionUser, source }: Props
   if (step === 'application') {
     return (
       <div className={styles.appFormParent}>
+        {initialSessionUser && (
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', paddingBottom: '16px' }}>
+            <span style={{ color: '#989898', fontSize: '14px' }}>Signed in as {email}</span>
+            <button
+              type="button"
+              onClick={async () => {
+                await fetch('/api/auth/logout-user', { method: 'POST' });
+                setStep('email');
+                setEmail('');
+                setOtp(['', '', '', '']);
+                setFirstName('');
+                setLastName('');
+                setVisitedCount('');
+                setLinks([]);
+                setSelectedCountry(null);
+              }}
+              style={{ background: 'none', border: 'none', color: '#5a45f9', cursor: 'pointer', fontSize: '14px', padding: 0 }}
+            >
+              Not you?
+            </button>
+          </div>
+        )}
         <div className={styles.fieldContainer}>
           <div className={styles.fieldLabel}>Full name</div>
           <div className={styles.inputRow}>
