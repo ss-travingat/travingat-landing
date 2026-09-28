@@ -248,7 +248,7 @@ export function MobileHero({
               <div
                 className="relative z-10 text-white/80 pointer-events-none select-none font-medium leading-none whitespace-nowrap drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)]"
                 style={{ fontSize: "0.75rem" }}
-1              >
+              >
             Sample Profile
           </div>
             )}
