@@ -30,6 +30,9 @@ function walkFiles(dir, result = []) {
   for (const entry of entries) {
     const absolutePath = path.join(dir, entry.name);
     if (entry.isDirectory()) {
+      if (entry.name === "flags" || entry.name === "inter-display") {
+        continue;
+      }
       walkFiles(absolutePath, result);
       continue;
     }
