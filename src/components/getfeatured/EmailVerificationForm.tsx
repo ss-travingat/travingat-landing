@@ -284,28 +284,6 @@ const EmailVerificationForm = ({ onVerified, initialSessionUser, source }: Props
   if (step === 'application') {
     return (
       <div className={styles.appFormParent}>
-        {initialSessionUser && (
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', paddingBottom: '16px' }}>
-            <span style={{ color: '#989898', fontSize: '14px' }}>Signed in as {email}</span>
-            <button
-              type="button"
-              onClick={async () => {
-                await fetch('/api/auth/logout-user', { method: 'POST' });
-                setStep('email');
-                setEmail('');
-                setOtp(['', '', '', '']);
-                setFirstName('');
-                setLastName('');
-                setVisitedCount('');
-                setLinks([]);
-                setSelectedCountry(null);
-              }}
-              style={{ background: 'none', border: 'none', color: '#5a45f9', cursor: 'pointer', fontSize: '14px', padding: 0 }}
-            >
-              Not you?
-            </button>
-          </div>
-        )}
         <div className={styles.fieldContainer}>
           <div className={styles.fieldLabel}>Full name</div>
           <div className={styles.inputRow}>
@@ -319,6 +297,28 @@ const EmailVerificationForm = ({ onVerified, initialSessionUser, source }: Props
           <div className={styles.inputRow}>
             <input type="email" value={email} disabled className={styles.textInput} />
           </div>
+          {initialSessionUser && (
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', marginTop: '4px' }}>
+              <span style={{ color: '#989898', fontSize: '12px' }}>Signed in as {email}</span>
+              <button
+                type="button"
+                onClick={async () => {
+                  await fetch('/api/auth/logout-user', { method: 'POST' });
+                  setStep('email');
+                  setEmail('');
+                  setOtp(['', '', '', '']);
+                  setFirstName('');
+                  setLastName('');
+                  setVisitedCount('');
+                  setLinks([]);
+                  setSelectedCountry(null);
+                }}
+                style={{ background: 'none', border: 'none', color: '#5a45f9', cursor: 'pointer', fontSize: '12px', padding: 0 }}
+              >
+                Not you?
+              </button>
+            </div>
+          )}
         </div>
 
         <div className={styles.fieldContainer}>
