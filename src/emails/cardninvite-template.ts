@@ -196,7 +196,7 @@ export function buildCardAndInviteEmail(name: string, editUrl: string): string {
           <img src="https://cdn.travingat.com/landingpage-assets/emails/travingat-logo-black.png" alt="Travingat" width="131" height="25" style="display: block; border: 0; outline: none; text-decoration: none;" />
         </div>
         
-        <img src="https://cdn.travingat.com/landingpage-assets/emails/hero-cover.png" class="hero-img" alt="Travel Cover">
+        <img src="https://cdn.travingat.com/landingpage-assets/emails/hero-cover.avif" class="hero-img" alt="Travel Cover">
         
         <h1 class="title">Your Explorer Card is ready</h1>
         <p class="text">

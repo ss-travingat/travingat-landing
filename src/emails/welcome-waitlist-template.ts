@@ -148,7 +148,7 @@ export function buildWelcomeWaitlistEmail(ctaUrl: string): string {
             <img src="https://cdn.travingat.com/landingpage-assets/emails/travingat-logo-black.png" alt="Travingat" width="131" height="25" style="display: block; border: 0; outline: none; text-decoration: none;" />
           </div>
           
-          <img src="https://cdn.travingat.com/landingpage-assets/emails/welcome-waitlist-hero.png" class="wc-hero-img" alt="Welcome to Travingat">
+          <img src="https://cdn.travingat.com/landingpage-assets/emails/welcome-waitlist-hero.avif" class="wc-hero-img" alt="Welcome to Travingat">
           
           <div class="wc-text-content">
             <h1 class="wc-title">Welcome to Travingat</h1>

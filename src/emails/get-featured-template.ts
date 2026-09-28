@@ -169,7 +169,7 @@ export function buildGetFeaturedEmail(confirmUrl: string): string {
           <img src="https://cdn.travingat.com/landingpage-assets/emails/travingat-logo-black.png" alt="Travingat" width="131" height="25" style="display: block; border: 0; outline: none; text-decoration: none;" />
         </div>
         
-        <img src="https://cdn.travingat.com/landingpage-assets/emails/welcome-waitlist-hero.png" class="hero-img" alt="Travel Cover">
+        <img src="https://cdn.travingat.com/landingpage-assets/emails/welcome-waitlist-hero.avif" class="hero-img" alt="Travel Cover">
         
         <h1 class="title">Confirm your application<br/>to get featured</h1>
         <p class="text">
