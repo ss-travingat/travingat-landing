@@ -79,7 +79,7 @@ const EmailVerificationForm = () => {
     const resData = await fetch(backendUrl + "/api/auth/verify-otp", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, otp: otpString }),
+      body: JSON.stringify({ email, otp: otpString, source: "Get Featured" }),
     })
     const res = await resData.json()
 
@@ -640,14 +640,11 @@ const EmailVerificationForm = () => {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                   email,
-                  data: {
-                    firstName,
-                    lastName,
-                    country: selectedCountry || "",
-                    visitedCount:
-                      parseInt(visitedCount) || 0,
-                    links,
-                  },
+                  firstName,
+                  lastName,
+                  country: selectedCountry || "",
+                  visitedCount: parseInt(visitedCount) || 0,
+                  links: links.map(l => l.startsWith('http') ? l : `https://${l}`),
                 }),
               }
             )
@@ -671,6 +668,7 @@ const EmailVerificationForm = () => {
             setLastName("")
             setVisitedCount("")
             setLinks([])
+            setLinkInput("")
             setSelectedCountry(null)
           }}
         >
