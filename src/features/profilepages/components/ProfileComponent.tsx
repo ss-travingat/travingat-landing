@@ -80,6 +80,7 @@ type CountryCard = {
   previewImages: string[];
   photoCount: number;
   videoCount: number;
+  updatedLabel: string;
 };
 
 type CollectionCard = {
@@ -87,6 +88,7 @@ type CollectionCard = {
   title: string;
   description: string;
   createdLabel: string;
+  updatedLabel: string;
   thumbnailUrl: string;
   previewImages: string[];
   countries: string[];
@@ -117,6 +119,27 @@ function getDeterministicCreatedLabel(index: number): string {
     year: "numeric",
     timeZone: "UTC",
   });
+}
+
+function getUpdatedLabel(updatedAt: string | undefined, index: number): string {
+  if (updatedAt) {
+    const date = new Date(updatedAt);
+    if (!isNaN(date.getTime())) {
+      return `Updated ${date.toLocaleDateString("en-GB", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+      })}`;
+    }
+  }
+  // Fallback deterministic mock
+  const createdAtMs = CREATED_AT_BASE_UTC_MS - index * CREATED_AT_STEP_DAYS * 24 * 60 * 60 * 1000;
+  return `Updated ${new Date(createdAtMs).toLocaleDateString("en-GB", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    timeZone: "UTC",
+  })}`;
 }
 
 function isVideoAsset(url: string) {
@@ -1103,6 +1126,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
           previewImages,
           photoCount: ci.images.filter((entry) => !isVideoAsset(typeof entry === "string" ? entry : entry.url)).length,
           videoCount: ci.images.filter((entry) => isVideoAsset(typeof entry === "string" ? entry : entry.url)).length,
+          updatedLabel: getUpdatedLabel(ci.updatedAt || ci.updated_at, index),
         };
       });
     }
@@ -1145,6 +1169,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
         previewImages,
         photoCount: Math.floor(totalPhotos / count),
         videoCount: Math.floor(totalVideos / count),
+        updatedLabel: getUpdatedLabel(undefined, index),
       };
     });
   }, [allMediaItems, basedIn, profile.images.cover, profile.currentlyIn, profile.flagCode, profile.homelandFlagCode, profile.currentlyInFlagCode, profile.homeland, profile.id, profile.countryImages]);
@@ -1286,6 +1311,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
           title: ci.title,
           description: profile.bio,
           createdLabel: getDeterministicCreatedLabel(index),
+          updatedLabel: getUpdatedLabel(ci.updatedAt || ci.updated_at, index),
           thumbnailUrl: ci.coverPhoto || previewImages[0] || (typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url),
           previewImages,
           countries: selectedCountries.length > 0 ? visibleCountries : fallbackVisibleCountries,
@@ -1787,10 +1813,13 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                                     {country.name}
                                   </p>
                                 </div>
-                                <div className="flex items-center gap-1 md:gap-1.5">
-                                  <span className="text-[#646464] text-xs md:text-sm leading-[1rem] md:leading-[1.25rem]">{country.photoCount} photos</span>
-                                  <span className="text-[#646464] text-xs md:text-sm leading-[1rem] md:leading-[1.25rem]">&bull;</span>
-                                  <span className="text-[#646464] text-xs md:text-sm leading-[1rem] md:leading-[1.25rem]">{country.videoCount} Videos</span>
+                                <div className="flex flex-col gap-0.5 md:gap-1">
+                                  <div className="flex items-center gap-1 md:gap-1.5">
+                                    <span className="text-[#646464] text-xs md:text-sm leading-[1rem] md:leading-[1.25rem]">{country.photoCount} photos</span>
+                                    <span className="text-[#646464] text-xs md:text-sm leading-[1rem] md:leading-[1.25rem]">&bull;</span>
+                                    <span className="text-[#646464] text-xs md:text-sm leading-[1rem] md:leading-[1.25rem]">{country.videoCount} Videos</span>
+                                  </div>
+                                  <span className="text-[#646464] text-[0.625rem] md:text-xs leading-[0.875rem] md:leading-[1rem] tracking-normal">{country.updatedLabel}</span>
                                 </div>
                               </div>
                             </Link>
@@ -1892,7 +1921,11 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
 
                               <div className="flex flex-col px-1 md:px-2 gap-3 md:gap-4">
                                 <div className="flex flex-col gap-1 md:gap-2">
-                                  <p className="text-[#646464] text-xs md:text-sm leading-[1rem] md:leading-[1.25rem] tracking-normal">{collection.createdLabel}</p>
+                                  <div className="flex items-center gap-1.5 flex-wrap">
+                                    <p className="text-[#646464] text-xs md:text-sm leading-[1rem] md:leading-[1.25rem] tracking-normal">{collection.createdLabel}</p>
+                                    <span className="text-[#646464] text-xs md:text-sm leading-[1rem] md:leading-[1.25rem]">&bull;</span>
+                                    <p className="text-[#646464] text-xs md:text-sm leading-[1rem] md:leading-[1.25rem] tracking-normal">{collection.updatedLabel}</p>
+                                  </div>
                                   <p className="text-white text-sm md:text-lg font-medium leading-[1.25rem] md:leading-[1.5rem] tracking-[-0.084px] md:tracking-[-0.2px] min-w-full w-min line-clamp-1">{collection.title}</p>
                                 </div>
                                 {/* Hidden countries for now as per design request until Admin CMS supports collection country multi-select */}

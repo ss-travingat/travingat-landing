@@ -31,8 +31,8 @@ export type SampleProfile = {
   };
   aboutImages?: string[];
   visitedCountryCodes: string[];
-  countryImages?: { countryCode: string; images: Array<string | { url: string; width?: number; height?: number }>; about?: string; coverPhoto?: string }[];
-  collectionImages?: { title: string; images: Array<string | { url: string; width?: number; height?: number }>; about?: string; countryCodes?: string[]; coverPhoto?: string }[];
+  countryImages?: { countryCode: string; images: Array<string | { url: string; width?: number; height?: number }>; about?: string; coverPhoto?: string; updatedAt?: string; updated_at?: string }[];
+  collectionImages?: { title: string; images: Array<string | { url: string; width?: number; height?: number }>; about?: string; countryCodes?: string[]; coverPhoto?: string; updatedAt?: string; updated_at?: string }[];
   showBadge?: boolean;
   isSampleProfile?: boolean;
 };
