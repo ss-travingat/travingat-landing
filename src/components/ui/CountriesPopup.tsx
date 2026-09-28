@@ -1,6 +1,6 @@
 "use client";
 
-import React, { ReactNode } from "react";
+import React, { ReactNode, useState, useRef } from "react";
 import * as Dialog from "@radix-ui/react-dialog";
 
 interface CountryItem {
@@ -26,8 +26,59 @@ const fontRenderingStyles: React.CSSProperties = {
 };
 
 export function CountriesPopup({ trigger, countries }: CountriesPopupProps) {
+  const [open, setOpen] = useState(false);
+  const [dragY, setDragY] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
+  const touchStartY = useRef<number | null>(null);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    // Only apply on mobile devices
+    if (typeof window !== 'undefined' && window.innerWidth >= 768) return;
+    touchStartY.current = e.touches[0].clientY;
+    setIsDragging(true);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!isDragging || touchStartY.current === null) return;
+    const currentY = e.touches[0].clientY;
+    const diff = currentY - touchStartY.current;
+    
+    // Only allow dragging downwards
+    if (diff > 0) {
+      setDragY(diff);
+    }
+  };
+
+  const handleTouchEnd = () => {
+    if (!isDragging) return;
+    setIsDragging(false);
+    
+    // If dragged more than 100px downwards, close the modal
+    if (dragY > 100) {
+      setOpen(false);
+      // Wait for exit animation to finish before resetting drag transform
+      setTimeout(() => setDragY(0), 300);
+    } else {
+      // Snap back if not dragged far enough
+      setDragY(0);
+    }
+    touchStartY.current = null;
+  };
+
+  const inlineStyles: React.CSSProperties = {
+    ...fontRenderingStyles,
+  };
+  
+  if (isDragging) {
+    inlineStyles.transform = `translateY(${dragY}px)`;
+    inlineStyles.transition = 'none';
+  } else if (dragY > 0) {
+    inlineStyles.transform = `translateY(0px)`;
+    inlineStyles.transition = 'transform 0.3s cubic-bezier(0.16, 1, 0.3, 1)';
+  }
+
   return (
-    <Dialog.Root>
+    <Dialog.Root open={open} onOpenChange={setOpen}>
       <Dialog.Trigger asChild>
         <button
           type="button"
@@ -38,57 +89,67 @@ export function CountriesPopup({ trigger, countries }: CountriesPopupProps) {
         </button>
       </Dialog.Trigger>
       <Dialog.Portal>
-        <Dialog.Overlay className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0" />
+        <Dialog.Overlay className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm data-[state=open]:animate-dialog-overlay-open data-[state=closed]:animate-dialog-overlay-closed" />
         <Dialog.Content
-          className="fixed bottom-4 left-4 z-50 flex w-[calc(100vw-32px)] max-h-[80vh] flex-col rounded-[20px] bg-[#1a1a1a] border border-white/5 shadow-2xl overflow-hidden outline-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:slide-out-to-bottom-[150%] data-[state=open]:slide-in-from-bottom-[150%] md:bottom-auto md:left-[50%] md:top-[50%] md:w-full md:max-w-[400px] md:max-h-[75vh] md:-translate-x-1/2 md:-translate-y-1/2 md:data-[state=closed]:zoom-out-95 md:data-[state=open]:zoom-in-95 md:data-[state=closed]:slide-out-to-left-1/2 md:data-[state=closed]:slide-out-to-top-[48%] md:data-[state=open]:slide-in-from-left-1/2 md:data-[state=open]:slide-in-from-top-[48%]"
+          className="fixed bottom-0 left-0 right-0 z-50 flex w-full flex-col outline-none data-[state=open]:animate-dialog-content-open data-[state=closed]:animate-dialog-content-closed md:bottom-auto md:left-[50%] md:top-[50%] md:w-full md:max-w-[400px] md:-translate-x-1/2 md:-translate-y-1/2 md:data-[state=open]:animate-dialog-desktop-open md:data-[state=closed]:animate-dialog-desktop-closed"
           style={fontRenderingStyles}
         >
-          <div className="px-5 pt-3 pb-3 shrink-0">
-            <div className="mx-auto mb-4 h-1 w-8 rounded-full bg-white/20 md:hidden" />
-            <Dialog.Title asChild>
-              <span
-                className="block text-white text-left ds-font-display m-0 px-3"
-                style={{
-                  fontSize: '24px',
-                  fontWeight: 500,
-                  lineHeight: '32px',
-                  letterSpacing: '-0.5px',
-                }}
-              >
-                {countries.length} Countries
-              </span>
-            </Dialog.Title>
-            <Dialog.Description className="sr-only">
-              List of {countries.length} countries visited.
-            </Dialog.Description>
-          </div>
-          <div className="flex-1 overflow-y-auto px-5 pb-5 space-y-1 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
-            {countries.map((country, index) => (
-              <div
-                key={`${country.code}-${index}`}
-                className="flex items-center gap-3 px-3 py-2.5 hover:bg-white/5 rounded-lg transition-colors"
-              >
-                <div className="h-[18px] w-[26px] shrink-0 overflow-hidden rounded-[2px] bg-[#2a2a2a]">
-                  <img
-                    src={`/flags/${country.code.toUpperCase()}.svg`}
-                    alt={`${country.name} flag`}
-                    className="h-full w-full object-cover"
-                    loading="lazy"
-                  />
-                </div>
+          <div 
+            className="flex w-full flex-col max-h-[85vh] md:max-h-[75vh] overflow-hidden rounded-t-[24px] bg-[#1a1a1a] shadow-[0_-8px_30px_rgba(0,0,0,0.5)] md:rounded-[20px] md:border md:border-white/5 md:shadow-2xl"
+            style={inlineStyles}
+          >
+            <div 
+              className="px-5 pt-4 pb-3 shrink-0"
+              onTouchStart={handleTouchStart}
+              onTouchMove={handleTouchMove}
+              onTouchEnd={handleTouchEnd}
+            >
+              <div className="mx-auto mb-6 h-1 w-10 rounded-full bg-[#333] md:hidden cursor-grab active:cursor-grabbing" />
+              <Dialog.Title asChild>
                 <span
-                  className="text-white/90 ds-font-display"
+                  className="block text-white text-left ds-font-display m-0 px-3"
                   style={{
-                    fontSize: '14px',
+                    fontSize: '24px',
                     fontWeight: 500,
-                    letterSpacing: '-0.006em',
-                    lineHeight: '20px',
+                    lineHeight: '32px',
+                    letterSpacing: '-0.5px',
                   }}
                 >
-                  {country.name}
+                  {countries.length} Countries
                 </span>
-              </div>
-            ))}
+              </Dialog.Title>
+              <Dialog.Description className="sr-only">
+                List of {countries.length} countries visited.
+              </Dialog.Description>
+            </div>
+            <div className="flex-1 overflow-y-auto px-5 pb-5 space-y-1 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
+              {countries.map((country, index) => (
+                <div
+                  key={`${country.code}-${index}`}
+                  className="flex items-center gap-3 px-3 py-2.5 hover:bg-white/5 rounded-lg transition-colors"
+                >
+                  <div className="h-[18px] w-[26px] shrink-0 overflow-hidden rounded-[2px] bg-[#2a2a2a]">
+                    <img
+                      src={`/flags/${country.code.toUpperCase()}.svg`}
+                      alt={`${country.name} flag`}
+                      className="h-full w-full object-cover"
+                      loading="lazy"
+                    />
+                  </div>
+                  <span
+                    className="text-white/90 ds-font-display"
+                    style={{
+                      fontSize: '14px',
+                      fontWeight: 500,
+                      letterSpacing: '-0.006em',
+                      lineHeight: '20px',
+                    }}
+                  >
+                    {country.name}
+                  </span>
+                </div>
+              ))}
+            </div>
           </div>
         </Dialog.Content>
       </Dialog.Portal>

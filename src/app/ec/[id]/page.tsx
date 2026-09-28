@@ -91,7 +91,7 @@ export default async function ShortExplorerCardPage({
 
   return (
     <div className="min-h-screen bg-black flex flex-col">
-      <main className="flex-1 flex items-center justify-center pt-[40px] pb-[80px] lg:py-[120px] px-6 lg:px-12 w-full overflow-hidden max-w-[1400px] mx-auto">
+      <main className="flex-1 flex items-center justify-center pt-[40px] pb-[80px] lg:py-[120px] px-6 lg:px-12 w-full max-w-[1400px] mx-auto">
         {/* Centered Card */}
         <div className="relative flex items-center justify-center lg:w-[450px] lg:h-[750px] sm:mb-[60px] lg:mb-0">
           <div className="scale-100 sm:scale-110 lg:scale-125 origin-top lg:origin-center transition-transform">

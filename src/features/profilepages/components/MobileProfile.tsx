@@ -248,160 +248,160 @@ export function MobileHero({
               <div
                 className="relative z-10 text-white/80 pointer-events-none select-none font-medium leading-none whitespace-nowrap drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)]"
                 style={{ fontSize: "0.75rem" }}
-              >
-                Sample Profile
-              </div>
+1              >
+            Sample Profile
+          </div>
             )}
-          </div>
-          <div className="relative z-10 mx-auto w-[5rem] h-[5rem] rounded-2xl ring-4 ring-black bg-[#151515]">
-            <LoadedImage
-              originalSrc={MediaResolver.getBase(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url)} src={MediaResolver.getOptimized(MediaResolver.getBase(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url))}
-              thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url), 720)}
-              alt="Profile avatar"
-              className="w-full h-full object-cover rounded-2xl"
-              skeletonClassName="absolute inset-0 bg-[#1a1a1a] rounded-2xl"
-              containerClassName="w-full h-full rounded-2xl"
-            />
-          </div>
         </div>
-
-        <div className="flex flex-col items-center gap-[0.5rem] w-full min-[50.625rem]:max-w-[25rem] min-[50.625rem]:mx-auto">
-          <div className="flex items-center justify-center gap-1.5 text-[#696969] text-[0.875rem] leading-[1.25rem] tracking-[-0.5px] font-sans font-normal">
-            {profileFlagSrc ? (
-              <TooltipProvider delayDuration={100}>
-                <Tooltip
-                  content={basedIn}
-                  theme="light"
-                  side="top"
-                  open={openBioTooltip}
-                  onOpenChange={setOpenBioTooltip}
-                >
-                  <button
-                    type="button"
-                    className="focus:outline-none flex items-center justify-center"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      setOpenBioTooltip(!openBioTooltip);
-                    }}
-                  >
-                    <img
-                      src={profileFlagSrc}
-                      alt={`${basedIn} flag`}
-                      className="h-[0.625rem] w-[0.9375rem] rounded-[0.125rem] object-cover cursor-pointer"
-                      loading="lazy"
-                      decoding="async"
-                    />
-                  </button>
-                </Tooltip>
-              </TooltipProvider>
-            ) : (
-              <span>{profileFlagCode}</span>
-            )}
-            <span>{basedIn}</span>
-          </div>
-          <h1 className="text-white text-[1.25rem] leading-[1.5rem] tracking-[-0.41px] font-semibold text-center w-full">{displayName}</h1>
-          <p className="text-[#a8a8a8] text-[0.875rem] leading-[1.25rem] tracking-[-0.5px] text-center w-full font-sans font-normal">{handle}</p>
-        </div>
-
-        <div className="flex flex-wrap items-start justify-center gap-[0.25rem] px-[0.375rem] w-full min-[50.625rem]:max-w-[25rem] min-[50.625rem]:mx-auto">
-          <TooltipProvider delayDuration={100}>
-            {headerFlagCodes.map((code, index) => {
-              const countryName = getCountryName(code);
-              return (
-                <Tooltip
-                  key={`${code}-${index}`}
-                  content={countryName}
-                  theme="light"
-                  side="top"
-                  open={openTooltipIndex === index}
-                  onOpenChange={(isOpen) => setOpenTooltipIndex(isOpen ? index : null)}
-                >
-                  <button
-                    type="button"
-                    className="focus:outline-none shrink-0"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      setOpenTooltipIndex(openTooltipIndex === index ? null : index);
-                    }}
-                  >
-                    <img
-                      src={toFlagAssetPath(code) || ""}
-                      alt={`${countryName} flag`}
-                      className="h-[1.0625rem] w-[1.625rem] rounded-[0.125rem] object-cover cursor-pointer"
-                      loading="lazy"
-                      decoding="async"
-                    />
-                  </button>
-                </Tooltip>
-              );
-            })}
-          </TooltipProvider>
-          {flagOverflowCount > 0 && (
-            <div className="flex h-[1.0625rem] w-[1.625rem] shrink-0 items-center justify-center overflow-hidden rounded-[0.125rem] bg-white">
-              <span className="font-medium text-violet-600 text-[0.625rem] text-center tracking-[-0.408px] whitespace-nowrap">
-                +{flagOverflowCount}
-              </span>
-            </div>
-          )}
-        </div>
-
-        {/* Mobile Stats Container */}
-        <div className="bg-[#111] flex items-center justify-center gap-[1.25rem] rounded-[0.75rem] w-full min-[50.625rem]:max-w-[25rem] min-[50.625rem]:mx-auto pt-[1.125rem] pb-[1.25rem] px-[1.25rem]">
-          <div className="flex flex-1 flex-col items-center justify-center gap-[0.25rem]">
-            <p className="ds-font-display text-[1.5rem] font-semibold leading-[2rem] tracking-[-0.5px] text-white">
-              {profile.countries}
-            </p>
-            <p className="text-[0.875rem] font-normal leading-[1.25rem] tracking-[-0.084px] text-[#989898]">
-              Countries
-            </p>
-          </div>
-          <div className="flex flex-1 flex-col items-center justify-center gap-[0.25rem]">
-            <p className="ds-font-display text-[1.5rem] font-semibold leading-[2rem] tracking-[-0.5px] text-white">
-              {profile.media}
-            </p>
-            <p className="text-[0.875rem] font-normal leading-[1.25rem] tracking-[-0.084px] text-[#989898]">
-              All media
-            </p>
-          </div>
-          <div className="flex flex-1 flex-col items-center justify-center gap-[0.25rem]">
-            <p className="ds-font-display text-[1.5rem] font-semibold leading-[2rem] tracking-[-0.5px] text-white">
-              {profile.collections}
-            </p>
-            <p className="text-[0.875rem] font-normal leading-[1.25rem] tracking-[-0.084px] text-[#989898]">
-              Collections
-            </p>
-          </div>
-        </div>
-
-        {/* Buttons under Stats Card */}
-        <div className="flex gap-[0.5rem] items-center w-full min-[50.625rem]:max-w-[25rem] min-[50.625rem]:mx-auto mt-[0.25rem]">
-          <button
-            onClick={() => showComingSoonToast("featureLaunch")}
-            className="flex-1 rounded-full bg-white text-black px-[1.125rem] py-[0.625rem] text-[1rem] font-medium leading-[1.5rem] tracking-[-0.096px]"
-          >
-            Follow
-          </button>
-          <button
-            onClick={() => showComingSoonToast("featureLaunch")}
-            className="h-[2.75rem] w-[2.6875rem] shrink-0 rounded-full border border-[#353535] bg-[#1a1a1a] grid place-items-center text-white"
-            aria-label="More options"
-          >
-            <span className="grid grid-cols-2 gap-1">
-              <span className="h-[0.1875rem] w-[0.1875rem] rounded-full bg-white" />
-              <span className="h-[0.1875rem] w-[0.1875rem] rounded-full bg-white" />
-              <span className="h-[0.1875rem] w-[0.1875rem] rounded-full bg-white" />
-              <span className="h-[0.1875rem] w-[0.1875rem] rounded-full bg-white" />
-            </span>
-          </button>
-          <button
-            onClick={() => showComingSoonToast("featureLaunch")}
-            className="flex-1 rounded-full bg-[#1a1a1a] border border-[#353535] text-white px-[1.125rem] py-[0.625rem] text-[1rem] font-medium leading-[1.5rem] tracking-[-0.096px]"
-          >
-            Connect
-          </button>
+        <div className="relative z-10 mx-auto w-[5rem] h-[5rem] rounded-2xl ring-4 ring-black bg-[#151515]">
+          <LoadedImage
+            originalSrc={MediaResolver.getBase(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url)} src={MediaResolver.getOptimized(MediaResolver.getBase(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url))}
+            thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url), 720)}
+            alt="Profile avatar"
+            className="w-full h-full object-cover rounded-2xl"
+            skeletonClassName="absolute inset-0 bg-[#1a1a1a] rounded-2xl"
+            containerClassName="w-full h-full rounded-2xl"
+          />
         </div>
       </div>
-    </section>
+
+      <div className="flex flex-col items-center gap-[0.5rem] w-full min-[50.625rem]:max-w-[25rem] min-[50.625rem]:mx-auto">
+        <div className="flex items-center justify-center gap-1.5 text-[#696969] text-[0.875rem] leading-[1.25rem] tracking-[-0.5px] font-sans font-normal">
+          {profileFlagSrc ? (
+            <TooltipProvider delayDuration={100}>
+              <Tooltip
+                content={basedIn}
+                theme="light"
+                side="top"
+                open={openBioTooltip}
+                onOpenChange={setOpenBioTooltip}
+              >
+                <button
+                  type="button"
+                  className="focus:outline-none flex items-center justify-center"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setOpenBioTooltip(!openBioTooltip);
+                  }}
+                >
+                  <img
+                    src={profileFlagSrc}
+                    alt={`${basedIn} flag`}
+                    className="h-[0.625rem] w-[0.9375rem] rounded-[0.125rem] object-cover cursor-pointer"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </button>
+              </Tooltip>
+            </TooltipProvider>
+          ) : (
+            <span>{profileFlagCode}</span>
+          )}
+          <span>{basedIn}</span>
+        </div>
+        <h1 className="text-white text-[1.25rem] leading-[1.5rem] tracking-[-0.41px] font-semibold text-center w-full">{displayName}</h1>
+        <p className="text-[#a8a8a8] text-[0.875rem] leading-[1.25rem] tracking-[-0.5px] text-center w-full font-sans font-normal">{handle}</p>
+      </div>
+
+      <div className="flex flex-wrap items-start justify-center gap-[0.25rem] px-[0.375rem] w-full min-[50.625rem]:max-w-[25rem] min-[50.625rem]:mx-auto">
+        <TooltipProvider delayDuration={100}>
+          {headerFlagCodes.map((code, index) => {
+            const countryName = getCountryName(code);
+            return (
+              <Tooltip
+                key={`${code}-${index}`}
+                content={countryName}
+                theme="light"
+                side="top"
+                open={openTooltipIndex === index}
+                onOpenChange={(isOpen) => setOpenTooltipIndex(isOpen ? index : null)}
+              >
+                <button
+                  type="button"
+                  className="focus:outline-none shrink-0"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setOpenTooltipIndex(openTooltipIndex === index ? null : index);
+                  }}
+                >
+                  <img
+                    src={toFlagAssetPath(code) || ""}
+                    alt={`${countryName} flag`}
+                    className="h-[1.0625rem] w-[1.625rem] rounded-[0.125rem] object-cover cursor-pointer"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </button>
+              </Tooltip>
+            );
+          })}
+        </TooltipProvider>
+        {flagOverflowCount > 0 && (
+          <div className="flex h-[1.0625rem] w-[1.625rem] shrink-0 items-center justify-center overflow-hidden rounded-[0.125rem] bg-white">
+            <span className="font-medium text-violet-600 text-[0.625rem] text-center tracking-[-0.408px] whitespace-nowrap">
+              +{flagOverflowCount}
+            </span>
+          </div>
+        )}
+      </div>
+
+      {/* Mobile Stats Container */}
+      <div className="bg-[#111] flex items-center justify-center gap-[1.25rem] rounded-[0.75rem] w-full min-[50.625rem]:max-w-[25rem] min-[50.625rem]:mx-auto pt-[1.125rem] pb-[1.25rem] px-[1.25rem]">
+        <div className="flex flex-1 flex-col items-center justify-center gap-[0.25rem]">
+          <p className="ds-font-display text-[1.5rem] font-semibold leading-[2rem] tracking-[-0.5px] text-white">
+            {profile.countries}
+          </p>
+          <p className="text-[0.875rem] font-normal leading-[1.25rem] tracking-[-0.084px] text-[#989898]">
+            Countries
+          </p>
+        </div>
+        <div className="flex flex-1 flex-col items-center justify-center gap-[0.25rem]">
+          <p className="ds-font-display text-[1.5rem] font-semibold leading-[2rem] tracking-[-0.5px] text-white">
+            {profile.media}
+          </p>
+          <p className="text-[0.875rem] font-normal leading-[1.25rem] tracking-[-0.084px] text-[#989898]">
+            All media
+          </p>
+        </div>
+        <div className="flex flex-1 flex-col items-center justify-center gap-[0.25rem]">
+          <p className="ds-font-display text-[1.5rem] font-semibold leading-[2rem] tracking-[-0.5px] text-white">
+            {profile.collections}
+          </p>
+          <p className="text-[0.875rem] font-normal leading-[1.25rem] tracking-[-0.084px] text-[#989898]">
+            Collections
+          </p>
+        </div>
+      </div>
+
+      {/* Buttons under Stats Card */}
+      <div className="flex gap-[0.5rem] items-center w-full min-[50.625rem]:max-w-[25rem] min-[50.625rem]:mx-auto mt-[0.25rem]">
+        <button
+          onClick={() => showComingSoonToast("featureLaunch")}
+          className="flex-1 rounded-full bg-white text-black px-[1.125rem] py-[0.625rem] text-[1rem] font-medium leading-[1.5rem] tracking-[-0.096px]"
+        >
+          Follow
+        </button>
+        <button
+          onClick={() => showComingSoonToast("featureLaunch")}
+          className="h-[2.75rem] w-[2.6875rem] shrink-0 rounded-full border border-[#353535] bg-[#1a1a1a] grid place-items-center text-white"
+          aria-label="More options"
+        >
+          <span className="grid grid-cols-2 gap-1">
+            <span className="h-[0.1875rem] w-[0.1875rem] rounded-full bg-white" />
+            <span className="h-[0.1875rem] w-[0.1875rem] rounded-full bg-white" />
+            <span className="h-[0.1875rem] w-[0.1875rem] rounded-full bg-white" />
+            <span className="h-[0.1875rem] w-[0.1875rem] rounded-full bg-white" />
+          </span>
+        </button>
+        <button
+          onClick={() => showComingSoonToast("featureLaunch")}
+          className="flex-1 rounded-full bg-[#1a1a1a] border border-[#353535] text-white px-[1.125rem] py-[0.625rem] text-[1rem] font-medium leading-[1.5rem] tracking-[-0.096px]"
+        >
+          Connect
+        </button>
+      </div>
+    </div>
+    </section >
   );
 }
 

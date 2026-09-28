@@ -157,8 +157,12 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
       return await domToPng(node, {
         scale: 2,
         quality: 0.9,
-        width: node.offsetWidth,
+        width: node.offsetWidth + 60,
         height: node.offsetHeight,
+        style: {
+          transform: 'translateX(60px)',
+          transformOrigin: 'top left'
+        },
         fetch: {
           bypassingCache: true,
           requestInit: { cache: "force-cache" },
@@ -659,7 +663,7 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
           </div>
         </header>
 
-        <main className="flex-1 flex flex-col items-center px-0 lg:px-6 pb-[100px] lg:pb-12 w-full pt-0 lg:pt-[24px] overflow-hidden">
+        <main className="flex-1 flex flex-col items-center px-0 lg:px-6 pb-[100px] lg:pb-12 w-full pt-0 lg:pt-[24px] overflow-visible">
 
           {/* Content Container */}
           <ExplorerCardScaler innerClassName="w-full flex justify-center">
@@ -811,7 +815,7 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
                   ))}
                 </div>
 
-                <div className="relative flex items-center justify-center shrink-0 overflow-hidden pb-[16px] min-h-[640px]">
+                <div className="relative flex items-center justify-center shrink-0 pb-[16px] min-h-[640px]">
                   <div ref={classicRef} className={tab === "Classic" ? "relative" : "absolute top-[-9999px] left-[-9999px] pointer-events-none"}>
                     <ClassicCard form={{ ...form, fullName: `${form.firstName} ${form.lastName}`.trim() }} sampleFlags={sampleFlags} visitedArray={visitedArray} />
                   </div>

@@ -2,6 +2,7 @@ import React from "react";
 import LoadedImage from "@/components/ui/LoadedImage";
 import { toLandingAssetUrl, getOptimizedMediaUrl } from "@/lib/landing-assets";
 import { CountriesPopup } from "@/components/ui/CountriesPopup";
+import FoundingExplorer from "@/components/ui/FoundingExplorerBadge";
 
 interface CardProps {
   form: {
@@ -99,7 +100,12 @@ export function MinimalCountryNotch({ form, sampleFlags, wrapperClassName = "" }
 
 export function ClassicCard({ form, sampleFlags, visitedArray, isPreview }: CardProps) {
   return (
-    <div className="flex w-[360px] shrink-0 flex-col items-center gap-[20px] rounded-[24px] border border-[#252525] bg-black px-[8px] pb-[24px] pt-[8px]">
+    <div className="relative flex w-[360px] shrink-0 flex-col items-center gap-[20px] rounded-[24px] border border-[#252525] bg-black px-[8px] pb-[24px] pt-[8px]">
+      {/* Founding Explorer Badge */}
+      <div className="absolute left-[20px] lg:left-[-60px] top-[204px] lg:top-[20px] z-50 h-[64px] w-[64px] lg:h-[120px] lg:w-[120px] pointer-events-none">
+        <FoundingExplorer />
+      </div>
+
       {/* Profile section */}
       <div className="flex w-full shrink-0 flex-col items-center">
         {/* Background image: 344x226, negative margin to allow avatar overlap */}
@@ -207,8 +213,13 @@ export function MinimalCard({ form, sampleFlags, visitedArray, isPreview }: Card
   return (
     <div
       id="minimal-card"
-      className="flex w-[360px] shrink-0 flex-col items-center gap-[20px] rounded-[24px] border border-[#252525] bg-black px-[8px] pb-[24px] pt-0"
+      className="relative flex w-[360px] shrink-0 flex-col items-center gap-[20px] rounded-[24px] border border-[#252525] bg-black px-[8px] pb-[24px] pt-0"
     >
+      {/* Founding Explorer Badge */}
+      <div className="absolute left-[12px] lg:left-[-60px] top-[12px] lg:top-[20px] z-50 h-[64px] w-[64px] lg:h-[120px] lg:w-[120px] pointer-events-none">
+        <FoundingExplorer />
+      </div>
+
       {/* Country badge at top */}
       <MinimalCountryNotch form={form} sampleFlags={sampleFlags} wrapperClassName="w-full shrink-0 relative -mt-[1px] z-30" />
 
@@ -229,7 +240,7 @@ export function MinimalCard({ form, sampleFlags, visitedArray, isPreview }: Card
           
           {/* Profile info */}
           <div className="flex h-full w-full flex-col items-start justify-end gap-[12px] rounded-[16px] bg-[#111111] p-[16px]">
-            <div className="relative h-[48px] w-[48px] shrink-0 overflow-hidden rounded-[10px] bg-[#2a2a2a]">
+            <div className="relative h-[3em] w-[3em] shrink-0 overflow-hidden rounded-[0.625em] bg-[#2a2a2a]">
               {form.profileImage ? (
                 <LoadedImage priority src={getOptimizedMediaUrl(toLandingAssetUrl(form.profileImage))} alt="profile" containerClassName="h-full w-full" className="h-full w-full object-cover" />
               ) : (
@@ -296,8 +307,13 @@ export function AdventureCard({ form, sampleFlags, visitedArray, isPreview }: Ca
   return (
     <div
       id="adventure-card"
-      className="flex w-[360px] shrink-0 flex-col items-center gap-[20px] rounded-[24px] border border-[#252525] bg-black px-[8px] pb-[24px] pt-[8px]"
+      className="relative flex w-[360px] shrink-0 flex-col items-center gap-[20px] rounded-[24px] border border-[#252525] bg-black px-[8px] pb-[24px] pt-[8px]"
     >
+      {/* Founding Explorer Badge */}
+      <div className="absolute left-[20px] lg:left-[-60px] top-[20px] lg:top-[20px] z-50 h-[64px] w-[64px] lg:h-[120px] lg:w-[120px] pointer-events-none">
+        <FoundingExplorer />
+      </div>
+
       {/* Main Image Container */}
       <div 
         className="relative flex w-full min-h-[528px] shrink-0 flex-col items-center justify-end overflow-hidden rounded-[16px] bg-[#161616] isolate"
@@ -344,7 +360,7 @@ export function AdventureCard({ form, sampleFlags, visitedArray, isPreview }: Ca
         <div className="relative z-20 mt-auto flex w-full flex-col items-center gap-[16px] pb-[32px] px-[8px]">
 
           {/* Profile Picture */}
-          <div className="relative z-10 flex h-[60px] w-[60px] shrink-0 items-center justify-center overflow-hidden rounded-[12px] border-[3px] border-white bg-[#2a2a2a] shadow-[0_4px_16px_rgba(0,0,0,0.35)]">
+          <div className="relative z-10 flex h-[3.75em] w-[3.75em] shrink-0 items-center justify-center overflow-hidden rounded-[0.75em] border-[0.1875em] border-white bg-[#2a2a2a] shadow-[0_4px_16px_rgba(0,0,0,0.35)]">
             {form.profileImage ? (
               <LoadedImage priority src={getOptimizedMediaUrl(toLandingAssetUrl(form.profileImage))} alt="profile" containerClassName="h-full w-full" className="h-full w-full object-cover" />
             ) : (

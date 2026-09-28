@@ -83,7 +83,7 @@ export default async function SharedExplorerCardPage({
 
   return (
     <div className="min-h-screen bg-black flex flex-col">
-      <main className="flex-1 flex items-center justify-center px-6 lg:px-12 w-full overflow-hidden max-w-[1400px] mx-auto">
+      <main className="flex-1 flex items-center justify-center px-6 lg:px-12 w-full overflow-visible max-w-[1400px] mx-auto">
         {/* Centered Card */}
         <ExplorerCardScaler>
           {style === "minimal" ? (
