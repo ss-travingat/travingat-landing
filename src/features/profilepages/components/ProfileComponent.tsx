@@ -1813,13 +1813,10 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                                     {country.name}
                                   </p>
                                 </div>
-                                <div className="flex flex-col gap-0.5 md:gap-1">
-                                  <div className="flex items-center gap-1 md:gap-1.5">
-                                    <span className="text-[#646464] text-xs md:text-sm leading-[1rem] md:leading-[1.25rem]">{country.photoCount} photos</span>
-                                    <span className="text-[#646464] text-xs md:text-sm leading-[1rem] md:leading-[1.25rem]">&bull;</span>
-                                    <span className="text-[#646464] text-xs md:text-sm leading-[1rem] md:leading-[1.25rem]">{country.videoCount} Videos</span>
-                                  </div>
-                                  <span className="text-[#646464] text-[0.625rem] md:text-xs leading-[0.875rem] md:leading-[1rem] tracking-normal">{country.updatedLabel}</span>
+                                <div className="flex items-center gap-1 md:gap-1.5">
+                                  <span className="text-[#646464] text-xs md:text-sm leading-[1rem] md:leading-[1.25rem]">{country.photoCount} photos</span>
+                                  <span className="text-[#646464] text-xs md:text-sm leading-[1rem] md:leading-[1.25rem]">&bull;</span>
+                                  <span className="text-[#646464] text-xs md:text-sm leading-[1rem] md:leading-[1.25rem]">{country.videoCount} Videos</span>
                                 </div>
                               </div>
                             </Link>
@@ -1921,11 +1918,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
 
                               <div className="flex flex-col px-1 md:px-2 gap-3 md:gap-4">
                                 <div className="flex flex-col gap-1 md:gap-2">
-                                  <div className="flex items-center gap-1.5 flex-wrap">
-                                    <p className="text-[#646464] text-xs md:text-sm leading-[1rem] md:leading-[1.25rem] tracking-normal">{collection.createdLabel}</p>
-                                    <span className="text-[#646464] text-xs md:text-sm leading-[1rem] md:leading-[1.25rem]">&bull;</span>
-                                    <p className="text-[#646464] text-xs md:text-sm leading-[1rem] md:leading-[1.25rem] tracking-normal">{collection.updatedLabel}</p>
-                                  </div>
+                                  <p className="text-[#646464] text-xs md:text-sm leading-[1rem] md:leading-[1.25rem] tracking-normal">{collection.createdLabel}</p>
                                   <p className="text-white text-sm md:text-lg font-medium leading-[1.25rem] md:leading-[1.5rem] tracking-[-0.084px] md:tracking-[-0.2px] min-w-full w-min line-clamp-1">{collection.title}</p>
                                 </div>
                                 {/* Hidden countries for now as per design request until Admin CMS supports collection country multi-select */}

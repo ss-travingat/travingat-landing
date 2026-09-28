@@ -17,6 +17,8 @@ import { useMobileComingSoon } from "@/components/ui/MobileComingSoonToast";
 
 /* eslint-disable @next/next/no-img-element */
 
+const STATIC_LAST_UPDATED_LABEL = "27 Dec 2025";
+
 type MediaTab = "all" | "photos" | "videos" | "about";
 
 function isVideoAsset(url: string) {
@@ -163,6 +165,10 @@ export default function CollectionDetailComponent({
   const videos = imageUrls.filter((url) => isVideoAsset(url));
   const collectionObj = profile.collectionImages?.find(c => c.title === title);
   const aboutText = collectionObj?.about;
+  const updatedDateStr = collectionObj?.updated_at || collectionObj?.updatedAt;
+  const updatedLabel = updatedDateStr
+    ? new Date(updatedDateStr).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })
+    : STATIC_LAST_UPDATED_LABEL;
 
   const displayImages =
     activeTab === "photos" ? photos :
@@ -317,7 +323,7 @@ export default function CollectionDetailComponent({
             </div>
             <div className="h-[0.1875rem] w-[0.1875rem] rounded-full bg-[#505050] shrink-0" />
             <div className="flex items-center gap-[0.5rem]">
-              <span className="text-[1rem] text-[#989898] leading-[1.5rem] tracking-[-0.096px] font-normal">Last Updated: 27 Dec 2025</span>
+              <span className="text-[1rem] text-[#989898] leading-[1.5rem] tracking-[-0.096px] font-normal">Last Updated: {updatedLabel}</span>
             </div>
             <div className="h-[0.1875rem] w-[0.1875rem] rounded-full bg-[#505050] shrink-0" />
             <div className="relative flex items-center" ref={menuRef}>

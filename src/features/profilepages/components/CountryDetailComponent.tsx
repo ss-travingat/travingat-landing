@@ -201,6 +201,10 @@ export default function CountryDetailComponent({
   const videos = imageUrls.filter((url) => isVideoAsset(url));
   const countryImageObj = profile.countryImages?.find(c => c.countryCode.toUpperCase() === countryCode.toUpperCase());
   const aboutText = countryImageObj?.about;
+  const updatedDateStr = countryImageObj?.updated_at || countryImageObj?.updatedAt;
+  const updatedLabel = updatedDateStr
+    ? new Date(updatedDateStr).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })
+    : STATIC_LAST_UPDATED_LABEL;
 
   const displayImages =
     activeTab === "photos" ? photos :
@@ -378,7 +382,7 @@ export default function CountryDetailComponent({
             <div className="flex items-center gap-[0.5rem]">
               <span className="text-[1rem] text-[#989898] leading-[1.5rem] tracking-[-0.096px] font-normal">Last Updated:</span>
               <span className="text-[1rem] text-[#989898] leading-[1.5rem] tracking-[-0.096px] font-normal">
-                {STATIC_LAST_UPDATED_LABEL}
+                {updatedLabel}
               </span>
             </div>
             <div className="h-[0.1875rem] w-[0.1875rem] rounded-full bg-[#505050] shrink-0" />
