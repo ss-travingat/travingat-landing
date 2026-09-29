@@ -31,7 +31,9 @@ export default async function Page() {
           ...data,
           profileImageUrl: data.profile_image_url,
           coverImageUrl: data.cover_image_url,
-          visitedCountries: data.visited_countries
+          visitedCountries: data.visited_countries,
+          profile_crop_data: typeof data.profile_crop_data === "string" ? JSON.parse(data.profile_crop_data) : data.profile_crop_data,
+          cover_crop_data: typeof data.cover_crop_data === "string" ? JSON.parse(data.cover_crop_data) : data.cover_crop_data
         };
       }
     } catch (err) {

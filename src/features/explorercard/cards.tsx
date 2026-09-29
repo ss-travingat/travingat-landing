@@ -14,6 +14,41 @@ interface CardProps {
   sampleFlags: Record<string, string>;
   visitedArray: string[];
   isPreview?: boolean;
+  coverCropData?: any;
+  profileCropData?: any;
+}
+
+export function CroppedImage({ src, cropData, alt, className }: { src: string, cropData: any, alt: string, className?: string }) {
+  // Gracefully handle old DB format which was just a flat object { pixels, mediaSize, ... }
+  // instead of { Classic: {...}, Minimal: {...} }
+  const actualCrop = cropData?.pixels ? cropData : null;
+  
+  if (!actualCrop || !actualCrop.pixels || !actualCrop.mediaSize) {
+    return <LoadedImage priority src={src} alt={alt} containerClassName="h-full w-full" className={`h-full w-full object-cover ${className || ''}`} />;
+  }
+  
+  const { pixels, mediaSize } = actualCrop;
+  const scaleX = mediaSize.width / pixels.width;
+  const scaleY = mediaSize.height / pixels.height;
+  const left = (pixels.x / mediaSize.width) * 100;
+  const top = (pixels.y / mediaSize.height) * 100;
+
+  return (
+    <div className={`relative overflow-hidden w-full h-full ${className || ''}`}>
+      <LoadedImage 
+        priority
+        src={src} 
+        alt={alt} 
+        containerClassName="absolute top-0 left-0 max-w-none"
+        className="w-full h-full max-w-none origin-top-left"
+        style={{
+          width: `${scaleX * 100}%`,
+          height: `${scaleY * 100}%`,
+          transform: `translate(-${left}%, -${top}%)`,
+        }} 
+      />
+    </div>
+  );
 }
 
 export function LogoWatermark() {
@@ -98,7 +133,7 @@ export function MinimalCountryNotch({ form, sampleFlags, wrapperClassName = "" }
   );
 }
 
-export function ClassicCard({ form, sampleFlags, visitedArray, isPreview }: CardProps) {
+export function ClassicCard({ form, sampleFlags, visitedArray, isPreview, coverCropData, profileCropData }: CardProps) {
   return (
     <div className="relative flex w-[360px] shrink-0 flex-col items-center gap-[20px] rounded-[24px] border border-[#252525] bg-black px-[8px] pb-[24px] pt-[8px]">
       {/* Founding Explorer Badge */}
@@ -113,7 +148,7 @@ export function ClassicCard({ form, sampleFlags, visitedArray, isPreview }: Card
         {/* Background image: 344x226, negative margin to allow avatar overlap */}
         <div className="relative z-0 -mb-[36px] flex h-[226px] w-[344px] shrink-0 items-center justify-center overflow-hidden rounded-[16px] bg-[#161616]">
           {form.coverImage ? (
-            <LoadedImage priority src={getOptimizedMediaUrl(toLandingAssetUrl(form.coverImage))} alt="cover" containerClassName="h-full w-full" className="h-full w-full object-cover" />
+            <CroppedImage src={getOptimizedMediaUrl(toLandingAssetUrl(form.coverImage))} alt="cover" cropData={coverCropData} />
           ) : (
             <ImagePlaceholderIcon />
           )}
@@ -124,7 +159,7 @@ export function ClassicCard({ form, sampleFlags, visitedArray, isPreview }: Card
         {/* Photo Avatar */}
         <div className="relative z-10 h-[80px] w-[80px] shrink-0 overflow-hidden rounded-[16px] border-[4px] border-black bg-[#161616]">
           {form.profileImage ? (
-            <LoadedImage priority src={getOptimizedMediaUrl(toLandingAssetUrl(form.profileImage))} alt="profile" containerClassName="h-full w-full" className="h-full w-full object-cover" />
+            <CroppedImage src={getOptimizedMediaUrl(toLandingAssetUrl(form.profileImage))} alt="profile" cropData={profileCropData} />
           ) : (
             <div className="flex h-full w-full items-center justify-center text-white-600">
               <AvatarPlaceholderIcon />
@@ -211,7 +246,7 @@ export function ClassicCard({ form, sampleFlags, visitedArray, isPreview }: Card
   );
 }
 
-export function MinimalCard({ form, sampleFlags, visitedArray, isPreview }: CardProps) {
+export function MinimalCard({ form, sampleFlags, visitedArray, isPreview, coverCropData, profileCropData }: CardProps) {
   return (
     <div
       id="minimal-card"
@@ -234,7 +269,7 @@ export function MinimalCard({ form, sampleFlags, visitedArray, isPreview }: Card
           {/* Profile image (acts like cover image here) */}
           <div className="relative flex h-full w-full items-center justify-center overflow-hidden rounded-[16px] bg-[#1a1a1a]">
             {form.coverImage ? (
-              <LoadedImage priority src={getOptimizedMediaUrl(toLandingAssetUrl(form.coverImage))} alt="cover" containerClassName="h-full w-full" className="h-full w-full object-cover" />
+              <CroppedImage src={getOptimizedMediaUrl(toLandingAssetUrl(form.coverImage))} alt="cover" cropData={coverCropData || (coverCropData && coverCropData.pixels ? coverCropData : null)} />
             ) : (
               <ImagePlaceholderIcon />
             )}
@@ -246,7 +281,7 @@ export function MinimalCard({ form, sampleFlags, visitedArray, isPreview }: Card
           <div className="flex h-full w-full flex-col items-start justify-end gap-[12px] rounded-[16px] bg-[#111111] p-[16px]">
             <div className="relative h-[3em] w-[3em] shrink-0 overflow-hidden rounded-[0.625em] bg-[#2a2a2a]">
               {form.profileImage ? (
-                <LoadedImage priority src={getOptimizedMediaUrl(toLandingAssetUrl(form.profileImage))} alt="profile" containerClassName="h-full w-full" className="h-full w-full object-cover" />
+                <CroppedImage src={getOptimizedMediaUrl(toLandingAssetUrl(form.profileImage))} alt="profile" cropData={profileCropData} />
               ) : (
                 <AvatarPlaceholderIcon className="h-full w-full object-cover" />
               )}
@@ -307,7 +342,7 @@ export function MinimalCard({ form, sampleFlags, visitedArray, isPreview }: Card
   );
 }
 
-export function AdventureCard({ form, sampleFlags, visitedArray, isPreview }: CardProps) {
+export function AdventureCard({ form, sampleFlags, visitedArray, isPreview, coverCropData, profileCropData }: CardProps) {
   return (
     <div
       id="adventure-card"
@@ -331,7 +366,7 @@ export function AdventureCard({ form, sampleFlags, visitedArray, isPreview }: Ca
         {/* Cover Image Background */}
         <div className="absolute inset-0 z-0">
           {form.coverImage ? (
-            <LoadedImage priority src={getOptimizedMediaUrl(toLandingAssetUrl(form.coverImage))} alt="cover" containerClassName="h-full w-full" className="h-full w-full object-cover" />
+            <CroppedImage src={getOptimizedMediaUrl(toLandingAssetUrl(form.coverImage))} alt="cover" cropData={coverCropData} />
           ) : (
             <div className="absolute top-[127px] left-1/2 -translate-x-1/2 flex items-center justify-center pointer-events-none">
                <span className="material-symbols-rounded text-[#E3E3E3] text-[40px]">add_photo_alternate</span>
@@ -368,7 +403,7 @@ export function AdventureCard({ form, sampleFlags, visitedArray, isPreview }: Ca
           {/* Profile Picture */}
           <div className="relative z-10 flex h-[3.75em] w-[3.75em] shrink-0 items-center justify-center overflow-hidden rounded-[0.75em] border-[0.1875em] border-white bg-[#2a2a2a] shadow-[0_4px_16px_rgba(0,0,0,0.35)]">
             {form.profileImage ? (
-              <LoadedImage priority src={getOptimizedMediaUrl(toLandingAssetUrl(form.profileImage))} alt="profile" containerClassName="h-full w-full" className="h-full w-full object-cover" />
+              <CroppedImage src={getOptimizedMediaUrl(toLandingAssetUrl(form.profileImage))} alt="profile" cropData={profileCropData} />
             ) : (
               <div className="flex h-[32px] w-[32px] shrink-0 items-center justify-center">
                 <AvatarPlaceholderIcon className="h-full w-full object-cover" />

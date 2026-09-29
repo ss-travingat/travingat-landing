@@ -54,7 +54,9 @@ export default async function ShortExplorerCardPage({
         country: data.country,
         visited_countries: data.visited_countries,
         profile_image_url: data.profile_image_url,
-        cover_image_url: data.cover_image_url
+        cover_image_url: data.cover_image_url,
+        profile_crop_data: typeof data.profile_crop_data === "string" ? JSON.parse(data.profile_crop_data) : data.profile_crop_data,
+        cover_crop_data: typeof data.cover_crop_data === "string" ? JSON.parse(data.cover_crop_data) : data.cover_crop_data
       };
     }
   } catch (err) {
@@ -96,11 +98,11 @@ export default async function ShortExplorerCardPage({
         <div className="relative flex items-center justify-center lg:w-[450px] lg:h-[750px] sm:mb-[60px] lg:mb-0">
           <div className="scale-100 sm:scale-110 lg:scale-125 origin-top lg:origin-center transition-transform">
             {style === "minimal" ? (
-              <MinimalCard form={form} sampleFlags={sampleFlags} visitedArray={visitedArray} />
+              <MinimalCard form={form} sampleFlags={sampleFlags} visitedArray={visitedArray} coverCropData={user.cover_crop_data?.Minimal || (user.cover_crop_data?.pixels ? user.cover_crop_data : null)} profileCropData={user.profile_crop_data} />
             ) : style === "adventure" ? (
-              <AdventureCard form={form} sampleFlags={sampleFlags} visitedArray={visitedArray} />
+              <AdventureCard form={form} sampleFlags={sampleFlags} visitedArray={visitedArray} coverCropData={user.cover_crop_data?.Adventure || (user.cover_crop_data?.pixels ? user.cover_crop_data : null)} profileCropData={user.profile_crop_data} />
             ) : (
-              <ClassicCard form={form} sampleFlags={sampleFlags} visitedArray={visitedArray} />
+              <ClassicCard form={form} sampleFlags={sampleFlags} visitedArray={visitedArray} coverCropData={user.cover_crop_data?.Classic || (user.cover_crop_data?.pixels ? user.cover_crop_data : null)} profileCropData={user.profile_crop_data} />
             )}
           </div>
         </div>

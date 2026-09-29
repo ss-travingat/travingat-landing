@@ -13,10 +13,8 @@ export interface CropData {
 interface ImageCropperModalProps {
   imageSrc: string;
   type: "coverImage" | "profileImage";
-  initialCrop?: { x: number; y: number };
-  initialZoom?: number;
-  initialAspectRatio?: number;
-  onSave: (croppedFile: File, cropData: CropData) => void;
+  initialCropData?: any;
+  onSave: (cropData: any) => void;
   onCancel: () => void;
   title?: string;
 }
@@ -24,20 +22,59 @@ interface ImageCropperModalProps {
 export default function ImageCropperModal({
   imageSrc,
   type,
-  initialCrop = { x: 0, y: 0 },
-  initialZoom = 1,
-  initialAspectRatio,
+  initialCropData,
   onSave,
   onCancel,
   title = "Crop Image",
 }: ImageCropperModalProps) {
-  const defaultCoverRatio = 3 / 2;
-  const [crop, setCrop] = useState(initialCrop);
-  const [zoom, setZoom] = useState(initialZoom);
-  const [aspectRatio, setAspectRatio] = useState(
-    initialAspectRatio || (type === "profileImage" ? 1 : defaultCoverRatio)
-  );
-  const [croppedAreaPixels, setCroppedAreaPixels] = useState<any>(null);
+  const [activeTab, setActiveTab] = useState<"Classic" | "Minimal" | "Adventure">("Classic");
+  
+  const defaultCrops = {
+    Classic: { crop: { x: 0, y: 0 }, zoom: 1, aspectRatio: 344 / 226, pixels: null },
+    Minimal: { crop: { x: 0, y: 0 }, zoom: 1, aspectRatio: 180 / 224, pixels: null },
+    Adventure: { crop: { x: 0, y: 0 }, zoom: 1, aspectRatio: 360 / 528, pixels: null },
+    profile: { crop: { x: 0, y: 0 }, zoom: 1, aspectRatio: 1, pixels: null }
+  };
+
+  const [crops, setCrops] = useState<any>(() => {
+    if (type === "profileImage") {
+      return { profile: { ...defaultCrops.profile, ...initialCropData } };
+    }
+    
+    const isOldFormat = initialCropData && initialCropData.crop !== undefined && !initialCropData.Classic;
+    
+    return {
+      Classic: { ...defaultCrops.Classic, ...(isOldFormat ? initialCropData : initialCropData?.Classic || {}) },
+      Minimal: { ...defaultCrops.Minimal, ...(initialCropData?.Minimal || {}) },
+      Adventure: { ...defaultCrops.Adventure, ...(initialCropData?.Adventure || {}) }
+    };
+  });
+
+  const activeCropState = type === "profileImage" ? crops.profile : crops[activeTab];
+
+  const setCrop = (c: any) => {
+    if (!mediaSize) return; // Prevent react-easy-crop from resetting crop before image loads
+    setCrops((s: any) => ({
+      ...s,
+      [type === "profileImage" ? "profile" : activeTab]: { ...s[type === "profileImage" ? "profile" : activeTab], crop: c }
+    }));
+  };
+
+  const setZoom = (z: any) => {
+    if (!mediaSize) return; // Prevent react-easy-crop from resetting zoom before image loads
+    setCrops((s: any) => ({
+      ...s,
+      [type === "profileImage" ? "profile" : activeTab]: { ...s[type === "profileImage" ? "profile" : activeTab], zoom: z }
+    }));
+  };
+
+  const setCroppedAreaPixels = (p: any) => {
+    setCrops((s: any) => ({
+      ...s,
+      [type === "profileImage" ? "profile" : activeTab]: { ...s[type === "profileImage" ? "profile" : activeTab], pixels: p }
+    }));
+  };
+
   const [isSaving, setIsSaving] = useState(false);
   const [mediaSize, setMediaSize] = useState<{width: number, height: number} | null>(null);
   const [cropSize, setCropSize] = useState<{width: number, height: number} | null>(null);
@@ -52,28 +89,32 @@ export default function ImageCropperModal({
   }, [mediaSize, cropSize]);
 
   React.useEffect(() => {
-    if (zoom < calculatedMinZoom) {
+    if (activeCropState.zoom < calculatedMinZoom) {
       setZoom(calculatedMinZoom);
     }
-  }, [calculatedMinZoom, zoom]);
+  }, [calculatedMinZoom, activeCropState.zoom, activeTab]);
 
   const maxZoomValue = Math.max(3, calculatedMinZoom + 2);
-  const zoomPercentage = ((zoom - calculatedMinZoom) / (maxZoomValue - calculatedMinZoom)) * 100 || 0;
+  const zoomPercentage = ((activeCropState.zoom - calculatedMinZoom) / (maxZoomValue - calculatedMinZoom)) * 100 || 0;
 
-  const onCropComplete = useCallback((croppedArea: any, croppedAreaPixels: any) => {
+  const onCropComplete = (croppedArea: any, croppedAreaPixels: any) => {
     setCroppedAreaPixels(croppedAreaPixels);
-  }, []);
+  };
 
   const handleSave = async () => {
     try {
       setIsSaving(true);
-      const croppedImage = await getCroppedImg(imageSrc, croppedAreaPixels, 0);
-      if (croppedImage) {
-        onSave(croppedImage, { crop, zoom, aspectRatio });
-      }
+      const finalData = type === "profileImage" 
+        ? { ...crops.profile, mediaSize } 
+        : {
+            Classic: { ...crops.Classic, mediaSize },
+            Minimal: { ...crops.Minimal, mediaSize },
+            Adventure: { ...crops.Adventure, mediaSize }
+          };
+      onSave(finalData);
     } catch (e) {
       console.error(e);
-      alert("Failed to crop image.");
+      alert("Failed to save crop.");
     } finally {
       setIsSaving(false);
     }
@@ -88,27 +129,16 @@ export default function ImageCropperModal({
 
         {type === "coverImage" && (
           <div className="mb-6 flex w-full justify-center gap-2">
-            <button
-              type="button"
-              onClick={() => setAspectRatio(344 / 226)} // Classic
-              className={`rounded-full px-4 py-1.5 text-[14px] font-medium transition-colors ${aspectRatio === 344 / 226 ? "bg-white text-black" : "bg-[#252525] text-[#999] hover:bg-[#333]"}`}
-            >
-              Classic
-            </button>
-            <button
-              type="button"
-              onClick={() => setAspectRatio(180 / 224)} // Minimal
-              className={`rounded-full px-4 py-1.5 text-[14px] font-medium transition-colors ${aspectRatio === 180 / 224 ? "bg-white text-black" : "bg-[#252525] text-[#999] hover:bg-[#333]"}`}
-            >
-              Minimal
-            </button>
-            <button
-              type="button"
-              onClick={() => setAspectRatio(360 / 528)} // Adventure
-              className={`rounded-full px-4 py-1.5 text-[14px] font-medium transition-colors ${aspectRatio === 360 / 528 ? "bg-white text-black" : "bg-[#252525] text-[#999] hover:bg-[#333]"}`}
-            >
-              Adventure
-            </button>
+            {(["Classic", "Minimal", "Adventure"] as const).map((tab) => (
+              <button
+                key={tab}
+                type="button"
+                onClick={() => setActiveTab(tab)}
+                className={`rounded-full px-4 py-1.5 text-[14px] font-medium transition-colors ${activeTab === tab ? "bg-white text-black" : "bg-[#252525] text-[#999] hover:bg-[#333]"}`}
+              >
+                {tab}
+              </button>
+            ))}
           </div>
         )}
 
@@ -116,9 +146,9 @@ export default function ImageCropperModal({
         <div className="relative h-[400px] w-full overflow-hidden rounded-[16px] bg-[#1a1a1a]">
           <Cropper
             image={imageSrc}
-            crop={crop}
-            zoom={zoom}
-            aspect={aspectRatio}
+            crop={activeCropState.crop}
+            zoom={activeCropState.zoom}
+            aspect={activeCropState.aspectRatio}
             minZoom={calculatedMinZoom}
             maxZoom={maxZoomValue}
             showGrid={false}
@@ -128,7 +158,7 @@ export default function ImageCropperModal({
             onCropChange={setCrop}
             onCropComplete={onCropComplete}
             onZoomChange={setZoom}
-            onMediaLoaded={(size) => setMediaSize({ width: size.width, height: size.height })}
+            onMediaLoaded={(size) => setMediaSize({ width: size.naturalWidth, height: size.naturalHeight })}
             onCropSizeChange={(size) => setCropSize({ width: size.width, height: size.height })}
           />
         </div>
@@ -156,7 +186,7 @@ export default function ImageCropperModal({
           }
         `}</style>
         <div className="mt-6 flex items-center gap-[12px] px-2 w-full justify-center">
-          <button type="button" onClick={() => setZoom(Math.max(calculatedMinZoom, zoom - 0.1))} className="flex items-center justify-center p-[6px] shrink-0 text-[#999] hover:text-white transition-colors">
+          <button type="button" onClick={() => setZoom(Math.max(calculatedMinZoom, activeCropState.zoom - 0.1))} className="flex items-center justify-center p-[6px] shrink-0 text-[#999] hover:text-white transition-colors">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="11" cy="11" r="8"></circle>
               <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
@@ -166,7 +196,7 @@ export default function ImageCropperModal({
           
           <input
             type="range"
-            value={zoom}
+            value={activeCropState.zoom}
             min={calculatedMinZoom}
             max={maxZoomValue}
             step={0.01}
@@ -178,7 +208,7 @@ export default function ImageCropperModal({
             }}
           />
 
-          <button type="button" onClick={() => setZoom(Math.min(maxZoomValue, zoom + 0.1))} className="flex items-center justify-center p-[6px] shrink-0 text-[#999] hover:text-white transition-colors">
+          <button type="button" onClick={() => setZoom(Math.min(maxZoomValue, activeCropState.zoom + 0.1))} className="flex items-center justify-center p-[6px] shrink-0 text-[#999] hover:text-white transition-colors">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="11" cy="11" r="8"></circle>
               <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
