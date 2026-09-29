@@ -779,6 +779,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
   const contextMenuRef = useRef<HTMLDivElement>(null);
 
   const handleTabChange = (tab: TabKey) => {
+    (window as any).__lastProgrammaticScrollTime = Date.now();
     (window as any).__isProgrammaticScroll = true;
     const scrollBefore = window.scrollY;
     setActiveTab(tab);
@@ -803,13 +804,9 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
           }
         } else {
           // Mobile/iPad
-          // The tabs are sticky at 72px, but they might be visually translated UP by the navbar hook.
-          // We can find the exact translation by checking the navbar's position.
           const navbarEl = document.getElementById("profile-mobile-navbar");
           const navbarVisualTop = navbarEl ? navbarEl.getBoundingClientRect().top : 0;
-          // If navbar is translated up by 72px, navbarVisualTop is -72.
-          // The formula: absoluteTop - 72 (sticky offset) - navbarVisualTop.
-          targetScrollY = absoluteTop - 72 - navbarVisualTop;
+          targetScrollY = absoluteTop + 12 - 72 - navbarVisualTop;
         }
 
         // Only jump if the user was scrolled past the tabs BEFORE the tab change triggered native browser scrolling
@@ -819,7 +816,6 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
       }
 
       setTimeout(() => {
-        (window as any).__isProgrammaticScroll = false;
         // Dispatch a final scroll event so Desktop LandingHeader re-evaluates the absolute scroll position
         // and correctly applies or removes the 'header-hidden' class, preventing the tabs from moving down incorrectly.
         window.dispatchEvent(new Event('scroll'));

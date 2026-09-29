@@ -14,6 +14,7 @@ import { WaitlistPopup } from "@/components/ui/WaitlistPopup";
 import LoadedImage from "@/components/ui/LoadedImage";
 import { useMobileComingSoon } from "@/components/ui/MobileComingSoonToast";
 import { COUNTRY_LIST } from "@/lib/countries";
+import { useNavbarVisibility } from "./MobileProfile";
 
 /* eslint-disable @next/next/no-img-element */
 
@@ -23,7 +24,7 @@ const COUNTRY_LIST_LOOKUP: Record<string, string> = Object.fromEntries(
   COUNTRY_LIST.map(c => [c.code.toUpperCase(), c.name])
 );
 
-type MediaTab = "all" | "photos" | "videos" | "about";
+type MediaTab = "all" | "photos" | "videos" | "collections" | "about";
 
 function isVideoAsset(url: string) {
   return /\.(mp4|mov|webm|m4v|3gp|3g2)$/i.test(url);
@@ -186,6 +187,7 @@ export default function CountryDetailComponent({
 }) {
   const { showComingSoonToast } = useMobileComingSoon();
   const router = useRouter();
+  useNavbarVisibility(false);
   const imageUrls = images.map((entry) => (typeof entry === "string" ? entry : entry.url));
   const countryName = COUNTRY_LIST_LOOKUP[countryCode] || countryCode;
   const [activeTab, setActiveTab] = useState<MediaTab>("all");
@@ -193,9 +195,113 @@ export default function CountryDetailComponent({
   const [isWaitlistOpen, setIsWaitlistOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
+  const handleTabChange = (tab: MediaTab) => {
+    (window as any).__lastProgrammaticScrollTime = Date.now();
+    (window as any).__isProgrammaticScroll = true;
+    const scrollBefore = window.scrollY;
+    setActiveTab(tab);
+
+    setTimeout(() => {
+      const isDesktop = window.innerWidth >= 768; // md breakpoint
+      const sentinelId = isDesktop ? "desktop-tabs-sentinel" : "mobile-tabs-sentinel";
+      const sentinelEl = document.getElementById(sentinelId);
+
+      if (sentinelEl) {
+        const rect = sentinelEl.getBoundingClientRect();
+        const absoluteTop = rect.top + window.scrollY;
+
+        let targetScrollY = 0;
+
+        if (isDesktop) {
+          let predictedTarget = absoluteTop - 0;
+          if (predictedTarget > 100) {
+            targetScrollY = predictedTarget;
+          } else {
+            targetScrollY = absoluteTop - 100;
+          }
+        } else {
+          const navbarEl = document.getElementById("profile-mobile-navbar");
+          const navbarVisualTop = navbarEl ? navbarEl.getBoundingClientRect().top : 0;
+          targetScrollY = absoluteTop + 12 - 72 - navbarVisualTop;
+        }
+
+        if (scrollBefore > targetScrollY) {
+          window.scrollTo({ top: targetScrollY, behavior: "instant" });
+        }
+      }
+
+      setTimeout(() => {
+        window.dispatchEvent(new Event("scroll"));
+      }, 50);
+    }, 0);
+  };
+
   // Lightbox state
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const didReadFromUrl = useRef(false);
+
+  // Swipe gesture state
+  const [swipeOffset, setSwipeOffset] = useState(0);
+  const touchStartX = useRef<number | null>(null);
+  const touchStartY = useRef<number | null>(null);
+  const touchEndX = useRef<number | null>(null);
+  const touchEndY = useRef<number | null>(null);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+    touchStartY.current = e.touches[0].clientY;
+    setSwipeOffset(0);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    touchEndX.current = e.touches[0].clientX;
+    touchEndY.current = e.touches[0].clientY;
+    if (touchStartX.current !== null && touchStartY.current !== null) {
+      const distanceX = touchStartX.current - touchEndX.current;
+      const distanceY = touchStartY.current - touchEndY.current;
+      if (Math.abs(distanceX) > Math.abs(distanceY)) {
+        setSwipeOffset(distanceX);
+      }
+    }
+  };
+
+  const handleTouchEnd = () => {
+    if (touchStartX.current !== null && touchEndX.current !== null && touchStartY.current !== null && touchEndY.current !== null) {
+      const distanceX = touchStartX.current - touchEndX.current;
+      const distanceY = touchStartY.current - touchEndY.current;
+      const swipeThreshold = 50;
+
+      if (Math.abs(distanceX) > Math.abs(distanceY) && Math.abs(distanceX) > swipeThreshold) {
+        const tabsArr: MediaTab[] = ["all", "photos", "videos", "collections", "about"];
+        const currentIndex = tabsArr.indexOf(activeTab);
+
+        if (distanceX > 0) {
+          if (currentIndex < tabsArr.length - 1) {
+            const nextTab = tabsArr[currentIndex + 1];
+            if (nextTab === "collections") {
+              showComingSoonToast("featureLaunch");
+            } else {
+              handleTabChange(nextTab);
+            }
+          }
+        } else {
+          if (currentIndex > 0) {
+            const prevTab = tabsArr[currentIndex - 1];
+            if (prevTab === "collections") {
+              showComingSoonToast("featureLaunch");
+            } else {
+              handleTabChange(prevTab);
+            }
+          }
+        }
+      }
+    }
+    touchStartX.current = null;
+    touchStartY.current = null;
+    touchEndX.current = null;
+    touchEndY.current = null;
+    setSwipeOffset(0);
+  };
 
   const photos = imageUrls.filter((url) => !isVideoAsset(url));
   const videos = imageUrls.filter((url) => isVideoAsset(url));
@@ -323,15 +429,17 @@ export default function CountryDetailComponent({
   const profileHandle = profile.handle.startsWith("@") ? profile.handle : `@${profile.handle}`;
 
   return (
-    <div className="min-h-screen bg-black text-white flex flex-col items-center px-[0.75rem] min-[50.625rem]:px-[2rem] min-[75rem]:px-[3rem] min-[90rem]:px-[4rem] relative pb-[6rem]">
+    <div className="min-h-screen bg-black text-white flex flex-col items-center px-[0.75rem] min-[50.625rem]:px-[2rem] min-[75rem]:px-[3rem] min-[90rem]:px-[4rem] relative">
       {/* Mobile Navbar */}
-      <div className="flex md:hidden w-full items-center justify-between py-[1rem] sticky top-0 z-[100] bg-black">
-        <button onClick={() => router.back()} className="text-white flex items-center justify-center p-2 -ml-2">
-          <span className="material-symbols-rounded text-[1.75rem]">arrow_back</span>
-        </button>
-        <button onClick={() => showComingSoonToast()} className="text-white flex items-center justify-center p-2 -mr-2">
-          <span className="material-symbols-rounded text-[1.75rem]">menu</span>
-        </button>
+      <div id="profile-mobile-navbar" className="flex md:hidden fixed top-0 left-0 w-full z-[120] flex-col pointer-events-none">
+        <div className="flex items-center justify-between px-[0.75rem] h-[4.5rem] bg-black shadow-[0_2px_0_0_#000] pointer-events-auto transition-transform duration-300">
+          <button onClick={() => router.back()} className="text-white flex items-center justify-center p-2 -ml-2">
+            <span className="material-symbols-rounded text-[1.75rem]">arrow_back</span>
+          </button>
+          <button onClick={() => showComingSoonToast()} className="text-white flex items-center justify-center p-2 -mr-2">
+            <span className="material-symbols-rounded text-[1.75rem]">menu</span>
+          </button>
+        </div>
       </div>
 
       {/* Lightbox */}
@@ -355,7 +463,7 @@ export default function CountryDetailComponent({
       )}
 
       {/* Country Info */}
-      <main className="w-full max-w-[108rem] flex flex-col items-center gap-[3rem] pb-28 md:pb-20 pt-8 md:pt-10">
+      <main className="w-full max-w-[108rem] flex flex-col items-center gap-[3rem] pb-28 md:pb-20 pt-[6.5rem] md:pt-10">
         <div className="flex flex-col items-center gap-[1.25rem] w-full max-w-[37.5rem]">
           <div className="flex flex-col items-center gap-[1.5rem]">
             <div className="h-[5rem] w-[7.5rem] overflow-hidden rounded-[0.5rem] shrink-0">
@@ -462,13 +570,14 @@ export default function CountryDetailComponent({
         </div>
 
         {/* Tabs + content */}
-        <div className="w-full flex flex-col gap-[1.5rem] md:gap-[3rem] items-center">
+        <div className="w-full flex flex-col gap-[0.75rem] md:gap-[3rem] items-center">
           {/* Desktop Tab pills */}
+          <div id="desktop-tabs-sentinel" className="w-full h-0 hidden md:block" />
           <div className="hidden md:flex items-center justify-center gap-[0.5rem] flex-wrap">
             {tabs.map((tab) => (
               <button
                 key={tab.label}
-                onClick={() => setActiveTab(tab.key as MediaTab)}
+                onClick={() => handleTabChange(tab.key as MediaTab)}
                 className={`rounded-[62.4375rem] px-[1.5rem] py-[0.5rem] text-[1rem] leading-[1.5rem] tracking-[-0.096px] transition ${activeTab === tab.key
                   ? "bg-[#1e1e1e] border border-white text-white font-medium"
                   : "bg-[#161616] border border-transparent text-[#bdbdbd] font-normal"
@@ -480,34 +589,68 @@ export default function CountryDetailComponent({
           </div>
 
           {/* Mobile Tab icons */}
-          <div className="flex md:hidden items-center justify-between w-[calc(100%+1.5rem)] border-b border-[#222] -mx-[0.75rem]">
-            {[
-              { key: "all", icon: "view_quilt" },
-              { key: "photos", icon: "image" },
-              { key: "videos", icon: "smart_display" },
-              { key: "collections", icon: "folder" },
-              { key: "about", icon: "info" },
-            ].map(tab => (
-              <button
-                key={tab.key}
-                onClick={() => {
-                  if (tab.key === "collections") {
-                    showComingSoonToast("featureLaunch");
-                    return;
-                  }
-                  setActiveTab(tab.key as MediaTab);
-                }}
-                className={`relative flex flex-col flex-1 items-center justify-center pb-[1rem] ${
-                  activeTab === tab.key ? "text-white" : "text-[#7c7c7c]"
-                }`}
-              >
-                <span className="material-symbols-rounded text-[1.5rem]" style={{ fontVariationSettings: "'FILL' 0" }}>{tab.icon}</span>
-                {activeTab === tab.key && <div className="absolute bottom-[-1px] h-[2px] w-full bg-white rounded-t-full" />}
-              </button>
-            ))}
-          </div>
+          {(() => {
+            const mobileTabsArr = ["all", "photos", "videos", "collections", "about"] as const;
+            const activeIndex = mobileTabsArr.indexOf(activeTab as any);
 
-          {/* Masonry grid or About */}
+            let offsetPercent = 0;
+            if (swipeOffset !== 0 && typeof window !== "undefined") {
+              const fraction = swipeOffset / (window.innerWidth / mobileTabsArr.length);
+              offsetPercent = Math.max(-1, Math.min(1, fraction)) * 100;
+              if (activeIndex === 0 && offsetPercent < 0) offsetPercent = 0;
+              if (activeIndex === mobileTabsArr.length - 1 && offsetPercent > 0) offsetPercent = 0;
+            }
+            const finalTranslate = activeIndex * 100 + offsetPercent;
+            const isDragging = swipeOffset !== 0;
+
+            return (
+              <>
+                <div id="mobile-tabs-sentinel" className="w-full h-0 md:hidden" />
+                <div id="profile-mobile-tabs" className="flex md:hidden items-center justify-between w-[calc(100%+1.5rem)] border-b border-[#222] -mx-[0.75rem] sticky top-[4.5rem] z-[90] bg-black relative">
+                  {[
+                  { key: "all", icon: "auto_awesome_mosaic" },
+                  { key: "photos", icon: "image" },
+                  { key: "videos", icon: "smart_display" },
+                  { key: "collections", icon: "folder_copy" },
+                  { key: "about", icon: "account_box" },
+                ].map(tab => (
+                  <button
+                    key={tab.key}
+                    onClick={() => {
+                      if (tab.key === "collections") {
+                        showComingSoonToast("featureLaunch");
+                        return;
+                      }
+                      handleTabChange(tab.key as MediaTab);
+                    }}
+                    className={`relative flex flex-col flex-1 items-center justify-center py-[1rem] ${
+                      activeTab === tab.key ? "text-white" : "text-[#7c7c7c]"
+                    }`}
+                  >
+                    <span className="material-symbols-rounded text-[1.5rem]" style={{ fontVariationSettings: "'FILL' 0" }}>{tab.icon}</span>
+                  </button>
+                ))}
+                <div
+                  className="absolute bottom-[-1px] left-0 h-[2px] bg-white rounded-t-full pointer-events-none"
+                  style={{
+                    width: `20%`,
+                    transform: `translateX(${finalTranslate}%)`,
+                    transition: isDragging ? "none" : "transform 300ms cubic-bezier(0.4, 0, 0.2, 1)",
+                  }}
+                />
+              </div>
+              </>
+            );
+          })()}
+
+          {/* Touch container for content */}
+          <div
+            className="w-full flex flex-col flex-1 min-h-screen"
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+          >
+            {/* Masonry grid or About */}
           {activeTab === "about" ? (
             <div className="flex flex-col items-start gap-4 w-full max-w-[50rem] text-left mt-8 mb-20 px-4 md:px-0">
               <h2 className="text-[1.5rem] font-semibold text-white">About {countryName}</h2>
@@ -722,6 +865,7 @@ export default function CountryDetailComponent({
               </div>
             </div>
           )}
+          </div>
         </div>
 
         <WaitlistPopup open={isWaitlistOpen} onClose={() => setIsWaitlistOpen(false)} />
@@ -729,36 +873,6 @@ export default function CountryDetailComponent({
 
       {/* Footer */}
       <ProfileFooter />
-
-      {/* Floating Bottom Bar for Mobile */}
-      <div className="md:hidden fixed left-1/2 -translate-x-1/2 bottom-[0.5rem] z-header rounded-full backdrop-blur-[0.375rem] bg-[rgba(255,255,255,0.12)] border border-[rgba(255,255,255,0.1)] px-[0.5625rem] py-[0.5rem] shadow-[0px_12px_12px_0px_rgba(0,0,0,0.12)] flex items-center overflow-clip w-[calc(100%-20px)] max-w-[37.5rem]">
-        <div className="flex gap-[0.5rem] items-center w-full">
-          <button
-            onClick={() => showComingSoonToast("featureLaunch")}
-            className="flex-1 rounded-full bg-white text-black px-[1.125rem] py-[0.625rem] text-[1rem] font-medium leading-[1.5rem] tracking-[-0.096px]"
-          >
-            Follow
-          </button>
-          <button
-            onClick={() => showComingSoonToast("featureLaunch")}
-            className="h-[2.75rem] w-[2.6875rem] shrink-0 rounded-full border border-[#353535] bg-[#1a1a1a] grid place-items-center text-white"
-            aria-label="More options"
-          >
-            <span className="grid grid-cols-2 gap-1">
-              <span className="h-[0.1875rem] w-[0.1875rem] rounded-full bg-white" />
-              <span className="h-[0.1875rem] w-[0.1875rem] rounded-full bg-white" />
-              <span className="h-[0.1875rem] w-[0.1875rem] rounded-full bg-white" />
-              <span className="h-[0.1875rem] w-[0.1875rem] rounded-full bg-white" />
-            </span>
-          </button>
-          <button
-            onClick={() => showComingSoonToast("featureLaunch")}
-            className="flex-1 rounded-full bg-[#1a1a1a] border border-[#353535] text-white px-[1.125rem] py-[0.625rem] text-[1rem] font-medium leading-[1.5rem] tracking-[-0.096px]"
-          >
-            Connect
-          </button>
-        </div>
-      </div>
     </div>
   );
 }

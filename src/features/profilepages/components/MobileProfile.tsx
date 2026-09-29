@@ -24,6 +24,14 @@ export function useNavbarVisibility(menuOpen = false) {
   const lastScrollY = useRef(0);
   const offsetRef = useRef(0);
 
+  // Restore imperative styles after any React re-render
+  useEffect(() => {
+    const navbarEl = document.getElementById("profile-mobile-navbar");
+    const tabsEl = document.getElementById("profile-mobile-tabs");
+    if (navbarEl) navbarEl.style.transform = `translateY(-${offsetRef.current}px)`;
+    if (tabsEl) tabsEl.style.transform = `translateY(-${offsetRef.current}px)`;
+  });
+
   useEffect(() => {
     const updateDOM = () => {
       const navbarEl = document.getElementById("profile-mobile-navbar");
@@ -41,6 +49,11 @@ export function useNavbarVisibility(menuOpen = false) {
 
       const currentScrollY = window.scrollY;
       const delta = currentScrollY - lastScrollY.current;
+
+      if ((window as any).__lastProgrammaticScrollTime && Date.now() - (window as any).__lastProgrammaticScrollTime < 500) {
+        lastScrollY.current = currentScrollY;
+        return;
+      }
 
       const tabsEl = document.getElementById("profile-mobile-tabs");
       const isTabsLocked = tabsEl ? tabsEl.getBoundingClientRect().top <= (72 - offsetRef.current + 2) : false;
