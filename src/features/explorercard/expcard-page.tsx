@@ -89,6 +89,7 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [shareStyle, setShareStyle] = useState<Tab | null>(null);
   const [readyToShareFile, setReadyToShareFile] = useState<File | null>(null);
+  const [readyToShareDataUrl, setReadyToShareDataUrl] = useState<string | null>(null);
 
   const [profileFile, setProfileFile] = useState<File | null>(null);
   const [coverFile, setCoverFile] = useState<File | null>(null);
@@ -154,13 +155,16 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
     const node = ref.current.firstElementChild as HTMLElement;
 
     try {
+      const isDesktop = window.innerWidth >= 1024;
+      const offsetX = isDesktop ? 60 : 0;
+      
       return await domToPng(node, {
         scale: 2,
         quality: 0.9,
-        width: node.offsetWidth + 60,
+        width: node.offsetWidth + offsetX,
         height: node.offsetHeight,
         style: {
-          transform: 'translateX(60px)',
+          transform: `translateX(${offsetX}px)`,
           transformOrigin: 'top left'
         },
         fetch: {
@@ -222,6 +226,7 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
         // Show the "Ready to Share/Download" modal on mobile to ensure synchronous share/download.
         // This bypasses Safari's aggressive blocking of async link.click() downloads.
         setReadyToShareFile(file);
+        setReadyToShareDataUrl(dataUrl);
         return;
       } else {
         const link = document.createElement("a");
@@ -579,11 +584,14 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
     window.location.href = '/join/explorercard';
   }
 
-  const readyToShareModal = readyToShareFile && (
+  const readyToShareModal = (readyToShareFile && readyToShareDataUrl) && (
     <div className="fixed inset-0 z-[999] flex items-center justify-center bg-black/80 px-4 backdrop-blur-sm">
       <div className="w-full max-w-sm rounded-[24px] bg-[#111] p-6 flex flex-col items-center border border-[#252525] shadow-2xl relative">
         <button
-          onClick={() => setReadyToShareFile(null)}
+          onClick={() => {
+            setReadyToShareFile(null);
+            setReadyToShareDataUrl(null);
+          }}
           className="absolute top-4 right-4 text-[#7c7c7c] hover:text-white"
         >
           <span className="material-symbols-rounded">close</span>
@@ -592,42 +600,25 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
         <p className="text-[#7c7c7c] text-[14px] text-center mb-6">You can now share or save the image to your device.</p>
 
         <img
-          src={URL.createObjectURL(readyToShareFile)}
+          src={readyToShareDataUrl}
           alt="Generated Card"
           className="w-48 h-auto rounded-[12px] mb-6 shadow-lg border border-[#252525]"
         />
 
         <button
           onClick={() => {
-            const fallbackDownload = () => {
-              const link = document.createElement("a");
-              link.download = readyToShareFile.name;
-              link.href = URL.createObjectURL(readyToShareFile);
-              document.body.appendChild(link);
-              link.click();
-              document.body.removeChild(link);
-              setReadyToShareFile(null);
-            };
-
-            if (navigator.share && navigator.canShare && navigator.canShare({ files: [readyToShareFile] })) {
-              navigator.share({
-                files: [readyToShareFile],
-                title: "My Explorer Card",
-              }).then(() => {
-                setReadyToShareFile(null);
-              }).catch((error) => {
-                if (error.name !== "AbortError" && !error.message?.includes("cancel")) {
-                  console.error("Error sharing:", error);
-                  fallbackDownload();
-                }
-              });
-            } else {
-              fallbackDownload();
-            }
+            const link = document.createElement("a");
+            link.download = readyToShareFile.name;
+            link.href = readyToShareDataUrl;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            setReadyToShareFile(null);
+            setReadyToShareDataUrl(null);
           }}
           className="w-full rounded-[999px] bg-[#5952FF] hover:bg-[#5952FF]/90 transition-colors py-[12px] text-white font-medium text-[15px]"
         >
-          Share & Save Image
+          Save Image
         </button>
       </div>
     </div>

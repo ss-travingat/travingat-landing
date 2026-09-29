@@ -323,7 +323,17 @@ export default function CountryDetailComponent({
   const profileHandle = profile.handle.startsWith("@") ? profile.handle : `@${profile.handle}`;
 
   return (
-    <div className="min-h-screen bg-black text-white flex flex-col items-center px-[0.75rem] min-[50.625rem]:px-[2rem] min-[75rem]:px-[3rem] min-[90rem]:px-[4rem]">
+    <div className="min-h-screen bg-black text-white flex flex-col items-center px-[0.75rem] min-[50.625rem]:px-[2rem] min-[75rem]:px-[3rem] min-[90rem]:px-[4rem] relative pb-[6rem]">
+      {/* Mobile Navbar */}
+      <div className="flex md:hidden w-full items-center justify-between py-[1rem] sticky top-0 z-[100] bg-black">
+        <button onClick={() => router.back()} className="text-white flex items-center justify-center p-2 -ml-2">
+          <span className="material-symbols-rounded text-[1.75rem]">arrow_back</span>
+        </button>
+        <button onClick={() => showComingSoonToast()} className="text-white flex items-center justify-center p-2 -mr-2">
+          <span className="material-symbols-rounded text-[1.75rem]">menu</span>
+        </button>
+      </div>
+
       {/* Lightbox */}
       {lightboxIndex !== null && (
         <PhotoLightbox
@@ -361,9 +371,9 @@ export default function CountryDetailComponent({
           </div>
 
           {/* Meta info row */}
-          <div className="flex items-center gap-[0.75rem]">
+          <div className="flex flex-col md:flex-row items-center gap-[0.5rem] md:gap-[0.75rem]">
             <div className="flex items-center gap-[0.5rem]">
-              <span className="text-[1rem] text-white leading-[1.5rem] tracking-[-0.096px] font-normal">By</span>
+              <span className="text-[0.875rem] md:text-[1rem] text-white leading-[1.5rem] tracking-[-0.096px] font-normal">By</span>
               <div className="h-[1.25rem] w-[1.25rem] overflow-hidden rounded-[0.375rem] shrink-0">
                 <LoadedImage
                   originalSrc={MediaResolver.getBase(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url)} src={MediaResolver.getOptimized(MediaResolver.getBase(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url))}
@@ -374,19 +384,52 @@ export default function CountryDetailComponent({
                   containerClassName="w-full h-full relative"
                 />
               </div>
-              <Link href={`/${profile.handle.replace(/^@/, "")}`} className="text-[1rem] text-white leading-[1.5rem] tracking-[-0.096px] font-normal hover:underline">
+              <Link href={`/${profile.handle.replace(/^@/, "")}`} className="text-[0.875rem] md:text-[1rem] text-white leading-[1.5rem] tracking-[-0.096px] font-normal hover:underline">
                 {profile.handle}
               </Link>
             </div>
-            <div className="h-[0.1875rem] w-[0.1875rem] rounded-full bg-[#505050] shrink-0" />
+            
+            <div className="hidden md:block h-[0.1875rem] w-[0.1875rem] rounded-full bg-[#505050] shrink-0" />
+            
             <div className="flex items-center gap-[0.5rem]">
-              <span className="text-[1rem] text-[#989898] leading-[1.5rem] tracking-[-0.096px] font-normal">Last Updated:</span>
-              <span className="text-[1rem] text-[#989898] leading-[1.5rem] tracking-[-0.096px] font-normal">
+              <span className="text-[0.875rem] md:text-[1rem] text-[#989898] leading-[1.5rem] tracking-[-0.096px] font-normal">Last Updated:</span>
+              <span className="text-[0.875rem] md:text-[1rem] text-[#989898] leading-[1.5rem] tracking-[-0.096px] font-normal">
                 {updatedLabel}
               </span>
+              
+              <div className="md:hidden ml-1 relative flex items-center" ref={menuRef}>
+                <button
+                  type="button"
+                  onClick={() => setShowMenu((prev) => !prev)}
+                  className="flex px-[0.5rem] py-[0.25rem] items-center justify-center rounded-[3.125rem] bg-[#181818] hover:bg-[#222] transition shrink-0"
+                  aria-label="More options"
+                >
+                  <div className="flex items-center gap-[0.25rem]">
+                    <div className="h-[0.125rem] w-[0.125rem] rounded-full bg-[#989898]" />
+                    <div className="h-[0.125rem] w-[0.125rem] rounded-full bg-[#989898]" />
+                    <div className="h-[0.125rem] w-[0.125rem] rounded-full bg-[#989898]" />
+                  </div>
+                </button>
+                {showMenu && (
+                  <ContextMenu
+                    kind="country"
+                    viewLabel="View main profile"
+                    shareLabel="Share country"
+                    viewHref={`/${profile.handle.replace(/^@/, "")}`}
+                    showViewAction={false}
+                    onShare={() => {
+                      navigator.clipboard.writeText(window.location.href).catch(() => { });
+                      setShowMenu(false);
+                    }}
+                    onClose={() => setShowMenu(false)}
+                    menuRef={menuRef}
+                  />
+                )}
+              </div>
             </div>
-            <div className="h-[0.1875rem] w-[0.1875rem] rounded-full bg-[#505050] shrink-0" />
-            <div className="relative flex items-center" ref={menuRef}>
+
+            <div className="hidden md:block h-[0.1875rem] w-[0.1875rem] rounded-full bg-[#505050] shrink-0" />
+            <div className="hidden md:flex relative items-center" ref={menuRef}>
               <button
                 type="button"
                 onClick={() => setShowMenu((prev) => !prev)}
@@ -419,9 +462,9 @@ export default function CountryDetailComponent({
         </div>
 
         {/* Tabs + content */}
-        <div className="w-full flex flex-col gap-[3rem] items-center">
-          {/* Tab pills */}
-          <div className="flex items-center justify-center gap-[0.5rem] flex-wrap">
+        <div className="w-full flex flex-col gap-[1.5rem] md:gap-[3rem] items-center">
+          {/* Desktop Tab pills */}
+          <div className="hidden md:flex items-center justify-center gap-[0.5rem] flex-wrap">
             {tabs.map((tab) => (
               <button
                 key={tab.label}
@@ -432,6 +475,34 @@ export default function CountryDetailComponent({
                   }`}
               >
                 {tab.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Mobile Tab icons */}
+          <div className="flex md:hidden items-center justify-between w-[calc(100%+1.5rem)] border-b border-[#222] -mx-[0.75rem]">
+            {[
+              { key: "all", icon: "view_quilt" },
+              { key: "photos", icon: "image" },
+              { key: "videos", icon: "smart_display" },
+              { key: "collections", icon: "folder" },
+              { key: "about", icon: "info" },
+            ].map(tab => (
+              <button
+                key={tab.key}
+                onClick={() => {
+                  if (tab.key === "collections") {
+                    showComingSoonToast("featureLaunch");
+                    return;
+                  }
+                  setActiveTab(tab.key as MediaTab);
+                }}
+                className={`relative flex flex-col flex-1 items-center justify-center pb-[1rem] ${
+                  activeTab === tab.key ? "text-white" : "text-[#7c7c7c]"
+                }`}
+              >
+                <span className="material-symbols-rounded text-[1.5rem]" style={{ fontVariationSettings: "'FILL' 0" }}>{tab.icon}</span>
+                {activeTab === tab.key && <div className="absolute bottom-[-1px] h-[2px] w-full bg-white rounded-t-full" />}
               </button>
             ))}
           </div>
@@ -658,6 +729,36 @@ export default function CountryDetailComponent({
 
       {/* Footer */}
       <ProfileFooter />
+
+      {/* Floating Bottom Bar for Mobile */}
+      <div className="md:hidden fixed left-1/2 -translate-x-1/2 bottom-[0.5rem] z-header rounded-full backdrop-blur-[0.375rem] bg-[rgba(255,255,255,0.12)] border border-[rgba(255,255,255,0.1)] px-[0.5625rem] py-[0.5rem] shadow-[0px_12px_12px_0px_rgba(0,0,0,0.12)] flex items-center overflow-clip w-[calc(100%-20px)] max-w-[37.5rem]">
+        <div className="flex gap-[0.5rem] items-center w-full">
+          <button
+            onClick={() => showComingSoonToast("featureLaunch")}
+            className="flex-1 rounded-full bg-white text-black px-[1.125rem] py-[0.625rem] text-[1rem] font-medium leading-[1.5rem] tracking-[-0.096px]"
+          >
+            Follow
+          </button>
+          <button
+            onClick={() => showComingSoonToast("featureLaunch")}
+            className="h-[2.75rem] w-[2.6875rem] shrink-0 rounded-full border border-[#353535] bg-[#1a1a1a] grid place-items-center text-white"
+            aria-label="More options"
+          >
+            <span className="grid grid-cols-2 gap-1">
+              <span className="h-[0.1875rem] w-[0.1875rem] rounded-full bg-white" />
+              <span className="h-[0.1875rem] w-[0.1875rem] rounded-full bg-white" />
+              <span className="h-[0.1875rem] w-[0.1875rem] rounded-full bg-white" />
+              <span className="h-[0.1875rem] w-[0.1875rem] rounded-full bg-white" />
+            </span>
+          </button>
+          <button
+            onClick={() => showComingSoonToast("featureLaunch")}
+            className="flex-1 rounded-full bg-[#1a1a1a] border border-[#353535] text-white px-[1.125rem] py-[0.625rem] text-[1rem] font-medium leading-[1.5rem] tracking-[-0.096px]"
+          >
+            Connect
+          </button>
+        </div>
+      </div>
     </div>
   );
 }

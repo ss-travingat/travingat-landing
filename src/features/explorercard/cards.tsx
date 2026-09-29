@@ -102,9 +102,11 @@ export function ClassicCard({ form, sampleFlags, visitedArray, isPreview }: Card
   return (
     <div className="relative flex w-[360px] shrink-0 flex-col items-center gap-[20px] rounded-[24px] border border-[#252525] bg-black px-[8px] pb-[24px] pt-[8px]">
       {/* Founding Explorer Badge */}
-      <div className="absolute left-[20px] lg:left-[-60px] top-[204px] lg:top-[20px] z-50 h-[64px] w-[64px] lg:h-[120px] lg:w-[120px] pointer-events-none">
-        <FoundingExplorer />
-      </div>
+      {!isPreview && (
+        <div className="absolute left-[20px] lg:left-[-60px] top-[204px] lg:top-[20px] z-50 h-[64px] w-[64px] lg:h-[120px] lg:w-[120px] pointer-events-none">
+          <FoundingExplorer />
+        </div>
+      )}
 
       {/* Profile section */}
       <div className="flex w-full shrink-0 flex-col items-center">
@@ -216,9 +218,11 @@ export function MinimalCard({ form, sampleFlags, visitedArray, isPreview }: Card
       className="relative flex w-[360px] shrink-0 flex-col items-center gap-[20px] rounded-[24px] border border-[#252525] bg-black px-[8px] pb-[24px] pt-0"
     >
       {/* Founding Explorer Badge */}
-      <div className="absolute left-[12px] lg:left-[-60px] top-[12px] lg:top-[20px] z-50 h-[64px] w-[64px] lg:h-[120px] lg:w-[120px] pointer-events-none">
-        <FoundingExplorer />
-      </div>
+      {!isPreview && (
+        <div className="absolute left-[12px] lg:left-[-60px] top-[12px] lg:top-[20px] z-50 h-[64px] w-[64px] lg:h-[120px] lg:w-[120px] pointer-events-none">
+          <FoundingExplorer />
+        </div>
+      )}
 
       {/* Country badge at top */}
       <MinimalCountryNotch form={form} sampleFlags={sampleFlags} wrapperClassName="w-full shrink-0 relative -mt-[1px] z-30" />
@@ -310,9 +314,11 @@ export function AdventureCard({ form, sampleFlags, visitedArray, isPreview }: Ca
       className="relative flex w-[360px] shrink-0 flex-col items-center gap-[20px] rounded-[24px] border border-[#252525] bg-black px-[8px] pb-[24px] pt-[8px]"
     >
       {/* Founding Explorer Badge */}
-      <div className="absolute left-[20px] lg:left-[-60px] top-[20px] lg:top-[20px] z-50 h-[64px] w-[64px] lg:h-[120px] lg:w-[120px] pointer-events-none">
-        <FoundingExplorer />
-      </div>
+      {!isPreview && (
+        <div className="absolute left-[20px] lg:left-[-60px] top-[20px] lg:top-[20px] z-50 h-[64px] w-[64px] lg:h-[120px] lg:w-[120px] pointer-events-none">
+          <FoundingExplorer />
+        </div>
+      )}
 
       {/* Main Image Container */}
       <div 

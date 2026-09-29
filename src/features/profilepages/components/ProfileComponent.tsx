@@ -1748,12 +1748,6 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                               key={country.code}
                               href={countryHref}
                               className="flex flex-col gap-2.5"
-                              onClick={(e) => {
-                                if (window.innerWidth < 811) {
-                                  e.preventDefault();
-                                  showComingSoonToast();
-                                }
-                              }}
                             >
                               {/* Photo */}
                               <div className="relative group">
