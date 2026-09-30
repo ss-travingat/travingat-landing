@@ -89,10 +89,29 @@ export function CountriesPopup({ trigger, countries }: CountriesPopupProps) {
         </button>
       </Dialog.Trigger>
       <Dialog.Portal>
+        <style dangerouslySetInnerHTML={{__html: `
+          @keyframes slideUpMobile { from { transform: translateY(100%); } to { transform: translateY(0); } }
+          @keyframes slideDownMobile { from { transform: translateY(0); } to { transform: translateY(100%); } }
+          @keyframes fadeInMobile { from { opacity: 0; } to { opacity: 1; } }
+          @keyframes fadeOutMobile { from { opacity: 1; } to { opacity: 0; } }
+          @media (max-width: 767px) {
+            .data\\[state\\=open\\]\\:animate-dialog-content-open[data-state="open"] > div { animation: slideUpMobile 0.3s cubic-bezier(0.32, 0.72, 0, 1) forwards; }
+            .data\\[state\\=closed\\]\\:animate-dialog-content-closed[data-state="closed"] > div { animation: slideDownMobile 0.3s cubic-bezier(0.32, 0.72, 0, 1) forwards; }
+          }
+          @media (min-width: 768px) {
+            .md-center-popup { transform: translate(-50%, -50%); }
+            @keyframes fadeInDesktopPop { from { opacity: 0; transform: translate(-50%, -48%) scale(0.95); } to { opacity: 1; transform: translate(-50%, -50%) scale(1); } }
+            @keyframes fadeOutDesktopPop { from { opacity: 1; transform: translate(-50%, -50%) scale(1); } to { opacity: 0; transform: translate(-50%, -48%) scale(0.95); } }
+            [data-state="open"].md\\[left-\\[50\\%\\]\\] { animation: fadeInDesktopPop 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards !important; }
+            [data-state="closed"].md\\[left-\\[50\\%\\]\\] { animation: fadeOutDesktopPop 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards !important; }
+          }
+        `}} />
+
         <Dialog.Overlay className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm data-[state=open]:animate-dialog-overlay-open data-[state=closed]:animate-dialog-overlay-closed" />
         <Dialog.Content
-          className="fixed bottom-0 left-0 right-0 z-50 flex w-full flex-col outline-none data-[state=open]:animate-dialog-content-open data-[state=closed]:animate-dialog-content-closed md:bottom-auto md:left-[50%] md:top-[50%] md:w-full md:max-w-[400px] md:-translate-x-1/2 md:-translate-y-1/2 md:data-[state=open]:animate-dialog-desktop-open md:data-[state=closed]:animate-dialog-desktop-closed"
-          style={fontRenderingStyles}
+          className="fixed bottom-0 left-0 right-0 z-50 flex w-full flex-col outline-none md:bottom-auto md:left-[50%] md:top-[50%] md:w-full md:max-w-[400px] md-center-popup"
+          style={{ ...fontRenderingStyles }}
+
         >
           <div 
             className="flex w-full flex-col max-h-[85vh] md:max-h-[75vh] overflow-hidden rounded-t-[24px] bg-[#1a1a1a] shadow-[0_-8px_30px_rgba(0,0,0,0.5)] md:rounded-[20px] md:border md:border-white/5 md:shadow-2xl"

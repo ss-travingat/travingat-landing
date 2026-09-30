@@ -26,9 +26,17 @@ export function DesktopCountriesPopup({ trigger, countries }: DesktopCountriesPo
         </button>
       </Dialog.Trigger>
       <Dialog.Portal>
+        <style dangerouslySetInnerHTML={{__html: `
+          @keyframes fadeInDesktop { from { opacity: 0; transform: translate(-50%, -48%) scale(0.95); } to { opacity: 1; transform: translate(-50%, -50%) scale(1); } }
+          @keyframes fadeOutDesktop { from { opacity: 1; transform: translate(-50%, -50%) scale(1); } to { opacity: 0; transform: translate(-50%, -48%) scale(0.95); } }
+          .animate-in { animation: fadeInDesktop 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+          .animate-out { animation: fadeOutDesktop 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        `}} />
+
         <Dialog.Overlay className="fixed inset-0 z-[999] bg-black/50 backdrop-blur-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0" />
         <Dialog.Content
-          className="fixed left-[50%] top-[50%] z-[999] flex w-full max-w-[400px] max-h-[85vh] translate-x-[-50%] translate-y-[-50%] flex-col overflow-hidden rounded-[24px] bg-[#111111] border border-white/5 shadow-2xl outline-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%]"
+          className="fixed left-[50%] top-[50%] z-[999] flex w-full max-w-[400px] max-h-[85vh] flex-col overflow-hidden rounded-[24px] bg-[#111111] border border-white/5 shadow-2xl outline-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0"
+          style={{ transform: 'translate(-50%, -50%)' }}
         >
           <div className="px-[32px] pt-[32px] shrink-0">
             <Dialog.Title asChild>
