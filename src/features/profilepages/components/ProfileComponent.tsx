@@ -922,6 +922,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
 
   const allMediaItems = useMemo<MediaItem[]>(() => {
     const buckets: MediaItem[][] = [];
+    const seenUrls = new Set<string>();
 
     // Gallery bucket
     if (profile.images.gallery.length > 0) {
@@ -929,6 +930,8 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
       profile.images.gallery.forEach((fileEntry) => {
         const isObj = typeof fileEntry !== "string" && fileEntry !== null && typeof fileEntry === "object";
         const url = isObj ? (fileEntry.url as string) : (fileEntry as string);
+        if (seenUrls.has(url)) return;
+        seenUrls.add(url);
         bucket.push({
           id: `media-${profile.id}-gallery-${bucket.length}`,
           fileUrl: url,
@@ -947,6 +950,8 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
         country.images.forEach((fileEntry) => {
           const isObj = typeof fileEntry !== "string" && fileEntry !== null && typeof fileEntry === "object";
           const url = isObj ? (fileEntry.url as string) : (fileEntry as string);
+          if (seenUrls.has(url)) return;
+          seenUrls.add(url);
           bucket.push({
             id: `media-${profile.id}-country-${countryIdx}-${bucket.length}`,
             fileUrl: url,
@@ -967,6 +972,8 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
         collection.images.forEach((fileEntry) => {
           const isObj = typeof fileEntry !== "string" && fileEntry !== null && typeof fileEntry === "object";
           const url = isObj ? (fileEntry.url as string) : (fileEntry as string);
+          if (seenUrls.has(url)) return;
+          seenUrls.add(url);
           bucket.push({
             id: `media-${profile.id}-collection-${collectionIdx}-${bucket.length}`,
             fileUrl: url,
