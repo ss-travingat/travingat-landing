@@ -50,33 +50,42 @@ export default function ImageCropperModal({
     };
   });
 
+  const activeTabRef = React.useRef(activeTab);
+  React.useEffect(() => {
+    activeTabRef.current = activeTab;
+  }, [activeTab]);
+
   const activeCropState = type === "profileImage" ? crops.profile : crops[activeTab];
 
   const setCrop = (c: any) => {
     if (!mediaSize) return; // Prevent react-easy-crop from resetting crop before image loads
+    const currentTab = type === "profileImage" ? "profile" : activeTabRef.current;
     setCrops((s: any) => ({
       ...s,
-      [type === "profileImage" ? "profile" : activeTab]: { ...s[type === "profileImage" ? "profile" : activeTab], crop: c }
+      [currentTab]: { ...s[currentTab], crop: c }
     }));
   };
 
   const setZoom = (z: any) => {
     if (!mediaSize) return; // Prevent react-easy-crop from resetting zoom before image loads
+    const currentTab = type === "profileImage" ? "profile" : activeTabRef.current;
     setCrops((s: any) => ({
       ...s,
-      [type === "profileImage" ? "profile" : activeTab]: { ...s[type === "profileImage" ? "profile" : activeTab], zoom: z }
+      [currentTab]: { ...s[currentTab], zoom: z }
     }));
   };
 
   const setCroppedAreaPixels = (p: any) => {
+    const currentTab = type === "profileImage" ? "profile" : activeTabRef.current;
     setCrops((s: any) => ({
       ...s,
-      [type === "profileImage" ? "profile" : activeTab]: { ...s[type === "profileImage" ? "profile" : activeTab], pixels: p }
+      [currentTab]: { ...s[currentTab], pixels: p }
     }));
   };
 
   const [isSaving, setIsSaving] = useState(false);
   const [mediaSize, setMediaSize] = useState<{width: number, height: number} | null>(null);
+  const [naturalMediaSize, setNaturalMediaSize] = useState<{width: number, height: number} | null>(null);
   const [cropSize, setCropSize] = useState<{width: number, height: number} | null>(null);
 
   const calculatedMinZoom = React.useMemo(() => {
@@ -105,11 +114,11 @@ export default function ImageCropperModal({
     try {
       setIsSaving(true);
       const finalData = type === "profileImage" 
-        ? { ...crops.profile, mediaSize } 
+        ? { ...crops.profile, mediaSize: naturalMediaSize } 
         : {
-            Classic: { ...crops.Classic, mediaSize },
-            Minimal: { ...crops.Minimal, mediaSize },
-            Adventure: { ...crops.Adventure, mediaSize }
+            Classic: { ...crops.Classic, mediaSize: naturalMediaSize },
+            Minimal: { ...crops.Minimal, mediaSize: naturalMediaSize },
+            Adventure: { ...crops.Adventure, mediaSize: naturalMediaSize }
           };
       onSave(finalData);
     } catch (e) {
@@ -145,6 +154,7 @@ export default function ImageCropperModal({
         {/* Cropper Container */}
         <div className="relative h-[400px] w-full overflow-hidden rounded-[16px] bg-[#1a1a1a]">
           <Cropper
+            key={type === "profileImage" ? "profile" : activeTab}
             image={imageSrc}
             crop={activeCropState.crop}
             zoom={activeCropState.zoom}
@@ -158,7 +168,10 @@ export default function ImageCropperModal({
             onCropChange={setCrop}
             onCropComplete={onCropComplete}
             onZoomChange={setZoom}
-            onMediaLoaded={(size) => setMediaSize({ width: size.naturalWidth, height: size.naturalHeight })}
+            onMediaLoaded={(size) => {
+              setMediaSize({ width: size.width, height: size.height });
+              setNaturalMediaSize({ width: size.naturalWidth, height: size.naturalHeight });
+            }}
             onCropSizeChange={(size) => setCropSize({ width: size.width, height: size.height })}
           />
         </div>

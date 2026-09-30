@@ -111,7 +111,17 @@ type ShareCardData = {
 const CREATED_AT_BASE_UTC_MS = Date.UTC(2025, 11, 27);
 const CREATED_AT_STEP_DAYS = 19;
 
-function getDeterministicCreatedLabel(index: number): string {
+function getDeterministicCreatedLabel(index: number, realDate?: string): string {
+  if (realDate) {
+    const date = new Date(realDate);
+    if (!isNaN(date.getTime())) {
+      return date.toLocaleDateString("en-GB", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+      });
+    }
+  }
   const createdAtMs = CREATED_AT_BASE_UTC_MS - index * CREATED_AT_STEP_DAYS * 24 * 60 * 60 * 1000;
   return new Date(createdAtMs).toLocaleDateString("en-GB", {
     day: "2-digit",
@@ -593,8 +603,9 @@ function JsMasonryGrid({
             </>
           ) : (
             <LoadedImage
-              originalSrc={MediaResolver.getBase(mediaItem.fileUrl)} src={MediaResolver.getOptimized(MediaResolver.getBase(mediaItem.fileUrl))}
-              thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(mediaItem.fileUrl), 720)}
+              originalSrc={MediaResolver.getBase(mediaItem.fileUrl)}
+              src={MediaResolver.getThumbnail(MediaResolver.getBase(mediaItem.fileUrl), 720)}
+              thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(mediaItem.fileUrl), 360)}
               alt="Uploaded media"
               className="w-full h-auto block"
               containerClassName="w-full h-full relative"
@@ -1306,7 +1317,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
           id: `${profile.id}-collection-${index}`,
           title: ci.title,
           description: profile.bio,
-          createdLabel: getDeterministicCreatedLabel(index),
+          createdLabel: getDeterministicCreatedLabel(index, ci.updatedAt || ci.updated_at),
           updatedLabel: getUpdatedLabel(ci.updatedAt || ci.updated_at, index),
           thumbnailUrl: ci.coverPhoto || previewImages[0] || (typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url),
           previewImages,
@@ -1967,9 +1978,13 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                             )}
                           </div>
                         </div>
-
-                        <hr className="border-t border-[#1e1e1e] w-full m-0" />
-
+                        <div className="flex flex-col gap-3 md:gap-4 w-full">
+                          <h3 className="ds-font-display text-white text-xl md:text-2xl font-medium md:font-semibold tracking-[-0.5px] leading-7 md:leading-8">My explorer card</h3>
+                          <div className="flex items-center gap-2">
+                            <img className="w-4 h-4 rounded" src={typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url} alt="Avatar" />
+                            <Link href={`https://app.travingat.com/ec/${profile.id.split("-")[0]}-c`} className="text-[#1FBCFE] text-base font-normal leading-6 break-words">app.travingat.com/ec/{profile.id.split("-")[0]}-c</Link>
+                          </div>
+                        </div>
                         <div className="flex flex-col gap-3 md:gap-6">
                           <h4 className="ds-font-display text-white text-xl md:text-2xl font-medium md:font-semibold tracking-[-0.5px] leading-7 md:leading-8">My Interests</h4>
                           {profile.interests.length > 0 ? (
