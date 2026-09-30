@@ -624,13 +624,11 @@ export default function CollectionDetailComponent({
             </div>
           ) : (
             <div className="w-full">
-              {/* Desktop: 4 explicit flex columns — matches Figma layout */}
+              {/* Desktop: 4 explicit flex columns distributed by height — matches Figma layout */}
               <div className="hidden lg:flex w-full gap-[0.5rem] xl:gap-[0.75rem]">
-                {[0, 1, 2, 3].map((colIdx) => (
+                {distributeMasonryColumns(items, 4, (item) => (item.height && item.width ? item.height / item.width : 1)).map((columnItems, colIdx) => (
                   <div key={colIdx} className="flex flex-col gap-[0.5rem] xl:gap-[0.75rem] flex-1 min-w-0">
-                    {items
-                      .filter((_, i) => i % 4 === colIdx)
-                      .map(({ url: imgUrl, globalIndex }) => {
+                    {columnItems.map(({ url: imgUrl, globalIndex }) => {
                         const isVideo = isVideoAsset(imgUrl);
                         return (
                           <div key={globalIndex} className="group relative">

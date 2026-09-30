@@ -7,7 +7,7 @@ import Link from "next/link";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { ThumbnailImage } from "@/components/ThumbnailImage";
 import { sampleProfiles, type SampleProfile } from "../data/profile-data";
-import { MediaLightbox, type LightboxItem } from "./MediaLightbox";
+import { MediaLightbox } from "./MediaLightbox";
 import { MoreOptionsButton } from "@/components/ui/MoreOptionsButton";
 import { WaitlistPopup } from "@/components/ui/WaitlistPopup";
 import { MobileHero, MobileTabs } from "./MobileProfile";
@@ -703,13 +703,11 @@ function JsMasonryGrid({
 
   return (
     <div className="w-full">
-      {/* Desktop: 4 explicit flex columns */}
+      {/* Desktop: 4 explicit flex columns distributed by height */}
       <div className="hidden lg:flex w-full gap-[0.5rem] xl:gap-[0.75rem]">
-        {[0, 1, 2, 3].map((colIdx) => (
+        {distributeMasonryColumns(orderedItems, 4, (item) => (item.height && item.width ? item.height / item.width : 1)).map((columnItems, colIdx) => (
           <div key={colIdx} className="flex flex-col gap-[0.5rem] xl:gap-[0.75rem] flex-1 min-w-0">
-            {orderedItems
-              .filter((_, i) => i % 4 === colIdx)
-              .map((mediaItem) => renderMediaItem(mediaItem, false))}
+            {columnItems.map((mediaItem) => renderMediaItem(mediaItem, false))}
           </div>
         ))}
       </div>
