@@ -1968,9 +1968,13 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                             )}
                           </div>
                         </div>
-
-                        <hr className="border-t border-[#1e1e1e] w-full m-0" />
-
+                        <div className="flex flex-col gap-3 md:gap-4 w-full">
+                          <h3 className="ds-font-display text-white text-xl md:text-2xl font-medium md:font-semibold tracking-[-0.5px] leading-7 md:leading-8">My explorer card</h3>
+                          <div className="flex items-center gap-2">
+                            <img className="w-4 h-4 rounded" src={typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url} alt="Avatar" />
+                            <Link href={`https://app.travingat.com/ec/${profile.id.split("-")[0]}-c`} className="text-[#1FBCFE] text-base font-normal leading-6 break-words">app.travingat.com/ec/{profile.id.split("-")[0]}-c</Link>
+                          </div>
+                        </div>
                         <div className="flex flex-col gap-3 md:gap-6">
                           <h4 className="ds-font-display text-white text-xl md:text-2xl font-medium md:font-semibold tracking-[-0.5px] leading-7 md:leading-8">My Interests</h4>
                           {profile.interests.length > 0 ? (
