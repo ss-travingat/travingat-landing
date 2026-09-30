@@ -17,6 +17,7 @@ import { COUNTRY_LIST } from "@/lib/countries";
 import LoadedImage from "@/components/ui/LoadedImage";
 import { useMobileComingSoon } from "@/components/ui/MobileComingSoonToast";
 import { useNavbarVisibility } from "./MobileProfile";
+import { distributeMasonryColumns } from "@/lib/masonry-utils";
 
 /* eslint-disable @next/next/no-img-element */
 
@@ -42,7 +43,7 @@ function CollectionLightbox({
   collectionTitle,
   description,
 }: {
-  items: string[];
+  items: Array<{ url: string; width?: number; height?: number }>;
   activeIndex: number;
   onClose: () => void;
   onNext: () => void;
@@ -63,10 +64,10 @@ function CollectionLightbox({
 
   return (
     <MediaLightbox
-      items={items.map((url) => ({
-        id: url,
-        url,
-        isVideo: isVideoAsset(url),
+      items={items.map((entry) => ({
+        id: entry.url,
+        url: entry.url,
+        isVideo: isVideoAsset(entry.url),
       }))}
       activeIndex={activeIndex}
       onClose={onClose}
@@ -151,7 +152,7 @@ export default function CollectionDetailComponent({
 }) {
   const router = useRouter();
   const { showComingSoonToast } = useMobileComingSoon();
-  const imageUrls = images.map((entry) => (typeof entry === "string" ? entry : entry.url));
+  const imageObjects = images.map((entry) => (typeof entry === "string" ? { url: entry } : entry));
   const [activeTab, setActiveTab] = useState<MediaTab>("all");
   const [showMenu, setShowMenu] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -257,8 +258,8 @@ export default function CollectionDetailComponent({
     touchEndY.current = null;
   };
 
-  const photos = imageUrls.filter((url) => !isVideoAsset(url));
-  const videos = imageUrls.filter((url) => isVideoAsset(url));
+  const photos = imageObjects.filter((entry) => !isVideoAsset(entry.url));
+  const videos = imageObjects.filter((entry) => isVideoAsset(entry.url));
   const collectionObj = profile.collectionImages?.find(c => c.title === title);
   const aboutText = collectionObj?.about;
   const updatedDateStr = collectionObj?.updated_at || collectionObj?.updatedAt;
@@ -269,7 +270,7 @@ export default function CollectionDetailComponent({
   const displayImages =
     activeTab === "photos" ? photos :
       activeTab === "videos" ? videos :
-        imageUrls;
+        imageObjects;
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -306,17 +307,17 @@ export default function CollectionDetailComponent({
     return () => { document.body.style.overflow = ""; };
   }, [lightboxIndex]);
 
-  const items = displayImages.map((url, index) => ({ url, globalIndex: index }));
+  const items = displayImages.map((entry, index) => ({ ...entry, globalIndex: index }));
 
   useEffect(() => {
     if (typeof window === "undefined" || didReadFromUrl.current) return;
     didReadFromUrl.current = true;
     const url = new URL(window.location.href);
     const encodedImage = url.searchParams.get("image");
-    if (encodedImage && imageUrls.length > 0) {
+    if (encodedImage && imageObjects.length > 0) {
       try {
         const imageUrl = decodeURIComponent(escape(atob(encodedImage)));
-        const indexInAll = imageUrls.indexOf(imageUrl);
+        const indexInAll = imageObjects.findIndex((entry) => entry.url === imageUrl);
         if (indexInAll !== -1) {
           setActiveTab("all");
           setLightboxIndex(indexInAll);
@@ -332,7 +333,7 @@ export default function CollectionDetailComponent({
     if (typeof window === "undefined") return;
     const url = new URL(window.location.href);
     if (lightboxIndex !== null && displayImages.length > 0) {
-      const activeUrl = displayImages[lightboxIndex];
+      const activeUrl = displayImages[lightboxIndex].url;
       const encodedUrl = btoa(unescape(encodeURIComponent(activeUrl)));
       if (url.searchParams.get("image") !== encodedUrl) {
         url.searchParams.set("image", encodedUrl);
@@ -674,53 +675,54 @@ export default function CollectionDetailComponent({
                   </div>
                 ))}
               </div>
-              {/* Mobile/tablet: CSS columns */}
-              <div className="lg:hidden columns-2 sm:columns-3 gap-[0.375rem] md:gap-[1.25rem] w-full">
-                {items.map(({ url: imgUrl, globalIndex }) => {
-                  const isVideo = isVideoAsset(imgUrl);
-                  return (
-                    <div
-                      key={globalIndex}
-                      className="group mb-[0.5rem] md:mb-[1.25rem] w-full break-inside-avoid relative [-webkit-column-break-inside:avoid] inline-block"
-                    >
-                      <div
-                        className="relative rounded-2xl overflow-hidden bg-[#151515] cursor-pointer"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          setLightboxIndex(globalIndex);
-                        }}
-                      >
-                        {isVideo ? (
-                          <>
-                            <video
-                              data-original-src={MediaResolver.getBase(imgUrl)} src={MediaResolver.getOptimized(MediaResolver.getBase(imgUrl))}
-                              muted
-                              playsInline
-                              loop
-                              preload="metadata"
-                              className="w-full h-auto block pointer-events-none"
-                            />
-                            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
-                              <span className="text-white text-3xl drop-shadow-lg">▶</span>
+              {/* Mobile/tablet: 2 explicit flex columns distributed by height */}
+              <div className="flex lg:hidden w-full gap-[0.375rem] md:gap-[1.25rem]">
+                {distributeMasonryColumns(items, 2, (item) => (item.height && item.width ? item.height / item.width : 1)).map((columnItems, colIdx) => (
+                  <div key={colIdx} className="flex flex-col gap-[0.375rem] md:gap-[1.25rem] flex-1 min-w-0">
+                    {columnItems.map(({ url: imgUrl, globalIndex }) => {
+                        const isVideo = isVideoAsset(imgUrl);
+                        return (
+                          <div key={globalIndex} className="group relative w-full">
+                            <div
+                              className="relative rounded-2xl overflow-hidden bg-[#151515] cursor-pointer"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                setLightboxIndex(globalIndex);
+                              }}
+                            >
+                              {isVideo ? (
+                                <>
+                                  <video
+                                    data-original-src={MediaResolver.getBase(imgUrl)} src={MediaResolver.getOptimized(MediaResolver.getBase(imgUrl))}
+                                    muted
+                                    playsInline
+                                    loop
+                                    preload="metadata"
+                                    className="w-full h-auto block pointer-events-none"
+                                  />
+                                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
+                                    <span className="text-white text-3xl drop-shadow-lg">▶</span>
+                                  </div>
+                                </>
+                              ) : (
+                                <LoadedImage
+                                  originalSrc={MediaResolver.getBase(imgUrl)}
+                                  src={MediaResolver.getThumbnail(MediaResolver.getBase(imgUrl), 720)}
+                                  thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(imgUrl), 360)}
+                                  alt={`${title} photo ${globalIndex + 1}`}
+                                  className="w-full h-auto block"
+                                  containerClassName="w-full"
+                                  skeletonClassName="w-full aspect-square"
+                                />
+                              )}
+                              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-200 pointer-events-none" />
                             </div>
-                          </>
-                        ) : (
-                          <LoadedImage
-                            originalSrc={MediaResolver.getBase(imgUrl)}
-                            src={MediaResolver.getThumbnail(MediaResolver.getBase(imgUrl), 720)}
-                            thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(imgUrl), 360)}
-                            alt={`${title} photo ${globalIndex + 1}`}
-                            className="w-full h-auto block"
-                            containerClassName="w-full"
-                            skeletonClassName="w-full aspect-square"
-                          />
-                        )}
-                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-200 pointer-events-none" />
-                      </div>
-                    </div>
-                  );
-                })}
+                          </div>
+                        );
+                      })}
+                  </div>
+                ))}
               </div>
             </div>
           )}

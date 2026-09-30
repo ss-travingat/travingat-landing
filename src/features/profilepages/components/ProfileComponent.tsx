@@ -1,23 +1,20 @@
 "use client";
+import { distributeMasonryColumns } from "@/lib/masonry-utils";
 import { MediaResolver } from "@/lib/media-resolver";
 import { useRouter } from "next/navigation";
 
 import Link from "next/link";
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import type { MouseEvent as ReactMouseEvent } from "react";
-
 import { ThumbnailImage } from "@/components/ThumbnailImage";
 import { sampleProfiles, type SampleProfile } from "../data/profile-data";
 import { MediaLightbox, type LightboxItem } from "./MediaLightbox";
 import { MoreOptionsButton } from "@/components/ui/MoreOptionsButton";
 import { WaitlistPopup } from "@/components/ui/WaitlistPopup";
-import { MobileHero, MobileTabs, MobileActionBar } from "./MobileProfile";
+import { MobileHero, MobileTabs } from "./MobileProfile";
 import ProfileFooter from "./ProfileFooter";
 import CardCarousel from "./CardCarousel";
 import LoadedImage from "@/components/ui/LoadedImage";
 import FoundingExplorer from "@/components/ui/FoundingExplorerBadge";
-import { MasonryImageGrid } from "@/components/ui/MasonryImageGrid";
-import type { MasonryItemWithDimensions } from "@/hooks/useMasonryAdvanced";
 import { useMobileComingSoon } from "@/components/ui/MobileComingSoonToast";
 import { COUNTRY_LIST } from "@/lib/countries";
 import { Tooltip, TooltipProvider } from "@/components/ui/Tooltip";
@@ -716,9 +713,13 @@ function JsMasonryGrid({
           </div>
         ))}
       </div>
-      {/* Mobile/tablet: 2-column CSS columns */}
-      <div className="lg:hidden columns-2 gap-[0.375rem] w-full">
-        {orderedItems.map((mediaItem) => renderMediaItem(mediaItem, true))}
+      {/* Mobile/tablet: 2 explicit flex columns distributed by height */}
+      <div className="flex lg:hidden w-full gap-[0.375rem]">
+        {distributeMasonryColumns(orderedItems, 2, (item) => (item.height && item.width ? item.height / item.width : 1)).map((columnItems, colIdx) => (
+          <div key={colIdx} className="flex flex-col gap-[0.375rem] flex-1 min-w-0">
+            {columnItems.map((mediaItem) => renderMediaItem(mediaItem, false))}
+          </div>
+        ))}
       </div>
     </div>
   );
