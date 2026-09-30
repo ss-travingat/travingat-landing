@@ -428,11 +428,11 @@ export interface MobileTabsProps {
 }
 
 export function MobileTabs({ activeTab, setActiveTab, swipeOffset = 0 }: MobileTabsProps) {
-  const mobileTabs: { key: TabKey }[] = [
-    { key: "all" },
-    { key: "countries" },
-    { key: "collections" },
-    { key: "about" },
+  const mobileTabs: { key: TabKey; icon: string }[] = [
+    { key: "all", icon: "auto_awesome_mosaic" },
+    { key: "countries", icon: "public" },
+    { key: "collections", icon: "folder_copy" },
+    { key: "about", icon: "account_box" },
   ];
   const activeIndex = mobileTabs.findIndex((t) => t.key === activeTab);
 
@@ -451,7 +451,7 @@ export function MobileTabs({ activeTab, setActiveTab, swipeOffset = 0 }: MobileT
   const isDragging = swipeOffset !== 0;
 
   return (
-    <div id="profile-mobile-tabs" className="flex min-[75rem]:hidden flex-col w-[calc(100%+16px)] -mx-[0.5rem] border-b border-[#252525] sticky top-[4.5rem] z-header bg-black">
+    <div id="profile-mobile-tabs" className="flex min-[75rem]:hidden flex-col w-full border-b border-[#252525] sticky top-[4.5rem] z-header bg-black">
       <div className="flex items-center w-full">
         {mobileTabs.map((tab) => (
           <button
@@ -462,19 +462,21 @@ export function MobileTabs({ activeTab, setActiveTab, swipeOffset = 0 }: MobileT
             }}
             className="flex-1 flex items-center justify-center px-6 py-4 transition-all duration-200 opacity-100"
           >
-            <img src={`/icons/tab-${tab.key}.svg`} alt={`${tab.key} tab`} className="w-[1.5rem] h-[1.5rem]" />
+            <span className="material-symbols-rounded text-[1.5rem]" style={{ fontVariationSettings: "'FILL' 0, 'wght' 400" }}>{tab.icon}</span>
           </button>
         ))}
       </div>
       {/* Sliding underline */}
       <div
-        className="absolute bottom-0 h-0.5 bg-white rounded-full"
+        className="absolute bottom-0 left-0 pointer-events-none"
         style={{
           width: `${100 / mobileTabs.length}%`,
           transform: `translateX(${finalTranslate}%)`,
           transition: isDragging ? "none" : "transform 300ms cubic-bezier(0.4, 0, 0.2, 1)",
         }}
-      />
+      >
+        <div className="w-full h-[1px] bg-white" />
+      </div>
     </div>
   );
 }

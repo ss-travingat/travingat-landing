@@ -22,7 +22,7 @@ import { useMobileComingSoon } from "@/components/ui/MobileComingSoonToast";
 import { COUNTRY_LIST } from "@/lib/countries";
 import { Tooltip, TooltipProvider } from "@/components/ui/Tooltip";
 import { getCountryName } from "@/lib/countries";
-import { CountriesPopup } from "@/components/ui/CountriesPopup";
+import { DesktopCountriesPopup } from "@/components/ui/DesktopCountriesPopup";
 
 /* eslint-disable @next/next/no-img-element */
 
@@ -1472,7 +1472,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                     })}
                   </TooltipProvider>
                   {flagOverflowCount > 0 && (
-                    <CountriesPopup
+                    <DesktopCountriesPopup
                       countries={allVisitedCountries}
                       trigger={
                         <div className="flex h-3 w-4.5 lg:h-4 lg:w-6 xl:h-5 xl:w-7.5 shrink-0 items-center justify-center overflow-hidden rounded-xs bg-white cursor-pointer hover:opacity-80 transition-opacity">

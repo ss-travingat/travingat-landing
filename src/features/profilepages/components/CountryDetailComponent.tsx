@@ -463,7 +463,7 @@ export default function CountryDetailComponent({
       )}
 
       {/* Country Info */}
-      <main className="w-full max-w-[108rem] flex flex-col items-center gap-[3rem] pb-28 md:pb-20 pt-[6.5rem] md:pt-10">
+      <main className="w-full max-w-[108rem] flex flex-col items-center gap-[1.25rem] md:gap-[3rem] pb-28 md:pb-20 pt-[6.5rem] md:pt-10">
         <div className="flex flex-col items-center gap-[1.25rem] w-full max-w-[37.5rem]">
           <div className="flex flex-col items-center gap-[1.5rem]">
             <div className="h-[5rem] w-[7.5rem] overflow-hidden rounded-[0.5rem] shrink-0">
@@ -473,7 +473,7 @@ export default function CountryDetailComponent({
                 className="w-full h-full object-cover"
               />
             </div>
-            <h1 className="ds-font-display text-[3.25rem] leading-[3.75rem] tracking-[-1px] font-bold text-white text-center">
+            <h1 className="ds-font-display text-[1.75rem] leading-[2.25rem] tracking-[-0.5px] font-semibold text-white text-center">
               {countryName}
             </h1>
           </div>
@@ -606,13 +606,13 @@ export default function CountryDetailComponent({
             return (
               <>
                 <div id="mobile-tabs-sentinel" className="w-full h-0 md:hidden" />
-                <div id="profile-mobile-tabs" className="flex md:hidden items-center justify-between w-[calc(100%+1.5rem)] border-b border-[#222] -mx-[0.75rem] sticky top-[4.5rem] z-[90] bg-black relative">
+                <div id="profile-mobile-tabs" className="flex md:hidden items-center justify-between w-full border-b border-[#222] sticky top-[4.5rem] z-[90] bg-black relative">
                   {[
                   { key: "all", icon: "auto_awesome_mosaic" },
-                  { key: "photos", icon: "image" },
-                  { key: "videos", icon: "smart_display" },
+                  { key: "photos", icon: "imagesmode" },
+                  { key: "videos", icon: "slideshow" },
                   { key: "collections", icon: "folder_copy" },
-                  { key: "about", icon: "account_box" },
+                  { key: "about", icon: "chat_info" },
                 ].map(tab => (
                   <button
                     key={tab.key}
@@ -623,21 +623,23 @@ export default function CountryDetailComponent({
                       }
                       handleTabChange(tab.key as MediaTab);
                     }}
-                    className={`relative flex flex-col flex-1 items-center justify-center py-[1rem] ${
+                    className={`relative flex flex-col flex-1 items-center justify-center py-[1rem] transition-colors ${
                       activeTab === tab.key ? "text-white" : "text-[#7c7c7c]"
                     }`}
                   >
-                    <span className="material-symbols-rounded text-[1.5rem]" style={{ fontVariationSettings: "'FILL' 0" }}>{tab.icon}</span>
+                    <span className="material-symbols-rounded text-[1.5rem]" style={{ fontVariationSettings: "'FILL' 0, 'wght' 400" }}>{tab.icon}</span>
                   </button>
                 ))}
                 <div
-                  className="absolute bottom-[-1px] left-0 h-[2px] bg-white rounded-t-full pointer-events-none"
+                  className="absolute bottom-[-1px] left-0 pointer-events-none"
                   style={{
                     width: `20%`,
                     transform: `translateX(${finalTranslate}%)`,
                     transition: isDragging ? "none" : "transform 300ms cubic-bezier(0.4, 0, 0.2, 1)",
                   }}
-                />
+                >
+                  <div className="w-full h-[1px] bg-white" />
+                </div>
               </div>
               </>
             );
