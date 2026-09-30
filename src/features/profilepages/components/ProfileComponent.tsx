@@ -111,7 +111,17 @@ type ShareCardData = {
 const CREATED_AT_BASE_UTC_MS = Date.UTC(2025, 11, 27);
 const CREATED_AT_STEP_DAYS = 19;
 
-function getDeterministicCreatedLabel(index: number): string {
+function getDeterministicCreatedLabel(index: number, realDate?: string): string {
+  if (realDate) {
+    const date = new Date(realDate);
+    if (!isNaN(date.getTime())) {
+      return date.toLocaleDateString("en-GB", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+      });
+    }
+  }
   const createdAtMs = CREATED_AT_BASE_UTC_MS - index * CREATED_AT_STEP_DAYS * 24 * 60 * 60 * 1000;
   return new Date(createdAtMs).toLocaleDateString("en-GB", {
     day: "2-digit",
@@ -1307,7 +1317,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
           id: `${profile.id}-collection-${index}`,
           title: ci.title,
           description: profile.bio,
-          createdLabel: getDeterministicCreatedLabel(index),
+          createdLabel: getDeterministicCreatedLabel(index, ci.updatedAt || ci.updated_at),
           updatedLabel: getUpdatedLabel(ci.updatedAt || ci.updated_at, index),
           thumbnailUrl: ci.coverPhoto || previewImages[0] || (typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url),
           previewImages,
