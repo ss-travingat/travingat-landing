@@ -353,10 +353,15 @@ export default function CollectionDetailComponent({
     { key: "videos", label: "Videos" },
     { key: "about", label: "About" },
   ];
-  const headerCountryCodes =
-    collectionCountryCodes.length > 0
-      ? collectionCountryCodes
-      : (profile.visitedCountryCodes ?? []);
+  const getCountryCodeForImage = (url: string) => {
+    const entry = profile.countryImages?.find(c => 
+      c.images.some((i: any) => (typeof i === "string" ? i : i.url) === url)
+    );
+    return entry?.countryCode;
+  };
+
+  const derivedCountryCodes = new Set(imageObjects.map(img => getCountryCodeForImage(img.url)).filter(Boolean));
+  const headerCountryCodes = Array.from(derivedCountryCodes) as string[];
 
   const flagOverflowCount = headerCountryCodes.length > 4 ? headerCountryCodes.length - 4 : 0;
   const allVisitedCountries = headerCountryCodes.map((code) => {
@@ -630,6 +635,10 @@ export default function CollectionDetailComponent({
                   <div key={colIdx} className="flex flex-col gap-[0.5rem] xl:gap-[0.75rem] flex-1 min-w-0">
                     {columnItems.map(({ url: imgUrl, globalIndex }) => {
                         const isVideo = isVideoAsset(imgUrl);
+                        const displayCountryCode = getCountryCodeForImage(imgUrl);
+                        const countryEntry = displayCountryCode ? COUNTRY_LIST.find((c) => c.code.toLowerCase() === displayCountryCode.toLowerCase()) : null;
+                        const countryName = countryEntry ? countryEntry.name : displayCountryCode;
+
                         return (
                           <div key={globalIndex} className="group relative">
                             <div
@@ -667,6 +676,25 @@ export default function CollectionDetailComponent({
                               )}
                               <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-200 pointer-events-none" />
                             </div>
+                            {displayCountryCode ? (
+                              <div className="absolute top-2 right-2 md:top-3 md:right-3 z-20 transition-opacity duration-200 opacity-100 pointer-events-auto">
+                                <TooltipProvider delayDuration={100}>
+                                  <Tooltip
+                                    content={countryName || displayCountryCode}
+                                    theme="light"
+                                    side="top"
+                                  >
+                                    <div className="flex items-center drop-shadow-md cursor-pointer">
+                                      <img
+                                        src={`/flags/${displayCountryCode.toUpperCase()}.svg`}
+                                        alt={displayCountryCode}
+                                        className="h-3.5 w-5 rounded-xs object-cover"
+                                      />
+                                    </div>
+                                  </Tooltip>
+                                </TooltipProvider>
+                              </div>
+                            ) : null}
                           </div>
                         );
                       })}
@@ -679,6 +707,10 @@ export default function CollectionDetailComponent({
                   <div key={colIdx} className="flex flex-col gap-[0.375rem] md:gap-[1.25rem] flex-1 min-w-0">
                     {columnItems.map(({ url: imgUrl, globalIndex }) => {
                         const isVideo = isVideoAsset(imgUrl);
+                        const displayCountryCode = getCountryCodeForImage(imgUrl);
+                        const countryEntry = displayCountryCode ? COUNTRY_LIST.find((c) => c.code.toLowerCase() === displayCountryCode.toLowerCase()) : null;
+                        const countryName = countryEntry ? countryEntry.name : displayCountryCode;
+
                         return (
                           <div key={globalIndex} className="group relative w-full">
                             <div
@@ -716,6 +748,25 @@ export default function CollectionDetailComponent({
                               )}
                               <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-200 pointer-events-none" />
                             </div>
+                            {displayCountryCode ? (
+                              <div className="absolute top-2 right-2 md:top-3 md:right-3 z-20 transition-opacity duration-200 opacity-100 pointer-events-auto">
+                                <TooltipProvider delayDuration={100}>
+                                  <Tooltip
+                                    content={countryName || displayCountryCode}
+                                    theme="light"
+                                    side="top"
+                                  >
+                                    <div className="flex items-center drop-shadow-md cursor-pointer">
+                                      <img
+                                        src={`/flags/${displayCountryCode.toUpperCase()}.svg`}
+                                        alt={displayCountryCode}
+                                        className="h-3.5 w-5 rounded-xs object-cover"
+                                      />
+                                    </div>
+                                  </Tooltip>
+                                </TooltipProvider>
+                              </div>
+                            ) : null}
                           </div>
                         );
                       })}
