@@ -679,13 +679,9 @@ export default function CountryDetailComponent({
                             <div
                               className="relative rounded-2xl overflow-hidden bg-[#151515] cursor-pointer"
                               onClick={(e) => {
-                                if (window.innerWidth < 811) {
-                                  e.preventDefault();
-                                  e.stopPropagation();
-                                  showComingSoonToast();
-                                } else {
-                                  setLightboxIndex(globalIndex);
-                                }
+                                e.preventDefault();
+                                e.stopPropagation();
+                                setLightboxIndex(globalIndex);
                               }}
                             >
                               {isVideo ? (
@@ -782,13 +778,9 @@ export default function CountryDetailComponent({
                       <div
                         className="relative rounded-2xl overflow-hidden bg-[#151515] cursor-pointer"
                         onClick={(e) => {
-                          if (window.innerWidth < 811) {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            showComingSoonToast();
-                          } else {
-                            setLightboxIndex(globalIndex);
-                          }
+                          e.preventDefault();
+                          e.stopPropagation();
+                          setLightboxIndex(globalIndex);
                         }}
                       >
                         {isVideo ? (

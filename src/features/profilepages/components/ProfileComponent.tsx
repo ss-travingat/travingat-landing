@@ -577,11 +577,7 @@ function JsMasonryGrid({
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
-            if (window.innerWidth < 811) {
-              showComingSoonToast();
-            } else {
-              openCarouselAt(originalIndex);
-            }
+            openCarouselAt(originalIndex);
           }}
         >
           {mediaItem.isVideo ? (
@@ -661,13 +657,8 @@ function JsMasonryGrid({
                   href={viewHref}
                   role="menuitem"
                   className="flex w-full items-center gap-3 text-[0.9375rem] font-medium tracking-[-0.3px] text-white hover:text-[#d4d4d4] transition-colors"
-                  onClick={(event) => {
-                    if (window.innerWidth < 811) {
-                      event.preventDefault();
-                      showComingSoonToast("featureLaunch");
-                    } else {
-                      setOpenContextMenuId(null);
-                    }
+                  onClick={() => {
+                    setOpenContextMenuId(null);
                   }}
                 >
                   <span className="material-symbols-rounded text-[1.375rem]">{collectionHref ? "collections" : "public"}</span>
@@ -1418,6 +1409,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
             profileFlagSrc={profileFlagSrc}
             headerFlagCodes={headerFlagCodes}
             flagOverflowCount={flagOverflowCount}
+            allVisitedCountries={allVisitedCountries}
           />
 
 
@@ -1869,12 +1861,6 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                               key={collection.id}
                               href={collectionHref}
                               className="flex flex-col gap-4 md:gap-5"
-                              onClick={(e) => {
-                                if (window.innerWidth < 811) {
-                                  e.preventDefault();
-                                  showComingSoonToast();
-                                }
-                              }}
                             >
                               <div className="relative group">
                                 <CardCarousel

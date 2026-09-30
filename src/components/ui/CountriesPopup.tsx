@@ -122,7 +122,7 @@ export function CountriesPopup({ trigger, countries }: CountriesPopupProps) {
                 List of {countries.length} countries visited.
               </Dialog.Description>
             </div>
-            <div className="flex-1 overflow-y-auto px-5 pb-5 space-y-1 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
+            <div className="flex-1 overflow-y-auto min-h-0 px-5 pb-5 space-y-1 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
               {countries.map((country, index) => (
                 <div
                   key={`${country.code}-${index}`}

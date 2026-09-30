@@ -1,0 +1,749 @@
+--- src/features/profilepages/components/CountryDetailComponent.tsx	2026-09-30 13:58:01
++++ src/features/profilepages/components/CollectionDetailComponent.tsx	2026-09-30 14:25:59
+@@ -10,34 +10,25 @@
+ import { MediaLightbox } from "./MediaLightbox";
+ import ProfileFooter from "./ProfileFooter";
+ import { MoreOptionsButton } from "@/components/ui/MoreOptionsButton";
+-import { WaitlistPopup } from "@/components/ui/WaitlistPopup";
++import { Tooltip, TooltipProvider } from "@/components/ui/Tooltip";
++import { CountriesPopup } from "@/components/ui/CountriesPopup";
++import { DesktopCountriesPopup } from "@/components/ui/DesktopCountriesPopup";
++import { COUNTRY_LIST } from "@/lib/countries";
+ import LoadedImage from "@/components/ui/LoadedImage";
+ import { useMobileComingSoon } from "@/components/ui/MobileComingSoonToast";
+-import { COUNTRY_LIST } from "@/lib/countries";
+ import { useNavbarVisibility } from "./MobileProfile";
+ 
+ /* eslint-disable @next/next/no-img-element */
+ 
+ const STATIC_LAST_UPDATED_LABEL = "27 Dec 2025";
+ 
+-const COUNTRY_LIST_LOOKUP: Record<string, string> = Object.fromEntries(
+-  COUNTRY_LIST.map(c => [c.code.toUpperCase(), c.name])
+-);
++type MediaTab = "all" | "photos" | "videos" | "about";
+ 
+-type MediaTab = "all" | "photos" | "videos" | "collections" | "about";
+-
+ function isVideoAsset(url: string) {
+   return /\.(mp4|mov|webm|m4v|3gp|3g2)$/i.test(url);
+ }
+ 
+-function toFlagAssetPath(flagCode?: string): string | undefined {
+-  if (!flagCode) return undefined;
+-  return `/flags/${flagCode.toUpperCase()}.svg`;
+-}
+-
+-// ─── Lightbox Modal ──────────────────────────────────────────────────────────
+-
+-function PhotoLightbox({
++function CollectionLightbox({
+   items,
+   activeIndex,
+   onClose,
+@@ -48,11 +39,8 @@
+   profileCountry,
+   profileHandle,
+   profileAvatar,
+-  profileFlagCode,
+-  countryName,
+-  countryCode,
++  collectionTitle,
+   description,
+-  quote,
+ }: {
+   items: string[];
+   activeIndex: number;
+@@ -64,22 +52,18 @@
+   profileCountry?: string;
+   profileHandle: string;
+   profileAvatar: string;
+-  profileFlagCode?: string;
+-  countryName: string;
+-  countryCode: string;
++  collectionTitle: string;
+   description?: string;
+-  quote?: string;
+ }) {
+-  const { showComingSoonToast } = useMobileComingSoon();
+   const totalCount = items.length;
+   const displayIndex = activeIndex + 1;
+   const avatarSrc = MediaResolver.getBase(profileAvatar);
+-  const countryFlagSrc = toFlagAssetPath(countryCode);
+-  const profileFlagSrc = toFlagAssetPath(profileFlagCode);
+ 
++  const { showComingSoonToast } = useMobileComingSoon();
++
+   return (
+     <MediaLightbox
+-      items={items.map((url: string) => ({
++      items={items.map((url) => ({
+         id: url,
+         url,
+         isVideo: isVideoAsset(url),
+@@ -94,7 +78,6 @@
+           className="flex w-[22.5rem] shrink-0 flex-col gap-8 overflow-y-auto bg-[#111111] p-8 text-white"
+           onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
+         >
+-          {/* Avatar + close */}
+           <div className="flex items-start justify-between">
+             <div className="h-[4.5rem] w-[4.5rem] overflow-hidden rounded-2xl">
+               <LoadedImage src={avatarSrc} thumbnailSrc={MediaResolver.getThumbnail(avatarSrc, 720)} alt={profileName} className="h-full w-full object-cover" />
+@@ -109,18 +92,13 @@
+             </button>
+           </div>
+ 
+-          {/* Profile info */}
+           <div className="flex flex-col gap-3">
+             <div className="flex items-center gap-[0.375rem]">
+-              {profileFlagSrc ? (
+-                <img src={profileFlagSrc} alt="" className="h-3 w-[1.125rem] rounded-[0.125rem] object-cover" />
+-              ) : null}
+               <span className="text-[0.875rem] font-medium leading-[1.25rem] tracking-[-0.1px] text-[#A8A8A8]">{profileCountry || profileName}</span>
+             </div>
+             <p className="text-[1.25rem] font-semibold tracking-[-0.5px] text-white">{profileHandle}</p>
+           </div>
+ 
+-          {/* Follow / Connect / More */}
+           <div className="flex items-center gap-2">
+             <button
+               type="button"
+@@ -146,55 +124,54 @@
+             </button>
+           </div>
+ 
+-          {/* Country + description */}
+-          <div className="flex flex-col gap-[0.5rem]">
+-            <div className="flex items-center gap-[0.75rem]">
+-              {countryFlagSrc ? (
+-                <img src={countryFlagSrc} alt="" className="h-[1.3125rem] w-[2rem] rounded-[0.204375rem] object-cover shadow-sm" />
+-              ) : null}
+-              <p className="text-center font-display text-[1.5rem] font-semibold not-italic leading-[2rem] tracking-[-0.03125rem] text-white">
+-                {countryName}
+-              </p>
+-            </div>
++          <div className="flex flex-col gap-4">
++            <p className="text-[1.375rem] font-semibold tracking-[-0.5px] text-[#ededed]">
++              {collectionTitle}
++            </p>
+             {description ? (
+-              <p className="text-[1rem] leading-[1.5rem] tracking-[-0.096px] font-normal text-[#dcdcdc] whitespace-pre-wrap">{description}</p>
++              <p className="text-[0.9375rem] leading-[1.6] tracking-[-0.3px] text-[#a0a0a0]">{description}</p>
+             ) : null}
+           </div>
+-
+-          {/* Divider + quote */}
+-          {quote ? (
+-            <div className="border-t border-[#222] pt-6">
+-              <p className="text-[1rem] leading-[1.5rem] tracking-[-0.096px] font-normal text-[#dcdcdc] whitespace-pre-wrap">{quote}</p>
+-            </div>
+-          ) : null}
+         </aside>
+       }
+     />
+   );
+ }
+ 
+-// ─── Custom Trigger for Media ────────────────────────────────────────────────
+-// ─── Main Component ──────────────────────────────────────────────────────────
+-
+-export default function CountryDetailComponent({
++export default function CollectionDetailComponent({
+   profile,
+-  countryCode,
++  title,
+   images,
++  collectionCountryCodes = [],
+ }: {
+   profile: SampleProfile;
+-  countryCode: string;
++  title: string;
+   images: Array<string | { url: string; width?: number; height?: number }>;
++  collectionCountryCodes?: string[];
+ }) {
+-  const { showComingSoonToast } = useMobileComingSoon();
+   const router = useRouter();
+-  useNavbarVisibility(false);
++  const { showComingSoonToast } = useMobileComingSoon();
+   const imageUrls = images.map((entry) => (typeof entry === "string" ? entry : entry.url));
+-  const countryName = COUNTRY_LIST_LOOKUP[countryCode] || countryCode;
+   const [activeTab, setActiveTab] = useState<MediaTab>("all");
+   const [showMenu, setShowMenu] = useState(false);
+-  const [isWaitlistOpen, setIsWaitlistOpen] = useState(false);
+   const menuRef = useRef<HTMLDivElement>(null);
++  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
++  const [prevActiveTab, setPrevActiveTab] = useState<MediaTab>("all");
+ 
++  if (activeTab !== prevActiveTab) {
++    setPrevActiveTab(activeTab);
++    setLightboxIndex(null);
++  }
++  const didReadFromUrl = useRef(false);
++
++  // Swipe gesture state
++  const [swipeOffset, setSwipeOffset] = useState(0);
++  const touchStartX = useRef<number | null>(null);
++  const touchStartY = useRef<number | null>(null);
++  const touchEndX = useRef<number | null>(null);
++  const touchEndY = useRef<number | null>(null);
++  useNavbarVisibility(showMenu);
++
+   const handleTabChange = (tab: MediaTab) => {
+     (window as any).__lastProgrammaticScrollTime = Date.now();
+     (window as any).__isProgrammaticScroll = true;
+@@ -229,23 +206,8 @@
+           window.scrollTo({ top: targetScrollY, behavior: "instant" });
+         }
+       }
+-
+-      setTimeout(() => {
+-        window.dispatchEvent(new Event("scroll"));
+-      }, 50);
+-    }, 0);
++    }, 10);
+   };
+-
+-  // Lightbox state
+-  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+-  const didReadFromUrl = useRef(false);
+-
+-  // Swipe gesture state
+-  const [swipeOffset, setSwipeOffset] = useState(0);
+-  const touchStartX = useRef<number | null>(null);
+-  const touchStartY = useRef<number | null>(null);
+-  const touchEndX = useRef<number | null>(null);
+-  const touchEndY = useRef<number | null>(null);
+ 
+   const handleTouchStart = (e: React.TouchEvent) => {
+     touchStartX.current = e.touches[0].clientX;
+@@ -272,42 +234,34 @@
+       const swipeThreshold = 50;
+ 
+       if (Math.abs(distanceX) > Math.abs(distanceY) && Math.abs(distanceX) > swipeThreshold) {
+-        const tabsArr: MediaTab[] = ["all", "photos", "videos", "collections", "about"];
++        const tabsArr: MediaTab[] = ["all", "photos", "videos", "about"];
+         const currentIndex = tabsArr.indexOf(activeTab);
+ 
+         if (distanceX > 0) {
+           if (currentIndex < tabsArr.length - 1) {
+             const nextTab = tabsArr[currentIndex + 1];
+-            if (nextTab === "collections") {
+-              showComingSoonToast("featureLaunch");
+-            } else {
+-              handleTabChange(nextTab);
+-            }
++            handleTabChange(nextTab);
+           }
+         } else {
+           if (currentIndex > 0) {
+             const prevTab = tabsArr[currentIndex - 1];
+-            if (prevTab === "collections") {
+-              showComingSoonToast("featureLaunch");
+-            } else {
+-              handleTabChange(prevTab);
+-            }
++            handleTabChange(prevTab);
+           }
+         }
+       }
+     }
++    setSwipeOffset(0);
+     touchStartX.current = null;
+     touchStartY.current = null;
+     touchEndX.current = null;
+     touchEndY.current = null;
+-    setSwipeOffset(0);
+   };
+ 
+   const photos = imageUrls.filter((url) => !isVideoAsset(url));
+   const videos = imageUrls.filter((url) => isVideoAsset(url));
+-  const countryImageObj = profile.countryImages?.find(c => c.countryCode.toUpperCase() === countryCode.toUpperCase());
+-  const aboutText = countryImageObj?.about;
+-  const updatedDateStr = countryImageObj?.updated_at || countryImageObj?.updatedAt;
++  const collectionObj = profile.collectionImages?.find(c => c.title === title);
++  const aboutText = collectionObj?.about;
++  const updatedDateStr = collectionObj?.updated_at || collectionObj?.updatedAt;
+   const updatedLabel = updatedDateStr
+     ? new Date(updatedDateStr).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })
+     : STATIC_LAST_UPDATED_LABEL;
+@@ -317,9 +271,16 @@
+       activeTab === "videos" ? videos :
+         imageUrls;
+ 
+-  const items = displayImages.map((url, index) => ({ url, globalIndex: index }));
++  useEffect(() => {
++    function handleClickOutside(e: MouseEvent) {
++      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
++        setShowMenu(false);
++      }
++    }
++    document.addEventListener("mousedown", handleClickOutside);
++    return () => document.removeEventListener("mousedown", handleClickOutside);
++  }, []);
+ 
+-  // Close lightbox on ESC, navigate on arrow keys
+   const handleKeyDown = useCallback((e: KeyboardEvent) => {
+     if (lightboxIndex === null) return;
+     if (e.key === "Escape") {
+@@ -336,7 +297,6 @@
+     return () => document.removeEventListener("keydown", handleKeyDown);
+   }, [handleKeyDown]);
+ 
+-  // Lock body scroll when lightbox is open
+   useEffect(() => {
+     if (lightboxIndex !== null) {
+       document.body.style.overflow = "hidden";
+@@ -346,35 +306,9 @@
+     return () => { document.body.style.overflow = ""; };
+   }, [lightboxIndex]);
+ 
+-  useEffect(() => {
+-    function handleClickOutside(e: MouseEvent) {
+-      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+-        setShowMenu(false);
+-      }
+-      if (contextMenuRef.current && !contextMenuRef.current.contains(e.target as Node)) {
+-        setOpenContextMenuId(null);
+-      }
+-    }
+-    function handleKeyDown(e: KeyboardEvent) {
+-      if (e.key === "Escape") {
+-        setOpenContextMenuId(null);
+-      }
+-    }
+-    document.addEventListener("mousedown", handleClickOutside);
+-    document.addEventListener("keydown", handleKeyDown);
+-    return () => {
+-      document.removeEventListener("mousedown", handleClickOutside);
+-      document.removeEventListener("keydown", handleKeyDown);
+-    };
+-  }, []);
++  const items = displayImages.map((url, index) => ({ url, globalIndex: index }));
+ 
+-  // When tab changes, close lightbox
+   useEffect(() => {
+-    setLightboxIndex(null);
+-  }, [activeTab]);
+-
+-  // Read from URL on mount (runs once)
+-  useEffect(() => {
+     if (typeof window === "undefined" || didReadFromUrl.current) return;
+     didReadFromUrl.current = true;
+     const url = new URL(window.location.href);
+@@ -382,22 +316,18 @@
+     if (encodedImage && imageUrls.length > 0) {
+       try {
+         const imageUrl = decodeURIComponent(escape(atob(encodedImage)));
+-        // Search in the full images array regardless of active tab
+         const indexInAll = imageUrls.indexOf(imageUrl);
+         if (indexInAll !== -1) {
+-          // Ensure we're on the "all" tab so the index lines up with displayImages
+           setActiveTab("all");
+           setLightboxIndex(indexInAll);
+           return;
+         }
+-        // Fallback: open at index 0
+         setLightboxIndex(0);
+       } catch (e) { }
+     }
+     // eslint-disable-next-line react-hooks/exhaustive-deps
+   }, []);
+ 
+-  // Sync lightbox state to URL (only after initial read)
+   useEffect(() => {
+     if (typeof window === "undefined") return;
+     const url = new URL(window.location.href);
+@@ -416,17 +346,22 @@
+     }
+   }, [lightboxIndex, displayImages]);
+ 
+-  const [openContextMenuId, setOpenContextMenuId] = useState<string | null>(null);
+-  const contextMenuRef = useRef<HTMLDivElement>(null);
+-
+   const tabs: { key: string; label: string }[] = [
+     { key: "all", label: "All media" },
+     { key: "photos", label: "Photos" },
+     { key: "videos", label: "Videos" },
+     { key: "about", label: "About" },
+   ];
++  const headerCountryCodes =
++    collectionCountryCodes.length > 0
++      ? collectionCountryCodes
++      : (profile.visitedCountryCodes ?? []);
+ 
+-  const profileHandle = profile.handle.startsWith("@") ? profile.handle : `@${profile.handle}`;
++  const flagOverflowCount = headerCountryCodes.length > 4 ? headerCountryCodes.length - 4 : 0;
++  const allVisitedCountries = headerCountryCodes.map((code) => {
++    const countryEntry = COUNTRY_LIST.find((c) => c.code.toLowerCase() === code.toLowerCase());
++    return { name: countryEntry ? countryEntry.name : code, code };
++  });
+ 
+   return (
+     <div className="min-h-screen bg-black text-white flex flex-col items-center px-[0.75rem] min-[50.625rem]:px-[2rem] min-[75rem]:px-[3rem] min-[90rem]:px-[4rem] relative">
+@@ -441,10 +376,8 @@
+           </button>
+         </div>
+       </div>
+-
+-      {/* Lightbox */}
+       {lightboxIndex !== null && (
+-        <PhotoLightbox
++        <CollectionLightbox
+           items={displayImages}
+           activeIndex={lightboxIndex}
+           onClose={() => setLightboxIndex(null)}
+@@ -453,28 +386,60 @@
+           onSelectIndex={setLightboxIndex}
+           profileName={profile.name}
+           profileCountry={profile.country}
+-          profileHandle={profileHandle}
++          profileHandle={profile.handle.startsWith("@") ? profile.handle : `@${profile.handle}`}
+           profileAvatar={typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url}
+-          profileFlagCode={profile.flagCode}
+-          countryName={countryName}
+-          countryCode={countryCode}
+-          description={profile.countryImages?.find((c) => c.countryCode.toUpperCase() === countryCode.toUpperCase())?.about}
++          collectionTitle={title}
++          description={aboutText}
+         />
+       )}
+-
+-      {/* Country Info */}
+-      <main className="w-full max-w-[108rem] flex flex-col items-center gap-[1.25rem] md:gap-[3rem] pb-28 md:pb-20 pt-[6.5rem] md:pt-10">
++      <main className="w-full max-w-[108rem] flex flex-col items-center gap-0 md:gap-[3rem] pb-28 md:pb-20 pt-[6.5rem] md:pt-10">
+         <div className="flex flex-col items-center gap-[1.25rem] w-full max-w-[37.5rem]">
+           <div className="flex flex-col items-center gap-[1.5rem]">
+-            <div className="h-[5rem] w-[7.5rem] overflow-hidden rounded-[0.5rem] shrink-0">
+-              <img
+-                src={`/flags/${countryCode}.svg`}
+-                alt={`${countryName} flag`}
+-                className="w-full h-full object-cover"
+-              />
++            <div className="flex items-center gap-[0.5rem] justify-center flex-wrap">
++              {headerCountryCodes.slice(0, 4).map((code) => {
++                const countryEntry = COUNTRY_LIST.find((c) => c.code.toLowerCase() === code.toLowerCase());
++                const countryName = countryEntry ? countryEntry.name : code;
++                return (
++                  <TooltipProvider key={code} delayDuration={100}>
++                    <Tooltip content={countryName} theme="light" side="top">
++                      <div className="h-[1.5rem] w-[2.125rem] overflow-hidden rounded-[0.1875rem] shadow-sm cursor-pointer">
++                        <img src={`/flags/${code.toUpperCase()}.svg`} className="w-full h-full object-cover" alt={countryName} />
++                      </div>
++                    </Tooltip>
++                  </TooltipProvider>
++                );
++              })}
++              {flagOverflowCount > 0 && (
++                <>
++                  <div className="hidden md:block">
++                    <DesktopCountriesPopup
++                      countries={allVisitedCountries}
++                      trigger={
++                        <div className="flex h-[1.5rem] w-[2.125rem] shrink-0 items-center justify-center overflow-hidden rounded-[0.1875rem] bg-white cursor-pointer hover:opacity-80 transition-opacity">
++                          <span className="font-medium text-violet-600 text-[0.75rem] text-center tracking-[-0.408px] whitespace-nowrap">
++                            +{flagOverflowCount}
++                          </span>
++                        </div>
++                      }
++                    />
++                  </div>
++                  <div className="block md:hidden">
++                    <CountriesPopup
++                      countries={allVisitedCountries}
++                      trigger={
++                        <div className="flex h-[1.5rem] w-[2.125rem] shrink-0 items-center justify-center overflow-hidden rounded-[0.1875rem] bg-white cursor-pointer hover:opacity-80 transition-opacity">
++                          <span className="font-medium text-violet-600 text-[0.75rem] text-center tracking-[-0.408px] whitespace-nowrap">
++                            +{flagOverflowCount}
++                          </span>
++                        </div>
++                      }
++                    />
++                  </div>
++                </>
++              )}
+             </div>
+-            <h1 className="ds-font-display text-[1.75rem] leading-[2.25rem] tracking-[-0.5px] font-semibold text-white text-center">
+-              {countryName}
++            <h1 className="ds-font-display text-[1.75rem] leading-[2.25rem] tracking-[-0.5px] font-semibold md:text-[3.25rem] md:leading-[3.75rem] md:tracking-[-1px] md:font-bold text-white text-center">
++              {title}
+             </h1>
+           </div>
+ 
+@@ -520,9 +485,9 @@
+                 </button>
+                 {showMenu && (
+                   <ContextMenu
+-                    kind="country"
+-                    viewLabel="View main profile"
+-                    shareLabel="Share country"
++                    kind="collection"
++                    viewLabel="View collection"
++                    shareLabel="Share collection"
+                     viewHref={`/${profile.handle.replace(/^@/, "")}`}
+                     showViewAction={false}
+                     onShare={() => {
+@@ -552,9 +517,9 @@
+               </button>
+               {showMenu && (
+                 <ContextMenu
+-                  kind="country"
+-                  viewLabel="View main profile"
+-                  shareLabel="Share country"
++                  kind="collection"
++                  viewLabel="View collection"
++                  shareLabel="Share collection"
+                   viewHref={`/${profile.handle.replace(/^@/, "")}`}
+                   showViewAction={false}
+                   onShare={() => {
+@@ -571,26 +536,9 @@
+ 
+         {/* Tabs + content */}
+         <div className="w-full flex flex-col gap-[0.75rem] md:gap-[3rem] items-center">
+-          {/* Desktop Tab pills */}
+-          <div id="desktop-tabs-sentinel" className="w-full h-0 hidden md:block" />
+-          <div className="hidden md:flex items-center justify-center gap-[0.5rem] flex-wrap">
+-            {tabs.map((tab) => (
+-              <button
+-                key={tab.label}
+-                onClick={() => handleTabChange(tab.key as MediaTab)}
+-                className={`rounded-[62.4375rem] px-[1.5rem] py-[0.5rem] text-[1rem] leading-[1.5rem] tracking-[-0.096px] transition ${activeTab === tab.key
+-                  ? "bg-[#1e1e1e] border border-white text-white font-medium"
+-                  : "bg-[#161616] border border-transparent text-[#bdbdbd] font-normal"
+-                  }`}
+-              >
+-                {tab.label}
+-              </button>
+-            ))}
+-          </div>
+-
+           {/* Mobile Tab icons */}
+           {(() => {
+-            const mobileTabsArr = ["all", "photos", "videos", "collections", "about"] as const;
++            const mobileTabsArr = ["all", "photos", "videos", "about"] as const;
+             const activeIndex = mobileTabsArr.indexOf(activeTab as any);
+ 
+             let offsetPercent = 0;
+@@ -611,18 +559,11 @@
+                   { key: "all", icon: "auto_awesome_mosaic" },
+                   { key: "photos", icon: "imagesmode" },
+                   { key: "videos", icon: "slideshow" },
+-                  { key: "collections", icon: "folder_copy" },
+                   { key: "about", icon: "chat_info" },
+                 ].map(tab => (
+                   <button
+                     key={tab.key}
+-                    onClick={() => {
+-                      if (tab.key === "collections") {
+-                        showComingSoonToast("featureLaunch");
+-                        return;
+-                      }
+-                      handleTabChange(tab.key as MediaTab);
+-                    }}
++                    onClick={() => handleTabChange(tab.key as MediaTab)}
+                     className={`relative flex flex-col flex-1 items-center justify-center py-[1rem] transition-colors ${
+                       activeTab === tab.key ? "text-white" : "text-[#7c7c7c]"
+                     }`}
+@@ -633,7 +574,7 @@
+                 <div
+                   className="absolute bottom-[-1px] left-0 pointer-events-none"
+                   style={{
+-                    width: `20%`,
++                    width: `25%`,
+                     transform: `translateX(${finalTranslate}%)`,
+                     transition: isDragging ? "none" : "transform 300ms cubic-bezier(0.4, 0, 0.2, 1)",
+                   }}
+@@ -645,6 +586,22 @@
+             );
+           })()}
+ 
++          {/* Desktop Tab pills */}
++          <div className="hidden md:flex items-center justify-center gap-[0.5rem] flex-wrap">
++            {tabs.map((tab) => (
++              <button
++                key={tab.label}
++                onClick={() => setActiveTab(tab.key as MediaTab)}
++                className={`rounded-[62.4375rem] px-[1.5rem] py-[0.5rem] text-[1rem] leading-[1.5rem] tracking-[-0.096px] transition ${activeTab === tab.key
++                    ? "bg-[#1e1e1e] border border-white text-white font-medium"
++                    : "bg-[#161616] border border-transparent text-[#bdbdbd] font-normal"
++                  }`}
++              >
++                {tab.label}
++              </button>
++            ))}
++          </div>
++
+           {/* Touch container for content */}
+           <div
+             className="w-full flex flex-col flex-1 min-h-screen"
+@@ -655,7 +612,7 @@
+             {/* Masonry grid or About */}
+           {activeTab === "about" ? (
+             <div className="flex flex-col items-start gap-4 w-full max-w-[50rem] text-left mt-8 mb-20 px-4 md:px-0">
+-              <h2 className="text-[1.5rem] font-semibold text-white">About {countryName}</h2>
++              <h2 className="text-[1.5rem] font-semibold text-white">About {title}</h2>
+               <p className="text-[1rem] text-[#a8a8a8] leading-relaxed whitespace-pre-wrap">
+                 {aboutText || "No information provided yet."}
+               </p>
+@@ -686,7 +643,8 @@
+                             >
+                               {isVideo ? (
+                                 <>
+-                                  <video data-data-original-src={MediaResolver.getBase(imgUrl)} src={MediaResolver.getOptimized(MediaResolver.getBase(imgUrl))}
++                                  <video
++                                    data-original-src={MediaResolver.getBase(imgUrl)} src={MediaResolver.getOptimized(MediaResolver.getBase(imgUrl))}
+                                     muted
+                                     playsInline
+                                     loop
+@@ -702,8 +660,7 @@
+                                   originalSrc={MediaResolver.getBase(imgUrl)}
+                                   src={MediaResolver.getThumbnail(MediaResolver.getBase(imgUrl), 720)}
+                                   thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(imgUrl), 360)}
+-                                  alt={`${countryName} photo ${globalIndex + 1}`}
+-                                  priority={globalIndex < 4}
++                                  alt={`${title} photo ${globalIndex + 1}`}
+                                   className="w-full h-auto block"
+                                   containerClassName="w-full"
+                                   skeletonClassName="w-full aspect-square"
+@@ -711,69 +668,20 @@
+                               )}
+                               <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-200 pointer-events-none" />
+                             </div>
+-                            <MoreOptionsButton
+-                              isOpen={openContextMenuId === `media-${globalIndex}`}
+-                              label={`Open menu for photo ${globalIndex + 1}`}
+-                              size="sm"
+-                              onClick={(e) => {
+-                                e.preventDefault();
+-                                e.stopPropagation();
+-                                setOpenContextMenuId(openContextMenuId === `media-${globalIndex}` ? null : `media-${globalIndex}`);
+-                              }}
+-                            />
+-                            {openContextMenuId === `media-${globalIndex}` ? (
+-                              <div
+-                                ref={contextMenuRef}
+-                                role="menu"
+-                                className="absolute right-3 bottom-14 z-30 w-[12.5rem] rounded-2xl border border-[#2e2e2e] bg-[#1a1a1a] p-4 shadow-[0_8px_30px_rgb(0,0,0,0.5)]"
+-                                onClick={(event) => { event.preventDefault(); event.stopPropagation(); }}
+-                              >
+-                                <div className="flex flex-col gap-4">
+-                                  <button
+-                                    type="button"
+-                                    role="menuitem"
+-                                    onClick={(event) => {
+-                                      event.preventDefault();
+-                                      event.stopPropagation();
+-                                      setOpenContextMenuId(null);
+-                                      showComingSoonToast("featureLaunch");
+-                                    }}
+-                                    className="flex w-full items-center gap-3 text-[0.9375rem] font-medium tracking-[-0.3px] text-white hover:text-[#d4d4d4] transition-colors"
+-                                  >
+-                                    <span className="material-symbols-rounded text-[1.375rem]">favorite_border</span>
+-                                    <span>Add to favorites</span>
+-                                  </button>
+-                                  <button
+-                                    type="button"
+-                                    role="menuitem"
+-                                    onClick={(event) => {
+-                                      event.preventDefault();
+-                                      event.stopPropagation();
+-                                      showComingSoonToast("featureLaunch");
+-                                      setOpenContextMenuId(null);
+-                                    }}
+-                                    className="flex w-full items-center gap-3 text-[0.9375rem] font-medium tracking-[-0.3px] text-white hover:text-[#d4d4d4] transition-colors"
+-                                  >
+-                                    <span className="material-symbols-rounded text-[1.375rem]">block</span>
+-                                    <span>Report</span>
+-                                  </button>
+-                                </div>
+-                              </div>
+-                            ) : null}
+                           </div>
+                         );
+                       })}
+                   </div>
+                 ))}
+               </div>
+-              {/* Mobile/tablet: 2-column CSS columns */}
+-              <div className="lg:hidden columns-2 gap-[0.375rem] w-full">
++              {/* Mobile/tablet: CSS columns */}
++              <div className="lg:hidden columns-2 sm:columns-3 gap-[0.375rem] md:gap-[1.25rem] w-full">
+                 {items.map(({ url: imgUrl, globalIndex }) => {
+                   const isVideo = isVideoAsset(imgUrl);
+                   return (
+                     <div
+                       key={globalIndex}
+-                      className="group mb-[0.5rem] w-full break-inside-avoid relative [-webkit-column-break-inside:avoid] inline-block"
++                      className="group mb-[0.5rem] md:mb-[1.25rem] w-full break-inside-avoid relative [-webkit-column-break-inside:avoid] inline-block"
+                     >
+                       <div
+                         className="relative rounded-2xl overflow-hidden bg-[#151515] cursor-pointer"
+@@ -802,8 +710,7 @@
+                             originalSrc={MediaResolver.getBase(imgUrl)}
+                             src={MediaResolver.getThumbnail(MediaResolver.getBase(imgUrl), 720)}
+                             thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(imgUrl), 360)}
+-                            alt={`${countryName} photo ${globalIndex + 1}`}
+-                            priority={globalIndex < 4}
++                            alt={`${title} photo ${globalIndex + 1}`}
+                             className="w-full h-auto block"
+                             containerClassName="w-full"
+                             skeletonClassName="w-full aspect-square"
+@@ -811,50 +718,6 @@
+                         )}
+                         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-200 pointer-events-none" />
+                       </div>
+-                      <MoreOptionsButton
+-                        isOpen={openContextMenuId === `media-${globalIndex}`}
+-                        label={`Open menu for photo ${globalIndex + 1}`}
+-                        size="sm"
+-                        onClick={(e) => {
+-                          e.preventDefault();
+-                          e.stopPropagation();
+-                          setOpenContextMenuId(openContextMenuId === `media-${globalIndex}` ? null : `media-${globalIndex}`);
+-                        }}
+-                      />
+-                      {openContextMenuId === `media-${globalIndex}` ? (
+-                        <div
+-                          ref={contextMenuRef}
+-                          role="menu"
+-                          className="absolute right-3 bottom-14 z-30 w-[12.5rem] rounded-2xl border border-[#2e2e2e] bg-[#1a1a1a] p-4 shadow-[0_8px_30px_rgb(0,0,0,0.5)]"
+-                          onClick={(event) => { event.preventDefault(); event.stopPropagation(); }}
+-                        >
+-                          <div className="flex flex-col gap-4">
+-                            <button
+-                              type="button"
+-                              role="menuitem"
+-                              onClick={(event) => {
+-                                event.preventDefault();
+-                                event.stopPropagation();
+-                                setOpenContextMenuId(null);
+-                                showComingSoonToast("featureLaunch");
+-                              }}
+-                              className="flex w-full items-center gap-3 text-[0.9375rem] font-medium tracking-[-0.3px] text-white hover:text-[#d4d4d4] transition-colors"
+-                            >
+-                              <span className="material-symbols-rounded text-[1.375rem]">favorite_border</span>
+-                              <span>Add to favorites</span>
+-                            </button>
+-                            <button
+-                              type="button"
+-                              role="menuitem"
+-                              onClick={(event) => { event.preventDefault(); event.stopPropagation(); setOpenContextMenuId(null); }}
+-                              className="flex w-full items-center gap-3 text-[0.9375rem] font-medium tracking-[-0.3px] text-white hover:text-[#d4d4d4] transition-colors"
+-                            >
+-                              <span className="material-symbols-rounded text-[1.375rem]">block</span>
+-                              <span>Report</span>
+-                            </button>
+-                          </div>
+-                        </div>
+-                      ) : null}
+                     </div>
+                   );
+                 })}
+@@ -863,8 +726,6 @@
+           )}
+           </div>
+         </div>
+-
+-        <WaitlistPopup open={isWaitlistOpen} onClose={() => setIsWaitlistOpen(false)} />
+       </main>
+ 
+       {/* Footer */}

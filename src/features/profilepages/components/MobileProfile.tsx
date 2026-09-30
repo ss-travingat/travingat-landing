@@ -8,6 +8,7 @@ import { type SampleProfile } from "../data/profile-data";
 import LoadedImage from "@/components/ui/LoadedImage";
 import FoundingExplorer from "@/components/ui/FoundingExplorerBadge";
 import { useMobileComingSoon } from "@/components/ui/MobileComingSoonToast";
+import { CountriesPopup } from "@/components/ui/CountriesPopup";
 
 // Shared Types
 type TabKey = "all" | "countries" | "collections" | "about";
@@ -213,6 +214,7 @@ export interface MobileHeroProps {
   profileFlagSrc?: string;
   headerFlagCodes: string[];
   flagOverflowCount: number;
+  allVisitedCountries: { name: string; code: string; }[];
 }
 
 export function MobileHero({
@@ -224,6 +226,7 @@ export function MobileHero({
   profileFlagSrc,
   headerFlagCodes,
   flagOverflowCount,
+  allVisitedCountries,
 }: MobileHeroProps) {
   const { showComingSoonToast } = useMobileComingSoon();
   const [openTooltipIndex, setOpenTooltipIndex] = useState<number | null>(null);
@@ -350,11 +353,16 @@ export function MobileHero({
           })}
         </TooltipProvider>
         {flagOverflowCount > 0 && (
-          <div className="flex h-[1.0625rem] w-[1.625rem] shrink-0 items-center justify-center overflow-hidden rounded-[0.125rem] bg-white">
-            <span className="font-medium text-violet-600 text-[0.625rem] text-center tracking-[-0.408px] whitespace-nowrap">
-              +{flagOverflowCount}
-            </span>
-          </div>
+          <CountriesPopup
+            countries={allVisitedCountries}
+            trigger={
+              <div className="flex h-[1.0625rem] w-[1.625rem] shrink-0 items-center justify-center overflow-hidden rounded-[0.125rem] bg-white">
+                <span className="font-medium text-violet-600 text-[0.625rem] text-center tracking-[-0.408px] whitespace-nowrap">
+                  +{flagOverflowCount}
+                </span>
+              </div>
+            }
+          />
         )}
       </div>
 
