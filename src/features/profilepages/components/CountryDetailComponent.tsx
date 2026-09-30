@@ -701,8 +701,9 @@ export default function CountryDetailComponent({
                                 </>
                               ) : (
                                 <LoadedImage
-                                  originalSrc={MediaResolver.getBase(imgUrl)} src={MediaResolver.getOptimized(MediaResolver.getBase(imgUrl))}
-                                  thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(imgUrl), 720)}
+                                  originalSrc={MediaResolver.getBase(imgUrl)}
+                                  src={MediaResolver.getThumbnail(MediaResolver.getBase(imgUrl), 720)}
+                                  thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(imgUrl), 360)}
                                   alt={`${countryName} photo ${globalIndex + 1}`}
                                   priority={globalIndex < 4}
                                   className="w-full h-auto block"
@@ -804,8 +805,9 @@ export default function CountryDetailComponent({
                           </>
                         ) : (
                           <LoadedImage
-                            originalSrc={MediaResolver.getBase(imgUrl)} src={MediaResolver.getOptimized(MediaResolver.getBase(imgUrl))}
-                            thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(imgUrl), 720)}
+                            originalSrc={MediaResolver.getBase(imgUrl)}
+                            src={MediaResolver.getThumbnail(MediaResolver.getBase(imgUrl), 720)}
+                            thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(imgUrl), 360)}
                             alt={`${countryName} photo ${globalIndex + 1}`}
                             priority={globalIndex < 4}
                             className="w-full h-auto block"

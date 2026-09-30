@@ -196,8 +196,9 @@ export function MediaLightbox({
                     </>
                   ) : (
                     <LoadedImage
-                      originalSrc={MediaResolver.getBase(item.url)} src={MediaResolver.getOptimized(MediaResolver.getBase(item.url))}
-                      thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(item.url), 720)}
+                      originalSrc={MediaResolver.getBase(item.url)}
+                      src={MediaResolver.getThumbnail(MediaResolver.getBase(item.url), 720)}
+                      thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(item.url), 360)}
                       alt={`Gallery thumbnail ${idx + 1}`}
                       className="h-auto w-full"
                     />

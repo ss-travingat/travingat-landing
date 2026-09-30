@@ -593,8 +593,9 @@ function JsMasonryGrid({
             </>
           ) : (
             <LoadedImage
-              originalSrc={MediaResolver.getBase(mediaItem.fileUrl)} src={MediaResolver.getOptimized(MediaResolver.getBase(mediaItem.fileUrl))}
-              thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(mediaItem.fileUrl), 720)}
+              originalSrc={MediaResolver.getBase(mediaItem.fileUrl)}
+              src={MediaResolver.getThumbnail(MediaResolver.getBase(mediaItem.fileUrl), 720)}
+              thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(mediaItem.fileUrl), 360)}
               alt="Uploaded media"
               className="w-full h-auto block"
               containerClassName="w-full h-full relative"
