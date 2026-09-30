@@ -48,7 +48,8 @@ export default async function SharedExplorerCardPage({
         profile_image_url: data.profile_image_url,
         cover_image_url: data.cover_image_url,
         profile_crop_data: typeof data.profile_crop_data === "string" ? JSON.parse(data.profile_crop_data) : data.profile_crop_data,
-        cover_crop_data: typeof data.cover_crop_data === "string" ? JSON.parse(data.cover_crop_data) : data.cover_crop_data
+        cover_crop_data: typeof data.cover_crop_data === "string" ? JSON.parse(data.cover_crop_data) : data.cover_crop_data,
+        show_badge: data.show_badge || false
       };
     }
   } catch (err) {
@@ -68,6 +69,7 @@ export default async function SharedExplorerCardPage({
     country: user.country || "",
     profileImage: user.profile_image_url || "",
     coverImage: user.cover_image_url || "",
+    showBadge: user.show_badge || false,
   };
   
   // visited_countries is parsed automatically by postgres library if it's a JSON array

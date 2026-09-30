@@ -38,6 +38,7 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
     country: initialExplorerCard?.country || initialSessionUser?.country || "",
     coverImage: initialExplorerCard?.cover_image_url || initialSessionUser?.cover_image_url || "",
     profileImage: initialExplorerCard?.profile_image_url || initialSessionUser?.profile_image_url || "",
+    showBadge: initialExplorerCard?.show_badge || initialSessionUser?.show_badge || false,
   });
 
   let initVisited: string[] = [];
@@ -71,6 +72,7 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
     country: initialExplorerCard?.country || initialSessionUser?.country || "",
     coverImage: initialExplorerCard?.cover_image_url || initialSessionUser?.cover_image_url || "",
     profileImage: initialExplorerCard?.profile_image_url || initialSessionUser?.profile_image_url || "",
+    showBadge: initialExplorerCard?.show_badge || initialSessionUser?.show_badge || false,
   });
   const [initialVisited] = useState<string[]>(initVisited);
 
