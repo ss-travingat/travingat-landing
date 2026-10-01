@@ -1974,7 +1974,14 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                           <h3 className="ds-font-display text-white text-xl md:text-2xl font-medium md:font-semibold tracking-[-0.5px] leading-7 md:leading-8">My explorer card</h3>
                           <div className="flex items-center gap-2">
                             <img className="w-4 h-4 rounded" src={typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url} alt="Avatar" />
-                            <Link href={`https://app.travingat.com/ec/${profile.id.split("-")[0]}-${profile.explorer_card_variant === 'minimal' ? 'b' : (profile.explorer_card_variant === 'classic' ? 'a' : 'c')}`} className="text-[#1FBCFE] text-base font-normal leading-6 break-words">app.travingat.com/ec/{profile.id.split("-")[0]}-{profile.explorer_card_variant === 'minimal' ? 'b' : (profile.explorer_card_variant === 'classic' ? 'a' : 'c')}</Link>
+                            <Link
+                              href={`https://app.travingat.com/ec/${profile.id.split("-")[0]}-${profile.explorer_card_variant === 'minimal' ? 'b' : (profile.explorer_card_variant === 'classic' ? 'a' : 'c')}`}
+                              className="text-[#1FBCFE] text-base font-normal leading-6 break-words"
+                              rel="noopener noreferrer"
+                              target="_blank"
+                            >
+                              app.travingat.com/ec/{profile.id.split("-")[0]}-{profile.explorer_card_variant === 'minimal' ? 'b' : (profile.explorer_card_variant === 'classic' ? 'a' : 'c')}
+                            </Link>
                           </div>
                         </div>
                         <div className="flex flex-col gap-3 md:gap-6">
