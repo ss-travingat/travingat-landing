@@ -1,6 +1,6 @@
 "use client";
 
-import React, { ReactNode, useState, useRef } from "react";
+import React, { ReactNode, useState, useRef, useEffect } from "react";
 import * as Dialog from "@radix-ui/react-dialog";
 
 interface CountryItem {
@@ -78,42 +78,48 @@ export function CountriesPopup({ trigger, countries }: CountriesPopupProps) {
   }
 
   return (
-    <Dialog.Root open={open} onOpenChange={setOpen}>
-      <Dialog.Trigger asChild>
-        <button
-          type="button"
-          className="cursor-pointer border-none bg-transparent p-0 outline-none flex items-center justify-center m-0"
-          aria-label="View all countries"
-        >
-          {trigger}
-        </button>
-      </Dialog.Trigger>
-      <Dialog.Portal>
-        <style dangerouslySetInnerHTML={{__html: `
-          @keyframes slideUpMobile { from { transform: translateY(100%); } to { transform: translateY(0); } }
-          @keyframes slideDownMobile { from { transform: translateY(0); } to { transform: translateY(100%); } }
-          @keyframes fadeInMobile { from { opacity: 0; } to { opacity: 1; } }
-          @keyframes fadeOutMobile { from { opacity: 1; } to { opacity: 0; } }
-          @media (max-width: 767px) {
-            .data\\[state\\=open\\]\\:animate-dialog-content-open[data-state="open"] > div { animation: slideUpMobile 0.3s cubic-bezier(0.32, 0.72, 0, 1) forwards; }
-            .data\\[state\\=closed\\]\\:animate-dialog-content-closed[data-state="closed"] > div { animation: slideDownMobile 0.3s cubic-bezier(0.32, 0.72, 0, 1) forwards; }
-          }
-          @media (min-width: 768px) {
-            .md-center-popup { transform: translate(-50%, -50%); }
-            @keyframes fadeInDesktopPop { from { opacity: 0; transform: translate(-50%, -48%) scale(0.95); } to { opacity: 1; transform: translate(-50%, -50%) scale(1); } }
-            @keyframes fadeOutDesktopPop { from { opacity: 1; transform: translate(-50%, -50%) scale(1); } to { opacity: 0; transform: translate(-50%, -48%) scale(0.95); } }
-            [data-state="open"].md\\[left-\\[50\\%\\]\\] { animation: fadeInDesktopPop 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards !important; }
-            [data-state="closed"].md\\[left-\\[50\\%\\]\\] { animation: fadeOutDesktopPop 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards !important; }
-          }
-        `}} />
-
-        <Dialog.Overlay className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm data-[state=open]:animate-dialog-overlay-open data-[state=closed]:animate-dialog-overlay-closed" />
+    <>
+      <style dangerouslySetInnerHTML={{__html: `
+        @keyframes slideUpMobile { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        @keyframes slideDownMobile { from { transform: translateY(0); } to { transform: translateY(100%); } }
+        @keyframes fadeInOverlay { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes fadeOutOverlay { from { opacity: 1; } to { opacity: 0; } }
+        
+        .mobile-overlay-bg[data-state="open"] { animation: fadeInOverlay 0.3s ease-out forwards; }
+        .mobile-overlay-bg[data-state="closed"] { animation: fadeOutOverlay 0.2s ease-in forwards; }
+        
+        @media (max-width: 767px) {
+          .mobile-popup-content[data-state="open"] { animation: slideUpMobile 0.4s cubic-bezier(0.32, 0.72, 0, 1) forwards; }
+          .mobile-popup-content[data-state="closed"] { animation: slideDownMobile 0.3s cubic-bezier(0.32, 0.72, 0, 1) forwards; }
+        }
+        @media (min-width: 768px) {
+          .mobile-popup-content { transform: translate(-50%, -50%); }
+          @keyframes slideUpDesktop { from { opacity: 0; transform: translate(-50%, -48%) scale(0.95); } to { opacity: 1; transform: translate(-50%, -50%) scale(1); } }
+          @keyframes slideDownDesktop { from { opacity: 1; transform: translate(-50%, -50%) scale(1); } to { opacity: 0; transform: translate(-50%, -48%) scale(0.95); } }
+          .mobile-popup-content[data-state="open"] { animation: slideUpDesktop 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards !important; }
+          .mobile-popup-content[data-state="closed"] { animation: slideDownDesktop 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards !important; }
+        }
+      `}} />
+      <Dialog.Root open={open} onOpenChange={setOpen}>
+        <Dialog.Trigger asChild>
+          <button
+            type="button"
+            className="cursor-pointer border-none bg-transparent p-0 outline-none flex items-center justify-center m-0"
+            aria-label="View all countries"
+          >
+            {trigger}
+          </button>
+        </Dialog.Trigger>
+        <Dialog.Portal>
+          <Dialog.Overlay 
+            className="fixed inset-0 z-[999] bg-black/50 backdrop-blur-sm mobile-overlay-bg" 
+            style={{ pointerEvents: 'auto' }}
+          />
         <Dialog.Content
-          className="fixed bottom-0 left-0 right-0 z-50 flex w-full flex-col outline-none md:bottom-auto md:left-[50%] md:top-[50%] md:w-full md:max-w-[400px] md-center-popup data-[state=open]:animate-dialog-content-open data-[state=closed]:animate-dialog-content-closed"
-          style={{ ...fontRenderingStyles }}
+          className="fixed bottom-0 left-0 right-0 z-[1000] flex w-full flex-col outline-none md:bottom-auto md:left-[50%] md:top-[50%] md:w-full md:max-w-[400px] mobile-popup-content"
         >
           <div 
-            className="flex w-full flex-col max-h-[85vh] md:max-h-[75vh] overflow-hidden rounded-t-[24px] bg-[#1a1a1a] shadow-[0_-8px_30px_rgba(0,0,0,0.5)] md:rounded-[20px] md:border md:border-white/5 md:shadow-2xl"
+            className="flex w-full flex-col max-h-[85vh] md:max-h-[75vh] overflow-hidden rounded-t-[24px] bg-[#1a1a1a] shadow-[0_-8px_30px_rgba(0,0,0,0.5)] md:rounded-[20px] md:border md:border-white/5 md:shadow-2xl relative"
             style={inlineStyles}
           >
             <div 
@@ -172,5 +178,6 @@ export function CountriesPopup({ trigger, countries }: CountriesPopupProps) {
         </Dialog.Content>
       </Dialog.Portal>
     </Dialog.Root>
+    </>
   );
 }
