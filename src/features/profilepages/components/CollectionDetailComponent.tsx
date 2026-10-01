@@ -646,7 +646,7 @@ export default function CollectionDetailComponent({
                               onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
-                                setLightboxIndex(globalIndex);
+                                showComingSoonToast("desktopOnly");
                               }}
                             >
                               {isVideo ? (
@@ -718,7 +718,7 @@ export default function CollectionDetailComponent({
                               onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
-                                setLightboxIndex(globalIndex);
+                                showComingSoonToast("desktopOnly");
                               }}
                             >
                               {isVideo ? (

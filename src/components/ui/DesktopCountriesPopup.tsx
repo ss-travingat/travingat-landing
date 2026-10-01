@@ -27,15 +27,20 @@ export function DesktopCountriesPopup({ trigger, countries }: DesktopCountriesPo
       </Dialog.Trigger>
       <Dialog.Portal>
         <style dangerouslySetInnerHTML={{__html: `
-          @keyframes fadeInDesktop { from { opacity: 0; transform: translate(-50%, -48%) scale(0.95); } to { opacity: 1; transform: translate(-50%, -50%) scale(1); } }
-          @keyframes fadeOutDesktop { from { opacity: 1; transform: translate(-50%, -50%) scale(1); } to { opacity: 0; transform: translate(-50%, -48%) scale(0.95); } }
-          .animate-in { animation: fadeInDesktop 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-          .animate-out { animation: fadeOutDesktop 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+          @keyframes slideUpDesktop { from { opacity: 0; transform: translate(-50%, -45%); } to { opacity: 1; transform: translate(-50%, -50%); } }
+          @keyframes slideDownDesktop { from { opacity: 1; transform: translate(-50%, -50%); } to { opacity: 0; transform: translate(-50%, -45%); } }
+          @keyframes fadeInOverlay { from { opacity: 0; } to { opacity: 1; } }
+          @keyframes fadeOutOverlay { from { opacity: 1; } to { opacity: 0; } }
+          
+          .desktop-overlay[data-state="open"] { animation: fadeInOverlay 0.3s ease-out forwards; }
+          .desktop-overlay[data-state="closed"] { animation: fadeOutOverlay 0.2s ease-in forwards; }
+          .desktop-popup-content[data-state="open"] { animation: slideUpDesktop 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+          .desktop-popup-content[data-state="closed"] { animation: slideDownDesktop 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         `}} />
 
-        <Dialog.Overlay className="fixed inset-0 z-[999] bg-black/50 backdrop-blur-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0" />
+        <Dialog.Overlay className="fixed inset-0 z-[999] bg-black/50 backdrop-blur-sm desktop-overlay" />
         <Dialog.Content
-          className="fixed left-[50%] top-[50%] z-[999] flex w-full max-w-[400px] max-h-[85vh] flex-col overflow-hidden rounded-[24px] bg-[#111111] border border-white/5 shadow-2xl outline-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0"
+          className="fixed left-[50%] top-[50%] z-[999] flex w-full max-w-[400px] max-h-[85vh] flex-col overflow-hidden rounded-[24px] bg-[#111111] border border-white/5 shadow-2xl outline-none desktop-popup-content"
           style={{ transform: 'translate(-50%, -50%)' }}
         >
           <div className="px-[32px] pt-[32px] shrink-0">

@@ -26,7 +26,7 @@ const COUNTRY_LIST_LOOKUP: Record<string, string> = Object.fromEntries(
   COUNTRY_LIST.map(c => [c.code.toUpperCase(), c.name])
 );
 
-type MediaTab = "all" | "photos" | "videos" | "collections" | "about";
+type MediaTab = "all" | "photos" | "videos" | "about";
 
 function isVideoAsset(url: string) {
   return /\.(mp4|mov|webm|m4v|3gp|3g2)$/i.test(url);
@@ -275,26 +275,18 @@ export default function CountryDetailComponent({
       const swipeThreshold = 50;
 
       if (Math.abs(distanceX) > Math.abs(distanceY) && Math.abs(distanceX) > swipeThreshold) {
-        const tabsArr: MediaTab[] = ["all", "photos", "videos", "collections", "about"];
+        const tabsArr: MediaTab[] = ["all", "photos", "videos", "about"];
         const currentIndex = tabsArr.indexOf(activeTab);
 
         if (distanceX > 0) {
           if (currentIndex < tabsArr.length - 1) {
             const nextTab = tabsArr[currentIndex + 1];
-            if (nextTab === "collections") {
-              showComingSoonToast("featureLaunch");
-            } else {
-              handleTabChange(nextTab);
-            }
+            handleTabChange(nextTab);
           }
         } else {
           if (currentIndex > 0) {
             const prevTab = tabsArr[currentIndex - 1];
-            if (prevTab === "collections") {
-              showComingSoonToast("featureLaunch");
-            } else {
-              handleTabChange(prevTab);
-            }
+            handleTabChange(prevTab);
           }
         }
       }
@@ -593,7 +585,7 @@ export default function CountryDetailComponent({
 
           {/* Mobile Tab icons */}
           {(() => {
-            const mobileTabsArr = ["all", "photos", "videos", "collections", "about"] as const;
+            const mobileTabsArr = ["all", "photos", "videos", "about"] as const;
             const activeIndex = mobileTabsArr.indexOf(activeTab as any);
 
             let offsetPercent = 0;
@@ -614,16 +606,11 @@ export default function CountryDetailComponent({
                     { key: "all", icon: "auto_awesome_mosaic" },
                     { key: "photos", icon: "imagesmode" },
                     { key: "videos", icon: "slideshow" },
-                    { key: "collections", icon: "folder_copy" },
                     { key: "about", icon: "chat_info" },
                   ].map(tab => (
                     <button
                       key={tab.key}
                       onClick={() => {
-                        if (tab.key === "collections") {
-                          showComingSoonToast("featureLaunch");
-                          return;
-                        }
                         handleTabChange(tab.key as MediaTab);
                       }}
                       className={`relative flex flex-col flex-1 items-center justify-center py-[1rem] transition-colors ${activeTab === tab.key ? "text-white" : "text-[#7c7c7c]"
@@ -635,7 +622,7 @@ export default function CountryDetailComponent({
                   <div
                     className="absolute bottom-[-1px] left-0 pointer-events-none"
                     style={{
-                      width: `20%`,
+                      width: `${100 / mobileTabsArr.length}%`,
                       transform: `translateX(${finalTranslate}%)`,
                       transition: isDragging ? "none" : "transform 300ms cubic-bezier(0.4, 0, 0.2, 1)",
                     }}
@@ -681,7 +668,7 @@ export default function CountryDetailComponent({
                                 onClick={(e) => {
                                   e.preventDefault();
                                   e.stopPropagation();
-                                  setLightboxIndex(globalIndex);
+                                  showComingSoonToast("desktopOnly");
                                 }}
                               >
                                 {isVideo ? (
@@ -779,7 +766,7 @@ export default function CountryDetailComponent({
                                 onClick={(e) => {
                                   e.preventDefault();
                                   e.stopPropagation();
-                                  setLightboxIndex(globalIndex);
+                                  showComingSoonToast("desktopOnly");
                                 }}
                               >
                                 {isVideo ? (

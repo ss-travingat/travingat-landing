@@ -109,9 +109,8 @@ export function CountriesPopup({ trigger, countries }: CountriesPopupProps) {
 
         <Dialog.Overlay className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm data-[state=open]:animate-dialog-overlay-open data-[state=closed]:animate-dialog-overlay-closed" />
         <Dialog.Content
-          className="fixed bottom-0 left-0 right-0 z-50 flex w-full flex-col outline-none md:bottom-auto md:left-[50%] md:top-[50%] md:w-full md:max-w-[400px] md-center-popup"
+          className="fixed bottom-0 left-0 right-0 z-50 flex w-full flex-col outline-none md:bottom-auto md:left-[50%] md:top-[50%] md:w-full md:max-w-[400px] md-center-popup data-[state=open]:animate-dialog-content-open data-[state=closed]:animate-dialog-content-closed"
           style={{ ...fontRenderingStyles }}
-
         >
           <div 
             className="flex w-full flex-col max-h-[85vh] md:max-h-[75vh] overflow-hidden rounded-t-[24px] bg-[#1a1a1a] shadow-[0_-8px_30px_rgba(0,0,0,0.5)] md:rounded-[20px] md:border md:border-white/5 md:shadow-2xl"
