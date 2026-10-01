@@ -95,8 +95,11 @@ export default function LoadedImage({
   };
 
   const handleError = () => {
-    // Before giving up completely, if the image isn't already avif/webm, attempt to fallback to it.
-    if (!isHealing && !activeSrc.match(/\.(avif|webm)$/i) && !activeSrc.startsWith("blob:") && !activeSrc.startsWith("data:")) {
+    // Before giving up completely, if the image isn't already avif/webm (or if we have a different originalSrc to fall back to), attempt to fallback.
+    const canHealToOriginal = originalSrc && activeSrc !== originalSrc;
+    const canHealToOptimized = !activeSrc.match(/\.(avif|webm)$/i);
+    
+    if (!isHealing && (canHealToOriginal || canHealToOptimized) && !activeSrc.startsWith("blob:") && !activeSrc.startsWith("data:")) {
       setIsHealing(true);
       setRetryCount(0); // Reset retries for the new URL
       setPhase("skeleton");
