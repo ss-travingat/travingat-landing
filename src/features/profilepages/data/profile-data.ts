@@ -35,6 +35,7 @@ export type SampleProfile = {
   collectionImages?: { title: string; images: Array<string | { url: string; width?: number; height?: number }>; about?: string; countryCodes?: string[]; coverPhoto?: string; updatedAt?: string; updated_at?: string }[];
   showBadge?: boolean;
   isSampleProfile?: boolean;
+  explorer_card_variant?: "classic" | "minimal" | "adventure";
 };
 
 export const sampleProfiles = profilesData as unknown as SampleProfile[];
