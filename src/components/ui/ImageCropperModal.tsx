@@ -16,6 +16,8 @@ interface ImageCropperModalProps {
   initialCropData?: any;
   onSave: (cropData: any) => void;
   onCancel: () => void;
+  onReplace?: () => void;
+  onDelete?: () => void;
   title?: string;
 }
 
@@ -25,6 +27,8 @@ export default function ImageCropperModal({
   initialCropData,
   onSave,
   onCancel,
+  onReplace,
+  onDelete,
   title = "Crop Image",
 }: ImageCropperModalProps) {
   const [activeTab, setActiveTab] = useState<"Classic" | "Minimal" | "Adventure">("Classic");
@@ -174,6 +178,35 @@ export default function ImageCropperModal({
             }}
             onCropSizeChange={(size) => setCropSize({ width: size.width, height: size.height })}
           />
+          {/* Action Icons (Replace & Delete) */}
+          <div className="absolute top-4 right-4 z-[100] flex items-center gap-2">
+            {onReplace && (
+              <button
+                type="button"
+                onClick={onReplace}
+                title="Replace photo"
+                className="flex h-10 w-10 items-center justify-center rounded-full bg-black/60 text-white backdrop-blur-sm transition-colors hover:bg-black/80 shadow-lg border border-white/10"
+              >
+                <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7" />
+                  <line x1="16" x2="22" y1="5" y2="5" strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} />
+                  <line x1="19" x2="19" y1="2" y2="8" strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} />
+                  <circle cx="9" cy="9" r="2" strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
+                </svg>
+              </button>
+            )}
+            {onDelete && (
+              <button
+                type="button"
+                onClick={onDelete}
+                title="Delete photo"
+                className="flex h-10 w-10 items-center justify-center rounded-full bg-black/60 text-[#ff453a] backdrop-blur-sm transition-colors hover:bg-black/80 shadow-lg border border-white/10"
+              >
+                <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Controls */}

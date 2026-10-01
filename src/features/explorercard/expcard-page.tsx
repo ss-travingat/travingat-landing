@@ -150,7 +150,7 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
     try {
       const isDesktop = window.innerWidth >= 1024;
       const offsetX = isDesktop ? 60 : 0;
-      
+
       return await domToPng(node, {
         scale: 2,
         quality: 0.9,
@@ -1145,6 +1145,17 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
           initialCropData={cropConfig.initialCropData}
           onSave={handleCropSave}
           onCancel={() => setCropConfig(null)}
+          onReplace={() => {
+            const fileInput = document.createElement("input");
+            fileInput.type = "file";
+            fileInput.accept = "image/*";
+            fileInput.onchange = (e) => handleFile(e as any, cropConfig.type);
+            fileInput.click();
+          }}
+          onDelete={() => {
+            handleRemoveImage(cropConfig.type);
+            setCropConfig(null);
+          }}
         />
       )}
 
