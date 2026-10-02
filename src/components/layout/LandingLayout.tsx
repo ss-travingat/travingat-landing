@@ -50,7 +50,7 @@ export default function LandingLayout({
   const isExplorerCardRoute = Boolean(pathname?.includes("/explorercard"));
   const isAdminRoute = pathname?.startsWith("/admin");
   const isDetailRoute = Boolean(pathname?.includes("/country/") || pathname?.includes("/collection/"));
-  const hideNavbar = pathname?.startsWith("/edit/explorercard") || pathname === "/explorercard" || pathname === "/join/explorercard" || isAdminRoute || isDetailRoute;
+  const hideNavbar = pathname?.startsWith("/edit/explorercard") || pathname === "/explorercard" || pathname === "/join/explorercard" || isAdminRoute;
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

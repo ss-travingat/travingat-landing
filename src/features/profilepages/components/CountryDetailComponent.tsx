@@ -194,7 +194,7 @@ export default function CountryDetailComponent({
 }) {
   const { showComingSoonToast } = useMobileComingSoon();
   const router = useRouter();
-  useNavbarVisibility(false);
+
 
   const imageObjects = images.map((entry) => (typeof entry === "string" ? { url: entry } : entry));
   const countryName = COUNTRY_LIST_LOOKUP[countryCode] || countryCode;
@@ -202,6 +202,7 @@ export default function CountryDetailComponent({
   const [showMenu, setShowMenu] = useState(false);
   const [isWaitlistOpen, setIsWaitlistOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  useNavbarVisibility(showMenu, 56);
 
   const handleTabChange = (tab: MediaTab) => {
     (window as any).__lastProgrammaticScrollTime = Date.now();
@@ -521,7 +522,7 @@ export default function CountryDetailComponent({
             return (
               <>
                 <div id="mobile-tabs-sentinel" className="w-full h-0 pointer-events-none md:hidden" />
-                <div id="profile-mobile-tabs" className="flex md:hidden items-center justify-between w-full border-b border-[#222] sticky top-[4.5rem] z-[90] bg-black">
+                <div id="profile-mobile-tabs" className="flex md:hidden items-center justify-between w-full border-b border-[#222] sticky top-[56px] z-[90] bg-black">
                   {[
                     { key: "all", icon: "auto_awesome_mosaic" },
                     { key: "photos", icon: "imagesmode" },

@@ -21,7 +21,7 @@ function toFlagAssetPath(flagCode?: string): string | undefined {
 // ==========================================
 // CUSTOM HOOK: NAVBAR VISIBILITY
 // ==========================================
-export function useNavbarVisibility(menuOpen = false) {
+export function useNavbarVisibility(menuOpen = false, navbarHeight = 72) {
   const lastScrollY = useRef(0);
   const offsetRef = useRef(0);
 
@@ -57,13 +57,13 @@ export function useNavbarVisibility(menuOpen = false) {
       }
 
       const tabsEl = document.getElementById("profile-mobile-tabs");
-      const isTabsLocked = tabsEl ? tabsEl.getBoundingClientRect().top <= (72 - offsetRef.current + 2) : false;
+      const isTabsLocked = tabsEl ? tabsEl.getBoundingClientRect().top <= (navbarHeight - offsetRef.current + 2) : false;
 
       if (currentScrollY <= 24) {
         offsetRef.current = 0;
       } else {
         if (delta > 0 && isTabsLocked) {
-          offsetRef.current = Math.min(72, offsetRef.current + delta);
+          offsetRef.current = Math.min(navbarHeight, offsetRef.current + delta);
         } else if (delta < 0) {
           offsetRef.current = Math.max(0, offsetRef.current + delta);
         }

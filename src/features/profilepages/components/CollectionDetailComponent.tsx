@@ -176,7 +176,7 @@ export default function CollectionDetailComponent({
   const touchStartY = useRef<number | null>(null);
   const touchEndX = useRef<number | null>(null);
   const touchEndY = useRef<number | null>(null);
-  useNavbarVisibility(showMenu);
+  useNavbarVisibility(showMenu, 56);
 
   const handleTabChange = (tab: MediaTab) => {
     (window as any).__lastProgrammaticScrollTime = Date.now();
@@ -448,7 +448,7 @@ export default function CollectionDetailComponent({
             return (
               <>
                 <div id="mobile-tabs-sentinel" className="w-full h-0 pointer-events-none md:hidden" />
-                <div id="profile-mobile-tabs" className="flex md:hidden items-center justify-between w-full border-b border-[#222] sticky top-[4.5rem] z-[90] bg-black">
+                <div id="profile-mobile-tabs" className="flex md:hidden items-center justify-between w-full border-b border-[#222] sticky top-[56px] z-[90] bg-black">
                   {[
                   { key: "all", icon: "auto_awesome_mosaic" },
                   { key: "photos", icon: "imagesmode" },
