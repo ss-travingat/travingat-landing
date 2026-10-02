@@ -5,16 +5,17 @@ import { MediaResolver } from "@/lib/media-resolver";
 
 export const MobileCountryHeader = ({ countryCode, countryName, profile, updatedLabel, menuRef, showMenu, setShowMenu }: any) => {
   return (
-    <div className="flex md:hidden flex-col items-center gap-[1.25rem] w-full max-w-[37.5rem]">
-      <div className="flex flex-col items-center gap-[1.5rem]">
+    <div className="flex md:hidden flex-col items-center gap-[1.5rem] w-full max-w-[37.5rem] pt-[48px]">
+      <div className="flex flex-col items-center gap-[1.75rem]">
         <div className="h-[5rem] w-[7.5rem] overflow-hidden rounded-[0.5rem] shrink-0">
           <img
             src={`/flags/${countryCode.toUpperCase()}.svg`}
             alt={`${countryName} flag`}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover block"
+            style={{ objectPosition: 'center' }}
           />
         </div>
-        <h1 className="text-white text-center" style={{ fontFamily: 'var(--font-inter-display, "Inter Display")', fontSize: '1.75rem', lineHeight: '2.25rem', letterSpacing: '-0.03125rem', fontWeight: 600 }}>
+        <h1 className="text-white text-center" style={{ fontFamily: 'var(--font-inter-display, "Inter Display")', fontSize: '1.75rem', lineHeight: 1, letterSpacing: '-0.03125rem', fontWeight: 600 }}>
           {countryName}
         </h1>
       </div>

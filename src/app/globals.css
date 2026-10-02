@@ -174,7 +174,6 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font-synthesis: none;
-  text-rendering: optimizeLegibility;
 }
 
 @layer base {

@@ -5,12 +5,12 @@ import { MediaResolver } from "@/lib/media-resolver";
 
 export const DesktopCountryHeader = ({ countryCode, countryName, profile, updatedLabel, menuRef, showMenu, setShowMenu }: any) => {
   return (
-    <div className="hidden md:flex flex-col items-center shrink-0" style={{ gap: '20px', marginBottom: '48px', width: '600px' }}>
+    <div className="hidden md:flex flex-col items-center shrink-0 pt-[48px]" style={{ gap: '20px', marginBottom: '48px', width: '600px' }}>
       <div className="flex flex-col items-center justify-center w-full" style={{ gap: '24px' }}>
         <div className="overflow-hidden rounded-[8px] shrink-0 bg-transparent" style={{ width: '120px', height: '80px' }}>
-          <img src={`/flags/${countryCode.toUpperCase()}.svg`} alt={`${countryName} flag`} className="w-full h-full" style={{ objectFit: 'cover' }} />
+          <img src={`/flags/${countryCode.toUpperCase()}.svg`} alt={`${countryName} flag`} className="w-full h-full block" style={{ objectFit: 'cover', objectPosition: 'center' }} />
         </div>
-        <h1 className="ds-font-display text-white text-center whitespace-nowrap font-bold" style={{ fontSize: '3.25rem', lineHeight: '3.75rem', letterSpacing: '-0.0625rem' }}>
+        <h1 className="text-white text-center whitespace-nowrap" style={{ fontFamily: 'var(--font-inter-display, "Inter Display")', fontSize: '52px', fontWeight: 700, lineHeight: '60px', letterSpacing: '-1px' }}>
           {countryName}
         </h1>
       </div>

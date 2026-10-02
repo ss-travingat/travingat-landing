@@ -8,8 +8,8 @@ import { COUNTRY_LIST } from "@/lib/countries";
 
 export const MobileCollectionHeader = ({ title, headerCountryCodes, flagOverflowCount, allVisitedCountries, profile, updatedLabel, menuRef, showMenu, setShowMenu }: any) => {
   return (
-    <div className="flex md:hidden flex-col items-center gap-[1.25rem] w-full max-w-[37.5rem]">
-      <div className="flex flex-col items-center gap-[1.5rem]">
+    <div className="flex md:hidden flex-col items-center gap-[1.5rem] w-full max-w-[37.5rem] pt-[48px]">
+      <div className="flex flex-col items-center gap-[1.75rem]">
         <div className="flex items-center gap-[0.5rem] justify-center flex-wrap">
           {headerCountryCodes.slice(0, 4).map((code: string) => {
             const countryEntry = COUNTRY_LIST.find((c) => c.code.toLowerCase() === code.toLowerCase());
@@ -37,7 +37,7 @@ export const MobileCollectionHeader = ({ title, headerCountryCodes, flagOverflow
             />
           )}
         </div>
-        <h1 className="text-white text-center" style={{ fontFamily: 'var(--font-inter-display, "Inter Display")', fontSize: '1.75rem', lineHeight: '2.25rem', letterSpacing: '-0.03125rem', fontWeight: 600 }}>
+        <h1 className="text-white text-center" style={{ fontFamily: 'var(--font-inter-display, "Inter Display")', fontSize: '1.75rem', lineHeight: 1, letterSpacing: '-0.03125rem', fontWeight: 600 }}>
           {title}
         </h1>
       </div>

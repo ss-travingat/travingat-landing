@@ -214,10 +214,11 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
       const filename = `explorer-card-${style.toLowerCase()}.png`;
       const file = new File([blob], filename, { type: "image/png" });
 
-      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || 
+                       (navigator.maxTouchPoints && navigator.maxTouchPoints > 2 && /MacIntel/.test(navigator.platform)) ||
+                       window.innerWidth <= 768;
       if (isMobile) {
-        // Show the "Ready to Share/Download" modal on mobile to ensure synchronous share/download.
-        // This bypasses Safari's aggressive blocking of async link.click() downloads.
+        // Show the "Ready to Share/Download" modal on mobile as fallback
         setReadyToShareFile(file);
         setReadyToShareDataUrl(dataUrl);
         return;
@@ -620,19 +621,40 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
         />
 
         <button
-          onClick={() => {
-            const link = document.createElement("a");
-            link.download = readyToShareFile.name;
-            link.href = readyToShareDataUrl;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            setReadyToShareFile(null);
-            setReadyToShareDataUrl(null);
+          onClick={async () => {
+            const handleFallbackDownload = () => {
+              const link = document.createElement("a");
+              link.download = readyToShareFile.name;
+              link.href = readyToShareDataUrl;
+              document.body.appendChild(link);
+              link.click();
+              document.body.removeChild(link);
+              setReadyToShareFile(null);
+              setReadyToShareDataUrl(null);
+            };
+
+            if (navigator.share && navigator.canShare && navigator.canShare({ files: [readyToShareFile] })) {
+              try {
+                await navigator.share({
+                  files: [readyToShareFile],
+                  title: "My Explorer Card",
+                });
+                // Share successful, close the modal
+                setReadyToShareFile(null);
+                setReadyToShareDataUrl(null);
+              } catch (error: any) {
+                // If the user explicitly cancelled the share, do nothing and keep modal open
+                if (error.name === 'AbortError') return;
+                // Otherwise fall back to direct download
+                handleFallbackDownload();
+              }
+            } else {
+              handleFallbackDownload();
+            }
           }}
           className="w-full rounded-[999px] bg-[#5952FF] hover:bg-[#5952FF]/90 transition-colors py-[12px] text-white font-medium text-[15px]"
         >
-          Save Image
+          Share / Save Image
         </button>
       </div>
     </div>

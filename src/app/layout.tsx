@@ -144,6 +144,8 @@ export default function RootLayout({
           media="print"
           crossOrigin="anonymous"
         />
+        <link rel="preload" href="/web/inter.css" as="style" />
+        <link rel="stylesheet" href="/web/inter.css" />
         <Script id="material-icons-swap" strategy="afterInteractive">
           {`document.querySelector('link[href*="Material+Symbols"][media="print"]').media='all'`}
         </Script>

@@ -8,11 +8,11 @@ import { COUNTRY_LIST } from "@/lib/countries";
 
 export const DesktopCollectionHeader = ({ title, headerCountryCodes, flagOverflowCount, allVisitedCountries, profile, updatedLabel, menuRef, showMenu, setShowMenu }: any) => {
   return (
-    <div className="hidden md:flex flex-col items-center shrink-0 w-[600px]" style={{ gap: '16px', marginBottom: '48px' }}>
-      <div className="flex flex-col items-center justify-center w-full" style={{ gap: '16px' }}>
+    <div className="hidden md:flex flex-col items-center shrink-0 w-[600px] pt-[48px]" style={{ gap: '20px', marginBottom: '48px' }}>
+      <div className="flex flex-col items-center justify-center w-full" style={{ gap: '20px' }}>
         {headerCountryCodes.length === 1 ? (
           <div className="overflow-hidden rounded-[8px] shrink-0 bg-transparent" style={{ width: '120px', height: '80px' }}>
-            <img src={`/flags/${headerCountryCodes[0].toUpperCase()}.svg`} alt="flag" className="w-full h-full" style={{ objectFit: 'cover' }} />
+            <img src={`/flags/${headerCountryCodes[0].toUpperCase()}.svg`} alt="flag" className="w-full h-full block" style={{ objectFit: 'cover', objectPosition: 'center' }} />
           </div>
         ) : (
           <div className="flex items-center justify-center flex-wrap" style={{ gap: '8px' }}>
@@ -43,7 +43,7 @@ export const DesktopCollectionHeader = ({ title, headerCountryCodes, flagOverflo
             )}
           </div>
         )}
-        <h1 className="text-white text-center" style={{ fontFamily: 'var(--font-inter-display, "Inter Display")', fontSize: '3.25rem', lineHeight: '3.75rem', letterSpacing: '-0.0625rem', fontWeight: 700 }}>
+        <h1 className="text-white text-center" style={{ fontFamily: 'var(--font-inter-display, "Inter Display")', fontSize: '52px', fontWeight: 700, lineHeight: '60px', letterSpacing: '-1px' }}>
           {title}
         </h1>
       </div>

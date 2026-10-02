@@ -269,7 +269,7 @@ export default function CollectionDetailComponent({
   const aboutText = collectionObj?.about;
   const updatedDateStr = collectionObj?.updated_at || collectionObj?.updatedAt;
   const updatedLabel = updatedDateStr
-    ? new Date(updatedDateStr).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })
+    ? new Date(updatedDateStr).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }).replace("Sept", "Sep")
     : STATIC_LAST_UPDATED_LABEL;
 
   const displayImages =
@@ -403,7 +403,7 @@ export default function CollectionDetailComponent({
           description={aboutText}
         />
       )}
-      <main className="w-full flex flex-col items-center gap-[1.25rem] md:gap-0 pb-28 md:pb-[100px] pt-[6.5rem] min-[1200px]:pt-0">
+      <main className="w-full flex flex-col items-center gap-[1.25rem] md:gap-0 pb-28 md:pb-[100px] pt-[6.5rem] md:pt-0">
         <MobileCollectionHeader
           title={title}
           headerCountryCodes={headerCountryCodes}

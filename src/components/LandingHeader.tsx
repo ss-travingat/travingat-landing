@@ -110,12 +110,13 @@ export default function LandingHeader({
                 setIsScrolled(false)
             }
 
-            if (currentScrollY > 100) {
-                setHidden(true)
-                document.body.classList.add("header-hidden")
-            } else if (currentScrollY <= 10) {
+            if (currentScrollY < 80 || currentScrollY < lastScrollY) {
                 setHidden(false)
                 document.body.classList.remove("header-hidden")
+            } else if (currentScrollY > lastScrollY && currentScrollY > 80) {
+                setHidden(true)
+                document.body.classList.add("header-hidden")
+                setMenuOpen(false)
             }
             lastScrollY = currentScrollY
         }
@@ -249,6 +250,15 @@ export default function LandingHeader({
                 }
                 .trv-header.is-fullscreen {
                     display: none;
+                }
+
+                @media (min-width: 1200px) {
+                    .trv-header {
+                        position: absolute !important;
+                    }
+                    .trv-header.is-hidden {
+                        transform: none !important;
+                    }
                 }
 
                 .trv-shell {

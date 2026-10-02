@@ -116,7 +116,7 @@ function getDeterministicCreatedLabel(index: number, realDate?: string): string 
         day: "2-digit",
         month: "short",
         year: "numeric",
-      });
+      }).replace("Sept", "Sep");
     }
   }
   const createdAtMs = CREATED_AT_BASE_UTC_MS - index * CREATED_AT_STEP_DAYS * 24 * 60 * 60 * 1000;
@@ -125,7 +125,7 @@ function getDeterministicCreatedLabel(index: number, realDate?: string): string 
     month: "short",
     year: "numeric",
     timeZone: "UTC",
-  });
+  }).replace("Sept", "Sep");
 }
 
 function getUpdatedLabel(updatedAt: string | undefined, index: number): string {
@@ -136,7 +136,7 @@ function getUpdatedLabel(updatedAt: string | undefined, index: number): string {
         day: "2-digit",
         month: "short",
         year: "numeric",
-      })}`;
+      }).replace("Sept", "Sep")}`;
     }
   }
   // Fallback deterministic mock
@@ -146,7 +146,7 @@ function getUpdatedLabel(updatedAt: string | undefined, index: number): string {
     month: "short",
     year: "numeric",
     timeZone: "UTC",
-  })}`;
+  }).replace("Sept", "Sep")}`;
 }
 
 function isVideoAsset(url: string) {
@@ -567,14 +567,18 @@ function JsMasonryGrid({
     const isLoaded = loadedItemIds.has(mediaItem.id);
 
     return (
-      <div key={mediaItem.id} className={`group relative w-full ${isMobile ? "mb-[0.375rem] break-inside-avoid [-webkit-column-break-inside:avoid] inline-block" : ""}`}>
+      <div key={mediaItem.id} className="group relative w-full">
         <div
           className="relative rounded-lg md:rounded-2xl overflow-hidden bg-[#151515] cursor-pointer"
           style={{ aspectRatio: mediaItem.width && mediaItem.height ? `${mediaItem.width}/${mediaItem.height}` : "1/1" }}
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
-            openCarouselAt(originalIndex);
+            if (isMobile) {
+              showComingSoonToast("desktopOnly");
+            } else {
+              openCarouselAt(originalIndex);
+            }
           }}
         >
           {mediaItem.isVideo ? (
@@ -715,7 +719,7 @@ function JsMasonryGrid({
       <div className="flex lg:hidden w-full gap-[0.375rem]">
         {distributeMasonryColumns(orderedItems, 2, (item) => (item.height && item.width ? item.height / item.width : 1)).map((columnItems, colIdx) => (
           <div key={colIdx} className="flex flex-col gap-[0.375rem] flex-1 min-w-0">
-            {columnItems.map((mediaItem) => renderMediaItem(mediaItem, false))}
+            {columnItems.map((mediaItem) => renderMediaItem(mediaItem, true))}
           </div>
         ))}
       </div>
@@ -1454,7 +1458,9 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                         <span>{basedIn}</span>
                       </div>
 
-                      <h1 className="ds-font-display text-2xl lg:text-4xl xl:text-[2.75rem] leading-tight xl:leading-[3.25rem] tracking-[-0.5px] font-semibold text-white w-full">{displayName}</h1>
+                      <h1 className="text-white w-full" style={{ fontFamily: 'var(--font-inter-display, "Inter Display")', fontSize: '52px', fontWeight: 700, lineHeight: '60px', letterSpacing: '-1px' }}>
+                        {displayName}
+                      </h1>
 
                       <div className="flex items-center gap-2 w-full">
                         <p className="ds-font-display text-white-400 text-base lg:text-xl xl:text-2xl leading-normal xl:leading-[2rem] tracking-[-0.5px] font-normal">{handle}</p>
@@ -1618,7 +1624,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
           <div id="desktop-tabs-sentinel" className="w-full h-0" />
           <div
             id="profile-desktop-tabs"
-            className={`hidden min-[75rem]:flex items-center justify-center gap-2 flex-wrap sticky z-header pt-8 pb-8 -mx-4 px-4 lg:-mx-8 lg:px-8 xl:-mx-10 xl:px-10 transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] top-[7.5rem] [.header-hidden_&]:top-0`}
+            className={`hidden min-[75rem]:flex items-center justify-center gap-2 flex-wrap sticky z-header pt-8 pb-8 -mx-4 px-4 lg:-mx-8 lg:px-8 xl:-mx-10 xl:px-10 transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] top-0`}
           >
             {/* Background gradient and progressive blur */}
             <div
