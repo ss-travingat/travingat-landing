@@ -8,7 +8,7 @@ import { COUNTRY_LIST } from "@/lib/countries";
 
 export const MobileCollectionHeader = ({ title, headerCountryCodes, flagOverflowCount, allVisitedCountries, profile, updatedLabel, menuRef, showMenu, setShowMenu }: any) => {
   return (
-    <div className="flex md:hidden flex-col items-center gap-[1.5rem] w-full max-w-[37.5rem] pt-[48px]">
+    <div className="flex md:hidden flex-col items-center gap-[1.5rem] w-full max-w-[37.5rem] pt-[16px]">
       <div className="flex flex-col items-center gap-[1.75rem]">
         <div className="flex items-center gap-[0.5rem] justify-center flex-wrap">
           {headerCountryCodes.slice(0, 4).map((code: string) => {

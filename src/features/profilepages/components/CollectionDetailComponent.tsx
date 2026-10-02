@@ -378,7 +378,7 @@ export default function CollectionDetailComponent({
     <div className="min-h-screen bg-black text-white flex flex-col items-center px-[0.75rem] min-[50.625rem]:px-[2rem] min-[1200px]:px-[96px] relative">
       {/* Mobile Navbar */}
       <div id="profile-mobile-navbar" className="flex md:hidden fixed top-0 left-0 w-full z-[120] flex-col pointer-events-none">
-        <div className="flex items-center justify-between px-[0.75rem] h-[4.5rem] bg-black shadow-[0_2px_0_0_#000] pointer-events-auto transition-transform duration-300">
+        <div className="flex items-center justify-between px-[20px] h-[56px] bg-black shadow-[0_2px_0_0_#000] pointer-events-auto transition-transform duration-300">
           <button onClick={() => router.back()} className="text-white flex items-center justify-center p-2 -ml-2">
             <span className="material-symbols-rounded text-[1.75rem]">arrow_back</span>
           </button>
@@ -403,7 +403,7 @@ export default function CollectionDetailComponent({
           description={aboutText}
         />
       )}
-      <main className="w-full flex flex-col items-center gap-[1.25rem] md:gap-0 pb-28 md:pb-[100px] pt-[6.5rem] md:pt-0">
+      <main className="w-full flex flex-col items-center gap-[1.25rem] md:gap-0 pb-28 md:pb-[100px] pt-[56px] md:pt-0">
         <MobileCollectionHeader
           title={title}
           headerCountryCodes={headerCountryCodes}

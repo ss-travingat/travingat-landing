@@ -5,7 +5,7 @@ import { MediaResolver } from "@/lib/media-resolver";
 
 export const MobileCountryHeader = ({ countryCode, countryName, profile, updatedLabel, menuRef, showMenu, setShowMenu }: any) => {
   return (
-    <div className="flex md:hidden flex-col items-center gap-[1.5rem] w-full max-w-[37.5rem] pt-[48px]">
+    <div className="flex md:hidden flex-col items-center gap-[1.5rem] w-full max-w-[37.5rem] pt-[16px]">
       <div className="flex flex-col items-center gap-[1.75rem]">
         <div className="h-[5rem] w-[7.5rem] overflow-hidden rounded-[0.5rem] shrink-0">
           <img
