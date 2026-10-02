@@ -21,6 +21,9 @@ import { distributeMasonryColumns } from "@/lib/masonry-utils";
 
 /* eslint-disable @next/next/no-img-element */
 
+import { MobileCollectionHeader } from "./MobileCollectionHeader";
+import { DesktopCollectionHeader } from "./DesktopCollectionHeader";
+
 const STATIC_LAST_UPDATED_LABEL = "27 Dec 2025";
 
 type MediaTab = "all" | "photos" | "videos" | "about";
@@ -28,6 +31,8 @@ type MediaTab = "all" | "photos" | "videos" | "about";
 function isVideoAsset(url: string) {
   return /\.(mp4|mov|webm|m4v|3gp|3g2)$/i.test(url);
 }
+
+// ─── Main Component ─────────────────────────────────────────────────────────────
 
 function CollectionLightbox({
   items,
@@ -370,7 +375,7 @@ export default function CollectionDetailComponent({
   });
 
   return (
-    <div className="min-h-screen bg-black text-white flex flex-col items-center px-[0.75rem] min-[50.625rem]:px-[2rem] min-[75rem]:px-[3rem] min-[90rem]:px-[4rem] relative">
+    <div className="min-h-screen bg-black text-white flex flex-col items-center px-[0.75rem] min-[50.625rem]:px-[2rem] min-[1200px]:px-[96px] relative">
       {/* Mobile Navbar */}
       <div id="profile-mobile-navbar" className="flex md:hidden fixed top-0 left-0 w-full z-[120] flex-col pointer-events-none">
         <div className="flex items-center justify-between px-[0.75rem] h-[4.5rem] bg-black shadow-[0_2px_0_0_#000] pointer-events-auto transition-transform duration-300">
@@ -398,150 +403,33 @@ export default function CollectionDetailComponent({
           description={aboutText}
         />
       )}
-      <main className="w-full max-w-[108rem] flex flex-col items-center gap-[1.25rem] md:gap-[3rem] pb-28 md:pb-20 pt-[6.5rem] md:pt-10">
-        <div className="flex flex-col items-center gap-[1.25rem] w-full max-w-[37.5rem]">
-          <div className="flex flex-col items-center gap-[1.5rem]">
-            <div className="flex items-center gap-[0.5rem] justify-center flex-wrap">
-              {headerCountryCodes.slice(0, 4).map((code) => {
-                const countryEntry = COUNTRY_LIST.find((c) => c.code.toLowerCase() === code.toLowerCase());
-                const countryName = countryEntry ? countryEntry.name : code;
-                return (
-                  <TooltipProvider key={code} delayDuration={100}>
-                    <Tooltip content={countryName} theme="light" side="top">
-                      <div className="h-[1.5rem] w-[2.125rem] overflow-hidden rounded-[0.1875rem] shadow-sm cursor-pointer">
-                        <img src={`/flags/${code.toUpperCase()}.svg`} className="w-full h-full object-cover" alt={countryName} />
-                      </div>
-                    </Tooltip>
-                  </TooltipProvider>
-                );
-              })}
-              {flagOverflowCount > 0 && (
-                <>
-                  <div className="hidden md:block">
-                    <DesktopCountriesPopup
-                      countries={allVisitedCountries}
-                      trigger={
-                        <div className="flex h-[1.5rem] w-[2.125rem] shrink-0 items-center justify-center overflow-hidden rounded-[0.1875rem] bg-white cursor-pointer hover:opacity-80 transition-opacity">
-                          <span className="font-medium text-violet-600 text-[0.75rem] text-center tracking-[-0.408px] whitespace-nowrap">
-                            +{flagOverflowCount}
-                          </span>
-                        </div>
-                      }
-                    />
-                  </div>
-                  <div className="block md:hidden">
-                    <CountriesPopup
-                      countries={allVisitedCountries}
-                      trigger={
-                        <div className="flex h-[1.5rem] w-[2.125rem] shrink-0 items-center justify-center overflow-hidden rounded-[0.1875rem] bg-white cursor-pointer hover:opacity-80 transition-opacity">
-                          <span className="font-medium text-violet-600 text-[0.75rem] text-center tracking-[-0.408px] whitespace-nowrap">
-                            +{flagOverflowCount}
-                          </span>
-                        </div>
-                      }
-                    />
-                  </div>
-                </>
-              )}
-            </div>
-            <h1 className="ds-font-display text-[1.75rem] leading-[2.25rem] tracking-[-0.5px] font-semibold md:text-[3.25rem] md:leading-[3.75rem] md:tracking-[-1px] md:font-bold text-white text-center">
-              {title}
-            </h1>
-          </div>
+      <main className="w-full flex flex-col items-center gap-[1.25rem] md:gap-0 pb-28 md:pb-[100px] pt-[6.5rem] min-[1200px]:pt-0">
+        <MobileCollectionHeader
+          title={title}
+          headerCountryCodes={headerCountryCodes}
+          flagOverflowCount={flagOverflowCount}
+          allVisitedCountries={allVisitedCountries}
+          profile={profile}
+          updatedLabel={updatedLabel}
+          menuRef={menuRef}
+          showMenu={showMenu}
+          setShowMenu={setShowMenu}
+        />
 
-          {/* Meta info row */}
-          <div className="flex flex-col md:flex-row items-center gap-[0.5rem] md:gap-[0.75rem]">
-            <div className="flex items-center gap-[0.5rem]">
-              <span className="text-[0.875rem] md:text-[1rem] text-white leading-[1.5rem] tracking-[-0.096px] font-normal">By</span>
-              <div className="h-[1.25rem] w-[1.25rem] overflow-hidden rounded-[0.375rem] shrink-0">
-                <LoadedImage
-                  originalSrc={MediaResolver.getBase(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url)} src={MediaResolver.getOptimized(MediaResolver.getBase(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url))}
-                  thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url), 720)}
-                  alt={profile.name}
-                  className="w-full h-full object-cover"
-                  skeletonClassName="absolute inset-0 bg-[#2a2a2a]"
-                  containerClassName="w-full h-full relative"
-                />
-              </div>
-              <Link href={`/${profile.handle.replace(/^@/, "")}`} className="text-[0.875rem] md:text-[1rem] text-white leading-[1.5rem] tracking-[-0.096px] font-normal hover:underline">
-                {profile.handle}
-              </Link>
-            </div>
-            
-            <div className="hidden md:block h-[0.1875rem] w-[0.1875rem] rounded-full bg-[#505050] shrink-0" />
-            
-            <div className="flex items-center gap-[0.5rem]">
-              <span className="text-[0.875rem] md:text-[1rem] text-[#989898] leading-[1.5rem] tracking-[-0.096px] font-normal">Last Updated:</span>
-              <span className="text-[0.875rem] md:text-[1rem] text-[#989898] leading-[1.5rem] tracking-[-0.096px] font-normal">
-                {updatedLabel}
-              </span>
-              
-              <div className="md:hidden ml-1 relative flex items-center" ref={menuRef}>
-                <button
-                  type="button"
-                  onClick={() => setShowMenu((prev) => !prev)}
-                  className="flex px-[0.5rem] py-[0.25rem] items-center justify-center rounded-[3.125rem] bg-[#181818] hover:bg-[#222] transition shrink-0"
-                  aria-label="More options"
-                >
-                  <div className="flex items-center gap-[0.25rem]">
-                    <div className="h-[0.125rem] w-[0.125rem] rounded-full bg-[#989898]" />
-                    <div className="h-[0.125rem] w-[0.125rem] rounded-full bg-[#989898]" />
-                    <div className="h-[0.125rem] w-[0.125rem] rounded-full bg-[#989898]" />
-                  </div>
-                </button>
-                {showMenu && (
-                  <ContextMenu
-                    kind="collection"
-                    viewLabel="View collection"
-                    shareLabel="Share collection"
-                    viewHref={`/${profile.handle.replace(/^@/, "")}`}
-                    showViewAction={false}
-                    onShare={() => {
-                      navigator.clipboard.writeText(window.location.href).catch(() => { });
-                      setShowMenu(false);
-                    }}
-                    onClose={() => setShowMenu(false)}
-                    menuRef={menuRef}
-                  />
-                )}
-              </div>
-            </div>
-
-            <div className="hidden md:block h-[0.1875rem] w-[0.1875rem] rounded-full bg-[#505050] shrink-0" />
-            <div className="hidden md:flex relative items-center" ref={menuRef}>
-              <button
-                type="button"
-                onClick={() => setShowMenu((prev) => !prev)}
-                className="flex px-[0.75rem] py-[0.5625rem] items-center justify-center rounded-[3.125rem] border border-[#363636] bg-[#181818] hover:bg-[#222] transition shrink-0"
-                aria-label="More options"
-              >
-                <div className="flex items-center gap-[0.4375rem]">
-                  <div className="h-[0.125rem] w-[0.125rem] rounded-full bg-white" />
-                  <div className="h-[0.125rem] w-[0.125rem] rounded-full bg-white" />
-                  <div className="h-[0.125rem] w-[0.125rem] rounded-full bg-white" />
-                </div>
-              </button>
-              {showMenu && (
-                <ContextMenu
-                  kind="collection"
-                  viewLabel="View collection"
-                  shareLabel="Share collection"
-                  viewHref={`/${profile.handle.replace(/^@/, "")}`}
-                  showViewAction={false}
-                  onShare={() => {
-                    navigator.clipboard.writeText(window.location.href).catch(() => { });
-                    setShowMenu(false);
-                  }}
-                  onClose={() => setShowMenu(false)}
-                  menuRef={menuRef}
-                />
-              )}
-            </div>
-          </div>
-        </div>
+        <DesktopCollectionHeader
+          title={title}
+          headerCountryCodes={headerCountryCodes}
+          flagOverflowCount={flagOverflowCount}
+          allVisitedCountries={allVisitedCountries}
+          profile={profile}
+          updatedLabel={updatedLabel}
+          menuRef={menuRef}
+          showMenu={showMenu}
+          setShowMenu={setShowMenu}
+        />
 
         {/* Tabs + content */}
-        <div className="w-full flex flex-col gap-[0.75rem] md:gap-[3rem] items-center">
+        <div className="w-full flex flex-col items-center">
           {/* Mobile Tab icons */}
           {(() => {
             const mobileTabsArr = ["all", "photos", "videos", "about"] as const;
@@ -559,8 +447,8 @@ export default function CollectionDetailComponent({
 
             return (
               <>
-                <div id="mobile-tabs-sentinel" className="w-full h-0 md:hidden" />
-                <div id="profile-mobile-tabs" className="flex md:hidden items-center justify-between w-full border-b border-[#222] sticky top-[4.5rem] z-[90] bg-black relative">
+                <div id="mobile-tabs-sentinel" className="w-full h-0 pointer-events-none md:hidden" />
+                <div id="profile-mobile-tabs" className="flex md:hidden items-center justify-between w-full border-b border-[#222] sticky top-[4.5rem] z-[90] bg-black">
                   {[
                   { key: "all", icon: "auto_awesome_mosaic" },
                   { key: "photos", icon: "imagesmode" },
@@ -610,7 +498,7 @@ export default function CollectionDetailComponent({
 
           {/* Touch container for content */}
           <div
-            className="w-full flex flex-col flex-1 min-h-screen"
+            className="w-full flex flex-col flex-1 min-h-screen mt-[0.75rem] md:mt-[48px]"
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
@@ -646,7 +534,7 @@ export default function CollectionDetailComponent({
                               onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
-                                showComingSoonToast("desktopOnly");
+                                setLightboxIndex(globalIndex);
                               }}
                             >
                               {isVideo ? (
