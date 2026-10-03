@@ -148,16 +148,13 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
     const node = ref.current.firstElementChild as HTMLElement;
 
     try {
-      const isDesktop = window.innerWidth >= 1024;
-      const offsetX = isDesktop ? 60 : 0;
-
       return await domToPng(node, {
         scale: 2,
         quality: 0.9,
-        width: node.offsetWidth + offsetX,
+        width: node.offsetWidth,
         height: node.offsetHeight,
         style: {
-          transform: `translateX(${offsetX}px)`,
+          transform: 'none',
           transformOrigin: 'top left'
         },
         fetch: {

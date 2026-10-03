@@ -91,7 +91,7 @@ export function CountryNotch({ form, sampleFlags, fill = "#000000", emptyBg = "b
               <div className={`h-full w-full rounded-[2px] ${emptyBg}`} />
             )}
           </div>
-          <p className="whitespace-nowrap text-[14px] font-[family-name:var(--font-inter)] font-normal leading-[20px] tracking-[-0.084px] text-white">
+          <p className="whitespace-nowrap text-[14px] font-[family-name:Inter,_sans-serif] font-normal leading-[20px] tracking-[-0.084px] text-white">
             {form.country || <span className="text-[#656565]">Your country</span>}
           </p>
         </div>
@@ -121,7 +121,7 @@ export function MinimalCountryNotch({ form, sampleFlags, wrapperClassName = "" }
               <div className="h-full w-full rounded-[2px] bg-[#2a2a2a]" />
             )}
           </div>
-          <p className="whitespace-nowrap text-[14px] font-[family-name:var(--font-inter)] font-normal leading-[20px] tracking-[-0.084px] text-white">
+          <p className="whitespace-nowrap text-[14px] font-[family-name:Inter,_sans-serif] font-normal leading-[20px] tracking-[-0.084px] text-white">
             {form.country || <span className="text-[#656565]">Your country</span>}
           </p>
         </div>
@@ -177,19 +177,19 @@ export function ClassicCard({ form, sampleFlags, visitedArray, isPreview, coverC
           <div className="flex shrink-0 items-center justify-center gap-[6px]">
             {form.country && sampleFlags[form.country] ? (
               <>
-                <div className="h-[13.333px] w-[20px] aspect-[3/2] shrink-0 overflow-hidden rounded-[2px] bg-[#161616]">
+                <div className="h-[13.333px] w-[20px] shrink-0 overflow-hidden rounded-[2px] bg-[#161616]">
                   <span className={`fi fi-${sampleFlags[form.country].toLowerCase()} !block !h-full !w-full !bg-cover !bg-center !text-[0px]`} title={form.country} />
                 </div>
-                <span className="text-[14px] font-[family-name:var(--font-inter)] font-normal leading-[20px] tracking-[-0.084px] text-[#656565]">{form.country}</span>
+                <span className="text-[14px] font-[family-name:Inter,_sans-serif] font-normal leading-[20px] tracking-[-0.084px] text-[#656565]">{form.country}</span>
               </>
             ) : (
               <>
                 <div className="h-[13.333px] w-[20px] shrink-0 overflow-hidden rounded-[2px] bg-[#2a2a2a]" />
-                <span className="text-[14px] font-[family-name:var(--font-inter)] font-normal leading-[20px] tracking-[-0.084px] text-[#656565]">Your country</span>
+                <span className="text-[14px] font-[family-name:Inter,_sans-serif] font-normal leading-[20px] tracking-[-0.084px] text-[#656565]">Your country</span>
               </>
             )}
           </div>
-          <h3 className="w-full text-center text-[20px] font-[family-name:var(--font-inter-display)] font-semibold leading-[28px] tracking-[-0.1px] text-white">
+          <h3 className="w-full text-center text-[20px] font-[family-name:InterDisplay,_sans-serif] font-semibold leading-[28px] tracking-[-0.1px] text-white">
             {form.fullName || "Your full name"}
           </h3>
         </div>
@@ -202,7 +202,7 @@ export function ClassicCard({ form, sampleFlags, visitedArray, isPreview, coverC
                 <div
                   key={c}
                   title={c}
-                  className="h-[13.333px] w-[20px] aspect-[3/2] shrink-0 overflow-hidden rounded-[2px] bg-[#161616]"
+                  className="h-[13.333px] w-[20px] shrink-0 overflow-hidden rounded-[2px] bg-[#161616]"
                 >
                   <span className={`fi fi-${sampleFlags[c].toLowerCase()} !block !h-full !w-full !bg-cover !bg-center !text-[0px]`} title={c} />
                 </div>
@@ -228,7 +228,7 @@ export function ClassicCard({ form, sampleFlags, visitedArray, isPreview, coverC
 
         {/* Countries explored container */}
         <div className="flex w-full shrink-0 flex-col items-center gap-[12px]">
-          <p className="text-[32px] font-[family-name:var(--font-inter-display)] font-normal leading-[40px] tracking-[-0.5px] text-white">
+          <p className="text-[32px] font-[family-name:InterDisplay,_sans-serif] font-normal leading-[40px] tracking-[-0.5px] text-white">
             {visitedArray.length} Countries
           </p>
           <p className="bg-gradient-to-l from-[#3c3c3c] to-[#242424] bg-clip-text font-[family-name:var(--font-antonio)] text-[32px] font-bold leading-[40px] tracking-[24px] text-transparent pl-[24px]">
@@ -287,7 +287,7 @@ export function MinimalCard({ form, sampleFlags, visitedArray, isPreview, coverC
                 <AvatarPlaceholderIcon className="h-full w-full object-cover" />
               )}
             </div>
-            <div className="flex flex-col text-[24px] font-[family-name:var(--font-inter-display)] font-semibold leading-[32px] tracking-[-0.5px] text-white">
+            <div className="flex flex-col text-[24px] font-[family-name:InterDisplay,_sans-serif] font-semibold leading-[32px] tracking-[-0.5px] text-white">
               <span>{(form.fullName || "Your full name").trim().split(" ")[0]}</span>
               <span>{(form.fullName || "Your full name").trim().split(" ").slice(1).join(" ")}</span>
             </div>
@@ -298,7 +298,7 @@ export function MinimalCard({ form, sampleFlags, visitedArray, isPreview, coverC
         {/* Stats Container */}
         <div className="flex w-full shrink-0 flex-col items-start justify-end gap-[24px] rounded-[16px] bg-[#111111] px-[20px] py-[24px]">
            <div className="flex flex-col items-start whitespace-nowrap">
-             <p className="text-[64px] font-[family-name:var(--font-inter-display)] font-normal leading-[72px] tracking-[-1px] text-white">
+             <p className="text-[64px] font-[family-name:InterDisplay,_sans-serif] font-normal leading-[72px] tracking-[-1px] text-white">
                {visitedArray.length}
              </p>
              <p className="text-[16px] font-normal leading-[1.5] tracking-[-0.5px] text-[#a8a8a8]">
@@ -415,11 +415,11 @@ export function AdventureCard({ form, sampleFlags, visitedArray, isPreview, cove
           {/* Text Container: Name & Countries Explored */}
           <div className="relative z-10 flex w-full flex-col items-center gap-[24px]">
             <div className="relative z-10 flex w-full flex-col items-center gap-[4px]">
-              <h3 className="w-full break-words px-2 text-center text-[28px] font-bold font-[family-name:var(--font-inter-display)] leading-[36px] tracking-[-0.5px] text-white">
+              <h3 className="w-full break-words px-2 text-center text-[28px] font-bold font-[family-name:InterDisplay,_sans-serif] leading-[36px] tracking-[-0.5px] text-white">
                 {form.fullName || "Your full name"}
               </h3>
 
-              <p className="whitespace-nowrap text-center text-[16px] font-[family-name:var(--font-inter)] font-medium leading-[24px] tracking-[-0.096px] text-white">
+              <p className="whitespace-nowrap text-center text-[16px] font-[family-name:Inter,_sans-serif] font-medium leading-[24px] tracking-[-0.096px] text-white">
                 {visitedArray.length} Countries explored
               </p>
             </div>
@@ -429,7 +429,7 @@ export function AdventureCard({ form, sampleFlags, visitedArray, isPreview, cove
               {visitedArray.length > 0 ? (
               <>
                 {visitedArray.slice(0, 35).map((c) => (
-                  <div key={c} title={c} className="h-[13.333px] w-[20px] aspect-[3/2] shrink-0 overflow-hidden rounded-[2px] bg-[#161616]">
+                  <div key={c} title={c} className="h-[13.333px] w-[20px] shrink-0 overflow-hidden rounded-[2px] bg-[#161616]">
                     <span className={`fi fi-${sampleFlags[c].toLowerCase()} !block !h-full !w-full !bg-cover !bg-center !text-[0px]`} title={c} />
                   </div>
                 ))}
@@ -540,7 +540,7 @@ export function PreviewWatermark() {
     >
       <span style={{
         color: 'rgba(255, 255, 255, 0.50)',
-        fontFamily: 'var(--font-inter-display, "Inter Display")',
+        fontFamily: 'InterDisplay, sans-serif',
         fontSize: 'var(--Heading-H4-Bold-Size, 32px)',
         fontStyle: 'normal',
         fontWeight: 700,
