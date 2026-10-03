@@ -207,7 +207,7 @@ const EmailVerificationForm = ({ onVerified, initialSessionUser, source }: Props
 
   if (step === 'otp') {
     return (
-      <div className="bg-transparent lg:bg-[#111] flex flex-col h-auto lg:h-[563px] items-center lg:justify-center overflow-hidden lg:pb-[32px] lg:px-[32px] relative lg:rounded-[20px] shrink-0 w-full max-w-[420px] mx-auto box-border">
+      <div className="bg-transparent lg:bg-[#111] flex flex-col h-auto lg:h-[563px] items-center lg:justify-center overflow-hidden relative lg:rounded-[20px] shrink-0 w-full max-w-[420px] mx-auto box-border">
         <div className="flex flex-col gap-[24px] items-center p-[32px] relative shrink-0 w-full">
           {/* OTP field group */}
           <div className="flex flex-col gap-[16px] items-center relative shrink-0 w-full">
@@ -509,7 +509,7 @@ const EmailVerificationForm = ({ onVerified, initialSessionUser, source }: Props
   }
 
   return (
-    <div className="bg-transparent lg:bg-[#111] flex flex-col h-auto lg:h-[563px] items-center lg:justify-center overflow-hidden lg:pb-[32px] lg:px-[32px] relative lg:rounded-[20px] shrink-0 w-full max-w-[420px] mx-auto box-border">
+    <div className="bg-transparent lg:bg-[#111] flex flex-col h-auto lg:h-[563px] items-center lg:justify-center overflow-hidden relative lg:rounded-[20px] shrink-0 w-full max-w-[420px] mx-auto box-border">
       <div className="flex flex-col gap-[24px] items-center p-[32px] relative shrink-0 w-full">
         {/* Email field group */}
         <div className="flex flex-col gap-[16px] items-center relative shrink-0 w-full">
