@@ -281,7 +281,7 @@ export default function CountryDetailComponent({
       const swipeThreshold = 50;
 
       if (Math.abs(distanceX) > Math.abs(distanceY) && Math.abs(distanceX) > swipeThreshold) {
-        const tabsArr: MediaTab[] = ["all", "photos", "videos", "about"];
+        const tabsArr: MediaTab[] = ["all", "about"];
         const currentIndex = tabsArr.indexOf(activeTab);
 
         if (distanceX > 0) {
@@ -422,8 +422,6 @@ export default function CountryDetailComponent({
 
   const tabs: { key: string; label: string }[] = [
     { key: "all", label: "All media" },
-    { key: "photos", label: "Photos" },
-    { key: "videos", label: "Videos" },
     { key: "about", label: "About" },
   ];
 
@@ -506,7 +504,7 @@ export default function CountryDetailComponent({
 
           {/* Mobile Tab icons */}
           {(() => {
-            const mobileTabsArr = ["all", "photos", "videos", "about"] as const;
+            const mobileTabsArr = ["all", "about"] as const;
             const activeIndex = mobileTabsArr.indexOf(activeTab as any);
 
             let offsetPercent = 0;
@@ -525,8 +523,6 @@ export default function CountryDetailComponent({
                 <div id="profile-mobile-tabs" className="flex md:hidden items-center justify-between w-full border-b border-[#222] sticky top-[56px] z-[90] bg-black">
                   {[
                     { key: "all", icon: "auto_awesome_mosaic" },
-                    { key: "photos", icon: "imagesmode" },
-                    { key: "videos", icon: "slideshow" },
                     { key: "about", icon: "chat_info" },
                   ].map(tab => (
                     <button
