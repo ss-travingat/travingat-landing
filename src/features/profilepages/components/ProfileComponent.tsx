@@ -1815,7 +1815,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                                       className="block w-full h-full object-cover"
                                     />
                                   </div>
-                                  <p className="text-white text-sm md:text-lg font-medium leading-[1.25rem] md:leading-[1.5rem] tracking-[-0.084px] md:tracking-[-0.2px] truncate">
+                                  <p className="text-white text-base font-medium leading-[24px] tracking-[-0.096px] truncate">
                                     {country.name}
                                   </p>
                                 </div>
@@ -1919,7 +1919,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                               <div className="flex flex-col px-1 md:px-2 gap-3 md:gap-4">
                                 <div className="flex flex-col gap-1 md:gap-2">
                                   <p className="text-[#646464] text-xs md:text-sm leading-[1rem] md:leading-[1.25rem] tracking-normal">{collection.createdLabel}</p>
-                                  <p className="text-white text-sm md:text-lg font-medium leading-[1.25rem] md:leading-[1.5rem] tracking-[-0.084px] md:tracking-[-0.2px] min-w-full w-min line-clamp-1">{collection.title}</p>
+                                  <p className="text-white text-base font-medium leading-[24px] tracking-[-0.096px] self-stretch line-clamp-1">{collection.title}</p>
                                 </div>
                                 {/* Hidden countries for now as per design request until Admin CMS supports collection country multi-select */}
                                 <div className="flex flex-wrap items-center gap-1.5">
