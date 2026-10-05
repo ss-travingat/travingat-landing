@@ -555,6 +555,7 @@ function JsMasonryGrid({
 
   const renderMediaItem = (mediaItem: MediaItem, isMobile = false) => {
     const originalIndex = allMediaItems.findIndex((it) => String(it.id) === String(mediaItem?.id));
+    const gridIndex = orderedItems.findIndex((it) => String(it.id) === String(mediaItem?.id));
     const isMenuOpen = openContextMenuId === mediaItem.id;
     const displayCountryCode = mediaItem.countryCode || profileFlagCode;
     const collectionHref =
@@ -605,6 +606,7 @@ function JsMasonryGrid({
               src={MediaResolver.getThumbnail(MediaResolver.getBase(mediaItem.fileUrl), 720)}
               thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(mediaItem.fileUrl), 144)}
               alt="Uploaded media"
+              priority={gridIndex < 4}
               className="w-full h-auto block"
               containerClassName="w-full h-full relative"
               skeletonClassName="absolute inset-0 w-full h-full bg-[#1a1a1a]"
