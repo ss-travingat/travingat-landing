@@ -48,7 +48,7 @@ export default function CardCarousel({
 
   return (
     <div
-      className={`relative w-full overflow-hidden rounded-[0.5rem] md:rounded-2xl bg-[#151515] group ${containerClassName}`}
+      className={`relative w-full overflow-hidden rounded-2xl bg-[#151515] group ${containerClassName}`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
