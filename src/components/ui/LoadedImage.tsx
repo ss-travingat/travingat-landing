@@ -33,7 +33,7 @@ export default function LoadedImage({
   // "error" is a terminal state
   const [phase, setPhase] = useState<"skeleton" | "blurPreview" | "loaded" | "error">(src ? "skeleton" : "error");
   const [retryCount, setRetryCount] = useState(0);
-  const [isHealing, setIsHealing] = useState(false);
+  const [healState, setHealState] = useState<"none" | "optimized" | "original">("none");
   const hasTriggeredHealRef = useRef(false);
 
   const [prevSrc, setPrevSrc] = useState(src);
@@ -42,7 +42,7 @@ export default function LoadedImage({
     setPrevSrc(src);
     setPhase(src ? "skeleton" : "error");
     setRetryCount(0);
-    setIsHealing(false);
+    setHealState("none");
     hasTriggeredHealRef.current = false;
   }
   const maxRetries = 2;
@@ -53,10 +53,11 @@ export default function LoadedImage({
   // The main image we are trying to load
   let activeSrc = src;
 
-  // If we are in a healing fallback state, use the original source from the DB if available,
-  // or rewrite the extension to the optimized fallback if originalSrc isn't passed.
-  if (isHealing) {
-    activeSrc = originalSrc ? originalSrc : MediaResolver.getOptimized(activeSrc);
+  // Try optimized fallback first, then original source if neither works
+  if (healState === "optimized") {
+    activeSrc = originalSrc ? MediaResolver.getOptimized(originalSrc) : MediaResolver.getOptimized(src);
+  } else if (healState === "original") {
+    activeSrc = originalSrc || src;
   }
 
   // Add a query param on retries to bypass broken browser cache for the failed image
@@ -78,10 +79,10 @@ export default function LoadedImage({
     setPhase("loaded");
 
     // If we loaded successfully via fallback, tell the server to update the DB permanently
-    if (isHealing && !hasTriggeredHealRef.current) {
+    if (healState !== "none" && !hasTriggeredHealRef.current) {
       hasTriggeredHealRef.current = true;
       // Only heal if we fell back to an optimized image format, not if we fell back to the original DB format while processing
-      if (!originalSrc) {
+      if (!originalSrc && healState === "optimized") {
         fetch("/api/heal-image", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -97,14 +98,23 @@ export default function LoadedImage({
   };
 
   const handleError = () => {
-    // Before giving up completely, if the image isn't already avif/webm (or if we have a different originalSrc to fall back to), attempt to fallback.
-    const canHealToOriginal = originalSrc && activeSrc !== originalSrc;
-    const canHealToOptimized = !activeSrc.match(/\.(avif|webm)$/i);
-    
-    if (!isHealing && (canHealToOriginal || canHealToOptimized) && !activeSrc.startsWith("blob:") && !activeSrc.startsWith("data:")) {
-      setIsHealing(true);
-      setRetryCount(0); // Reset retries for the new URL
-      return;
+    if (!activeSrc.startsWith("blob:") && !activeSrc.startsWith("data:")) {
+      if (healState === "none") {
+        const optimizedTarget = originalSrc ? MediaResolver.getOptimized(originalSrc) : MediaResolver.getOptimized(src);
+        if (optimizedTarget && optimizedTarget !== activeSrc) {
+          setHealState("optimized");
+          setRetryCount(0);
+          return;
+        }
+      }
+      
+      if (healState === "none" || healState === "optimized") {
+        if (originalSrc && originalSrc !== activeSrc) {
+          setHealState("original");
+          setRetryCount(0);
+          return;
+        }
+      }
     }
 
     if (retryCount < maxRetries) {
@@ -176,7 +186,7 @@ export default function LoadedImage({
           className={`absolute inset-0 w-full h-full object-cover rounded-[inherit] z-[1] transition-opacity duration-500 ${phase === "loaded" ? "opacity-0" : "opacity-100"
             }`}
           style={{ filter: phase === "loaded" ? "blur(0px)" : "blur(20px)", transform: "scale(1.1)" }}
-          loading="eager"
+          {...(priority ? { fetchPriority: "high" as any, loading: "eager" } : { loading: "lazy" })}
           decoding="async"
           onLoad={handleBlurPreviewLoad}
           onError={handleBlurPreviewError}
