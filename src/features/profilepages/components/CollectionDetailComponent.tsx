@@ -157,7 +157,7 @@ export default function CollectionDetailComponent({
 }) {
   const router = useRouter();
   const { showComingSoonToast } = useMobileComingSoon();
-  const imageObjects = images.map((entry) => (typeof entry === "string" ? { url: entry } : entry));
+  const imageObjects = (images || []).filter(Boolean).map((entry) => (typeof entry === "string" ? { url: entry } : entry));
   const [activeTab, setActiveTab] = useState<MediaTab>("all");
   const [showMenu, setShowMenu] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -357,9 +357,10 @@ export default function CollectionDetailComponent({
     { key: "about", label: "About" },
   ];
   const getCountryCodeForImage = (img: { url: string; countryCode?: string }) => {
+    if (!img) return undefined;
     if (img.countryCode) return img.countryCode;
     const entry = profile.countryImages?.find(c => 
-      c.images.some((i: any) => (typeof i === "string" ? i : i.url) === img.url)
+      c.images.some((i: any) => i && (typeof i === "string" ? i : i.url) === img.url)
     );
     return entry?.countryCode;
   };
