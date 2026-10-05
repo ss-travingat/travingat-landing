@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { Field } from './expcard-page';
-import { ImagePlaceholderIcon, AvatarPlaceholderIcon } from './cards';
+import { ImagePlaceholderIcon, AvatarPlaceholderIcon, resolveCountryInfo } from './cards';
 
 
 interface MobileExplorerFormProps {
@@ -304,8 +304,8 @@ export function MobileExplorerForm({
                 <Field label="Where are you from?">
                   <div className="relative w-full">
                     <div className={`flex w-full items-center gap-[8px] rounded-[10px] border bg-black px-[16px] py-[12px] ${errors.country ? 'border-red-500' : 'border-[#1e1e1e]'}`}>
-                      {sampleFlags[form.country] && (
-                        <span className={`fi fi-${sampleFlags[form.country].toLowerCase()} h-[13.333px] w-[20px] aspect-[3/2] shrink-0 rounded-[2px] inline-block bg-cover bg-center`} />
+                      {resolveCountryInfo(form.country, sampleFlags).code && (
+                        <span className={`fi fi-${resolveCountryInfo(form.country, sampleFlags).code} h-[13.333px] w-[20px] aspect-[3/2] shrink-0 rounded-[2px] inline-block bg-cover bg-center`} />
                       )}
                       <input
                         value={form.country}
@@ -359,8 +359,10 @@ export function MobileExplorerForm({
                 <div className="flex flex-wrap items-start gap-x-[12px] gap-y-[8px] mt-[10px] shrink-0 max-h-[140px] overflow-y-auto" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
                   {visited.map((c) => (
                     <div key={c} className="flex items-center gap-[4px]">
-                      <span className={`fi fi-${sampleFlags[c]?.toLowerCase()} h-[13.333px] w-[20px] aspect-[3/2] overflow-clip rounded-[1px] bg-cover bg-center`} title={c} />
-                      <span className="text-[12px] text-[#A3A3A3] font-medium leading-none">{sampleFlags[c]}</span>
+                      {resolveCountryInfo(c, sampleFlags).code && (
+                        <span className={`fi fi-${resolveCountryInfo(c, sampleFlags).code} h-[13.333px] w-[20px] aspect-[3/2] overflow-clip rounded-[1px] bg-cover bg-center`} title={resolveCountryInfo(c, sampleFlags).name || c} />
+                      )}
+                      <span className="text-[12px] text-[#A3A3A3] font-medium leading-none">{resolveCountryInfo(c, sampleFlags).code.toUpperCase()}</span>
                     </div>
                   ))}
                 </div>
