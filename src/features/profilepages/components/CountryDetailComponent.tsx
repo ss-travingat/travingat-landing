@@ -104,7 +104,7 @@ function PhotoLightbox({
           {/* Avatar + close */}
           <div className="flex items-start justify-between">
             <div className="h-[4.5rem] w-[4.5rem] overflow-hidden rounded-2xl">
-              <LoadedImage src={avatarSrc} thumbnailSrc={MediaResolver.getThumbnail(avatarSrc, 720)} alt={profileName} className="h-full w-full object-cover" />
+              <LoadedImage src={avatarSrc} thumbnailSrc={MediaResolver.getThumbnail(avatarSrc, 144)} alt={profileName} className="h-full w-full object-cover" />
             </div>
             <button
               type="button"

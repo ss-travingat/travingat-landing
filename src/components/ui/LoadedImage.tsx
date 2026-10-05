@@ -104,7 +104,6 @@ export default function LoadedImage({
     if (!isHealing && (canHealToOriginal || canHealToOptimized) && !activeSrc.startsWith("blob:") && !activeSrc.startsWith("data:")) {
       setIsHealing(true);
       setRetryCount(0); // Reset retries for the new URL
-      setPhase("skeleton");
       return;
     }
 
@@ -112,8 +111,6 @@ export default function LoadedImage({
       // Delay before retrying to give the backend time to heal the image
       // First retry after 2 seconds, second retry after 4 seconds
       const delay = retryCount === 0 ? 2000 : 4000;
-
-      setPhase("skeleton");
 
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
       timeoutRef.current = setTimeout(() => {

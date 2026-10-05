@@ -286,19 +286,22 @@ export function MediaLightbox({
                     key={`thumb-${activeIndex}`}
                     src={thumbnailSrc}
                     alt="Carousel media"
-                    className={`block w-full h-full object-contain carousel-image rounded-[0.75rem] mx-auto transition-opacity duration-300 ${
+                    className={`block w-full h-full object-contain carousel-image rounded-[0.75rem] mx-auto transition-all duration-500 ${
                       mediaLoaded ? 'opacity-100' : 'opacity-0'
                     }`}
+                    style={{
+                      filter: fullResReady ? 'blur(0px)' : 'blur(20px)',
+                      transform: fullResReady ? 'scale(1)' : 'scale(1.05)'
+                    }}
                     onLoad={(e: SyntheticEvent<HTMLImageElement>) => {
                       setMediaLoaded(true);
                       if (!naturalAspectRatio && e.currentTarget.naturalWidth > 0) {
                         setNaturalAspectRatio(e.currentTarget.naturalWidth / e.currentTarget.naturalHeight);
                       }
                     }}
-                    onError={() => {
-                      // Thumbnail failed, try showing optimized directly
-                      setMediaError(true);
-                      setMediaLoaded(true);
+                    onError={(e: SyntheticEvent<HTMLImageElement>) => {
+                      // Thumbnail failed, just hide it. The full-res image will load in the background.
+                      e.currentTarget.style.display = 'none';
                     }}
                   />
                   {/* Top layer: full-res optimized — preloaded in background, fades in on top */}
@@ -306,8 +309,9 @@ export function MediaLightbox({
                     <img
                       src={fullResSrc}
                       alt="Carousel media"
-                      className="absolute inset-0 z-[2] block w-full h-full object-contain carousel-image rounded-[0.75rem] mx-auto"
+                      className="absolute inset-0 z-[2] block w-full h-full object-contain carousel-image rounded-[0.75rem] mx-auto animate-in fade-in duration-500"
                       onLoad={(e: SyntheticEvent<HTMLImageElement>) => {
+                        setMediaLoaded(true);
                         setNaturalAspectRatio(e.currentTarget.naturalWidth / e.currentTarget.naturalHeight);
                       }}
                     />
