@@ -34,6 +34,7 @@ export default function LoadedImage({
   const [phase, setPhase] = useState<"skeleton" | "blurPreview" | "loaded" | "error">("skeleton");
   const [retryCount, setRetryCount] = useState(0);
   const [isHealing, setIsHealing] = useState(false);
+  const hasTriggeredHealRef = useRef(false);
 
   const [prevSrc, setPrevSrc] = useState(src);
 
@@ -42,6 +43,7 @@ export default function LoadedImage({
     setPhase("skeleton");
     setRetryCount(0);
     setIsHealing(false);
+    hasTriggeredHealRef.current = false;
   }
   const maxRetries = 2;
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -76,7 +78,8 @@ export default function LoadedImage({
     setPhase("loaded");
 
     // If we loaded successfully via fallback, tell the server to update the DB permanently
-    if (isHealing) {
+    if (isHealing && !hasTriggeredHealRef.current) {
+      hasTriggeredHealRef.current = true;
       // Only heal if we fell back to an optimized image format, not if we fell back to the original DB format while processing
       if (!originalSrc) {
         fetch("/api/heal-image", {
@@ -88,7 +91,6 @@ export default function LoadedImage({
           })
         }).catch((e) => console.error("Failed to trigger image healing", e));
       }
-      setIsHealing(false); // Prevent multiple triggers
     }
 
     onLoad?.();

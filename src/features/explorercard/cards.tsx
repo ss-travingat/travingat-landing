@@ -74,6 +74,19 @@ export function LogoWatermark() {
   );
 }
 
+export function resolveCountryInfo(countryValue: string, sampleFlags: Record<string, string>) {
+  if (!countryValue) return { name: "", code: "" };
+  if (sampleFlags[countryValue]) {
+    return { name: countryValue, code: sampleFlags[countryValue].toLowerCase() };
+  }
+  const upperCode = countryValue.toUpperCase();
+  const matchedName = Object.keys(sampleFlags).find(name => sampleFlags[name] === upperCode);
+  if (matchedName) {
+    return { name: matchedName, code: upperCode.toLowerCase() };
+  }
+  return { name: countryValue, code: "" };
+}
+
 export function CountryNotch({ form, sampleFlags, fill = "#000000", emptyBg = "bg-[#2a2a2a]", wrapperClassName = "" }: { form: any, sampleFlags: any, fill?: string, emptyBg?: string, wrapperClassName?: string }) {
   return (
     <div className={`flex items-start justify-center pointer-events-none ${wrapperClassName}`}>
@@ -85,14 +98,17 @@ export function CountryNotch({ form, sampleFlags, fill = "#000000", emptyBg = "b
       <div className="relative z-10 flex items-center justify-center rounded-b-[12px] pt-[2px] pb-[5px] px-[12px] pointer-events-auto" style={{ backgroundColor: fill }}>
         <div className="flex items-center justify-center gap-[6px] -translate-y-[2.8px]">
           <div className="h-[9px] w-[14px] shrink-0 overflow-hidden rounded-[2px] bg-[#161616]">
-            {form.country && sampleFlags[form.country] ? (
-              <span className={`fi fi-${sampleFlags[form.country].toLowerCase()} !block !h-full !w-full !bg-cover !bg-center !text-[0px]`} title={form.country} />
-            ) : (
-              <div className={`h-full w-full rounded-[2px] ${emptyBg}`} />
-            )}
+            {(() => {
+              const { name, code } = resolveCountryInfo(form.country, sampleFlags);
+              return code ? (
+                <span className={`fi fi-${code} !block !h-full !w-full !bg-cover !bg-center !text-[0px]`} title={name} />
+              ) : (
+                <div className={`h-full w-full rounded-[2px] ${emptyBg}`} />
+              );
+            })()}
           </div>
           <p className="whitespace-nowrap text-[14px] font-[family-name:Inter,_sans-serif] font-normal leading-[20px] tracking-[-0.084px] text-white">
-            {form.country || <span className="text-[#656565]">Your country</span>}
+            {resolveCountryInfo(form.country, sampleFlags).name || <span className="text-[#656565]">Your country</span>}
           </p>
         </div>
       </div>
@@ -115,14 +131,17 @@ export function MinimalCountryNotch({ form, sampleFlags, wrapperClassName = "" }
       <div className="relative z-10 flex h-[32px] items-center justify-center rounded-b-[12px] bg-[#1E1E1E] px-[12px] pointer-events-auto">
         <div className="flex items-center justify-center gap-[6px]">
           <div className="h-[9px] w-[14px] shrink-0 overflow-hidden rounded-[2px] bg-[#161616]">
-            {form.country && sampleFlags[form.country] ? (
-              <span className={`fi fi-${sampleFlags[form.country].toLowerCase()} !block !h-full !w-full !bg-cover !bg-center !text-[0px]`} title={form.country} />
-            ) : (
-              <div className="h-full w-full rounded-[2px] bg-[#2a2a2a]" />
-            )}
+            {(() => {
+              const { name, code } = resolveCountryInfo(form.country, sampleFlags);
+              return code ? (
+                <span className={`fi fi-${code} !block !h-full !w-full !bg-cover !bg-center !text-[0px]`} title={name} />
+              ) : (
+                <div className="h-full w-full rounded-[2px] bg-[#2a2a2a]" />
+              );
+            })()}
           </div>
           <p className="whitespace-nowrap text-[14px] font-[family-name:Inter,_sans-serif] font-normal leading-[20px] tracking-[-0.084px] text-white">
-            {form.country || <span className="text-[#656565]">Your country</span>}
+            {resolveCountryInfo(form.country, sampleFlags).name || <span className="text-[#656565]">Your country</span>}
           </p>
         </div>
       </div>
@@ -175,19 +194,22 @@ export function ClassicCard({ form, sampleFlags, visitedArray, isPreview, coverC
         <div className="flex w-full shrink-0 flex-col items-center gap-[10px]">
           {/* Country container */}
           <div className="flex shrink-0 items-center justify-center gap-[6px]">
-            {form.country && sampleFlags[form.country] ? (
-              <>
-                <div className="h-[13.333px] w-[20px] shrink-0 overflow-hidden rounded-[2px] bg-[#161616]">
-                  <span className={`fi fi-${sampleFlags[form.country].toLowerCase()} !block !h-full !w-full !bg-cover !bg-center !text-[0px]`} title={form.country} />
-                </div>
-                <span className="text-[14px] font-[family-name:Inter,_sans-serif] font-normal leading-[20px] tracking-[-0.084px] text-[#656565]">{form.country}</span>
-              </>
-            ) : (
-              <>
-                <div className="h-[13.333px] w-[20px] shrink-0 overflow-hidden rounded-[2px] bg-[#2a2a2a]" />
-                <span className="text-[14px] font-[family-name:Inter,_sans-serif] font-normal leading-[20px] tracking-[-0.084px] text-[#656565]">Your country</span>
-              </>
-            )}
+            {(() => {
+              const { name, code } = resolveCountryInfo(form.country, sampleFlags);
+              return code ? (
+                <>
+                  <div className="h-[13.333px] w-[20px] shrink-0 overflow-hidden rounded-[2px] bg-[#161616]">
+                    <span className={`fi fi-${code} !block !h-full !w-full !bg-cover !bg-center !text-[0px]`} title={name} />
+                  </div>
+                  <span className="text-[14px] font-[family-name:Inter,_sans-serif] font-normal leading-[20px] tracking-[-0.084px] text-[#656565]">{name}</span>
+                </>
+              ) : (
+                <>
+                  <div className="h-[13.333px] w-[20px] shrink-0 overflow-hidden rounded-[2px] bg-[#2a2a2a]" />
+                  <span className="text-[14px] font-[family-name:Inter,_sans-serif] font-normal leading-[20px] tracking-[-0.084px] text-[#656565]">{name || "Your country"}</span>
+                </>
+              );
+            })()}
           </div>
           <h3 className="w-full text-center text-[20px] font-[family-name:InterDisplay,_sans-serif] font-semibold leading-[28px] tracking-[-0.1px] text-white">
             {form.fullName || "Your full name"}
