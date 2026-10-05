@@ -570,7 +570,7 @@ function JsMasonryGrid({
     return (
       <div key={mediaItem.id} className="group relative w-full">
         <div
-          className="relative rounded-lg md:rounded-2xl overflow-hidden bg-[#151515] cursor-pointer"
+          className="relative rounded-2xl overflow-hidden bg-[#151515] cursor-pointer"
           style={{ aspectRatio: mediaItem.width && mediaItem.height ? `${mediaItem.width}/${mediaItem.height}` : "1/1" }}
           onClick={(e) => {
             e.preventDefault();
@@ -1729,7 +1729,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                         <div className="max-w-150 mx-auto flex flex-col items-center gap-6 text-center">
                           <div className="flex items-center gap-3">
                             {COUNTRIES_EMPTY_PREVIEW_IMAGES.map((src, idx) => (
-                              <div key={src} className="w-19 h-19 md:w-25 md:h-25 rounded-[0.625rem] overflow-hidden">
+                              <div key={src} className="w-19 h-19 md:w-25 md:h-25 rounded-2xl md:rounded-[0.625rem] overflow-hidden">
                                 <LoadedImage
                                   originalSrc={MediaResolver.getBase(src)} src={MediaResolver.getOptimized(MediaResolver.getBase(src))}
                                   thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(src), 144)}
@@ -1842,7 +1842,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                         <div className="max-w-150 mx-auto flex flex-col items-center gap-6 text-center">
                           <div className="flex items-center gap-3">
                             {COLLECTIONS_EMPTY_PREVIEW_IMAGES.map((src, idx) => (
-                              <div key={src} className="w-19 h-19 md:w-25 md:h-25 rounded-[0.625rem] overflow-hidden">
+                              <div key={src} className="w-19 h-19 md:w-25 md:h-25 rounded-2xl md:rounded-[0.625rem] overflow-hidden">
                                 <LoadedImage
                                   originalSrc={MediaResolver.getBase(src)} src={MediaResolver.getOptimized(MediaResolver.getBase(src))}
                                   thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(src), 144)}
@@ -1966,7 +1966,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                           >
                             {aboutPhotos.length > 0 ? (
                               aboutPhotos.map((src, idx) => (
-                                <div key={`${src}-${idx}`} className="w-[10rem] md:w-auto md:flex-1 shrink-0 min-w-0 rounded-[0.5rem] md:rounded-[0.75rem] overflow-hidden bg-[#151515] aspect-square snap-start">
+                                <div key={`${src}-${idx}`} className="w-[10rem] md:w-auto md:flex-1 shrink-0 min-w-0 rounded-2xl md:rounded-[0.75rem] overflow-hidden bg-[#151515] aspect-square snap-start">
                                   <ThumbnailImage originalSrc={MediaResolver.getBase(src)} size={720} alt={`About photo ${idx + 1}`} loading="eager" decoding="async" draggable={false} className="w-full h-full object-cover pointer-events-none select-none" />
                                 </div>
                               ))
