@@ -148,6 +148,7 @@ export function MobileProfileNavbar({ profile }: { profile?: any }) {
                 originalSrc={MediaResolver.getBase(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url)} src={MediaResolver.getOptimized(MediaResolver.getBase(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url))}
                 thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url), 144)}
                 alt="Avatar"
+                priority={true}
                 className="w-8 h-8 rounded-full object-cover"
                 skeletonClassName="absolute inset-0 bg-[#2a2a2a]"
                 containerClassName="w-8 h-8 relative shrink-0 rounded-full"
@@ -243,6 +244,7 @@ export function MobileHero({
                 originalSrc={MediaResolver.getBase(typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url)} src={MediaResolver.getOptimized(MediaResolver.getBase(typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url))}
                 thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url), 144)}
                 alt="Profile cover"
+                priority={true}
                 className="w-full h-full object-cover"
                 skeletonClassName="absolute inset-0 bg-[#1a1a1a]"
                 containerClassName="w-full h-full"
@@ -274,6 +276,7 @@ export function MobileHero({
             originalSrc={MediaResolver.getBase(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url)} src={MediaResolver.getOptimized(MediaResolver.getBase(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url))}
             thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url), 144)}
             alt="Profile avatar"
+            priority={true}
             className="w-full h-full object-cover rounded-2xl"
             skeletonClassName="absolute inset-0 bg-[#1a1a1a] rounded-2xl"
             containerClassName="w-full h-full rounded-2xl"

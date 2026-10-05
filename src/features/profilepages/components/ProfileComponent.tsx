@@ -1438,6 +1438,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                       originalSrc={MediaResolver.getBase(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url)} src={MediaResolver.getOptimized(MediaResolver.getBase(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url))}
                       thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url), 144)}
                       alt="Profile avatar"
+                      priority={true}
                       className="h-full w-full object-cover rounded-[1.25rem]"
                       skeletonClassName="absolute inset-0 bg-[#1a1a1a]"
                       containerClassName="w-full h-full"
@@ -1591,6 +1592,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                     originalSrc={MediaResolver.getBase(typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url)} src={MediaResolver.getOptimized(MediaResolver.getBase(typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url))}
                     thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url), 144)}
                     alt="Profile cover"
+                    priority={true}
                     className="absolute inset-0 w-full h-full object-cover rounded-3xl lg:rounded-[1.5rem] xl:rounded-[2rem]"
                     skeletonClassName="absolute inset-0 bg-[#1a1a1a]"
                     containerClassName="absolute inset-0 w-full h-full"
