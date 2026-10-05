@@ -84,6 +84,16 @@ export function resolveCountryInfo(countryValue: string, sampleFlags: Record<str
   if (matchedName) {
     return { name: matchedName, code: upperCode.toLowerCase() };
   }
+  
+  // Try partial match
+  const lowercaseValue = countryValue.toLowerCase();
+  const partialMatch = Object.keys(sampleFlags).find(
+    name => lowercaseValue.includes(name.toLowerCase()) || name.toLowerCase().includes(lowercaseValue)
+  );
+  if (partialMatch) {
+    return { name: partialMatch, code: sampleFlags[partialMatch].toLowerCase() };
+  }
+
   return { name: countryValue, code: "" };
 }
 
@@ -226,12 +236,14 @@ export function ClassicCard({ form, sampleFlags, visitedArray, isPreview, coverC
                   title={c}
                   className="h-[13.333px] w-[20px] shrink-0 overflow-hidden rounded-[2px] bg-[#161616]"
                 >
-                  <span className={`fi fi-${sampleFlags[c].toLowerCase()} !block !h-full !w-full !bg-cover !bg-center !text-[0px]`} title={c} />
+                  {resolveCountryInfo(c, sampleFlags).code && (
+                    <span className={`fi fi-${resolveCountryInfo(c, sampleFlags).code} !block !h-full !w-full !bg-cover !bg-center !text-[0px]`} title={resolveCountryInfo(c, sampleFlags).name || c} />
+                  )}
                 </div>
               ))}
               {visitedArray.length > 35 && (
                 <CountriesPopup
-                  countries={visitedArray.map((c) => ({ name: c, code: sampleFlags[c] || "" }))}
+                  countries={visitedArray.map((c) => ({ name: resolveCountryInfo(c, sampleFlags).name || c, code: resolveCountryInfo(c, sampleFlags).code || "" }))}
                   trigger={
                     <div className="flex h-[13.333px] w-[20px] shrink-0 items-center justify-center bg-[#533df6] text-[8px] font-bold text-white tracking-[-0.408px] leading-none cursor-pointer hover:opacity-80 transition-opacity">
                       +{visitedArray.length - 35}
@@ -333,12 +345,14 @@ export function MinimalCard({ form, sampleFlags, visitedArray, isPreview, coverC
                <>
                  {visitedArray.slice(0, 35).map((c) => (
                     <div key={c} title={c} className="h-[18px] w-[26px] shrink-0 overflow-hidden rounded-[2px] bg-[#161616]">
-                      <span className={`fi fi-${sampleFlags[c].toLowerCase()} !block !h-full !w-full !bg-cover !bg-center !text-[0px]`} title={c} />
+                      {resolveCountryInfo(c, sampleFlags).code && (
+                        <span className={`fi fi-${resolveCountryInfo(c, sampleFlags).code} !block !h-full !w-full !bg-cover !bg-center !text-[0px]`} title={resolveCountryInfo(c, sampleFlags).name || c} />
+                      )}
                     </div>
                  ))}
                  {visitedArray.length > 35 && (
                     <CountriesPopup
-                      countries={visitedArray.map((c) => ({ name: c, code: sampleFlags[c] || "" }))}
+                      countries={visitedArray.map((c) => ({ name: resolveCountryInfo(c, sampleFlags).name || c, code: resolveCountryInfo(c, sampleFlags).code || "" }))}
                       trigger={
                         <div className="flex h-[18px] min-w-[26px] shrink-0 items-center justify-center rounded-[2px] bg-[#533df6] px-1 text-[11px] font-medium text-white cursor-pointer hover:opacity-80 transition-opacity">
                           +{visitedArray.length - 35}
@@ -452,12 +466,14 @@ export function AdventureCard({ form, sampleFlags, visitedArray, isPreview, cove
               <>
                 {visitedArray.slice(0, 35).map((c) => (
                   <div key={c} title={c} className="h-[13.333px] w-[20px] shrink-0 overflow-hidden rounded-[2px] bg-[#161616]">
-                    <span className={`fi fi-${sampleFlags[c].toLowerCase()} !block !h-full !w-full !bg-cover !bg-center !text-[0px]`} title={c} />
+                    {resolveCountryInfo(c, sampleFlags).code && (
+                      <span className={`fi fi-${resolveCountryInfo(c, sampleFlags).code} !block !h-full !w-full !bg-cover !bg-center !text-[0px]`} title={resolveCountryInfo(c, sampleFlags).name || c} />
+                    )}
                   </div>
                 ))}
                 {visitedArray.length > 35 && (
                   <CountriesPopup
-                    countries={visitedArray.map((c) => ({ name: c, code: sampleFlags[c] || "" }))}
+                    countries={visitedArray.map((c) => ({ name: resolveCountryInfo(c, sampleFlags).name || c, code: resolveCountryInfo(c, sampleFlags).code || "" }))}
                     trigger={
                       <div className="flex h-[13.333px] min-w-[26px] shrink-0 items-center justify-center rounded-[2px] bg-[#533df6] px-1 text-[9px] font-medium text-white cursor-pointer hover:opacity-80 transition-opacity">
                         +{visitedArray.length - 35}
