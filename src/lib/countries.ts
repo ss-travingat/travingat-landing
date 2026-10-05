@@ -255,7 +255,7 @@ export const COUNTRY_LIST: { code: string; name: string; flag: string }[] = [
   { code: "GB", name: "United Kingdom", flag: "" },
   { code: "UN", name: "United Nations", flag: "" },
   { code: "UM", name: "United States Minor Outlying Islands", flag: "" },
-  { code: "US", name: "United States of America", flag: "" },
+  { code: "US", name: "United States", flag: "" },
   { code: "XX", name: "Unknown", flag: "" },
   { code: "UY", name: "Uruguay", flag: "" },
   { code: "UZ", name: "Uzbekistan", flag: "" },
