@@ -545,7 +545,7 @@ export default function CollectionDetailComponent({
                                     playsInline
                                     loop
                                     preload="metadata"
-                                    className="w-full h-auto block pointer-events-none"
+                                    className="w-full h-full object-cover block pointer-events-none"
                                   />
                                   <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
                                     <span className="text-white text-3xl drop-shadow-lg">▶</span>
@@ -558,9 +558,9 @@ export default function CollectionDetailComponent({
                                   thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(imgUrl), 144)}
                                   alt={`${title} photo ${globalIndex + 1}`}
                                   priority={globalIndex < 4}
-                                  className="w-full h-auto block"
-                                  containerClassName="w-full"
-                                  skeletonClassName="w-full aspect-square"
+                                  className="w-full h-full object-cover block"
+                                  containerClassName="w-full h-full relative"
+                                  skeletonClassName="absolute inset-0 w-full h-full bg-[#1a1a1a]"
                                 />
                               )}
                               <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-200 pointer-events-none" />
@@ -618,7 +618,7 @@ export default function CollectionDetailComponent({
                                     playsInline
                                     loop
                                     preload="metadata"
-                                    className="w-full h-auto block pointer-events-none"
+                                    className="w-full h-full object-cover block pointer-events-none"
                                   />
                                   <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
                                     <span className="text-white text-3xl drop-shadow-lg">▶</span>
@@ -631,9 +631,9 @@ export default function CollectionDetailComponent({
                                   thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(imgUrl), 144)}
                                   alt={`${title} photo ${globalIndex + 1}`}
                                   priority={globalIndex < 4}
-                                  className="w-full h-auto block"
-                                  containerClassName="w-full"
-                                  skeletonClassName="w-full aspect-square"
+                                  className="w-full h-full object-cover block"
+                                  containerClassName="w-full h-full relative"
+                                  skeletonClassName="absolute inset-0 w-full h-full bg-[#1a1a1a]"
                                 />
                               )}
                               <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-200 pointer-events-none" />

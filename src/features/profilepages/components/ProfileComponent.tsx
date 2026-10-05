@@ -591,7 +591,7 @@ function JsMasonryGrid({
                 playsInline
                 loop
                 preload="metadata"
-                className="w-full h-auto block pointer-events-none"
+                className="w-full h-full object-cover block pointer-events-none"
                 onLoadedData={() => markItemLoaded(mediaItem.id)}
                 onCanPlay={() => markItemLoaded(mediaItem.id)}
                 onError={() => markItemLoaded(mediaItem.id)}
@@ -607,7 +607,7 @@ function JsMasonryGrid({
               thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(mediaItem.fileUrl), 144)}
               alt="Uploaded media"
               priority={gridIndex < 4}
-              className="w-full h-auto block"
+              className="w-full h-full object-cover block"
               containerClassName="w-full h-full relative"
               skeletonClassName="absolute inset-0 w-full h-full bg-[#1a1a1a]"
               onLoad={() => markItemLoaded(mediaItem.id)}
