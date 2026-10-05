@@ -180,7 +180,8 @@ function toSocialLabel(value: string) {
   return value.replace(/^https?:\/\//i, "").replace(/^www\./i, "");
 }
 
-function toLocationCountry(value: string) {
+function toLocationCountry(value?: string | null) {
+  if (!value) return "";
   const parts = value
     .split(",")
     .map((part) => part.trim())

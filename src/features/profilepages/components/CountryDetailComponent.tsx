@@ -492,7 +492,7 @@ export default function CountryDetailComponent({
               <button
                 key={tab.label}
                 onClick={() => handleTabChange(tab.key as MediaTab)}
-                className={`rounded-[62.4375rem] px-[1.5rem] py-[0.5rem] text-[1rem] leading-[1.5rem] tracking-[-0.096px] transition ${activeTab === tab.key
+                className={`w-[7.5rem] rounded-[62.4375rem] px-[1.5rem] py-[0.5rem] text-[1rem] leading-[1.5rem] tracking-[-0.096px] transition ${activeTab === tab.key
                   ? "bg-[#1e1e1e] border border-white text-white font-medium"
                   : "bg-[#161616] border border-transparent text-[#bdbdbd] font-normal"
                   }`}
@@ -560,7 +560,7 @@ export default function CountryDetailComponent({
           >
             {/* Masonry grid or About */}
             {activeTab === "about" ? (
-              <div className="flex flex-col items-start gap-4 w-full max-w-[50rem] text-left mt-8 mb-20 px-4 md:px-0">
+              <div className="flex flex-col items-start gap-6 w-full max-w-[50rem] mx-auto text-left mt-8 mb-20 px-4 md:px-0">
                 <h2 className="text-[1.5rem] font-semibold text-white">About {countryName}</h2>
                 <p className="text-[1rem] text-[#a8a8a8] leading-relaxed whitespace-pre-wrap">
                   {aboutText || "No information provided yet."}
