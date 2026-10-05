@@ -17,7 +17,7 @@ export const MobileCollectionHeader = ({ title, headerCountryCodes, flagOverflow
             return (
               <TooltipProvider key={code} delayDuration={100}>
                 <Tooltip content={countryName} theme="light" side="top">
-                  <div className="h-[1.5rem] w-[2.125rem] overflow-hidden rounded-[0.1875rem] shadow-sm cursor-pointer">
+                  <div className="h-[15px] w-[24px] aspect-[8/5] overflow-hidden rounded-[0.1875rem] shadow-sm cursor-pointer">
                     <img src={`/flags/${code.toUpperCase()}.svg`} className="w-full h-full object-cover" alt={countryName} />
                   </div>
                 </Tooltip>
@@ -28,7 +28,7 @@ export const MobileCollectionHeader = ({ title, headerCountryCodes, flagOverflow
             <CountriesPopup
               countries={allVisitedCountries}
               trigger={
-                <div className="flex h-[1.5rem] w-[2.125rem] shrink-0 items-center justify-center overflow-hidden rounded-[0.1875rem] bg-white cursor-pointer hover:opacity-80 transition-opacity">
+                <div className="flex h-[15px] w-[24px] aspect-[8/5] shrink-0 items-center justify-center overflow-hidden rounded-[0.1875rem] bg-white cursor-pointer hover:opacity-80 transition-opacity">
                   <span className="font-medium text-violet-600 text-[0.75rem] text-center tracking-[-0.408px] whitespace-nowrap">
                     +{flagOverflowCount}
                   </span>
