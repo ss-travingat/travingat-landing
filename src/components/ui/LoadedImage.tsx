@@ -153,8 +153,12 @@ export default function LoadedImage({
     // SVGs might have a naturalWidth of 0 depending on their viewbox/width attributes
     const isSvg = currentSrc.includes(".svg");
 
-    if (node.complete && (node.naturalWidth > 0 || (isSvg && node.naturalWidth === 0))) {
-      handleLoad();
+    if (node.complete) {
+      if (node.naturalWidth > 0 || (isSvg && node.naturalWidth === 0)) {
+        handleLoad();
+      } else {
+        handleError();
+      }
     }
   }, [currentSrc]);
 
