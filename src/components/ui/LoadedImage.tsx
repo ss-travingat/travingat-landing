@@ -153,13 +153,28 @@ export default function LoadedImage({
     // SVGs might have a naturalWidth of 0 depending on their viewbox/width attributes
     const isSvg = currentSrc.includes(".svg");
 
-    if (node.complete) {
-      if (node.naturalWidth > 0 || (isSvg && node.naturalWidth === 0)) {
-        handleLoad();
-      } else {
-        handleError();
+    const checkState = () => {
+      if (node.complete) {
+        if (node.naturalWidth > 0 || (isSvg && node.naturalWidth === 0)) {
+          handleLoad();
+        } else {
+          handleError();
+        }
+        return true;
       }
-    }
+      return false;
+    };
+
+    if (checkState()) return;
+
+    // Fallback polling for browsers that drop the load event on lazy images
+    const interval = setInterval(() => {
+      if (checkState()) {
+        clearInterval(interval);
+      }
+    }, 250);
+
+    return () => clearInterval(interval);
   }, [currentSrc]);
 
   // Handle blur preview loaded
