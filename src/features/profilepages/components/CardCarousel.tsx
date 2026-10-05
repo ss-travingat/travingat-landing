@@ -61,7 +61,7 @@ export default function CardCarousel({
             <LoadedImage
               originalSrc={MediaResolver.getBase(src)}
               src={MediaResolver.getThumbnail(MediaResolver.getBase(src), 720)}
-              thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(src), 360)}
+              thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(src), 144)}
               alt={`${alt} ${i + 1}`}
               priority={priority && i === 0}
               className="w-full h-full object-cover block transition-transform duration-300 group-hover:scale-[1.03]"

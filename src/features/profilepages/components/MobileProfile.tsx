@@ -146,7 +146,7 @@ export function MobileProfileNavbar({ profile }: { profile?: any }) {
             <div className="flex items-center gap-2">
               <LoadedImage
                 originalSrc={MediaResolver.getBase(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url)} src={MediaResolver.getOptimized(MediaResolver.getBase(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url))}
-                thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url), 720)}
+                thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url), 144)}
                 alt="Avatar"
                 className="w-8 h-8 rounded-full object-cover"
                 skeletonClassName="absolute inset-0 bg-[#2a2a2a]"
@@ -241,7 +241,7 @@ export function MobileHero({
             <div className="absolute inset-0 rounded-[1rem] overflow-hidden bg-[#151515]">
               <LoadedImage
                 originalSrc={MediaResolver.getBase(typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url)} src={MediaResolver.getOptimized(MediaResolver.getBase(typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url))}
-                thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url), 720)}
+                thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url), 144)}
                 alt="Profile cover"
                 className="w-full h-full object-cover"
                 skeletonClassName="absolute inset-0 bg-[#1a1a1a]"
@@ -272,7 +272,7 @@ export function MobileHero({
         <div className="relative z-10 mx-auto w-[5rem] h-[5rem] rounded-2xl ring-4 ring-black bg-[#151515]">
           <LoadedImage
             originalSrc={MediaResolver.getBase(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url)} src={MediaResolver.getOptimized(MediaResolver.getBase(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url))}
-            thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url), 720)}
+            thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url), 144)}
             alt="Profile avatar"
             className="w-full h-full object-cover rounded-2xl"
             skeletonClassName="absolute inset-0 bg-[#1a1a1a] rounded-2xl"

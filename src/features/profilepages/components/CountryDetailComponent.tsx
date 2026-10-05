@@ -104,7 +104,7 @@ function PhotoLightbox({
           {/* Avatar + close */}
           <div className="flex items-start justify-between">
             <div className="h-[4.5rem] w-[4.5rem] overflow-hidden rounded-2xl">
-              <LoadedImage src={avatarSrc} thumbnailSrc={MediaResolver.getThumbnail(avatarSrc, 720)} alt={profileName} className="h-full w-full object-cover" />
+              <LoadedImage src={avatarSrc} thumbnailSrc={MediaResolver.getThumbnail(avatarSrc, 144)} alt={profileName} className="h-full w-full object-cover" />
             </div>
             <button
               type="button"
@@ -605,7 +605,7 @@ export default function CountryDetailComponent({
                                   <LoadedImage
                                     originalSrc={MediaResolver.getBase(imgUrl)}
                                     src={MediaResolver.getThumbnail(MediaResolver.getBase(imgUrl), 720)}
-                                    thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(imgUrl), 360)}
+                                    thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(imgUrl), 144)}
                                     alt={`${countryName} photo ${globalIndex + 1}`}
                                     priority={globalIndex < 4}
                                     className="w-full h-auto block"
@@ -704,7 +704,7 @@ export default function CountryDetailComponent({
                                   <LoadedImage
                                     originalSrc={MediaResolver.getBase(imgUrl)}
                                     src={MediaResolver.getThumbnail(MediaResolver.getBase(imgUrl), 720)}
-                                    thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(imgUrl), 360)}
+                                    thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(imgUrl), 144)}
                                     alt={`${countryName} photo ${globalIndex + 1}`}
                                     priority={globalIndex < 4}
                                     className="w-full h-auto block"
