@@ -356,14 +356,18 @@ export default function CollectionDetailComponent({
     { key: "all", label: "All media" },
     { key: "about", label: "About" },
   ];
-  const getCountryCodeForImage = (url: string) => {
+  const getCountryCodeForImage = (img: { url: string; countryCode?: string }) => {
+    if (img.countryCode) return img.countryCode;
     const entry = profile.countryImages?.find(c => 
-      c.images.some((i: any) => (typeof i === "string" ? i : i.url) === url)
+      c.images.some((i: any) => (typeof i === "string" ? i : i.url) === img.url)
     );
     return entry?.countryCode;
   };
 
-  const derivedCountryCodes = new Set(imageObjects.map(img => getCountryCodeForImage(img.url)).filter(Boolean));
+  const derivedCountryCodes = new Set([
+    ...(collectionCountryCodes || []),
+    ...imageObjects.map(img => getCountryCodeForImage(img as any)).filter(Boolean)
+  ]);
   const headerCountryCodes = Array.from(derivedCountryCodes) as string[];
 
   const flagOverflowCount = headerCountryCodes.length > 4 ? headerCountryCodes.length - 4 : 0;
@@ -519,7 +523,7 @@ export default function CollectionDetailComponent({
                   <div key={colIdx} className="flex flex-col gap-[0.5rem] xl:gap-[0.75rem] flex-1 min-w-0">
                     {columnItems.map(({ url: imgUrl, globalIndex }) => {
                         const isVideo = isVideoAsset(imgUrl);
-                        const displayCountryCode = getCountryCodeForImage(imgUrl);
+                        const displayCountryCode = getCountryCodeForImage(columnItems[colIdx] as any) || getCountryCodeForImage({ url: imgUrl });
                         const countryEntry = displayCountryCode ? COUNTRY_LIST.find((c) => c.code.toLowerCase() === displayCountryCode.toLowerCase()) : null;
                         const countryName = countryEntry ? countryEntry.name : displayCountryCode;
 
@@ -592,7 +596,7 @@ export default function CollectionDetailComponent({
                   <div key={colIdx} className="flex flex-col gap-[0.375rem] md:gap-[1.25rem] flex-1 min-w-0">
                     {columnItems.map(({ url: imgUrl, globalIndex }) => {
                         const isVideo = isVideoAsset(imgUrl);
-                        const displayCountryCode = getCountryCodeForImage(imgUrl);
+                        const displayCountryCode = getCountryCodeForImage(columnItems[colIdx] as any) || getCountryCodeForImage({ url: imgUrl });
                         const countryEntry = displayCountryCode ? COUNTRY_LIST.find((c) => c.code.toLowerCase() === displayCountryCode.toLowerCase()) : null;
                         const countryName = countryEntry ? countryEntry.name : displayCountryCode;
 
