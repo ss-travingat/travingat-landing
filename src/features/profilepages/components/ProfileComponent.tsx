@@ -538,7 +538,27 @@ function JsMasonryGrid({
   shareOwnerAvatar,
 }: JsMasonryGridProps) {
   const { showComingSoonToast } = useMobileComingSoon();
-  const orderedItems = items;
+  const [visibleCount, setVisibleCount] = useState(20);
+  const observerTarget = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          setVisibleCount((prev) => Math.min(prev + 20, items.length));
+        }
+      },
+      { threshold: 0.1, rootMargin: '800px' }
+    );
+
+    if (observerTarget.current) {
+      observer.observe(observerTarget.current);
+    }
+
+    return () => observer.disconnect();
+  }, [items.length]);
+
+  const orderedItems = items.slice(0, visibleCount);
 
   const renderMediaItem = (mediaItem: MediaItem, isMobile = false) => {
     const originalIndex = allMediaItems.findIndex((it) => String(it.id) === String(mediaItem?.id));
@@ -709,6 +729,11 @@ function JsMasonryGrid({
           </div>
         ))}
       </div>
+      {visibleCount < items.length && (
+        <div ref={observerTarget} className="w-full flex justify-center py-12">
+          <div className="w-6 h-6 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+        </div>
+      )}
     </div>
   );
 }

@@ -330,6 +330,27 @@ export default function CountryDetailComponent({
         imageObjects;
 
   const items = displayImages.map((entry, index) => ({ ...entry, globalIndex: index }));
+  const [visibleCount, setVisibleCount] = useState(20);
+  const observerTarget = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          setVisibleCount((prev) => Math.min(prev + 20, items.length));
+        }
+      },
+      { threshold: 0.1, rootMargin: '800px' }
+    );
+
+    if (observerTarget.current) {
+      observer.observe(observerTarget.current);
+    }
+
+    return () => observer.disconnect();
+  }, [items.length]);
+
+  const orderedItems = items.slice(0, visibleCount);
 
   // Close lightbox on ESC, navigate on arrow keys
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
@@ -621,9 +642,9 @@ export default function CountryDetailComponent({
               <div className="w-full">
                 {/* Desktop: 4 explicit flex columns distributed by height — matches Figma layout */}
                 <div className="hidden lg:flex w-full gap-[0.5rem] xl:gap-[0.75rem]">
-                  {distributeMasonryColumns(items, 4, (item) => (item.height && item.width ? item.height / item.width : 1)).map((columnItems, colIdx) => (
+                  {distributeMasonryColumns(orderedItems, 4, (item) => (item.height && item.width ? item.height / item.width : 1)).map((columnItems, colIdx) => (
                     <div key={colIdx} className="flex flex-col gap-[0.5rem] xl:gap-[0.75rem] flex-1 min-w-0">
-                      {columnItems.map(({ url: imgUrl, globalIndex }) => {
+                      {columnItems.map(({ url: imgUrl, globalIndex, width, height }) => {
                           const isVideo = isVideoAsset(imgUrl);
                           return (
                             <div key={globalIndex} className="group relative">
@@ -719,9 +740,9 @@ export default function CountryDetailComponent({
                 </div>
                 {/* Mobile/tablet: 2 explicit flex columns distributed by height */}
                 <div className="flex lg:hidden w-full gap-[0.375rem]">
-                  {distributeMasonryColumns(items, 2, (item) => (item.height && item.width ? item.height / item.width : 1)).map((columnItems, colIdx) => (
+                  {distributeMasonryColumns(orderedItems, 2, (item) => (item.height && item.width ? item.height / item.width : 1)).map((columnItems, colIdx) => (
                     <div key={colIdx} className="flex flex-col gap-[0.375rem] flex-1 min-w-0">
-                      {columnItems.map(({ url: imgUrl, globalIndex }) => {
+                      {columnItems.map(({ url: imgUrl, globalIndex, width, height }) => {
                           const isVideo = isVideoAsset(imgUrl);
                           return (
                             <div key={globalIndex} className="group relative w-full">
@@ -811,6 +832,11 @@ export default function CountryDetailComponent({
                     </div>
                   ))}
                 </div>
+                {visibleCount < items.length && (
+                  <div ref={observerTarget} className="w-full flex justify-center py-12">
+                    <div className="w-6 h-6 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+                  </div>
+                )}
               </div>
             )}
           </div>

@@ -110,16 +110,6 @@ export default function LoadedImage({
           return;
         }
       }
-      
-      if (healState === "none" || healState === "optimized") {
-        const targetOriginal = originalSrc || src;
-        if (targetOriginal && targetOriginal !== activeSrc) {
-          console.warn(`[LoadedImage] Optimized image failed. Falling back to original image: ${targetOriginal}`);
-          setHealState("original");
-          setRetryCount(0);
-          return;
-        }
-      }
     }
 
     if (retryCount < maxRetries) {
