@@ -225,8 +225,8 @@ export default function LoadedImage({
         className={`relative z-10 transition-all duration-700 ease-out ${phase === "loaded" ? "opacity-100 blur-none scale-100" : "opacity-0 blur-sm scale-[1.02]"
           } ${className}`}
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        {...(priority || healState !== "none" ? { fetchPriority: priority ? ("high" as any) : "auto", loading: "eager" } : { loading: "lazy" })}
-        decoding={priority || healState !== "none" ? "auto" : "async"}
+        {...(priority ? { fetchPriority: "high" as any, loading: "eager" } : { loading: "lazy" })}
+        decoding={priority ? "auto" : "async"}
         onClick={onClick}
         onLoad={handleLoad}
         onError={handleError}
