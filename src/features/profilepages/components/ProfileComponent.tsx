@@ -1805,8 +1805,8 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                                 </div>
                                 <div className="flex items-center gap-1 md:gap-1.5">
                                   <span className="text-[#646464] text-xs md:text-sm leading-[1rem] md:leading-[1.25rem]">{country.photoCount} photos</span>
-                                  <span className="text-[#646464] text-xs md:text-sm leading-[1rem] md:leading-[1.25rem]">&bull;</span>
-                                  <span className="text-[#646464] text-xs md:text-sm leading-[1rem] md:leading-[1.25rem]">{country.videoCount} Videos</span>
+                                  {/* <span className="text-[#646464] text-xs md:text-sm leading-[1rem] md:leading-[1.25rem]">&bull;</span> */}
+                                  {/* <span className="text-[#646464] text-xs md:text-sm leading-[1rem] md:leading-[1.25rem]">{country.videoCount} Videos</span> */}
                                 </div>
                               </div>
                             </Link>
