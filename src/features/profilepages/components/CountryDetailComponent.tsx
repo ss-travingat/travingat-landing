@@ -650,6 +650,7 @@ export default function CountryDetailComponent({
                                   </>
                                 ) : (
                                   <LoadedImage
+                                    priority={globalIndex < 4}
                                     originalSrc={MediaResolver.getBase(imgUrl)}
                                     src={MediaResolver.getThumbnail(MediaResolver.getBase(imgUrl), 720)}
                                     thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(imgUrl), 144)}
@@ -748,6 +749,7 @@ export default function CountryDetailComponent({
                                   </>
                                 ) : (
                                   <LoadedImage
+                                    priority={globalIndex < 4}
                                     originalSrc={MediaResolver.getBase(imgUrl)}
                                     src={MediaResolver.getThumbnail(MediaResolver.getBase(imgUrl), 720)}
                                     thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(imgUrl), 144)}
