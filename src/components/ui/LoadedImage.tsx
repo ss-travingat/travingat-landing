@@ -154,12 +154,8 @@ export default function LoadedImage({
     const isSvg = currentSrc.includes(".svg");
 
     const checkState = () => {
-      if (node.complete) {
-        if (node.naturalWidth > 0 || (isSvg && node.naturalWidth === 0)) {
-          handleLoad();
-        } else {
-          handleError();
-        }
+      if (node.complete && (node.naturalWidth > 0 || isSvg)) {
+        handleLoad();
         return true;
       }
       return false;
@@ -221,7 +217,7 @@ export default function LoadedImage({
           } ${className}`}
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         {...(priority ? { fetchPriority: "high" as any, loading: "eager" } : { loading: "lazy" })}
-        decoding="async"
+        decoding={priority ? "auto" : "async"}
         onClick={onClick}
         onLoad={handleLoad}
         onError={handleError}
