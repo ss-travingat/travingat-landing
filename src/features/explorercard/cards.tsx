@@ -1,4 +1,5 @@
 import React from "react";
+import { COUNTRY_LIST } from "@/lib/countries";
 import LoadedImage from "@/components/ui/LoadedImage";
 import { toLandingAssetUrl, getOptimizedMediaUrl } from "@/lib/landing-assets";
 import { CountriesPopup } from "@/components/ui/CountriesPopup";
@@ -23,11 +24,11 @@ export function CroppedImage({ src, cropData, alt, className }: { src: string, c
   // Gracefully handle old DB format which was just a flat object { pixels, mediaSize, ... }
   // instead of { Classic: {...}, Minimal: {...} }
   const actualCrop = cropData?.pixels ? cropData : null;
-  
+
   if (!actualCrop || !actualCrop.pixels || !actualCrop.mediaSize) {
     return <LoadedImage priority src={src} alt={alt} containerClassName="h-full w-full" className={`h-full w-full object-cover ${className || ''}`} />;
   }
-  
+
   const { pixels, mediaSize } = actualCrop;
   const scaleX = mediaSize.width / pixels.width;
   const scaleY = mediaSize.height / pixels.height;
@@ -36,17 +37,17 @@ export function CroppedImage({ src, cropData, alt, className }: { src: string, c
 
   return (
     <div className={`relative overflow-hidden w-full h-full ${className || ''}`}>
-      <LoadedImage 
+      <LoadedImage
         priority
-        src={src} 
-        alt={alt} 
+        src={src}
+        alt={alt}
         containerClassName="absolute top-0 left-0 max-w-none"
         className="w-full h-full max-w-none origin-top-left"
         style={{
           width: `${scaleX * 100}%`,
           height: `${scaleY * 100}%`,
           transform: `translate(-${left}%, -${top}%)`,
-        }} 
+        }}
       />
     </div>
   );
@@ -57,7 +58,7 @@ export function LogoWatermark() {
     <div className="absolute flex h-[100px] w-[29px] items-center justify-center pointer-events-none select-none z-[40]" style={{ left: '5.91px', top: '22.5px' }}>
       <div className="-rotate-90 flex-none">
         <div className="flex items-center opacity-40">
-          <p 
+          <p
             className="whitespace-nowrap bg-gradient-to-l from-[rgba(255,255,255,0.10)] to-white bg-clip-text text-transparent"
             style={{
               fontFamily: 'var(--font-logo, Righteous)',
@@ -84,11 +85,16 @@ export function resolveCountryInfo(countryValue: string, sampleFlags: Record<str
   if (matchedName) {
     return { name: matchedName, code: upperCode.toLowerCase() };
   }
-  
+
   // Try partial match
   const lowercaseValue = countryValue.toLowerCase();
   const partialMatch = Object.keys(sampleFlags).find(
-    name => lowercaseValue.includes(name.toLowerCase()) || name.toLowerCase().includes(lowercaseValue)
+    name => {
+      if (lowercaseValue.includes(name.toLowerCase()) || name.toLowerCase().includes(lowercaseValue)) return true;
+      const code = sampleFlags[name];
+      const entry = COUNTRY_LIST.find(cl => cl.code === code);
+      return !!entry?.aliases?.some(a => a.toLowerCase().includes(lowercaseValue));
+    }
   );
   if (partialMatch) {
     return { name: partialMatch, code: sampleFlags[partialMatch].toLowerCase() };
@@ -135,7 +141,7 @@ export function MinimalCountryNotch({ form, sampleFlags, wrapperClassName = "" }
     <div className={`flex items-start justify-center pointer-events-none ${wrapperClassName}`}>
       {/* Left Curve */}
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="shrink-0 relative z-20 overflow-visible">
-        <path d="M25 0H0L0.533106 0.0283589C13.3936 0.712479 23.5897 11.1279 24 24H25V0Z" fill="#1E1E1E"/>
+        <path d="M25 0H0L0.533106 0.0283589C13.3936 0.712479 23.5897 11.1279 24 24H25V0Z" fill="#1E1E1E" />
       </svg>
       {/* Center Rectangle */}
       <div className="relative z-10 flex h-[32px] items-center justify-center rounded-b-[12px] bg-[#1E1E1E] px-[12px] pointer-events-auto">
@@ -157,7 +163,7 @@ export function MinimalCountryNotch({ form, sampleFlags, wrapperClassName = "" }
       </div>
       {/* Right Curve */}
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="shrink-0 relative z-20 overflow-visible">
-        <path d="M-1 0H24L23.4669 0.0283589C10.6064 0.712479 0.4103 11.1279 0 24H-1V0Z" fill="#1E1E1E"/>
+        <path d="M-1 0H24L23.4669 0.0283589C10.6064 0.712479 0.4103 11.1279 0 24H-1V0Z" fill="#1E1E1E" />
       </svg>
     </div>
   );
@@ -311,7 +317,7 @@ export function MinimalCard({ form, sampleFlags, visitedArray, isPreview, coverC
             {isPreview && form.coverImage && <PreviewWatermark />}
             {!isPreview && form.coverImage && <LogoWatermark />}
           </div>
-          
+
           {/* Profile info */}
           <div className="flex h-full w-full flex-col items-start justify-end gap-[12px] rounded-[16px] bg-[#111111] p-[16px]">
             <div className="relative h-[3em] w-[3em] shrink-0 overflow-hidden rounded-[0.625em] bg-[#2a2a2a]">
@@ -331,42 +337,42 @@ export function MinimalCard({ form, sampleFlags, visitedArray, isPreview, coverC
 
         {/* Stats Container */}
         <div className="flex w-full shrink-0 flex-col items-start justify-end gap-[24px] rounded-[16px] bg-[#111111] px-[20px] py-[24px]">
-           <div className="flex flex-col items-start whitespace-nowrap">
-             <p className="text-[64px] font-[family-name:InterDisplay,_sans-serif] font-normal leading-[72px] tracking-[-1px] text-white">
-               {visitedArray.length}
-             </p>
-             <p className="text-[16px] font-normal leading-[1.5] tracking-[-0.5px] text-[#a8a8a8]">
-               Countries Explored
-             </p>
-           </div>
+          <div className="flex flex-col items-start whitespace-nowrap">
+            <p className="text-[64px] font-[family-name:InterDisplay,_sans-serif] font-normal leading-[72px] tracking-[-1px] text-white">
+              {visitedArray.length}
+            </p>
+            <p className="text-[16px] font-normal leading-[1.5] tracking-[-0.5px] text-[#a8a8a8]">
+              Countries Explored
+            </p>
+          </div>
 
-           <div className="flex w-full shrink-0 flex-wrap items-start gap-[4px]">
-             {visitedArray.length > 0 ? (
-               <>
-                 {visitedArray.slice(0, 35).map((c) => (
-                    <div key={c} title={c} className="h-[18px] w-[26px] shrink-0 overflow-hidden rounded-[2px] bg-[#161616]">
-                      {resolveCountryInfo(c, sampleFlags).code && (
-                        <span className={`fi fi-${resolveCountryInfo(c, sampleFlags).code} !block !h-full !w-full !bg-cover !bg-center !text-[0px]`} title={resolveCountryInfo(c, sampleFlags).name || c} />
-                      )}
-                    </div>
-                 ))}
-                 {visitedArray.length > 35 && (
-                    <CountriesPopup
-                      countries={visitedArray.map((c) => ({ name: resolveCountryInfo(c, sampleFlags).name || c, code: resolveCountryInfo(c, sampleFlags).code || "" }))}
-                      trigger={
-                        <div className="flex h-[18px] min-w-[26px] shrink-0 items-center justify-center rounded-[2px] bg-[#533df6] px-1 text-[11px] font-medium text-white cursor-pointer hover:opacity-80 transition-opacity">
-                          +{visitedArray.length - 35}
-                        </div>
-                      }
-                    />
-                 )}
-               </>
-             ) : (
-                Array.from({ length: 8 }).map((_, i) => (
-                   <div key={i} className="h-[18px] w-[26px] shrink-0 overflow-hidden rounded-[2px] bg-[#2a2a2a]" />
-                ))
-             )}
-           </div>
+          <div className="flex w-full shrink-0 flex-wrap items-start gap-[4px]">
+            {visitedArray.length > 0 ? (
+              <>
+                {visitedArray.slice(0, 35).map((c) => (
+                  <div key={c} title={c} className="h-[18px] w-[26px] shrink-0 overflow-hidden rounded-[2px] bg-[#161616]">
+                    {resolveCountryInfo(c, sampleFlags).code && (
+                      <span className={`fi fi-${resolveCountryInfo(c, sampleFlags).code} !block !h-full !w-full !bg-cover !bg-center !text-[0px]`} title={resolveCountryInfo(c, sampleFlags).name || c} />
+                    )}
+                  </div>
+                ))}
+                {visitedArray.length > 35 && (
+                  <CountriesPopup
+                    countries={visitedArray.map((c) => ({ name: resolveCountryInfo(c, sampleFlags).name || c, code: resolveCountryInfo(c, sampleFlags).code || "" }))}
+                    trigger={
+                      <div className="flex h-[18px] min-w-[26px] shrink-0 items-center justify-center rounded-[2px] bg-[#533df6] px-1 text-[11px] font-medium text-white cursor-pointer hover:opacity-80 transition-opacity">
+                        +{visitedArray.length - 35}
+                      </div>
+                    }
+                  />
+                )}
+              </>
+            ) : (
+              Array.from({ length: 8 }).map((_, i) => (
+                <div key={i} className="h-[18px] w-[26px] shrink-0 overflow-hidden rounded-[2px] bg-[#2a2a2a]" />
+              ))
+            )}
+          </div>
         </div>
       </div>
 
@@ -393,10 +399,10 @@ export function AdventureCard({ form, sampleFlags, visitedArray, isPreview, cove
       )}
 
       {/* Main Image Container */}
-      <div 
+      <div
         className="relative flex w-full min-h-[528px] shrink-0 flex-col items-center justify-end overflow-hidden rounded-[16px] bg-[#161616] isolate"
       >
-        
+
         {/* Notch Overlay - Negative top coordinate to overlap any hairline background bleed from anti-aliasing */}
         <CountryNotch form={form} sampleFlags={sampleFlags} fill="#000000" wrapperClassName="absolute -top-[1px] left-0 right-0 z-30 w-full shrink-0" />
 
@@ -406,31 +412,31 @@ export function AdventureCard({ form, sampleFlags, visitedArray, isPreview, cove
             <CroppedImage src={getOptimizedMediaUrl(toLandingAssetUrl(form.coverImage))} alt="cover" cropData={coverCropData} />
           ) : (
             <div className="absolute top-[127px] left-1/2 -translate-x-1/2 flex items-center justify-center pointer-events-none">
-               <span className="material-symbols-rounded text-[#E3E3E3] text-[40px]">add_photo_alternate</span>
+              <span className="material-symbols-rounded text-[#E3E3E3] text-[40px]">add_photo_alternate</span>
             </div>
           )}
         </div>
         {/* Blurred Layer (Guarantees perfect html-to-image support via duplicated image) */}
         {form.coverImage && (
-          <div 
+          <div
             className="absolute inset-0 z-10 pointer-events-none"
-            style={{ 
+            style={{
               WebkitMaskImage: 'linear-gradient(to bottom, transparent 45%, black 60%, black 100%)',
               maskImage: 'linear-gradient(to bottom, transparent 45%, black 60%, black 100%)'
             }}
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img 
-              src={toLandingAssetUrl(form.coverImage)} 
-              alt="" 
+            <img
+              src={toLandingAssetUrl(form.coverImage)}
+              alt=""
               aria-hidden="true"
-              className="h-full w-full object-cover blur-[16px] scale-[1.15]" 
+              className="h-full w-full object-cover blur-[16px] scale-[1.15]"
             />
             {/* Dark overlay to make text highly readable over the blur */}
             <div className="absolute inset-0 bg-black/40" />
           </div>
         )}
-        
+
         {isPreview && form.coverImage && <PreviewWatermark />}
         {!isPreview && form.coverImage && <LogoWatermark />}
 
@@ -463,41 +469,41 @@ export function AdventureCard({ form, sampleFlags, visitedArray, isPreview, cove
             {/* Flags */}
             <div className="relative z-10 flex w-full shrink-0 flex-wrap items-start justify-center gap-[4px] px-[6px]">
               {visitedArray.length > 0 ? (
-              <>
-                {visitedArray.slice(0, 35).map((c) => (
-                  <div key={c} title={c} className="h-[13.333px] w-[20px] shrink-0 overflow-hidden rounded-[2px] bg-[#161616]">
-                    {resolveCountryInfo(c, sampleFlags).code && (
-                      <span className={`fi fi-${resolveCountryInfo(c, sampleFlags).code} !block !h-full !w-full !bg-cover !bg-center !text-[0px]`} title={resolveCountryInfo(c, sampleFlags).name || c} />
-                    )}
-                  </div>
-                ))}
-                {visitedArray.length > 35 && (
-                  <CountriesPopup
-                    countries={visitedArray.map((c) => ({ name: resolveCountryInfo(c, sampleFlags).name || c, code: resolveCountryInfo(c, sampleFlags).code || "" }))}
-                    trigger={
-                      <div className="flex h-[13.333px] min-w-[26px] shrink-0 items-center justify-center rounded-[2px] bg-[#533df6] px-1 text-[9px] font-medium text-white cursor-pointer hover:opacity-80 transition-opacity">
-                        +{visitedArray.length - 35}
-                      </div>
-                    }
-                  />
-                )}
-              </>
-            ) : (
-               Array.from({ length: 9 }).map((_, i) => (
+                <>
+                  {visitedArray.slice(0, 35).map((c) => (
+                    <div key={c} title={c} className="h-[13.333px] w-[20px] shrink-0 overflow-hidden rounded-[2px] bg-[#161616]">
+                      {resolveCountryInfo(c, sampleFlags).code && (
+                        <span className={`fi fi-${resolveCountryInfo(c, sampleFlags).code} !block !h-full !w-full !bg-cover !bg-center !text-[0px]`} title={resolveCountryInfo(c, sampleFlags).name || c} />
+                      )}
+                    </div>
+                  ))}
+                  {visitedArray.length > 35 && (
+                    <CountriesPopup
+                      countries={visitedArray.map((c) => ({ name: resolveCountryInfo(c, sampleFlags).name || c, code: resolveCountryInfo(c, sampleFlags).code || "" }))}
+                      trigger={
+                        <div className="flex h-[13.333px] min-w-[26px] shrink-0 items-center justify-center rounded-[2px] bg-[#533df6] px-1 text-[9px] font-medium text-white cursor-pointer hover:opacity-80 transition-opacity">
+                          +{visitedArray.length - 35}
+                        </div>
+                      }
+                    />
+                  )}
+                </>
+              ) : (
+                Array.from({ length: 9 }).map((_, i) => (
                   <div key={i} className="h-[13.333px] w-[20px] shrink-0 overflow-hidden rounded-[2px] bg-white/20" />
-               ))
-            )}
-           </div>
+                ))
+              )}
+            </div>
           </div>
         </div>
       </div>
 
       {/* Call to Action Container */}
-        <div className="flex w-full shrink-0 items-center justify-center">
-          <a href="https://www.travingat.com/explorercard" className="whitespace-nowrap text-[14px] font-medium leading-[20px] tracking-[-0.084px] text-[#7c7c7c] hover:text-white transition-colors underline decoration-wavy underline-offset-2">
-            Join me on Travingat
-          </a>
-        </div>
+      <div className="flex w-full shrink-0 items-center justify-center">
+        <a href="https://www.travingat.com/explorercard" className="whitespace-nowrap text-[14px] font-medium leading-[20px] tracking-[-0.084px] text-[#7c7c7c] hover:text-white transition-colors underline decoration-wavy underline-offset-2">
+          Join me on Travingat
+        </a>
+      </div>
     </div>
   );
 }
@@ -535,7 +541,7 @@ export function PreviewWatermark() {
       ) {
         setTampered(true);
       }
-      
+
       const span = el.querySelector('span');
       if (span) {
         const spanStyles = window.getComputedStyle(span);
@@ -554,7 +560,7 @@ export function PreviewWatermark() {
 
     const observer = new MutationObserver(() => checkTamper());
     observer.observe(document.body, { childList: true, subtree: true, attributes: true });
-    
+
     const interval = setInterval(checkTamper, 1000);
 
     return () => {
@@ -572,7 +578,7 @@ export function PreviewWatermark() {
   }
 
   return (
-    <div 
+    <div
       ref={containerRef}
       className="absolute inset-0 z-[99] flex items-center justify-center pointer-events-none select-none mix-blend-plus-lighter"
     >
