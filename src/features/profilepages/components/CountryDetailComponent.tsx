@@ -200,9 +200,20 @@ export default function CountryDetailComponent({
   const countryName = COUNTRY_LIST_LOOKUP[countryCode] || countryCode;
   const [activeTab, setActiveTab] = useState<MediaTab>("all");
   const [showMenu, setShowMenu] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const fullScreenMenuRef = useRef<HTMLDivElement>(null);
   const [isWaitlistOpen, setIsWaitlistOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   useNavbarVisibility(showMenu, 56);
+
+  useEffect(() => {
+    if (menuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => { document.body.style.overflow = ""; };
+  }, [menuOpen]);
 
   const handleTabChange = (tab: MediaTab) => {
     (window as any).__lastProgrammaticScrollTime = Date.now();
@@ -429,15 +440,51 @@ export default function CountryDetailComponent({
 
   return (
     <div className="min-h-screen bg-black text-white flex flex-col items-center px-[0.75rem] min-[50.625rem]:px-[2rem] min-[1200px]:px-[96px] relative">
-      {/* Mobile Navbar */}
       <div id="profile-mobile-navbar" className="flex md:hidden fixed top-0 left-0 w-full z-[120] flex-col pointer-events-none">
         <div className="flex items-center justify-between px-[20px] h-[56px] bg-black shadow-[0_2px_0_0_#000] pointer-events-auto transition-transform duration-300">
           <button onClick={() => router.back()} className="text-white flex items-center justify-center p-2 -ml-2">
             <span className="material-symbols-rounded text-[1.75rem]">arrow_back</span>
           </button>
-          <button onClick={() => showComingSoonToast()} className="text-white flex items-center justify-center p-2 -mr-2">
-            <span className="material-symbols-rounded text-[1.75rem]">menu</span>
+          <button
+            onClick={() => setMenuOpen((prev) => !prev)}
+            className={`relative flex h-[2.25rem] w-[2.25rem] flex-col items-center justify-center gap-[0.25rem] rounded-full transition-colors ${menuOpen ? 'bg-[#1c1c1c] text-white hover:bg-[#2a2a2a]' : ''}`}
+            aria-label="Toggle navigation menu"
+            aria-expanded={menuOpen}
+          >
+            <span className={`block h-[0.125rem] w-[1.125rem] origin-center rounded-full bg-white transition-all duration-300 ease-in-out ${menuOpen ? 'translate-y-[0.375rem] rotate-45' : ''}`} />
+            <span className={`block h-[0.125rem] w-[1.125rem] origin-center rounded-full bg-white transition-all duration-300 ease-in-out ${menuOpen ? 'opacity-0' : ''}`} />
+            <span className={`block h-[0.125rem] w-[1.125rem] origin-center rounded-full bg-white transition-all duration-300 ease-in-out ${menuOpen ? '-translate-y-[0.375rem] -rotate-45' : ''}`} />
           </button>
+        </div>
+      </div>
+
+      {/* Fixed Full-Screen Mobile Overlay Menu */}
+      <div
+        ref={fullScreenMenuRef}
+        className={`fixed inset-0 z-[110] min-[75rem]:hidden bg-black/95 backdrop-blur-xl transition-all duration-300 ease-in-out flex flex-col justify-start items-center px-6 pt-[6.25rem] pb-10 ${menuOpen
+          ? "opacity-100 pointer-events-auto translate-y-0"
+          : "opacity-0 pointer-events-none -translate-y-4"
+          }`}
+      >
+        <div className="w-full max-w-xs flex flex-col items-center gap-[1.5rem]">
+          <nav className="flex flex-col items-center justify-start gap-[1.5rem] w-full">
+            <a href="https://travingat.com/" onClick={() => setMenuOpen(false)} className="text-[1.75rem] font-medium leading-[1.2] text-white hover:text-white/80 transition">Home</a>
+            <a href="https://travingat.com/profiles" onClick={() => setMenuOpen(false)} className="text-[1.75rem] font-medium leading-[1.2] text-white hover:text-white/80 transition">Profiles</a>
+            <a href="https://travingat.com/templates" onClick={() => setMenuOpen(false)} className="text-[1.75rem] font-medium leading-[1.2] text-white hover:text-white/80 transition">Templates</a>
+            <a href="https://travingat.com/pricing" onClick={() => setMenuOpen(false)} className="text-[1.75rem] font-medium leading-[1.2] text-white hover:text-white/80 transition">Pricing</a>
+            <a href="https://travingat.com/blog" onClick={() => setMenuOpen(false)} className="text-[1.75rem] font-medium leading-[1.2] text-white hover:text-white/80 transition">Blog</a>
+
+            <a
+              href="https://travingat.com/#join"
+              onClick={() => {
+                setMenuOpen(false);
+                window.location.href = "https://travingat.com/#join";
+              }}
+              className="mt-[0.75rem] w-full text-center rounded-[62.4375rem] bg-white px-[1.75rem] py-[0.75rem] text-[0.9375rem] font-medium tracking-tight text-black hover:bg-[#ececec] transition shadow-lg shrink-0"
+            >
+              Join now
+            </a>
+          </nav>
         </div>
       </div>
 

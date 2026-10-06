@@ -1863,7 +1863,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                                 <CardCarousel
                                   images={collection.previewImages.length > 0 ? collection.previewImages : [collection.thumbnailUrl]}
                                   alt={collection.title}
-                                  containerClassName="aspect-[357/278] border border-[#262626]"
+                                  containerClassName="aspect-[357/278]"
                                 />
 
                                 <MoreOptionsButton
