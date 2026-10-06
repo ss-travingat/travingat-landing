@@ -1583,7 +1583,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                 {/* Founding Explorer badge — half outside the left edge of the cover */}
                 {profile.showBadge && (
                   <div
-                    className="absolute z-10 w-[9.375rem] h-[9.375rem] pointer-events-none select-none shadow-[0_4px_24px_rgba(0,0,0,0.45)] rounded-full"
+                    className="absolute z-10 w-[9.375rem] h-[9.375rem] pointer-events-none select-none rounded-full"
                     style={{ top: "40px", left: "0", transform: "translateX(-50%)" }}
                   >
                     <FoundingExplorer />
