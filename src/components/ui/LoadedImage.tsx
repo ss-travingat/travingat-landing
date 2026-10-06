@@ -35,6 +35,7 @@ export default function LoadedImage({
   const [retryCount, setRetryCount] = useState(0);
   const [healState, setHealState] = useState<"none" | "optimized" | "original">("none");
   const hasTriggeredHealRef = useRef(false);
+  const [blurPreviewFailed, setBlurPreviewFailed] = useState(false);
 
   const [prevSrc, setPrevSrc] = useState(src);
 
@@ -43,6 +44,7 @@ export default function LoadedImage({
     setPhase(src ? "skeleton" : "error");
     setRetryCount(0);
     setHealState("none");
+    setBlurPreviewFailed(false);
     hasTriggeredHealRef.current = false;
   }
   const maxRetries = 2;
@@ -183,6 +185,7 @@ export default function LoadedImage({
 
   const handleBlurPreviewError = () => {
     // Blur preview failed, that's fine — stay on skeleton until real image loads
+    setBlurPreviewFailed(true);
   };
 
   return (
@@ -193,7 +196,7 @@ export default function LoadedImage({
       )}
 
       {/* Blurred thumbnail preview — loads fast, shown blurred behind real image */}
-      {blurPreviewSrc && phase !== "error" && (
+      {blurPreviewSrc && phase !== "error" && !blurPreviewFailed && (
         <img
           src={blurPreviewSrc}
           alt=""
