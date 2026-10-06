@@ -2,7 +2,7 @@
 "use client"
 import React, { useState, useRef } from "react"
 import { countries } from "https://esm.sh/countries-list"
-import { COUNTRY_LIST } from "@/lib/countries"
+import { COUNTRY_LIST, searchCountry } from "@/lib/countries"
 
 const countryOptions = Object.entries(countries)
   .map(([code, data]) => ({
@@ -32,9 +32,8 @@ const EmailVerificationForm = () => {
   const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
 
   const filteredCountries = countryOptions.filter((c) => {
-    if (c.name.toLowerCase().includes(countrySearchQuery.toLowerCase())) return true;
-    const entry = COUNTRY_LIST.find(cl => cl.code === c.code);
-    return !!entry?.aliases?.some(a => a.toLowerCase().includes(countrySearchQuery.toLowerCase()));
+    const entry = COUNTRY_LIST.find(cl => cl.code === c.code) || { name: c.name, code: c.code };
+    return searchCountry(entry, countrySearchQuery);
   });
 
   const trimmedLink = linkInput.trim()

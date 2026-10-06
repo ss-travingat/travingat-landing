@@ -1,5 +1,5 @@
 import React from "react";
-import { COUNTRY_LIST } from "@/lib/countries";
+import { COUNTRY_LIST, searchCountry } from "@/lib/countries";
 import LoadedImage from "@/components/ui/LoadedImage";
 import { toLandingAssetUrl, getOptimizedMediaUrl } from "@/lib/landing-assets";
 import { CountriesPopup } from "@/components/ui/CountriesPopup";
@@ -92,8 +92,8 @@ export function resolveCountryInfo(countryValue: string, sampleFlags: Record<str
     name => {
       if (lowercaseValue.includes(name.toLowerCase()) || name.toLowerCase().includes(lowercaseValue)) return true;
       const code = sampleFlags[name];
-      const entry = COUNTRY_LIST.find(cl => cl.code === code);
-      return !!entry?.aliases?.some(a => a.toLowerCase().includes(lowercaseValue));
+      const entry = COUNTRY_LIST.find(cl => cl.code === code) || { name, code, flag: "" };
+      return searchCountry(entry, lowercaseValue);
     }
   );
   if (partialMatch) {

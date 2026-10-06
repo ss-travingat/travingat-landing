@@ -3,7 +3,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Image from "next/image";
 import { countries } from 'countries-list';
-import { COUNTRY_LIST } from '@/lib/countries';
+import { COUNTRY_LIST, searchCountry } from '@/lib/countries';
 import styles from './form.module.css';
 
 
@@ -57,9 +57,8 @@ const EmailVerificationForm = ({ onVerified, initialSessionUser, source }: Props
   const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
   const filteredCountries = countryOptions.filter(c => {
-    if (c.name.toLowerCase().includes(countrySearchQuery.toLowerCase())) return true;
-    const entry = COUNTRY_LIST.find(cl => cl.code === c.code);
-    return !!entry?.aliases?.some(a => a.toLowerCase().includes(countrySearchQuery.toLowerCase()));
+    const entry = COUNTRY_LIST.find(cl => cl.code === c.code) || { name: c.name, code: c.code };
+    return searchCountry(entry, countrySearchQuery);
   });
 
   const isLinkInputValid = linkInput.trim().length === 0 || (linkInput.trim().includes('.') && !linkInput.trim().includes(' '));

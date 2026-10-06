@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { Field } from './expcard-page';
 import { ImagePlaceholderIcon, AvatarPlaceholderIcon, resolveCountryInfo } from './cards';
-import { COUNTRY_LIST } from "@/lib/countries";
+import { COUNTRY_LIST, searchCountry } from "@/lib/countries";
 
 
 interface MobileExplorerFormProps {
@@ -327,11 +327,9 @@ export function MobileExplorerForm({
                         {Object.keys(sampleFlags)
                           .filter((c) => {
                             if (Object.keys(sampleFlags).includes(form.country)) return true;
-                            const query = form.country.toLowerCase();
-                            if (c.toLowerCase().includes(query)) return true;
                             const code = sampleFlags[c];
-                            const entry = COUNTRY_LIST.find(cl => cl.code === code);
-                            return !!entry?.aliases?.some(a => a.toLowerCase().includes(query));
+                            const entry = COUNTRY_LIST.find(cl => cl.code === code) || { name: c, code: code, flag: "" };
+                            return searchCountry(entry, form.country);
                           })
                           .map((c) => (
                             <button
@@ -409,11 +407,9 @@ export function MobileExplorerForm({
               <div className="flex flex-col mt-[12px] overflow-y-auto flex-1 rounded-[8px]">
                 {Object.keys(sampleFlags)
                   .filter((c) => {
-                    const query = countryQuery.toLowerCase();
-                    if (c.toLowerCase().includes(query)) return true;
                     const code = sampleFlags[c];
-                    const entry = COUNTRY_LIST.find(cl => cl.code === code);
-                    return !!entry?.aliases?.some(a => a.toLowerCase().includes(query));
+                    const entry = COUNTRY_LIST.find(cl => cl.code === code) || { name: c, code: code, flag: "" };
+                    return searchCountry(entry, query);
                   })
                   .map((c) => {
                     const isSelected = visited.includes(c);
