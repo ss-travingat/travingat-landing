@@ -1,6 +1,7 @@
 import React from 'react';
 import { Field } from './expcard-page';
 import { ImagePlaceholderIcon, AvatarPlaceholderIcon, resolveCountryInfo } from './cards';
+import { COUNTRY_LIST } from "@/lib/countries";
 
 
 interface DesktopExplorerFormProps {
@@ -191,7 +192,14 @@ export function DesktopExplorerForm({
             {fromOpen && (
               <div className="absolute z-20 mt-1 max-h-48 w-full overflow-y-auto rounded-[8px] border border-[#2a2a2a] bg-[#111] shadow-lg">
                 {Object.keys(sampleFlags)
-                  .filter((c) => Object.keys(sampleFlags).includes(form.country) || c.toLowerCase().includes(form.country.toLowerCase()))
+                  .filter((c) => {
+                    if (Object.keys(sampleFlags).includes(form.country)) return true;
+                    const query = form.country.toLowerCase();
+                    if (c.toLowerCase().includes(query)) return true;
+                    const code = sampleFlags[c];
+                    const entry = COUNTRY_LIST.find(cl => cl.code === code);
+                    return !!entry?.aliases?.some(a => a.toLowerCase().includes(query));
+                  })
                   .map((c) => (
                   <button
                     key={c}

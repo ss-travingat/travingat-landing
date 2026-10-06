@@ -13,6 +13,7 @@ import countryData from "./countries.json";
 import { DesktopExplorerForm } from "./DesktopExplorerForm";
 import { MobileExplorerForm } from "./MobileExplorerForm";
 import { ExplorerCardScaler } from "./ExplorerCardScaler";
+import { COUNTRY_LIST } from "@/lib/countries";
 
 const sampleFlags: Record<string, string> = {};
 const sortedEntries = Object.entries(countryData)
@@ -573,9 +574,13 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
     }
   }
 
-  const countryMatches = Object.keys(sampleFlags).filter(
-    (c) => c.toLowerCase().includes(countryQuery.toLowerCase())
-  );
+  const countryMatches = Object.keys(sampleFlags).filter((c) => {
+    const query = countryQuery.toLowerCase();
+    if (c.toLowerCase().includes(query)) return true;
+    const code = sampleFlags[c];
+    const entry = COUNTRY_LIST.find(cl => cl.code === code);
+    return !!entry?.aliases?.some(a => a.toLowerCase().includes(query));
+  });
 
   function addCountry(c: string) {
     if (!visited.includes(c)) {
