@@ -190,7 +190,7 @@ export default function CountryDetailComponent({
 }: {
   profile: SampleProfile;
   countryCode: string;
-  images: Array<string | { url: string; width?: number; height?: number }>;
+  images: Array<string | { url: string; width?: number; height?: number; blurhash?: string }>;
 }) {
   const { showComingSoonToast } = useMobileComingSoon();
   const router = useRouter();
@@ -644,7 +644,7 @@ export default function CountryDetailComponent({
                 <div className="hidden lg:flex w-full gap-[0.5rem] xl:gap-[0.75rem]">
                   {distributeMasonryColumns(orderedItems, 4, (item) => (item.height && item.width ? item.height / item.width : 1)).map((columnItems, colIdx) => (
                     <div key={colIdx} className="flex flex-col gap-[0.5rem] xl:gap-[0.75rem] flex-1 min-w-0">
-                      {columnItems.map(({ url: imgUrl, globalIndex, width, height }) => {
+                      {columnItems.map(({ url: imgUrl, globalIndex, width, height, blurhash }) => {
                           const isVideo = isVideoAsset(imgUrl);
                           return (
                             <div key={globalIndex} className="group relative">
@@ -742,7 +742,7 @@ export default function CountryDetailComponent({
                 <div className="flex lg:hidden w-full gap-[0.375rem]">
                   {distributeMasonryColumns(orderedItems, 2, (item) => (item.height && item.width ? item.height / item.width : 1)).map((columnItems, colIdx) => (
                     <div key={colIdx} className="flex flex-col gap-[0.375rem] flex-1 min-w-0">
-                      {columnItems.map(({ url: imgUrl, globalIndex, width, height }) => {
+                      {columnItems.map(({ url: imgUrl, globalIndex, width, height, blurhash }) => {
                           const isVideo = isVideoAsset(imgUrl);
                           return (
                             <div key={globalIndex} className="group relative w-full">

@@ -67,6 +67,7 @@ type MediaItem = {
   collectionIndex?: number;
   width?: number;
   height?: number;
+  blurhash?: string;
 };
 
 type CountryCard = {
@@ -605,8 +606,9 @@ function JsMasonryGrid({
               </div>
             </>
           ) : (
-            <LoadedImage
+              <LoadedImage
               priority={gridIndex < 4}
+              blurhash={mediaItem.blurhash}
               originalSrc={MediaResolver.getBase(mediaItem.fileUrl)}
               src={MediaResolver.getThumbnail(MediaResolver.getBase(mediaItem.fileUrl), 720)}
               thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(mediaItem.fileUrl), 144)}

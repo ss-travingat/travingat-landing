@@ -1,4 +1,5 @@
 "use client";
+import { Blurhash } from "react-blurhash";
 
 import { useState, useEffect, useRef } from "react";
 import { MediaResolver } from "@/lib/media-resolver";
@@ -10,7 +11,9 @@ export default function LoadedImage({
   containerClassName = "",
   skeletonClassName = "absolute inset-0",
   priority = false,
+  blurhash,
   thumbnailSrc,
+
   originalSrc,
   onClick,
   onLoad,
@@ -22,7 +25,9 @@ export default function LoadedImage({
   containerClassName?: string;
   skeletonClassName?: string;
   priority?: boolean;
+  blurhash?: string;
   thumbnailSrc?: string;
+
   originalSrc?: string;
   onClick?: (event: React.MouseEvent<HTMLImageElement>) => void;
   onLoad?: () => void;
@@ -221,6 +226,24 @@ export default function LoadedImage({
         onLoad={handleLoad}
         onError={handleError}
       />
+
+      {/* Blurhash Placeholder (or Skeleton) */}
+      {phase === "skeleton" && (
+        <div className={`absolute inset-0 z-0 ${skeletonClassName}`}>
+          {blurhash ? (
+            <Blurhash
+              hash={blurhash}
+              width="100%"
+              height="100%"
+              resolutionX={32}
+              resolutionY={32}
+              punch={1}
+            />
+          ) : (
+            <div className="w-full h-full bg-[#1a1a1a] animate-pulse" />
+          )}
+        </div>
+      )}
 
       {/* Fallback Error State — shown when all retries fail */}
       {phase === "error" && (
