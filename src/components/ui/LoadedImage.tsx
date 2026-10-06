@@ -155,8 +155,13 @@ export default function LoadedImage({
     const isSvg = currentSrc.includes(".svg");
 
     const checkState = () => {
-      if (node.complete && (node.naturalWidth > 0 || isSvg)) {
-        handleLoad();
+      if (node.complete) {
+        if (node.naturalWidth > 0 || isSvg) {
+          handleLoad();
+          return true;
+        }
+        // If complete is true but naturalWidth is 0 (and not an SVG), it failed to decode or 404'd before hydration!
+        handleError();
         return true;
       }
       return false;
