@@ -1384,13 +1384,12 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
   return (
     <>
       <div
-        className="bg-black text-white flex flex-col items-center px-2 pt-2 min-[50.625rem]:pt-23 min-[75rem]:pt-0 min-[50.625rem]:px-8 min-[90rem]:px-16 w-full overflow-x-hidden relative min-h-screen"
+        className="bg-black text-white flex flex-col items-center px-2 pt-2 min-[50.625rem]:pt-23 min-[75rem]:pt-0 min-[50.625rem]:px-8 min-[90rem]:px-16 w-full overflow-x-hidden relative min-h-screen min-[75rem]:[padding-left:var(--desktop-inset)] min-[75rem]:[padding-right:var(--desktop-inset)]"
         style={
           strictDesktopStyle
-            ? {
-              paddingLeft: `${interpolatedDesktopInset}px`,
-              paddingRight: `${interpolatedDesktopInset}px`,
-            }
+            ? ({
+              "--desktop-inset": `${interpolatedDesktopInset}px`,
+            } as React.CSSProperties)
             : undefined
         }
       >
