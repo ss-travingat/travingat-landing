@@ -409,7 +409,7 @@ export function MobileExplorerForm({
                   .filter((c) => {
                     const code = sampleFlags[c];
                     const entry = COUNTRY_LIST.find(cl => cl.code === code) || { name: c, code: code, flag: "" };
-                    return searchCountry(entry, query);
+                    return searchCountry(entry, countryQuery);
                   })
                   .map((c) => {
                     const isSelected = visited.includes(c);
