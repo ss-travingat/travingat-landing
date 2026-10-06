@@ -104,7 +104,7 @@ export default function LoadedImage({
       if (healState === "none") {
         const optimizedTarget = originalSrc ? MediaResolver.getOptimized(originalSrc) : MediaResolver.getOptimized(src);
         if (optimizedTarget && optimizedTarget !== activeSrc) {
-          console.warn(`[LoadedImage] Thumbnail failed. Falling back to main image: ${optimizedTarget}`);
+          console.warn(`[LoadedImage] Thumbnail failed. Falling back to optimized image: ${optimizedTarget}`);
           setHealState("optimized");
           setRetryCount(0);
           return;
@@ -112,7 +112,9 @@ export default function LoadedImage({
       }
       
       if (healState === "none" || healState === "optimized") {
-        if (originalSrc && originalSrc !== activeSrc) {
+        const targetOriginal = originalSrc || src;
+        if (targetOriginal && targetOriginal !== activeSrc) {
+          console.warn(`[LoadedImage] Optimized image failed. Falling back to original image: ${targetOriginal}`);
           setHealState("original");
           setRetryCount(0);
           return;
@@ -121,15 +123,11 @@ export default function LoadedImage({
     }
 
     if (retryCount < maxRetries) {
-      // Delay before retrying to give the backend time to heal the image
-      // First retry after 2 seconds, second retry after 4 seconds
-      const delay = retryCount === 0 ? 2000 : 4000;
-
+      const delay = retryCount === 0 ? 1000 : 2000;
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
       timeoutRef.current = setTimeout(() => {
         setRetryCount((prev) => prev + 1);
       }, delay);
-
       return;
     }
 
