@@ -49,8 +49,7 @@ export function DesktopCountriesPopup({ trigger, countries }: DesktopCountriesPo
           className="fixed left-[50%] top-[50%] z-[1000] flex w-full max-w-[400px] max-h-[85vh] flex-col overflow-hidden rounded-[24px] bg-[#111111] border border-white/5 shadow-2xl outline-none desktop-popup-content"
           style={{ transform: 'translate(-50%, -50%)' }}
         >
-          <div className="flex flex-col w-full h-full">
-              <div className="px-[32px] pt-[32px] shrink-0">
+          <div className="px-[32px] pt-[32px] shrink-0">
             <Dialog.Title asChild>
               <h2 className="text-white text-left ds-font-display text-[24px] font-medium leading-[32px] tracking-[-0.5px] mb-[32px]">
                 {countries.length} Countries
@@ -80,7 +79,6 @@ export function DesktopCountriesPopup({ trigger, countries }: DesktopCountriesPo
                 </span>
               </div>
             ))}
-          </div>
           </div>
         </Dialog.Content>
       </Dialog.Portal>
