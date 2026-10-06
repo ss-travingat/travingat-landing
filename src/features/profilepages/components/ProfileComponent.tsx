@@ -590,7 +590,6 @@ function JsMasonryGrid({
               src={MediaResolver.getThumbnail(MediaResolver.getBase(mediaItem.fileUrl), 720)}
               thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(mediaItem.fileUrl), 144)}
               alt="Uploaded media"
-              priority={gridIndex < 4}
               className="w-full h-full object-cover block"
               containerClassName="w-full h-full relative"
               skeletonClassName="absolute inset-0 w-full h-full bg-[#1a1a1a]"

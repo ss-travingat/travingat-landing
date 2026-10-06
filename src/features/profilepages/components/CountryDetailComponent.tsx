@@ -654,7 +654,6 @@ export default function CountryDetailComponent({
                                     src={MediaResolver.getThumbnail(MediaResolver.getBase(imgUrl), 720)}
                                     thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(imgUrl), 144)}
                                     alt={`${countryName} photo ${globalIndex + 1}`}
-                                    priority={globalIndex < 4}
                                     className="w-full h-full object-cover block"
                                     containerClassName="w-full h-full relative"
                                     skeletonClassName="absolute inset-0 w-full h-full bg-[#1a1a1a]"
@@ -753,7 +752,6 @@ export default function CountryDetailComponent({
                                     src={MediaResolver.getThumbnail(MediaResolver.getBase(imgUrl), 720)}
                                     thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(imgUrl), 144)}
                                     alt={`${countryName} photo ${globalIndex + 1}`}
-                                    priority={globalIndex < 4}
                                     className="w-full h-full object-cover block"
                                     containerClassName="w-full h-full relative"
                                     skeletonClassName="absolute inset-0 w-full h-full bg-[#1a1a1a]"
