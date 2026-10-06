@@ -39,9 +39,10 @@ export function ThumbnailImage({ originalSrc, size = 720, ...props }: ThumbnailI
 
   return (
     <img 
+      key={src}
       ref={imgRef}
       src={src} 
-      loading="lazy"
+      loading={src === originalSrc ? "eager" : "lazy"}
       decoding="async"
       onError={handleError} 
       {...props} 
