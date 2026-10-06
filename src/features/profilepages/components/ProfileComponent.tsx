@@ -515,8 +515,6 @@ type JsMasonryGridProps = {
   profile: SampleProfile;
   openContextMenuId: string | null;
   setOpenContextMenuId: (id: string | null) => void;
-  loadedItemIds: Set<string>;
-  setLoadedItemIds: React.Dispatch<React.SetStateAction<Set<string>>>;
   openCarouselAt: (index: number) => void;
   openShareCard: (data: ShareCardData) => void;
   contextMenuRef: React.RefObject<HTMLDivElement>;
@@ -532,8 +530,6 @@ function JsMasonryGrid({
   profile,
   openContextMenuId,
   setOpenContextMenuId,
-  loadedItemIds,
-  setLoadedItemIds,
   openCarouselAt,
   openShareCard,
   contextMenuRef,
@@ -543,15 +539,6 @@ function JsMasonryGrid({
 }: JsMasonryGridProps) {
   const { showComingSoonToast } = useMobileComingSoon();
   const orderedItems = items;
-
-  const markItemLoaded = (id: string) => {
-    setLoadedItemIds((prev) => {
-      if (prev.has(id)) return prev;
-      const next = new Set(prev);
-      next.add(id);
-      return next;
-    });
-  };
 
   const renderMediaItem = (mediaItem: MediaItem, isMobile = false) => {
     const originalIndex = allMediaItems.findIndex((it) => String(it.id) === String(mediaItem?.id));
@@ -566,7 +553,7 @@ function JsMasonryGrid({
       ? `/${profile.handle.replace(/^@/, "")}/country/${displayCountryCode.toUpperCase()}`
       : undefined);
     const viewLabel = collectionHref ? "View collection" : "View country";
-    const isLoaded = loadedItemIds.has(mediaItem.id);
+
 
     return (
       <div key={mediaItem.id} className="group relative w-full">
@@ -592,9 +579,6 @@ function JsMasonryGrid({
                 loop
                 preload="metadata"
                 className="w-full h-full object-cover block pointer-events-none"
-                onLoadedData={() => markItemLoaded(mediaItem.id)}
-                onCanPlay={() => markItemLoaded(mediaItem.id)}
-                onError={() => markItemLoaded(mediaItem.id)}
               />
               <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
                 <span className="text-white text-3xl drop-shadow-lg">▶</span>
@@ -610,7 +594,6 @@ function JsMasonryGrid({
               className="w-full h-full object-cover block"
               containerClassName="w-full h-full relative"
               skeletonClassName="absolute inset-0 w-full h-full bg-[#1a1a1a]"
-              onLoad={() => markItemLoaded(mediaItem.id)}
             />
           )}
           <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-200 pointer-events-none" />
@@ -627,8 +610,8 @@ function JsMasonryGrid({
           }}
         />
 
-        {/* Flag badge (visible after image loads) */}
-        {displayCountryCode && isLoaded ? (
+        {/* Flag badge */}
+        {displayCountryCode ? (
           <div className="absolute top-2 right-2 md:top-3 md:right-3 z-20 transition-opacity duration-200 opacity-100 pointer-events-auto">
             <TooltipProvider delayDuration={100}>
               <Tooltip
@@ -735,7 +718,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
   const router = useRouter();
 
   const [activeTab, setActiveTab] = useState<TabKey>("all");
-  const [loadedItemIds, setLoadedItemIds] = useState<Set<string>>(() => new Set());
+
   const [swipeOffset, setSwipeOffset] = useState(0);
 
   const [headerHeight, setHeaderHeight] = useState(0);
@@ -1710,8 +1693,6 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                         profile={profile}
                         openContextMenuId={openContextMenuId}
                         setOpenContextMenuId={setOpenContextMenuId}
-                        loadedItemIds={loadedItemIds}
-                        setLoadedItemIds={setLoadedItemIds}
                         openCarouselAt={openCarouselAt}
                         openShareCard={openShareCard}
                         contextMenuRef={contextMenuRef as React.RefObject<HTMLDivElement>}
