@@ -2018,7 +2018,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                               ) : (
                                 <span>{homelandFlagCode}</span>
                               )}
-                              <span className="truncate">{profile.homeland}</span>
+                              <span className="truncate">{profile.homeland || (homelandFlagCode ? getCountryName(homelandFlagCode) : "")}</span>
                             </div>
                           </div>
 
@@ -2036,7 +2036,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                               ) : (
                                 <span>{currentlyInFlagCode}</span>
                               )}
-                              <span className="truncate">{profile.currentlyIn}</span>
+                              <span className="truncate">{profile.currentlyIn || (currentlyInFlagCode ? getCountryName(currentlyInFlagCode) : "")}</span>
                             </div>
                           </div>
 
