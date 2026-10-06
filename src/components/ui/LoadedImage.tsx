@@ -190,10 +190,10 @@ export default function LoadedImage({
   };
 
   return (
-    <div className={`relative overflow-hidden ${containerClassName}`} style={style}>
-      {/* Skeleton placeholder — plain pulsing background, no icon */}
-      {phase === "skeleton" && (
-        <div className={`z-0 pointer-events-none bg-[#1a1a1a] animate-pulse rounded-[inherit] ${skeletonClassName}`} />
+    <div className={`relative overflow-hidden [transform:translateZ(0)] ${containerClassName}`} style={style}>
+      {/* Skeleton placeholder — kept behind the blur preview to prevent edge bleeding into transparent */}
+      {(phase === "skeleton" || phase === "blurPreview") && (
+        <div className={`absolute inset-0 z-0 pointer-events-none bg-[#1a1a1a] ${phase === "skeleton" ? "animate-pulse" : ""} rounded-[inherit] ${skeletonClassName.replace("absolute inset-0", "")}`} />
       )}
 
       {/* Blurred thumbnail preview — loads fast, shown blurred behind real image */}
@@ -204,7 +204,7 @@ export default function LoadedImage({
           aria-hidden="true"
           className={`absolute inset-0 w-full h-full object-cover rounded-[inherit] z-[1] transition-opacity duration-500 ${phase === "loaded" ? "opacity-0" : "opacity-100"
             }`}
-          style={{ filter: phase === "loaded" ? "blur(0px)" : "blur(20px)", transform: "scale(1.1)" }}
+          style={{ filter: phase === "loaded" ? "blur(0px)" : "blur(10px)", transform: phase === "loaded" ? "scale(1)" : "scale(1.15)" }}
           {...(priority ? { fetchPriority: "high" as any, loading: "eager" } : { loading: "lazy" })}
           decoding="async"
           onLoad={handleBlurPreviewLoad}
