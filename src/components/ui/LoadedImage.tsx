@@ -104,6 +104,7 @@ export default function LoadedImage({
       if (healState === "none") {
         const optimizedTarget = originalSrc ? MediaResolver.getOptimized(originalSrc) : MediaResolver.getOptimized(src);
         if (optimizedTarget && optimizedTarget !== activeSrc) {
+          console.warn(`[LoadedImage] Thumbnail failed. Falling back to main image: ${optimizedTarget}`);
           setHealState("optimized");
           setRetryCount(0);
           return;
@@ -137,10 +138,10 @@ export default function LoadedImage({
   };
 
   useEffect(() => {
-    // Force error state if image hangs for more than 1 minute
+    // Force error state if image hangs for more than 5 minutes
     maxLoadTimeoutRef.current = setTimeout(() => {
       setPhase("error");
-    }, 60000);
+    }, 300000);
 
     return () => {
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
