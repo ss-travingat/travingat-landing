@@ -3,7 +3,6 @@ import { MediaResolver } from "@/lib/media-resolver";
 
 import { useState, useRef, useEffect, type SyntheticEvent } from "react";
 import { useMobileComingSoon } from "@/components/ui/MobileComingSoonToast";
-import { ThumbnailImage } from "@/components/ThumbnailImage";
 import LoadedImage from "@/components/ui/LoadedImage";
 import { useImagePreloader } from "@/hooks/useImagePreloader";
 
@@ -135,7 +134,7 @@ export function MediaLightbox({
     };
     img.src = fullResSrc;
     return () => { img.onload = null; img.onerror = null; };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fullResSrc, activeIndex]);
 
   return (
@@ -286,9 +285,8 @@ export function MediaLightbox({
                     key={`thumb-${activeIndex}`}
                     src={thumbnailSrc}
                     alt="Carousel media"
-                    className={`block w-full h-full object-contain carousel-image rounded-[0.75rem] mx-auto transition-all duration-500 ${
-                      mediaLoaded ? 'opacity-100' : 'opacity-0'
-                    }`}
+                    className={`block w-full h-full object-contain carousel-image rounded-[0.75rem] mx-auto transition-all duration-500 ${mediaLoaded ? 'opacity-100' : 'opacity-0'
+                      }`}
                     style={{
                       filter: fullResReady ? 'blur(0px)' : 'blur(20px)',
                       transform: fullResReady ? 'scale(1)' : 'scale(1.05)'
@@ -392,9 +390,13 @@ export function MediaLightbox({
                   </>
                 ) : (
                   <>
-                    <ThumbnailImage originalSrc={MediaResolver.getBase(item.url)} size={720}
+                    <LoadedImage
+                      originalSrc={MediaResolver.getBase(item.url)}
+                      src={MediaResolver.getThumbnail(MediaResolver.getBase(item.url), 720)}
+                      thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(item.url), 144)}
                       alt={`Carousel thumbnail ${idx + 1}`}
                       className="h-full w-full object-cover"
+                      containerClassName="h-full w-full"
                     />
                     <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors duration-200" />
                   </>

@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 
 import Link from "next/link";
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { ThumbnailImage } from "@/components/ThumbnailImage";
+import LoadedImage from "@/components/ui/LoadedImage";
 import { sampleProfiles, type SampleProfile } from "../data/profile-data";
 import { MediaLightbox } from "./MediaLightbox";
 import { MoreOptionsButton } from "@/components/ui/MoreOptionsButton";
@@ -13,7 +13,7 @@ import { WaitlistPopup } from "@/components/ui/WaitlistPopup";
 import { MobileHero, MobileTabs } from "./MobileProfile";
 import ProfileFooter from "./ProfileFooter";
 import CardCarousel from "./CardCarousel";
-import LoadedImage from "@/components/ui/LoadedImage";
+// import LoadedImage from "@/components/ui/LoadedImage";
 import FoundingExplorer from "@/components/ui/FoundingExplorerBadge";
 import { useMobileComingSoon } from "@/components/ui/MobileComingSoonToast";
 import { COUNTRY_LIST } from "@/lib/countries";
@@ -1951,7 +1951,15 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                             {aboutPhotos.length > 0 ? (
                               aboutPhotos.map((src, idx) => (
                                 <div key={`${src}-${idx}`} className="w-[10rem] md:w-auto md:flex-1 shrink-0 min-w-0 rounded-2xl md:rounded-[0.75rem] overflow-hidden bg-[#151515] aspect-square snap-start">
-                                  <ThumbnailImage originalSrc={MediaResolver.getBase(src)} size={720} alt={`About photo ${idx + 1}`} loading="eager" decoding="async" draggable={false} className="w-full h-full object-cover pointer-events-none select-none" />
+                                  <LoadedImage
+                                    originalSrc={MediaResolver.getBase(src)}
+                                    src={MediaResolver.getThumbnail(MediaResolver.getBase(src), 720)}
+                                    thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(src), 144)}
+                                    alt={`About photo ${idx + 1}`}
+                                    className="w-full h-full object-cover pointer-events-none select-none"
+                                    containerClassName="w-full h-full"
+                                    priority={true}
+                                  />
                                 </div>
                               ))
                             ) : (
