@@ -197,6 +197,7 @@ export default function LoadedImage({
       {/* Blurred thumbnail preview — loads fast, shown blurred behind real image */}
       {blurPreviewSrc && phase !== "error" && !blurPreviewFailed && (
         <img
+          key={blurPreviewSrc}
           src={blurPreviewSrc}
           alt=""
           aria-hidden="true"
@@ -212,6 +213,7 @@ export default function LoadedImage({
 
       {/* Real image — fades in and sharpens over the blur preview */}
       <img
+        key={currentSrc}
         ref={imgRef}
         src={currentSrc}
         alt={alt}
