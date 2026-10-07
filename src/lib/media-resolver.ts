@@ -30,8 +30,20 @@ export class MediaResolver {
   public static getBase(assetPath: string | { url: string } | undefined | null): string {
     if (!assetPath) return "";
     
-    const urlStr = typeof assetPath === "string" ? assetPath : assetPath.url;
+    let urlStr = typeof assetPath === "string" ? assetPath : assetPath.url;
     if (!urlStr) return "";
+
+    // Fix corrupted DB data where old URLs contained the crop API
+    if (urlStr.includes("api/media/crop")) {
+      try {
+        const parsed = new URL(urlStr, "http://localhost");
+        const realUrl = parsed.searchParams.get("url");
+        if (realUrl) {
+          urlStr = realUrl;
+        }
+      } catch (e) {}
+    }
+
     if (/^https?:\/\//i.test(urlStr) || /^blob:/i.test(urlStr) || /^data:/i.test(urlStr)) {
       return urlStr;
     }

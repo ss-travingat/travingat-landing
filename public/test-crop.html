@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+  .outer {
+    width: 344px;
+    height: 226px;
+    overflow: hidden;
+    position: relative;
+    border: 2px solid red;
+  }
+  .inner {
+    position: absolute;
+    width: 200%;
+    height: 200%;
+    transform: translate(-30%, -30%);
+    opacity: 0.5;
+  }
+  .img {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(45deg, blue, yellow);
+  }
+</style>
+</head>
+<body>
+  <div class="outer">
+    <div class="inner">
+      <div class="img"></div>
+    </div>
+  </div>
+</body>
+</html>

@@ -3,6 +3,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Image from "next/image";
 import { countries } from 'countries-list';
+import { COUNTRY_LIST, searchCountry } from '@/lib/countries';
 import styles from './form.module.css';
 
 
@@ -19,11 +20,20 @@ interface Props {
   source?: string;
 }
 
+const getInitialCountryCode = (countryValue: string | null) => {
+  if (!countryValue) return null;
+  if (countryValue.length === 2 && countryOptions.some(c => c.code === countryValue)) {
+    return countryValue;
+  }
+  const match = countryOptions.find(c => c.name.toLowerCase() === countryValue.toLowerCase());
+  return match ? match.code : null;
+};
+
 const EmailVerificationForm = ({ onVerified, initialSessionUser, source }: Props = {}) => {
   const [email, setEmail] = useState(initialSessionUser?.email || '');
   const [step, setStep] = useState<'email' | 'otp' | 'application'>(initialSessionUser ? 'application' : 'email');
   const [otp, setOtp] = useState(['', '', '', '']);
-  const [selectedCountry, setSelectedCountry] = useState<string | null>(initialSessionUser?.country || null);
+  const [selectedCountry, setSelectedCountry] = useState<string | null>(getInitialCountryCode(initialSessionUser?.country));
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [countrySearchQuery, setCountrySearchQuery] = useState('');
   const [linkInput, setLinkInput] = useState('');
@@ -46,7 +56,10 @@ const EmailVerificationForm = ({ onVerified, initialSessionUser, source }: Props
   // Basic email validation regex
   const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
-  const filteredCountries = countryOptions.filter(c => c.name.toLowerCase().includes(countrySearchQuery.toLowerCase()));
+  const filteredCountries = countryOptions.filter(c => {
+    const entry = COUNTRY_LIST.find(cl => cl.code === c.code) || { name: c.name, code: c.code };
+    return searchCountry(entry, countrySearchQuery);
+  });
 
   const isLinkInputValid = linkInput.trim().length === 0 || (linkInput.trim().includes('.') && !linkInput.trim().includes(' '));
 
@@ -133,7 +146,10 @@ const EmailVerificationForm = ({ onVerified, initialSessionUser, source }: Props
         if (lname) setLastName(lname);
 
         const bestCountry = u.country || ec.country;
-        if (bestCountry) setSelectedCountry(bestCountry);
+        if (bestCountry) {
+          const matchedCode = getInitialCountryCode(bestCountry);
+          setSelectedCountry(matchedCode || bestCountry);
+        }
 
         let count = u.visited_count;
         const ecVisited = ec.visitedCountries || ec.visited_countries;
@@ -195,7 +211,7 @@ const EmailVerificationForm = ({ onVerified, initialSessionUser, source }: Props
 
   if (step === 'otp') {
     return (
-      <div className="bg-transparent lg:bg-[#111] flex flex-col h-auto lg:h-[563px] items-center lg:justify-center overflow-hidden lg:pb-[32px] lg:px-[32px] relative lg:rounded-[20px] shrink-0 w-full max-w-[420px] mx-auto box-border">
+      <div className="bg-transparent lg:bg-[#111] flex flex-col h-auto lg:h-[563px] items-center lg:justify-center overflow-hidden relative lg:rounded-[20px] shrink-0 w-full max-w-[420px] mx-auto box-border">
         <div className="flex flex-col gap-[24px] items-center p-[32px] relative shrink-0 w-full">
           {/* OTP field group */}
           <div className="flex flex-col gap-[16px] items-center relative shrink-0 w-full">
@@ -285,6 +301,28 @@ const EmailVerificationForm = ({ onVerified, initialSessionUser, source }: Props
           <div className={styles.inputRow}>
             <input type="email" value={email} disabled className={styles.textInput} />
           </div>
+          {initialSessionUser && (
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', marginTop: '4px' }}>
+              <span style={{ color: '#989898', fontSize: '12px' }}>Signed in as {email}</span>
+              <button
+                type="button"
+                onClick={async () => {
+                  await fetch('/api/auth/logout-user', { method: 'POST' });
+                  setStep('email');
+                  setEmail('');
+                  setOtp(['', '', '', '']);
+                  setFirstName('');
+                  setLastName('');
+                  setVisitedCount('');
+                  setLinks([]);
+                  setSelectedCountry(null);
+                }}
+                style={{ background: 'none', border: 'none', color: '#5a45f9', cursor: 'pointer', fontSize: '12px', padding: 0 }}
+              >
+                Not you?
+              </button>
+            </div>
+          )}
         </div>
 
         <div className={styles.fieldContainer}>
@@ -475,7 +513,7 @@ const EmailVerificationForm = ({ onVerified, initialSessionUser, source }: Props
   }
 
   return (
-    <div className="bg-transparent lg:bg-[#111] flex flex-col h-auto lg:h-[563px] items-center lg:justify-center overflow-hidden lg:pb-[32px] lg:px-[32px] relative lg:rounded-[20px] shrink-0 w-full max-w-[420px] mx-auto box-border">
+    <div className="bg-transparent lg:bg-[#111] flex flex-col h-auto lg:h-[563px] items-center lg:justify-center overflow-hidden relative lg:rounded-[20px] shrink-0 w-full max-w-[420px] mx-auto box-border">
       <div className="flex flex-col gap-[24px] items-center p-[32px] relative shrink-0 w-full">
         {/* Email field group */}
         <div className="flex flex-col gap-[16px] items-center relative shrink-0 w-full">

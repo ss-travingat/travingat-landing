@@ -11,17 +11,28 @@ import { MediaLightbox } from "./MediaLightbox";
 import ProfileFooter from "./ProfileFooter";
 import { MoreOptionsButton } from "@/components/ui/MoreOptionsButton";
 import { Tooltip, TooltipProvider } from "@/components/ui/Tooltip";
+import { CountriesPopup } from "@/components/ui/CountriesPopup";
+import { DesktopCountriesPopup } from "@/components/ui/DesktopCountriesPopup";
 import { COUNTRY_LIST } from "@/lib/countries";
 import LoadedImage from "@/components/ui/LoadedImage";
 import { useMobileComingSoon } from "@/components/ui/MobileComingSoonToast";
+import { useNavbarVisibility } from "./MobileProfile";
+import { distributeMasonryColumns } from "@/lib/masonry-utils";
 
 /* eslint-disable @next/next/no-img-element */
+
+import { MobileCollectionHeader } from "./MobileCollectionHeader";
+import { DesktopCollectionHeader } from "./DesktopCollectionHeader";
+
+const STATIC_LAST_UPDATED_LABEL = "27 Dec 2025";
 
 type MediaTab = "all" | "photos" | "videos" | "about";
 
 function isVideoAsset(url: string) {
   return /\.(mp4|mov|webm|m4v|3gp|3g2)$/i.test(url);
 }
+
+// ─── Main Component ─────────────────────────────────────────────────────────────
 
 function CollectionLightbox({
   items,
@@ -34,10 +45,11 @@ function CollectionLightbox({
   profileCountry,
   profileHandle,
   profileAvatar,
+  profileAvatarBlurhash,
   collectionTitle,
   description,
 }: {
-  items: string[];
+  items: Array<{ url: string; width?: number; height?: number; blurhash?: string }>;
   activeIndex: number;
   onClose: () => void;
   onNext: () => void;
@@ -47,6 +59,7 @@ function CollectionLightbox({
   profileCountry?: string;
   profileHandle: string;
   profileAvatar: string;
+  profileAvatarBlurhash?: string;
   collectionTitle: string;
   description?: string;
 }) {
@@ -58,10 +71,10 @@ function CollectionLightbox({
 
   return (
     <MediaLightbox
-      items={items.map((url) => ({
-        id: url,
-        url,
-        isVideo: isVideoAsset(url),
+      items={items.map((entry) => ({
+        id: entry.url,
+        url: entry.url,
+        isVideo: isVideoAsset(entry.url),
       }))}
       activeIndex={activeIndex}
       onClose={onClose}
@@ -75,7 +88,7 @@ function CollectionLightbox({
         >
           <div className="flex items-start justify-between">
             <div className="h-[4.5rem] w-[4.5rem] overflow-hidden rounded-2xl">
-              <LoadedImage src={avatarSrc} thumbnailSrc={MediaResolver.getThumbnail(avatarSrc, 720)} alt={profileName} className="h-full w-full object-cover" />
+              <LoadedImage src={avatarSrc} thumbnailSrc={MediaResolver.getThumbnail(avatarSrc, 144)} blurhash={profileAvatarBlurhash} alt={profileName} className="h-full w-full object-cover" />
             </div>
             <button
               type="button"
@@ -141,17 +154,28 @@ export default function CollectionDetailComponent({
 }: {
   profile: SampleProfile;
   title: string;
-  images: Array<string | { url: string; width?: number; height?: number }>;
+  images: Array<string | { url: string; width?: number; height?: number; blurhash?: string }>;
   collectionCountryCodes?: string[];
 }) {
   const router = useRouter();
   const { showComingSoonToast } = useMobileComingSoon();
-  const imageUrls = images.map((entry) => (typeof entry === "string" ? entry : entry.url));
+  const imageObjects = (images || []).filter(Boolean).map((entry) => (typeof entry === "string" ? { url: entry } : entry));
   const [activeTab, setActiveTab] = useState<MediaTab>("all");
   const [showMenu, setShowMenu] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const fullScreenMenuRef = useRef<HTMLDivElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const [prevActiveTab, setPrevActiveTab] = useState<MediaTab>("all");
+
+  useEffect(() => {
+    if (menuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => { document.body.style.overflow = ""; };
+  }, [menuOpen]);
 
   if (activeTab !== prevActiveTab) {
     setPrevActiveTab(activeTab);
@@ -159,15 +183,112 @@ export default function CollectionDetailComponent({
   }
   const didReadFromUrl = useRef(false);
 
-  const photos = imageUrls.filter((url) => !isVideoAsset(url));
-  const videos = imageUrls.filter((url) => isVideoAsset(url));
+  // Swipe gesture state
+  const [swipeOffset, setSwipeOffset] = useState(0);
+  const touchStartX = useRef<number | null>(null);
+  const touchStartY = useRef<number | null>(null);
+  const touchEndX = useRef<number | null>(null);
+  const touchEndY = useRef<number | null>(null);
+  useNavbarVisibility(showMenu, 56);
+
+  const handleTabChange = (tab: MediaTab) => {
+    (window as any).__lastProgrammaticScrollTime = Date.now();
+    (window as any).__isProgrammaticScroll = true;
+    const scrollBefore = window.scrollY;
+    setActiveTab(tab);
+
+    setTimeout(() => {
+      const isDesktop = window.innerWidth >= 768; // md breakpoint
+      const sentinelId = isDesktop ? "desktop-tabs-sentinel" : "mobile-tabs-sentinel";
+      const sentinelEl = document.getElementById(sentinelId);
+
+      if (sentinelEl) {
+        const rect = sentinelEl.getBoundingClientRect();
+        const absoluteTop = rect.top + window.scrollY;
+
+        let targetScrollY = 0;
+
+        if (isDesktop) {
+          let predictedTarget = absoluteTop - 0;
+          if (predictedTarget > 100) {
+            targetScrollY = predictedTarget;
+          } else {
+            targetScrollY = absoluteTop - 100;
+          }
+        } else {
+          const navbarEl = document.getElementById("profile-mobile-navbar");
+          const navbarVisualTop = navbarEl ? navbarEl.getBoundingClientRect().top : 0;
+          targetScrollY = absoluteTop + 12 - 72 - navbarVisualTop;
+        }
+
+        if (scrollBefore > targetScrollY) {
+          window.scrollTo({ top: targetScrollY, behavior: "instant" });
+        }
+      }
+    }, 10);
+  };
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+    touchStartY.current = e.touches[0].clientY;
+    setSwipeOffset(0);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    touchEndX.current = e.touches[0].clientX;
+    touchEndY.current = e.touches[0].clientY;
+    if (touchStartX.current !== null && touchStartY.current !== null) {
+      const distanceX = touchStartX.current - touchEndX.current;
+      const distanceY = touchStartY.current - touchEndY.current;
+      if (Math.abs(distanceX) > Math.abs(distanceY)) {
+        setSwipeOffset(distanceX);
+      }
+    }
+  };
+
+  const handleTouchEnd = () => {
+    if (touchStartX.current !== null && touchEndX.current !== null && touchStartY.current !== null && touchEndY.current !== null) {
+      const distanceX = touchStartX.current - touchEndX.current;
+      const distanceY = touchStartY.current - touchEndY.current;
+      const swipeThreshold = 50;
+
+      if (Math.abs(distanceX) > Math.abs(distanceY) && Math.abs(distanceX) > swipeThreshold) {
+        const tabsArr: MediaTab[] = ["all", "about"];
+        const currentIndex = tabsArr.indexOf(activeTab);
+
+        if (distanceX > 0) {
+          if (currentIndex < tabsArr.length - 1) {
+            const nextTab = tabsArr[currentIndex + 1];
+            handleTabChange(nextTab);
+          }
+        } else {
+          if (currentIndex > 0) {
+            const prevTab = tabsArr[currentIndex - 1];
+            handleTabChange(prevTab);
+          }
+        }
+      }
+    }
+    setSwipeOffset(0);
+    touchStartX.current = null;
+    touchStartY.current = null;
+    touchEndX.current = null;
+    touchEndY.current = null;
+  };
+
+  const photos = imageObjects.filter((entry) => !isVideoAsset(entry.url));
+  const videos = imageObjects.filter((entry) => isVideoAsset(entry.url));
   const collectionObj = profile.collectionImages?.find(c => c.title === title);
   const aboutText = collectionObj?.about;
+  const updatedDateStr = collectionObj?.updated_at || collectionObj?.updatedAt;
+  const updatedLabel = updatedDateStr
+    ? new Date(updatedDateStr).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }).replace("Sept", "Sep")
+    : STATIC_LAST_UPDATED_LABEL;
 
   const displayImages =
     activeTab === "photos" ? photos :
       activeTab === "videos" ? videos :
-        imageUrls;
+        imageObjects;
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -204,17 +325,17 @@ export default function CollectionDetailComponent({
     return () => { document.body.style.overflow = ""; };
   }, [lightboxIndex]);
 
-  const items = displayImages.map((url, index) => ({ url, globalIndex: index }));
+  const items = displayImages.map((entry, index) => ({ ...entry, globalIndex: index }));
 
   useEffect(() => {
     if (typeof window === "undefined" || didReadFromUrl.current) return;
     didReadFromUrl.current = true;
     const url = new URL(window.location.href);
     const encodedImage = url.searchParams.get("image");
-    if (encodedImage && imageUrls.length > 0) {
+    if (encodedImage && imageObjects.length > 0) {
       try {
         const imageUrl = decodeURIComponent(escape(atob(encodedImage)));
-        const indexInAll = imageUrls.indexOf(imageUrl);
+        const indexInAll = imageObjects.findIndex((entry) => entry.url === imageUrl);
         if (indexInAll !== -1) {
           setActiveTab("all");
           setLightboxIndex(indexInAll);
@@ -230,7 +351,7 @@ export default function CollectionDetailComponent({
     if (typeof window === "undefined") return;
     const url = new URL(window.location.href);
     if (lightboxIndex !== null && displayImages.length > 0) {
-      const activeUrl = displayImages[lightboxIndex];
+      const activeUrl = displayImages[lightboxIndex].url;
       const encodedUrl = btoa(unescape(encodeURIComponent(activeUrl)));
       if (url.searchParams.get("image") !== encodedUrl) {
         url.searchParams.set("image", encodedUrl);
@@ -246,17 +367,78 @@ export default function CollectionDetailComponent({
 
   const tabs: { key: string; label: string }[] = [
     { key: "all", label: "All media" },
-    { key: "photos", label: "Photos" },
-    { key: "videos", label: "Videos" },
     { key: "about", label: "About" },
   ];
-  const headerCountryCodes =
-    collectionCountryCodes.length > 0
-      ? collectionCountryCodes
-      : (profile.visitedCountryCodes ?? []);
+  const getCountryCodeForImage = (img: { url: string; countryCode?: string }) => {
+    if (!img) return undefined;
+    if (img.countryCode) return img.countryCode;
+    const entry = profile.countryImages?.find(c =>
+      c.images.some((i: any) => i && (typeof i === "string" ? i : i.url) === img.url)
+    );
+    return entry?.countryCode;
+  };
+
+  const derivedCountryCodes = new Set([
+    ...(collectionCountryCodes || []),
+    ...imageObjects.map(img => getCountryCodeForImage(img as any)).filter(Boolean)
+  ]);
+  const headerCountryCodes = Array.from(derivedCountryCodes) as string[];
+
+  const flagOverflowCount = headerCountryCodes.length > 4 ? headerCountryCodes.length - 4 : 0;
+  const allVisitedCountries = headerCountryCodes.map((code) => {
+    const countryEntry = COUNTRY_LIST.find((c) => c.code.toLowerCase() === code.toLowerCase());
+    return { name: countryEntry ? countryEntry.name : code, code };
+  });
 
   return (
-    <div className="min-h-screen bg-black text-white flex flex-col items-center px-[0.75rem] min-[50.625rem]:px-[2rem] min-[75rem]:px-[3rem] min-[90rem]:px-[4rem]">
+    <div className="min-h-screen bg-black text-white flex flex-col items-center px-[0.75rem] min-[50.625rem]:px-[2rem] min-[1200px]:px-[96px] relative">
+      <div id="profile-mobile-navbar" className="flex md:hidden fixed top-0 left-0 w-full z-[120] flex-col pointer-events-none">
+        <div className="flex items-center justify-between px-[20px] h-[56px] bg-black shadow-[0_2px_0_0_#000] pointer-events-auto transition-transform duration-300">
+          <button onClick={() => router.back()} className="text-white flex items-center justify-center p-2 -ml-2">
+            <span className="material-symbols-rounded text-[1.75rem]">arrow_back</span>
+          </button>
+          <button
+            onClick={() => setMenuOpen((prev) => !prev)}
+            className={`relative flex h-[2.25rem] w-[2.25rem] flex-col items-center justify-center gap-[0.25rem] rounded-full transition-colors ${menuOpen ? 'bg-[#1c1c1c] text-white hover:bg-[#2a2a2a]' : ''}`}
+            aria-label="Toggle navigation menu"
+            aria-expanded={menuOpen}
+          >
+            <span className={`block h-[0.125rem] w-[1.125rem] origin-center rounded-full bg-white transition-all duration-300 ease-in-out ${menuOpen ? 'translate-y-[0.375rem] rotate-45' : ''}`} />
+            <span className={`block h-[0.125rem] w-[1.125rem] origin-center rounded-full bg-white transition-all duration-300 ease-in-out ${menuOpen ? 'opacity-0' : ''}`} />
+            <span className={`block h-[0.125rem] w-[1.125rem] origin-center rounded-full bg-white transition-all duration-300 ease-in-out ${menuOpen ? '-translate-y-[0.375rem] -rotate-45' : ''}`} />
+          </button>
+        </div>
+      </div>
+
+      {/* Fixed Full-Screen Mobile Overlay Menu */}
+      <div
+        ref={fullScreenMenuRef}
+        className={`fixed inset-0 z-[110] min-[75rem]:hidden bg-black/95 backdrop-blur-xl transition-all duration-300 ease-in-out flex flex-col justify-start items-center px-6 pt-[6.25rem] pb-10 ${menuOpen
+          ? "opacity-100 pointer-events-auto translate-y-0"
+          : "opacity-0 pointer-events-none -translate-y-4"
+          }`}
+      >
+        <div className="w-full max-w-xs flex flex-col items-center gap-[1.5rem]">
+          <nav className="flex flex-col items-center justify-start gap-[1.5rem] w-full">
+            <a href="https://travingat.com/" onClick={() => setMenuOpen(false)} className="text-[1.75rem] font-medium leading-[1.2] text-white hover:text-white/80 transition">Home</a>
+            <a href="https://travingat.com/profiles" onClick={() => setMenuOpen(false)} className="text-[1.75rem] font-medium leading-[1.2] text-white hover:text-white/80 transition">Profiles</a>
+            <a href="https://travingat.com/templates" onClick={() => setMenuOpen(false)} className="text-[1.75rem] font-medium leading-[1.2] text-white hover:text-white/80 transition">Templates</a>
+            <a href="https://travingat.com/pricing" onClick={() => setMenuOpen(false)} className="text-[1.75rem] font-medium leading-[1.2] text-white hover:text-white/80 transition">Pricing</a>
+            <a href="https://travingat.com/blog" onClick={() => setMenuOpen(false)} className="text-[1.75rem] font-medium leading-[1.2] text-white hover:text-white/80 transition">Blog</a>
+
+            <a
+              href="https://travingat.com/#join"
+              onClick={() => {
+                setMenuOpen(false);
+                window.location.href = "https://travingat.com/#join";
+              }}
+              className="mt-[0.75rem] w-full text-center rounded-[62.4375rem] bg-white px-[1.75rem] py-[0.75rem] text-[0.9375rem] font-medium tracking-tight text-black hover:bg-[#ececec] transition shadow-lg shrink-0"
+            >
+              Join now
+            </a>
+          </nav>
+        </div>
+      </div>
       {lightboxIndex !== null && (
         <CollectionLightbox
           items={displayImages}
@@ -273,96 +455,89 @@ export default function CollectionDetailComponent({
           description={aboutText}
         />
       )}
-      {/* Collection Info */}
-      <main className="w-full max-w-[108rem] flex flex-col items-center gap-[3rem] pb-28 md:pb-20 pt-8 md:pt-10">
-        <div className="flex flex-col items-center gap-[1.25rem] w-full max-w-[37.5rem]">
-          <div className="flex flex-col items-center gap-[1.5rem]">
-            <div className="flex items-center gap-[0.5rem] justify-center">
-              {headerCountryCodes.map((code) => {
-                const countryEntry = COUNTRY_LIST.find((c) => c.code.toLowerCase() === code.toLowerCase());
-                const countryName = countryEntry ? countryEntry.name : code;
-                return (
-                  <TooltipProvider key={code} delayDuration={100}>
-                    <Tooltip content={countryName} theme="light" side="top">
-                      <div className="h-[1.5rem] w-[2.125rem] overflow-hidden rounded-[0.1875rem] shadow-sm cursor-pointer">
-                        <img src={`/flags/${code.toUpperCase()}.svg`} className="w-full h-full object-cover" alt={countryName} />
-                      </div>
-                    </Tooltip>
-                  </TooltipProvider>
-                );
-              })}
-            </div>
-            <h1 className="ds-font-display text-[3.25rem] leading-[3.75rem] tracking-[-1px] font-bold text-white text-center">
-              {title}
-            </h1>
-          </div>
+      <main className="w-full flex flex-col items-center gap-[1.25rem] md:gap-0 pb-28 md:pb-[100px] pt-[56px] md:pt-0">
+        <MobileCollectionHeader
+          title={title}
+          headerCountryCodes={headerCountryCodes}
+          flagOverflowCount={flagOverflowCount}
+          allVisitedCountries={allVisitedCountries}
+          profile={profile}
+          updatedLabel={updatedLabel}
+          menuRef={menuRef}
+          showMenu={showMenu}
+          setShowMenu={setShowMenu}
+        />
 
-          {/* Meta info row */}
-          <div className="flex items-center gap-[0.75rem]">
-            <div className="flex items-center gap-[0.5rem]">
-              <span className="text-[1rem] text-white leading-[1.5rem] tracking-[-0.096px] font-normal">By</span>
-              <div className="h-[1.25rem] w-[1.25rem] overflow-hidden rounded-[0.375rem] shrink-0">
-                <LoadedImage
-                  originalSrc={MediaResolver.getBase(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url)} src={MediaResolver.getOptimized(MediaResolver.getBase(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url))}
-                  thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url), 720)}
-                  alt={profile.name}
-                  className="w-full h-full object-cover"
-                  skeletonClassName="absolute inset-0 bg-[#2a2a2a]"
-                  containerClassName="w-full h-full relative"
-                />
-              </div>
-              <Link href={`/${profile.handle.replace(/^@/, "")}`} className="text-[1rem] text-white leading-[1.5rem] tracking-[-0.096px] font-normal hover:underline">
-                {profile.handle}
-              </Link>
-            </div>
-            <div className="h-[0.1875rem] w-[0.1875rem] rounded-full bg-[#505050] shrink-0" />
-            <div className="flex items-center gap-[0.5rem]">
-              <span className="text-[1rem] text-[#989898] leading-[1.5rem] tracking-[-0.096px] font-normal">Last Updated: 27 Dec 2025</span>
-            </div>
-            <div className="h-[0.1875rem] w-[0.1875rem] rounded-full bg-[#505050] shrink-0" />
-            <div className="relative flex items-center" ref={menuRef}>
-              <button
-                type="button"
-                onClick={() => setShowMenu((prev) => !prev)}
-                className="flex px-[0.75rem] py-[0.5625rem] items-center justify-center rounded-[3.125rem] border border-[#363636] bg-[#181818] hover:bg-[#222] transition shrink-0"
-                aria-label="More options"
-              >
-                <div className="flex items-center gap-[0.4375rem]">
-                  <div className="h-[0.125rem] w-[0.125rem] rounded-full bg-white" />
-                  <div className="h-[0.125rem] w-[0.125rem] rounded-full bg-white" />
-                  <div className="h-[0.125rem] w-[0.125rem] rounded-full bg-white" />
-                </div>
-              </button>
-              {showMenu && (
-                <ContextMenu
-                  kind="collection"
-                  viewLabel="View collection"
-                  shareLabel="Share collection"
-                  viewHref={`/${profile.handle.replace(/^@/, "")}`}
-                  showViewAction={false}
-                  onShare={() => {
-                    navigator.clipboard.writeText(window.location.href).catch(() => { });
-                    setShowMenu(false);
-                  }}
-                  onClose={() => setShowMenu(false)}
-                  menuRef={menuRef}
-                />
-              )}
-            </div>
-          </div>
-        </div>
+        <DesktopCollectionHeader
+          title={title}
+          headerCountryCodes={headerCountryCodes}
+          flagOverflowCount={flagOverflowCount}
+          allVisitedCountries={allVisitedCountries}
+          profile={profile}
+          updatedLabel={updatedLabel}
+          menuRef={menuRef}
+          showMenu={showMenu}
+          setShowMenu={setShowMenu}
+        />
 
         {/* Tabs + content */}
-        <div className="w-full flex flex-col gap-[3rem] items-center">
-          {/* Tab pills */}
-          <div className="flex items-center justify-center gap-[0.5rem] flex-wrap">
+        <div className="w-full flex flex-col items-center">
+          {/* Mobile Tab icons */}
+          {(() => {
+            const mobileTabsArr = ["all", "about"] as const;
+            const activeIndex = mobileTabsArr.indexOf(activeTab as any);
+
+            let offsetPercent = 0;
+            if (swipeOffset !== 0 && typeof window !== "undefined") {
+              const fraction = swipeOffset / (window.innerWidth / mobileTabsArr.length);
+              offsetPercent = Math.max(-1, Math.min(1, fraction)) * 100;
+              if (activeIndex === 0 && offsetPercent < 0) offsetPercent = 0;
+              if (activeIndex === mobileTabsArr.length - 1 && offsetPercent > 0) offsetPercent = 0;
+            }
+            const finalTranslate = activeIndex * 100 + offsetPercent;
+            const isDragging = swipeOffset !== 0;
+
+            return (
+              <>
+                <div id="mobile-tabs-sentinel" className="w-full h-0 pointer-events-none md:hidden" />
+                <div id="profile-mobile-tabs" className="flex md:hidden items-center justify-between w-full border-b border-[#222] sticky top-[56px] z-[90] bg-black">
+                  {[
+                    { key: "all", icon: "auto_awesome_mosaic" },
+                    { key: "about", icon: "chat_info" },
+                  ].map(tab => (
+                    <button
+                      key={tab.key}
+                      onClick={() => handleTabChange(tab.key as MediaTab)}
+                      className={`relative flex flex-col flex-1 items-center justify-center py-[1rem] transition-colors ${activeTab === tab.key ? "text-white" : "text-[#7c7c7c]"
+                        }`}
+                    >
+                      <span className="material-symbols-rounded text-[1.5rem]" style={{ fontVariationSettings: "'FILL' 0, 'wght' 400" }}>{tab.icon}</span>
+                    </button>
+                  ))}
+                  <div
+                    className="absolute bottom-[-1px] left-0 pointer-events-none"
+                    style={{
+                      width: `${100 / mobileTabsArr.length}%`,
+                      transform: `translateX(${finalTranslate}%)`,
+                      transition: isDragging ? "none" : "transform 300ms cubic-bezier(0.4, 0, 0.2, 1)",
+                    }}
+                  >
+                    <div className="w-full h-[1px] bg-white" />
+                  </div>
+                </div>
+              </>
+            );
+          })()}
+
+          {/* Desktop Tab pills */}
+          <div className="hidden md:flex items-center justify-center gap-[0.5rem] flex-wrap">
             {tabs.map((tab) => (
               <button
                 key={tab.label}
                 onClick={() => setActiveTab(tab.key as MediaTab)}
-                className={`rounded-[62.4375rem] px-[1.5rem] py-[0.5rem] text-[1rem] leading-[1.5rem] tracking-[-0.096px] transition ${activeTab === tab.key
-                    ? "bg-[#1e1e1e] border border-white text-white font-medium"
-                    : "bg-[#161616] border border-transparent text-[#bdbdbd] font-normal"
+                className={`w-[7.5rem] rounded-[62.4375rem] px-[1.5rem] py-[0.5rem] text-[1rem] leading-[1.5rem] tracking-[-0.096px] transition ${activeTab === tab.key
+                  ? "bg-[#1e1e1e] border border-white text-white font-medium"
+                  : "bg-[#161616] border border-transparent text-[#bdbdbd] font-normal"
                   }`}
               >
                 {tab.label}
@@ -370,40 +545,45 @@ export default function CollectionDetailComponent({
             ))}
           </div>
 
-          {/* Masonry grid or About */}
-          {activeTab === "about" ? (
-            <div className="flex flex-col items-start gap-4 w-full max-w-[50rem] text-left mt-8 mb-20 px-4 md:px-0">
-              <h2 className="text-[1.5rem] font-semibold text-white">About {title}</h2>
-              <p className="text-[1rem] text-[#a8a8a8] leading-relaxed whitespace-pre-wrap">
-                {aboutText || "No information provided yet."}
-              </p>
-            </div>
-          ) : displayImages.length === 0 ? (
-            <div className="flex flex-col items-center gap-4 py-16 text-center">
-              <p className="text-[#a8a8a8] text-[1rem]">No media in this category yet.</p>
-            </div>
-          ) : (
-            <div className="w-full">
-              {/* Desktop: 4 explicit flex columns — matches Figma layout */}
-              <div className="hidden lg:flex w-full gap-[0.5rem] xl:gap-[0.75rem]">
-                {[0, 1, 2, 3].map((colIdx) => (
-                  <div key={colIdx} className="flex flex-col gap-[0.5rem] xl:gap-[0.75rem] flex-1 min-w-0">
-                    {items
-                      .filter((_, i) => i % 4 === colIdx)
-                      .map(({ url: imgUrl, globalIndex }) => {
+          {/* Touch container for content */}
+          <div
+            className="w-full flex flex-col flex-1 min-h-screen mt-[0.75rem] md:mt-[48px]"
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+          >
+            {/* Masonry grid or About */}
+            {activeTab === "about" ? (
+              <div className="flex flex-col items-start gap-6 w-full max-w-[50rem] mx-auto text-left mt-8 mb-20 px-4 md:px-0">
+                <h2 className="text-[1.5rem] font-semibold text-white">About {title}</h2>
+                <p className="text-[1rem] text-[#a8a8a8] leading-relaxed whitespace-pre-wrap">
+                  {aboutText || "No information provided yet."}
+                </p>
+              </div>
+            ) : displayImages.length === 0 ? (
+              <div className="flex flex-col items-center gap-4 py-16 text-center">
+                <p className="text-[#a8a8a8] text-[1rem]">No media in this category yet.</p>
+              </div>
+            ) : (
+              <div className="w-full">
+                {/* Desktop: 4 explicit flex columns distributed by height — matches Figma layout */}
+                <div className="hidden lg:flex w-full gap-[0.5rem] xl:gap-[0.75rem]">
+                  {distributeMasonryColumns(items, 4, (item) => (item.height && item.width ? item.height / item.width : 1)).map((columnItems, colIdx) => (
+                    <div key={colIdx} className="flex flex-col gap-[0.5rem] xl:gap-[0.75rem] flex-1 min-w-0">
+                      {columnItems.map(({ url: imgUrl, globalIndex, blurhash }) => {
                         const isVideo = isVideoAsset(imgUrl);
+                        const displayCountryCode = getCountryCodeForImage(columnItems[colIdx] as any) || getCountryCodeForImage({ url: imgUrl });
+                        const countryEntry = displayCountryCode ? COUNTRY_LIST.find((c) => c.code.toLowerCase() === displayCountryCode.toLowerCase()) : null;
+                        const countryName = countryEntry ? countryEntry.name : displayCountryCode;
+
                         return (
                           <div key={globalIndex} className="group relative">
                             <div
                               className="relative rounded-2xl overflow-hidden bg-[#151515] cursor-pointer"
                               onClick={(e) => {
-                                if (window.innerWidth < 811) {
-                                  e.preventDefault();
-                                  e.stopPropagation();
-                                  showComingSoonToast();
-                                } else {
-                                  setLightboxIndex(globalIndex);
-                                }
+                                e.preventDefault();
+                                e.stopPropagation();
+                                setLightboxIndex(globalIndex);
                               }}
                             >
                               {isVideo ? (
@@ -414,7 +594,7 @@ export default function CollectionDetailComponent({
                                     playsInline
                                     loop
                                     preload="metadata"
-                                    className="w-full h-auto block pointer-events-none"
+                                    className="w-full h-full object-cover block pointer-events-none"
                                   />
                                   <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
                                     <span className="text-white text-3xl drop-shadow-lg">▶</span>
@@ -422,75 +602,121 @@ export default function CollectionDetailComponent({
                                 </>
                               ) : (
                                 <LoadedImage
-                                  originalSrc={MediaResolver.getBase(imgUrl)} src={MediaResolver.getOptimized(MediaResolver.getBase(imgUrl))}
-                                  thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(imgUrl), 720)}
+                                  originalSrc={MediaResolver.getBase(imgUrl)}
+                                  src={MediaResolver.getThumbnail(MediaResolver.getBase(imgUrl), 720)}
+                                  thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(imgUrl), 144)}
+                                  blurhash={blurhash}
                                   alt={`${title} photo ${globalIndex + 1}`}
-                                  className="w-full h-auto block"
-                                  containerClassName="w-full"
-                                  skeletonClassName="w-full aspect-square"
+                                  priority={globalIndex < 4}
+                                  className="w-full h-full object-cover block"
+                                  containerClassName="w-full h-full relative"
+                                  skeletonClassName="absolute inset-0 w-full h-full bg-[#1a1a1a]"
                                 />
                               )}
                               <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-200 pointer-events-none" />
                             </div>
+                            {displayCountryCode ? (
+                              <div className="absolute top-2 right-2 md:top-3 md:right-3 z-20 transition-opacity duration-200 opacity-100 pointer-events-auto">
+                                <TooltipProvider delayDuration={100}>
+                                  <Tooltip
+                                    content={countryName || displayCountryCode}
+                                    theme="light"
+                                    side="top"
+                                  >
+                                    <div className="flex items-center drop-shadow-md cursor-pointer">
+                                      <img
+                                        src={`/flags/${displayCountryCode.toUpperCase()}.svg`}
+                                        alt={displayCountryCode}
+                                        className="h-3.5 w-5 rounded-xs object-cover"
+                                      />
+                                    </div>
+                                  </Tooltip>
+                                </TooltipProvider>
+                              </div>
+                            ) : null}
                           </div>
                         );
                       })}
-                  </div>
-                ))}
-              </div>
-              {/* Mobile/tablet: CSS columns */}
-              <div className="lg:hidden columns-2 sm:columns-3 gap-[0.375rem] md:gap-[1.25rem] w-full">
-                {items.map(({ url: imgUrl, globalIndex }) => {
-                  const isVideo = isVideoAsset(imgUrl);
-                  return (
-                    <div
-                      key={globalIndex}
-                      className="group mb-[0.5rem] md:mb-[1.25rem] w-full break-inside-avoid relative [-webkit-column-break-inside:avoid] inline-block"
-                    >
-                      <div
-                        className="relative rounded-2xl overflow-hidden bg-[#151515] cursor-pointer"
-                        onClick={(e) => {
-                          if (window.innerWidth < 811) {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            showComingSoonToast();
-                          } else {
-                            setLightboxIndex(globalIndex);
-                          }
-                        }}
-                      >
-                        {isVideo ? (
-                          <>
-                            <video
-                              data-original-src={MediaResolver.getBase(imgUrl)} src={MediaResolver.getOptimized(MediaResolver.getBase(imgUrl))}
-                              muted
-                              playsInline
-                              loop
-                              preload="metadata"
-                              className="w-full h-auto block pointer-events-none"
-                            />
-                            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
-                              <span className="text-white text-3xl drop-shadow-lg">▶</span>
-                            </div>
-                          </>
-                        ) : (
-                          <LoadedImage
-                            originalSrc={MediaResolver.getBase(imgUrl)} src={MediaResolver.getOptimized(MediaResolver.getBase(imgUrl))}
-                            thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(imgUrl), 720)}
-                            alt={`${title} photo ${globalIndex + 1}`}
-                            className="w-full h-auto block"
-                            containerClassName="w-full"
-                            skeletonClassName="w-full aspect-square"
-                          />
-                        )}
-                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-200 pointer-events-none" />
-                      </div>
                     </div>
-                  );
-                })}
+                  ))}
+                </div>
+                {/* Mobile/tablet: 2 explicit flex columns distributed by height */}
+                <div className="flex lg:hidden w-full gap-[0.375rem] md:gap-[1.25rem]">
+                  {distributeMasonryColumns(items, 2, (item) => (item.height && item.width ? item.height / item.width : 1)).map((columnItems, colIdx) => (
+                    <div key={colIdx} className="flex flex-col gap-[0.375rem] md:gap-[1.25rem] flex-1 min-w-0">
+                      {columnItems.map(({ url: imgUrl, globalIndex, blurhash }) => {
+                        const isVideo = isVideoAsset(imgUrl);
+                        const displayCountryCode = getCountryCodeForImage(columnItems[colIdx] as any) || getCountryCodeForImage({ url: imgUrl });
+                        const countryEntry = displayCountryCode ? COUNTRY_LIST.find((c) => c.code.toLowerCase() === displayCountryCode.toLowerCase()) : null;
+                        const countryName = countryEntry ? countryEntry.name : displayCountryCode;
+
+                        return (
+                          <div key={globalIndex} className="group relative w-full">
+                            <div
+                              className="relative rounded-2xl overflow-hidden bg-[#151515] cursor-pointer"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                showComingSoonToast("desktopOnly");
+                              }}
+                            >
+                              {isVideo ? (
+                                <>
+                                  <video
+                                    data-original-src={MediaResolver.getBase(imgUrl)} src={MediaResolver.getOptimized(MediaResolver.getBase(imgUrl))}
+                                    muted
+                                    playsInline
+                                    loop
+                                    preload="metadata"
+                                    className="w-full h-full object-cover block pointer-events-none"
+                                  />
+                                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
+                                    <span className="text-white text-3xl drop-shadow-lg">▶</span>
+                                  </div>
+                                </>
+                              ) : (
+                                <LoadedImage
+                                  originalSrc={MediaResolver.getBase(imgUrl)}
+                                  src={MediaResolver.getThumbnail(MediaResolver.getBase(imgUrl), 720)}
+                                  thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(imgUrl), 144)}
+                                  blurhash={blurhash}
+                                  alt={`${title} photo ${globalIndex + 1}`}
+                                  priority={globalIndex < 4}
+                                  className="w-full h-full object-cover block"
+                                  containerClassName="w-full h-full relative"
+                                  skeletonClassName="absolute inset-0 w-full h-full bg-[#1a1a1a]"
+                                />
+                              )}
+                              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-200 pointer-events-none" />
+                            </div>
+                            {displayCountryCode ? (
+                              <div className="absolute top-2 right-2 md:top-3 md:right-3 z-20 transition-opacity duration-200 opacity-100 pointer-events-auto">
+                                <TooltipProvider delayDuration={100}>
+                                  <Tooltip
+                                    content={countryName || displayCountryCode}
+                                    theme="light"
+                                    side="top"
+                                  >
+                                    <div className="flex items-center drop-shadow-md cursor-pointer">
+                                      <img
+                                        src={`/flags/${displayCountryCode.toUpperCase()}.svg`}
+                                        alt={displayCountryCode}
+                                        className="h-3.5 w-5 rounded-xs object-cover"
+                                      />
+                                    </div>
+                                  </Tooltip>
+                                </TooltipProvider>
+                              </div>
+                            ) : null}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  ))}
+                </div>
               </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </main>
 

@@ -3,7 +3,6 @@ import { MediaResolver } from "@/lib/media-resolver";
 
 import { useState, useRef, useEffect, type SyntheticEvent } from "react";
 import { useMobileComingSoon } from "@/components/ui/MobileComingSoonToast";
-import { ThumbnailImage } from "@/components/ThumbnailImage";
 import LoadedImage from "@/components/ui/LoadedImage";
 import { useImagePreloader } from "@/hooks/useImagePreloader";
 
@@ -13,6 +12,7 @@ export type LightboxItem = {
   isVideo: boolean;
   width?: number;
   height?: number;
+  blurhash?: string;
 };
 
 export type MediaLightboxProps = {
@@ -135,7 +135,7 @@ export function MediaLightbox({
     };
     img.src = fullResSrc;
     return () => { img.onload = null; img.onerror = null; };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fullResSrc, activeIndex]);
 
   return (
@@ -196,8 +196,10 @@ export function MediaLightbox({
                     </>
                   ) : (
                     <LoadedImage
-                      originalSrc={MediaResolver.getBase(item.url)} src={MediaResolver.getOptimized(MediaResolver.getBase(item.url))}
-                      thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(item.url), 720)}
+                      originalSrc={MediaResolver.getBase(item.url)}
+                      src={MediaResolver.getThumbnail(MediaResolver.getBase(item.url), 720)}
+                      thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(item.url), 144)}
+                      blurhash={item.blurhash}
                       alt={`Gallery thumbnail ${idx + 1}`}
                       className="h-auto w-full"
                     />
@@ -285,19 +287,21 @@ export function MediaLightbox({
                     key={`thumb-${activeIndex}`}
                     src={thumbnailSrc}
                     alt="Carousel media"
-                    className={`block w-full h-full object-contain carousel-image rounded-[0.75rem] mx-auto transition-opacity duration-300 ${
-                      mediaLoaded ? 'opacity-100' : 'opacity-0'
-                    }`}
+                    className={`block w-full h-full object-contain carousel-image rounded-[0.75rem] mx-auto transition-all duration-500 ${mediaLoaded ? 'opacity-100' : 'opacity-0'
+                      }`}
+                    style={{
+                      filter: fullResReady ? 'blur(0px)' : 'blur(20px)',
+                      transform: fullResReady ? 'scale(1)' : 'scale(1.05)'
+                    }}
                     onLoad={(e: SyntheticEvent<HTMLImageElement>) => {
                       setMediaLoaded(true);
                       if (!naturalAspectRatio && e.currentTarget.naturalWidth > 0) {
                         setNaturalAspectRatio(e.currentTarget.naturalWidth / e.currentTarget.naturalHeight);
                       }
                     }}
-                    onError={() => {
-                      // Thumbnail failed, try showing optimized directly
-                      setMediaError(true);
-                      setMediaLoaded(true);
+                    onError={(e: SyntheticEvent<HTMLImageElement>) => {
+                      // Thumbnail failed, just hide it. The full-res image will load in the background.
+                      e.currentTarget.style.display = 'none';
                     }}
                   />
                   {/* Top layer: full-res optimized — preloaded in background, fades in on top */}
@@ -305,8 +309,9 @@ export function MediaLightbox({
                     <img
                       src={fullResSrc}
                       alt="Carousel media"
-                      className="absolute inset-0 z-[2] block w-full h-full object-contain carousel-image rounded-[0.75rem] mx-auto"
+                      className="absolute inset-0 z-[2] block w-full h-full object-contain carousel-image rounded-[0.75rem] mx-auto animate-in fade-in duration-500"
                       onLoad={(e: SyntheticEvent<HTMLImageElement>) => {
+                        setMediaLoaded(true);
                         setNaturalAspectRatio(e.currentTarget.naturalWidth / e.currentTarget.naturalHeight);
                       }}
                     />
@@ -316,7 +321,7 @@ export function MediaLightbox({
 
               {/* Fallback Error State */}
               {mediaError && (
-                <div className="absolute inset-0 z-20 flex items-center justify-center rounded-[0.75rem] bg-[#0a0a0a]">
+                <div className="absolute inset-0 z-20 flex items-center justify-center rounded-[0.75rem] bg-[#0a0a0a] animate-pulse">
                   <svg width="48" height="48" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" className="opacity-30">
                     <path fillRule="evenodd" clipRule="evenodd" d="M20.9973 21.0011C23.5339 18.4645 27.6719 18.4899 30.2399 21.0579L53.2668 44.0848C55.8347 46.6527 55.8601 50.7908 53.3235 53.3274C50.7869 55.864 46.6489 55.8386 44.0809 53.2706L21.054 30.2437C18.4861 27.6758 18.4607 23.5377 20.9973 21.0011ZM27.0272 30.093L30.391 30.3376L30.146 26.9742L26.7826 26.7292L27.0272 30.093ZM23.0197 27.8352C22.5366 28.3184 22.5414 29.1066 23.0305 29.5957C23.5197 30.0848 24.3079 30.0897 24.791 29.6065C25.2742 29.1233 25.2693 28.3351 24.7802 27.846C24.2911 27.3569 23.5029 27.352 23.0197 27.8352ZM27.8313 23.0236C27.3482 23.5067 27.353 24.2949 27.8422 24.7841C28.3313 25.2732 29.1195 25.278 29.6026 24.7949C30.0858 24.3117 30.081 23.5235 29.5918 23.0344C29.1027 22.5453 28.3145 22.5404 27.8313 23.0236Z" fill="white" />
                     <path d="M8.4121 49.9708C6.82242 48.3812 6.80669 45.8195 8.37696 44.2493L18.3529 34.2733C19.4868 33.1394 21.3366 33.1508 22.4845 34.2987L26.1627 37.9769L14.1337 50.006C12.5634 51.5763 10.0018 51.5605 8.4121 49.9708Z" fill="white" />
@@ -387,9 +392,14 @@ export function MediaLightbox({
                   </>
                 ) : (
                   <>
-                    <ThumbnailImage originalSrc={MediaResolver.getBase(item.url)} size={720}
+                    <LoadedImage
+                      originalSrc={MediaResolver.getBase(item.url)}
+                      src={MediaResolver.getThumbnail(MediaResolver.getBase(item.url), 720)}
+                      thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(item.url), 144)}
+                      blurhash={item.blurhash}
                       alt={`Carousel thumbnail ${idx + 1}`}
                       className="h-full w-full object-cover"
+                      containerClassName="h-full w-full"
                     />
                     <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors duration-200" />
                   </>

@@ -15,22 +15,22 @@ const antonio = Antonio({
 const inter = localFont({
   src: [
     {
-      path: "../assets/fonts/inter-display/InterDisplay-Regular.ttf",
+      path: "../assets/fonts/inter/Inter-Regular.woff2",
       weight: "400",
       style: "normal",
     },
     {
-      path: "../assets/fonts/inter-display/InterDisplay-Medium.ttf",
+      path: "../assets/fonts/inter/Inter-Medium.woff2",
       weight: "500",
       style: "normal",
     },
     {
-      path: "../assets/fonts/inter-display/InterDisplay-SemiBold.ttf",
+      path: "../assets/fonts/inter/Inter-SemiBold.woff2",
       weight: "600",
       style: "normal",
     },
     {
-      path: "../assets/fonts/inter-display/InterDisplay-Bold.ttf",
+      path: "../assets/fonts/inter/Inter-Bold.woff2",
       weight: "700",
       style: "normal",
     },
@@ -56,22 +56,22 @@ const logoFont = localFont({
 const interDisplay = localFont({
   src: [
     {
-      path: "../assets/fonts/inter-display/InterDisplay-Regular.ttf",
+      path: "../assets/fonts/inter-display-woff2/InterDisplay-Regular.woff2",
       weight: "400",
       style: "normal",
     },
     {
-      path: "../assets/fonts/inter-display/InterDisplay-Medium.ttf",
+      path: "../assets/fonts/inter-display-woff2/InterDisplay-Medium.woff2",
       weight: "500",
       style: "normal",
     },
     {
-      path: "../assets/fonts/inter-display/InterDisplay-SemiBold.ttf",
+      path: "../assets/fonts/inter-display-woff2/InterDisplay-SemiBold.woff2",
       weight: "600",
       style: "normal",
     },
     {
-      path: "../assets/fonts/inter-display/InterDisplay-Bold.ttf",
+      path: "../assets/fonts/inter-display-woff2/InterDisplay-Bold.woff2",
       weight: "700",
       style: "normal",
     },
@@ -144,6 +144,8 @@ export default function RootLayout({
           media="print"
           crossOrigin="anonymous"
         />
+        <link rel="preload" href="/web/inter.css" as="style" />
+        <link rel="stylesheet" href="/web/inter.css" />
         <Script id="material-icons-swap" strategy="afterInteractive">
           {`document.querySelector('link[href*="Material+Symbols"][media="print"]').media='all'`}
         </Script>

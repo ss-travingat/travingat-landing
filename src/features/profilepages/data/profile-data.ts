@@ -13,9 +13,9 @@ export type SampleProfile = {
   media: number;
   collections: number;
   images: {
-    cover: string | { url: string; width?: number; height?: number };
-    avatar: string | { url: string; width?: number; height?: number };
-    gallery: Array<string | { url: string; width?: number; height?: number }>;
+    cover: string | { url: string; width?: number; height?: number; blurhash?: string };
+    avatar: string | { url: string; width?: number; height?: number; blurhash?: string };
+    gallery: Array<string | { url: string; width?: number; height?: number; blurhash?: string }>;
   };
   align: "start" | "end";
   bio: string;
@@ -31,10 +31,11 @@ export type SampleProfile = {
   };
   aboutImages?: string[];
   visitedCountryCodes: string[];
-  countryImages?: { countryCode: string; images: Array<string | { url: string; width?: number; height?: number }>; about?: string; coverPhoto?: string }[];
-  collectionImages?: { title: string; images: Array<string | { url: string; width?: number; height?: number }>; about?: string; countryCodes?: string[]; coverPhoto?: string }[];
+  countryImages?: { countryCode: string; images: Array<string | { url: string; width?: number; height?: number; blurhash?: string }>; about?: string; coverPhoto?: string; coverPhotoBlurhash?: string; updatedAt?: string; updated_at?: string }[];
+  collectionImages?: { title: string; images: Array<string | { url: string; width?: number; height?: number; blurhash?: string }>; about?: string; countryCodes?: string[]; coverPhoto?: string; coverPhotoBlurhash?: string; updatedAt?: string; updated_at?: string }[];
   showBadge?: boolean;
   isSampleProfile?: boolean;
+  explorer_card_variant?: "classic" | "minimal" | "adventure";
 };
 
 export const sampleProfiles = profilesData as unknown as SampleProfile[];

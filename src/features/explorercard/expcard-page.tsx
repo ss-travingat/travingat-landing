@@ -5,6 +5,7 @@ import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { domToPng } from "modern-screenshot";
 import { ClassicCard, MinimalCard, AdventureCard, ImagePlaceholderIcon, AvatarPlaceholderIcon } from "./cards";
 import ImageCropperModal from "@/components/ui/ImageCropperModal";
+import { MediaResolver } from "@/lib/media-resolver";
 import EmailVerificationForm from "@/components/getfeatured/EmailVerificationForm";
 
 
@@ -12,6 +13,7 @@ import countryData from "./countries.json";
 import { DesktopExplorerForm } from "./DesktopExplorerForm";
 import { MobileExplorerForm } from "./MobileExplorerForm";
 import { ExplorerCardScaler } from "./ExplorerCardScaler";
+import { COUNTRY_LIST, searchCountry } from "@/lib/countries";
 
 const sampleFlags: Record<string, string> = {};
 const sortedEntries = Object.entries(countryData)
@@ -37,6 +39,7 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
     country: initialExplorerCard?.country || initialSessionUser?.country || "",
     coverImage: initialExplorerCard?.cover_image_url || initialSessionUser?.cover_image_url || "",
     profileImage: initialExplorerCard?.profile_image_url || initialSessionUser?.profile_image_url || "",
+    showBadge: initialExplorerCard?.show_badge || initialSessionUser?.show_badge || false,
   });
 
   let initVisited: string[] = [];
@@ -70,6 +73,7 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
     country: initialExplorerCard?.country || initialSessionUser?.country || "",
     coverImage: initialExplorerCard?.cover_image_url || initialSessionUser?.cover_image_url || "",
     profileImage: initialExplorerCard?.profile_image_url || initialSessionUser?.profile_image_url || "",
+    showBadge: initialExplorerCard?.show_badge || initialSessionUser?.show_badge || false,
   });
   const [initialVisited] = useState<string[]>(initVisited);
 
@@ -89,6 +93,7 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [shareStyle, setShareStyle] = useState<Tab | null>(null);
   const [readyToShareFile, setReadyToShareFile] = useState<File | null>(null);
+  const [readyToShareDataUrl, setReadyToShareDataUrl] = useState<string | null>(null);
 
   const [profileFile, setProfileFile] = useState<File | null>(null);
   const [coverFile, setCoverFile] = useState<File | null>(null);
@@ -97,16 +102,6 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
 
   // Verification State
   const [isVerified, setIsVerified] = useState(!!initialSessionUser);
-
-  const hasChanged =
-    form.firstName !== initialForm.firstName ||
-    form.lastName !== initialForm.lastName ||
-    form.country !== initialForm.country ||
-    form.coverImage !== initialForm.coverImage ||
-    form.profileImage !== initialForm.profileImage ||
-    profileFile !== null ||
-    coverFile !== null ||
-    JSON.stringify(visited) !== JSON.stringify(initialVisited);
 
   const classicRef = useRef<HTMLDivElement>(null);
   const minimalRef = useRef<HTMLDivElement>(null);
@@ -159,6 +154,10 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
         quality: 0.9,
         width: node.offsetWidth,
         height: node.offsetHeight,
+        style: {
+          transform: 'none',
+          transformOrigin: 'top left'
+        },
         fetch: {
           bypassingCache: true,
           requestInit: { cache: "force-cache" },
@@ -213,11 +212,13 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
       const filename = `explorer-card-${style.toLowerCase()}.png`;
       const file = new File([blob], filename, { type: "image/png" });
 
-      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || 
+                       (navigator.maxTouchPoints && navigator.maxTouchPoints > 2 && /MacIntel/.test(navigator.platform)) ||
+                       window.innerWidth <= 768;
       if (isMobile) {
-        // Show the "Ready to Share/Download" modal on mobile to ensure synchronous share/download.
-        // This bypasses Safari's aggressive blocking of async link.click() downloads.
+        // Show the "Ready to Share/Download" modal on mobile as fallback
         setReadyToShareFile(file);
+        setReadyToShareDataUrl(dataUrl);
         return;
       } else {
         const link = document.createElement("a");
@@ -271,9 +272,21 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
     }
   }, [getStyleDataUrl]);
 
-  const [cropConfig, setCropConfig] = useState<{ src: string; type: "coverImage" | "profileImage"; originalFile?: File; initialCrop?: { x: number; y: number }; initialZoom?: number; initialAspectRatio?: number; } | null>(null);
-  const [profileCropData, setProfileCropData] = useState<any>(null);
-  const [coverCropData, setCoverCropData] = useState<any>(null);
+  const [cropConfig, setCropConfig] = useState<{ src: string; type: "coverImage" | "profileImage"; originalFile?: File; initialCropData?: any; } | null>(null);
+  const [profileCropData, setProfileCropData] = useState<any>(initialExplorerCard?.profile_crop_data || null);
+  const [coverCropData, setCoverCropData] = useState<any>(initialExplorerCard?.cover_crop_data || null);
+
+  const hasChanged =
+    form.firstName !== initialForm.firstName ||
+    form.lastName !== initialForm.lastName ||
+    form.country !== initialForm.country ||
+    form.coverImage !== initialForm.coverImage ||
+    form.profileImage !== initialForm.profileImage ||
+    profileFile !== null ||
+    coverFile !== null ||
+    JSON.stringify(visited) !== JSON.stringify(initialVisited) ||
+    JSON.stringify(coverCropData) !== JSON.stringify(initialExplorerCard?.cover_crop_data || null) ||
+    JSON.stringify(profileCropData) !== JSON.stringify(initialExplorerCard?.profile_crop_data || null);
   const [originalProfileFile, setOriginalProfileFile] = useState<File | null>(null);
   const [originalCoverFile, setOriginalCoverFile] = useState<File | null>(null);
 
@@ -313,22 +326,21 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
           src: String(reader.result),
           type: key,
           originalFile: origFile,
-          initialCrop: existingData.crop,
-          initialZoom: existingData.zoom,
-          initialAspectRatio: existingData.aspectRatio,
+          initialCropData: existingData,
         });
       };
       reader.readAsDataURL(origFile);
     } else if (form[key]) {
       // Fallback: If we don't have the original uncropped file (e.g. loaded from DB),
       // we can just re-crop the currently displayed image.
-      const url = form[key];
+      const url = MediaResolver.getBase(form[key]);
       const isCdn = url.includes("cdn.travingat.com") || url.includes("r2.cloudflarestorage.com");
       const srcToUse = isCdn ? `/api/image-proxy?url=${encodeURIComponent(url)}` : url;
 
       setCropConfig({
         src: srcToUse,
         type: key,
+        initialCropData: existingData,
       });
     } else {
       alert("Please upload a new image to edit its crop.");
@@ -348,47 +360,48 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
     }
   };
 
-  const handleCropSave = (croppedFile: File, cropData: any) => {
+  const handleCropSave = (cropData: any) => {
     if (!cropConfig) return;
     const { type, originalFile } = cropConfig;
 
     try {
-      const ext = croppedFile.name.split('.').pop() || "webp";
-      const baseName = originalFile ? originalFile.name.replace(/\.[^/.]+$/, "") : "image";
-      const file = new File([croppedFile], `${type}-${Date.now()}-${baseName}.${ext}`, { type: croppedFile.type });
-
       if (type === "profileImage") {
-        setProfileFile(file);
         setProfileCropData(cropData);
-        if (originalFile) setOriginalProfileFile(originalFile);
+        if (originalFile) {
+          setProfileFile(originalFile);
+          setOriginalProfileFile(originalFile);
+          const reader = new FileReader();
+          reader.onload = () => setForm((s) => ({ ...s, profileImage: String(reader.result) }));
+          reader.readAsDataURL(originalFile);
+        }
       }
       if (type === "coverImage") {
-        setCoverFile(file);
         setCoverCropData(cropData);
-        if (originalFile) setOriginalCoverFile(originalFile);
+        if (originalFile) {
+          setCoverFile(originalFile);
+          setOriginalCoverFile(originalFile);
+          const reader = new FileReader();
+          reader.onload = () => setForm((s) => ({ ...s, coverImage: String(reader.result) }));
+          reader.readAsDataURL(originalFile);
+        }
       }
-
-      const reader = new FileReader();
-      reader.onload = () => setForm((s) => ({ ...s, [type]: String(reader.result) }));
-      reader.readAsDataURL(file);
     } catch (err) {
       console.error("File processing failed", err);
-      alert("Failed to process cropped image. Please try again.");
+      alert("Failed to process image. Please try again.");
     } finally {
       setCropConfig(null);
     }
   };
 
   async function uploadFileToR2(file: File) {
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("filename", file.name);
-    formData.append("contentType", file.type);
-    formData.append("prefix", "explorercard/users");
-
+    // Only send metadata to presign — the actual file goes directly to R2
     const uploadRes = await fetch("/api/upload/presign", {
       method: "POST",
-      body: formData,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        contentType: file.type,
+        prefix: "explorercard/users",
+      }),
     });
     const uploadData = await uploadRes.json();
     if (uploadData.error) throw new Error(uploadData.error);
@@ -449,10 +462,14 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
       }
       if (finalOriginalProfileUrl) {
         formData.append("originalProfileImage", finalOriginalProfileUrl);
+      }
+      if (profileCropData) {
         formData.append("profileCropData", JSON.stringify(profileCropData));
       }
       if (finalOriginalCoverUrl) {
         formData.append("originalCoverImage", finalOriginalCoverUrl);
+      }
+      if (coverCropData) {
         formData.append("coverCropData", JSON.stringify(coverCropData));
       }
       formData.append("cardStyle", tab);
@@ -515,10 +532,14 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
       }
       if (finalOriginalProfileUrl) {
         formData.append("originalProfileImage", finalOriginalProfileUrl);
+      }
+      if (profileCropData) {
         formData.append("profileCropData", JSON.stringify(profileCropData));
       }
       if (finalOriginalCoverUrl) {
         formData.append("originalCoverImage", finalOriginalCoverUrl);
+      }
+      if (coverCropData) {
         formData.append("coverCropData", JSON.stringify(coverCropData));
       }
       formData.append("cardStyle", tab);
@@ -553,9 +574,11 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
     }
   }
 
-  const countryMatches = Object.keys(sampleFlags).filter(
-    (c) => c.toLowerCase().includes(countryQuery.toLowerCase())
-  );
+  const countryMatches = Object.keys(sampleFlags).filter((c) => {
+    const code = sampleFlags[c];
+    const entry = COUNTRY_LIST.find(cl => cl.code === code) || { name: c, code: code, flag: "" };
+    return searchCountry(entry, countryQuery);
+  });
 
   function addCountry(c: string) {
     if (!visited.includes(c)) {
@@ -576,11 +599,14 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
     window.location.href = '/join/explorercard';
   }
 
-  const readyToShareModal = readyToShareFile && (
+  const readyToShareModal = (readyToShareFile && readyToShareDataUrl) && (
     <div className="fixed inset-0 z-[999] flex items-center justify-center bg-black/80 px-4 backdrop-blur-sm">
       <div className="w-full max-w-sm rounded-[24px] bg-[#111] p-6 flex flex-col items-center border border-[#252525] shadow-2xl relative">
         <button
-          onClick={() => setReadyToShareFile(null)}
+          onClick={() => {
+            setReadyToShareFile(null);
+            setReadyToShareDataUrl(null);
+          }}
           className="absolute top-4 right-4 text-[#7c7c7c] hover:text-white"
         >
           <span className="material-symbols-rounded">close</span>
@@ -589,42 +615,46 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
         <p className="text-[#7c7c7c] text-[14px] text-center mb-6">You can now share or save the image to your device.</p>
 
         <img
-          src={URL.createObjectURL(readyToShareFile)}
+          src={readyToShareDataUrl}
           alt="Generated Card"
           className="w-48 h-auto rounded-[12px] mb-6 shadow-lg border border-[#252525]"
         />
 
         <button
-          onClick={() => {
-            const fallbackDownload = () => {
+          onClick={async () => {
+            const handleFallbackDownload = () => {
               const link = document.createElement("a");
               link.download = readyToShareFile.name;
-              link.href = URL.createObjectURL(readyToShareFile);
+              link.href = readyToShareDataUrl;
               document.body.appendChild(link);
               link.click();
               document.body.removeChild(link);
               setReadyToShareFile(null);
+              setReadyToShareDataUrl(null);
             };
 
             if (navigator.share && navigator.canShare && navigator.canShare({ files: [readyToShareFile] })) {
-              navigator.share({
-                files: [readyToShareFile],
-                title: "My Explorer Card",
-              }).then(() => {
+              try {
+                await navigator.share({
+                  files: [readyToShareFile],
+                  title: "My Explorer Card",
+                });
+                // Share successful, close the modal
                 setReadyToShareFile(null);
-              }).catch((error) => {
-                if (error.name !== "AbortError" && !error.message?.includes("cancel")) {
-                  console.error("Error sharing:", error);
-                  fallbackDownload();
-                }
-              });
+                setReadyToShareDataUrl(null);
+              } catch (error: any) {
+                // If the user explicitly cancelled the share, do nothing and keep modal open
+                if (error.name === 'AbortError') return;
+                // Otherwise fall back to direct download
+                handleFallbackDownload();
+              }
             } else {
-              fallbackDownload();
+              handleFallbackDownload();
             }
           }}
           className="w-full rounded-[999px] bg-[#5952FF] hover:bg-[#5952FF]/90 transition-colors py-[12px] text-white font-medium text-[15px]"
         >
-          Share & Save Image
+          Share / Save Image
         </button>
       </div>
     </div>
@@ -660,7 +690,7 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
           </div>
         </header>
 
-        <main className="flex-1 flex flex-col items-center px-0 lg:px-6 pb-[100px] lg:pb-12 w-full pt-0 lg:pt-[24px] overflow-hidden">
+        <main className="flex-1 flex flex-col items-center px-0 lg:px-6 pb-[100px] lg:pb-12 w-full pt-0 lg:pt-[24px] overflow-visible">
 
           {/* Content Container */}
           <ExplorerCardScaler innerClassName="w-full flex justify-center">
@@ -812,15 +842,15 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
                   ))}
                 </div>
 
-                <div className="relative flex items-center justify-center shrink-0 overflow-hidden pb-[16px]">
+                <div className="relative flex items-center justify-center shrink-0 pb-[16px] min-h-[640px]">
                   <div ref={classicRef} className={tab === "Classic" ? "relative" : "absolute top-[-9999px] left-[-9999px] pointer-events-none"}>
-                    <ClassicCard form={{ ...form, fullName: `${form.firstName} ${form.lastName}`.trim() }} sampleFlags={sampleFlags} visitedArray={visitedArray} />
+                    <ClassicCard form={{ ...form, fullName: `${form.firstName} ${form.lastName}`.trim() }} sampleFlags={sampleFlags} visitedArray={visitedArray} coverCropData={coverCropData?.Classic || (coverCropData?.pixels ? coverCropData : null)} profileCropData={profileCropData} />
                   </div>
                   <div ref={minimalRef} className={tab === "Minimal" ? "relative" : "absolute top-[-9999px] left-[-9999px] pointer-events-none"}>
-                    <MinimalCard form={{ ...form, fullName: `${form.firstName} ${form.lastName}`.trim() }} sampleFlags={sampleFlags} visitedArray={visitedArray} />
+                    <MinimalCard form={{ ...form, fullName: `${form.firstName} ${form.lastName}`.trim() }} sampleFlags={sampleFlags} visitedArray={visitedArray} coverCropData={coverCropData?.Minimal || (coverCropData?.pixels ? coverCropData : null)} profileCropData={profileCropData} />
                   </div>
                   <div ref={adventureRef} className={tab === "Adventure" ? "relative" : "absolute top-[-9999px] left-[-9999px] pointer-events-none"}>
-                    <AdventureCard form={{ ...form, fullName: `${form.firstName} ${form.lastName}`.trim() }} sampleFlags={sampleFlags} visitedArray={visitedArray} />
+                    <AdventureCard form={{ ...form, fullName: `${form.firstName} ${form.lastName}`.trim() }} sampleFlags={sampleFlags} visitedArray={visitedArray} coverCropData={coverCropData?.Adventure || (coverCropData?.pixels ? coverCropData : null)} profileCropData={profileCropData} />
                   </div>
                 </div>
               </div>
@@ -1013,7 +1043,7 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
                 <path d="M16.9955 15.3319L17.1236 17.0972L15.3583 16.9692L15.2289 15.2026L16.9955 15.3319Z" fill="white" />
                 <path d="M13.2539 15.7839C13.5075 15.5304 13.9212 15.5323 14.178 15.7889C14.4348 16.0458 14.4367 16.4606 14.183 16.7143C13.9293 16.9675 13.5156 16.9647 13.2589 16.708C13.0023 16.4512 13.0003 16.0375 13.2539 15.7839Z" fill="white" />
                 <path d="M15.7801 13.2577C16.0338 13.004 16.4474 13.0061 16.7042 13.2627C16.9609 13.5193 16.9637 13.9331 16.7105 14.1868C16.4568 14.4405 16.042 14.4386 15.7852 14.1818C15.5286 13.925 15.5266 13.5113 15.7801 13.2577Z" fill="white" />
-                <path fill-rule="evenodd" clip-rule="evenodd" d="M18 0C25.2229 0 28.8341 0.000501037 31.4284 1.73396C32.5515 2.48438 33.5156 3.44849 34.266 4.57157C35.9995 7.16587 36 10.7771 36 18C36 25.2229 35.9995 28.8341 34.266 31.4284C33.5156 32.5515 32.5515 33.5156 31.4284 34.266C28.8341 35.9995 25.2229 36 18 36C10.7771 36 7.16587 35.9995 4.57157 34.266C3.44849 33.5156 2.48438 32.5515 1.73396 31.4284C0.000501037 28.8341 0 25.2229 0 18C0 10.7771 0.000501037 7.16587 1.73396 4.57157C2.48438 3.44849 3.44849 2.48438 4.57157 1.73396C7.16587 0.000501037 10.7771 0 18 0ZM17.0445 12.2256C15.6962 10.8772 13.5236 10.8636 12.1917 12.1955C10.8598 13.5273 10.8735 15.6999 12.2218 17.0483L24.3118 29.1395C25.6602 30.4879 27.8327 30.5003 29.1646 29.1684C30.4965 27.8365 30.4841 25.6639 29.1357 24.3156L17.0445 12.2256ZM16.7645 22.9696C16.1225 22.3276 15.0872 22.3204 14.453 22.9545L9.40053 28.0082C12.0973 30.7045 16.4425 30.7309 19.1062 28.0672L20.4848 26.6886L16.7645 22.9696ZM12.9727 19.1777C12.37 18.575 11.3984 18.5686 10.803 19.1639L5.56473 24.4022C4.74033 25.2267 4.74891 26.5721 5.58357 27.4068C6.41827 28.2413 7.76372 28.2488 8.58817 27.4244L14.9037 21.1088L12.9727 19.1777ZM22.9508 14.4568C22.3167 15.091 22.3238 16.1262 22.9658 16.7683L26.6848 20.4886L28.0635 19.1099C30.7271 16.4463 30.7007 12.101 28.0045 9.4043L22.9508 14.4568ZM27.403 5.58733C26.5684 4.75267 25.223 4.7441 24.3984 5.5685L19.1602 10.8068C18.5649 11.4022 18.5713 12.3737 19.174 12.9764L21.105 14.9075L27.4206 8.59194C28.2451 7.76749 28.2376 6.42204 27.403 5.58733Z" fill="white" />
+                <path fillRule="evenodd" clipRule="evenodd" d="M18 0C25.2229 0 28.8341 0.000501037 31.4284 1.73396C32.5515 2.48438 33.5156 3.44849 34.266 4.57157C35.9995 7.16587 36 10.7771 36 18C36 25.2229 35.9995 28.8341 34.266 31.4284C33.5156 32.5515 32.5515 33.5156 31.4284 34.266C28.8341 35.9995 25.2229 36 18 36C10.7771 36 7.16587 35.9995 4.57157 34.266C3.44849 33.5156 2.48438 32.5515 1.73396 31.4284C0.000501037 28.8341 0 25.2229 0 18C0 10.7771 0.000501037 7.16587 1.73396 4.57157C2.48438 3.44849 3.44849 2.48438 4.57157 1.73396C7.16587 0.000501037 10.7771 0 18 0ZM17.0445 12.2256C15.6962 10.8772 13.5236 10.8636 12.1917 12.1955C10.8598 13.5273 10.8735 15.6999 12.2218 17.0483L24.3118 29.1395C25.6602 30.4879 27.8327 30.5003 29.1646 29.1684C30.4965 27.8365 30.4841 25.6639 29.1357 24.3156L17.0445 12.2256ZM16.7645 22.9696C16.1225 22.3276 15.0872 22.3204 14.453 22.9545L9.40053 28.0082C12.0973 30.7045 16.4425 30.7309 19.1062 28.0672L20.4848 26.6886L16.7645 22.9696ZM12.9727 19.1777C12.37 18.575 11.3984 18.5686 10.803 19.1639L5.56473 24.4022C4.74033 25.2267 4.74891 26.5721 5.58357 27.4068C6.41827 28.2413 7.76372 28.2488 8.58817 27.4244L14.9037 21.1088L12.9727 19.1777ZM22.9508 14.4568C22.3167 15.091 22.3238 16.1262 22.9658 16.7683L26.6848 20.4886L28.0635 19.1099C30.7271 16.4463 30.7007 12.101 28.0045 9.4043L22.9508 14.4568ZM27.403 5.58733C26.5684 4.75267 25.223 4.7441 24.3984 5.5685L19.1602 10.8068C18.5649 11.4022 18.5713 12.3737 19.174 12.9764L21.105 14.9075L27.4206 8.59194C28.2451 7.76749 28.2376 6.42204 27.403 5.58733Z" fill="white" />
               </svg>
             </div>
             <div className="flex-1 flex justify-center px-2">
@@ -1088,13 +1118,13 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
                 </div>
                 <div className="relative flex items-center justify-center shrink-0 pb-[16px]">
                   <div className={tab === "Classic" ? "relative" : "absolute opacity-0 pointer-events-none z-[-1]"}>
-                    <ClassicCard isPreview={true} form={{ ...form, fullName: `${form.firstName} ${form.lastName}`.trim() }} sampleFlags={sampleFlags} visitedArray={visitedArray} />
+                    <ClassicCard isPreview={true} form={{ ...form, fullName: `${form.firstName} ${form.lastName}`.trim() }} sampleFlags={sampleFlags} visitedArray={visitedArray} coverCropData={coverCropData?.Classic || (coverCropData?.pixels ? coverCropData : null)} profileCropData={profileCropData} />
                   </div>
                   <div className={tab === "Minimal" ? "relative" : "absolute opacity-0 pointer-events-none z-[-1]"}>
-                    <MinimalCard isPreview={true} form={{ ...form, fullName: `${form.firstName} ${form.lastName}`.trim() }} sampleFlags={sampleFlags} visitedArray={visitedArray} />
+                    <MinimalCard isPreview={true} form={{ ...form, fullName: `${form.firstName} ${form.lastName}`.trim() }} sampleFlags={sampleFlags} visitedArray={visitedArray} coverCropData={coverCropData?.Minimal || (coverCropData?.pixels ? coverCropData : null)} profileCropData={profileCropData} />
                   </div>
                   <div className={tab === "Adventure" ? "relative" : "absolute opacity-0 pointer-events-none z-[-1]"}>
-                    <AdventureCard isPreview={true} form={{ ...form, fullName: `${form.firstName} ${form.lastName}`.trim() }} sampleFlags={sampleFlags} visitedArray={visitedArray} />
+                    <AdventureCard isPreview={true} form={{ ...form, fullName: `${form.firstName} ${form.lastName}`.trim() }} sampleFlags={sampleFlags} visitedArray={visitedArray} coverCropData={coverCropData?.Adventure || (coverCropData?.pixels ? coverCropData : null)} profileCropData={profileCropData} />
                   </div>
                 </div>
               </div>
@@ -1134,11 +1164,20 @@ export default function Home({ initialSessionUser, initialExplorerCard }: { init
           imageSrc={cropConfig.src}
           title={cropConfig.type === "coverImage" ? "Cover Image" : "Profile Photo"}
           type={cropConfig.type}
-          initialCrop={cropConfig.initialCrop}
-          initialZoom={cropConfig.initialZoom}
-          initialAspectRatio={cropConfig.initialAspectRatio}
+          initialCropData={cropConfig.initialCropData}
           onSave={handleCropSave}
           onCancel={() => setCropConfig(null)}
+          onReplace={() => {
+            const fileInput = document.createElement("input");
+            fileInput.type = "file";
+            fileInput.accept = "image/*";
+            fileInput.onchange = (e) => handleFile(e as any, cropConfig.type);
+            fileInput.click();
+          }}
+          onDelete={() => {
+            handleRemoveImage(cropConfig.type);
+            setCropConfig(null);
+          }}
         />
       )}
 

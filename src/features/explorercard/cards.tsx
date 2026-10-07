@@ -1,7 +1,9 @@
 import React from "react";
+import { COUNTRY_LIST, searchCountry } from "@/lib/countries";
 import LoadedImage from "@/components/ui/LoadedImage";
 import { toLandingAssetUrl, getOptimizedMediaUrl } from "@/lib/landing-assets";
 import { CountriesPopup } from "@/components/ui/CountriesPopup";
+import FoundingExplorer from "@/components/ui/FoundingExplorerBadge";
 
 interface CardProps {
   form: {
@@ -9,10 +11,46 @@ interface CardProps {
     country: string;
     coverImage: string;
     profileImage: string;
+    showBadge?: boolean;
   };
   sampleFlags: Record<string, string>;
   visitedArray: string[];
   isPreview?: boolean;
+  coverCropData?: any;
+  profileCropData?: any;
+}
+
+export function CroppedImage({ src, cropData, alt, className }: { src: string, cropData: any, alt: string, className?: string }) {
+  // Gracefully handle old DB format which was just a flat object { pixels, mediaSize, ... }
+  // instead of { Classic: {...}, Minimal: {...} }
+  const actualCrop = cropData?.pixels ? cropData : null;
+
+  if (!actualCrop || !actualCrop.pixels || !actualCrop.mediaSize) {
+    return <LoadedImage priority src={src} alt={alt} containerClassName="h-full w-full" className={`h-full w-full object-cover ${className || ''}`} />;
+  }
+
+  const { pixels, mediaSize } = actualCrop;
+  const scaleX = mediaSize.width / pixels.width;
+  const scaleY = mediaSize.height / pixels.height;
+  const left = (pixels.x / mediaSize.width) * 100;
+  const top = (pixels.y / mediaSize.height) * 100;
+
+  return (
+    <div className={`relative overflow-hidden w-full h-full ${className || ''}`}>
+      <LoadedImage
+        priority
+        src={src}
+        alt={alt}
+        containerClassName="absolute top-0 left-0 max-w-none"
+        className="w-full h-full max-w-none origin-top-left"
+        style={{
+          width: `${scaleX * 100}%`,
+          height: `${scaleY * 100}%`,
+          transform: `translate(-${left}%, -${top}%)`,
+        }}
+      />
+    </div>
+  );
 }
 
 export function LogoWatermark() {
@@ -20,7 +58,7 @@ export function LogoWatermark() {
     <div className="absolute flex h-[100px] w-[29px] items-center justify-center pointer-events-none select-none z-[40]" style={{ left: '5.91px', top: '22.5px' }}>
       <div className="-rotate-90 flex-none">
         <div className="flex items-center opacity-40">
-          <p 
+          <p
             className="whitespace-nowrap bg-gradient-to-l from-[rgba(255,255,255,0.10)] to-white bg-clip-text text-transparent"
             style={{
               fontFamily: 'var(--font-logo, Righteous)',
@@ -37,6 +75,34 @@ export function LogoWatermark() {
   );
 }
 
+export function resolveCountryInfo(countryValue: string, sampleFlags: Record<string, string>) {
+  if (!countryValue) return { name: "", code: "" };
+  if (sampleFlags[countryValue]) {
+    return { name: countryValue, code: sampleFlags[countryValue].toLowerCase() };
+  }
+  const upperCode = countryValue.toUpperCase();
+  const matchedName = Object.keys(sampleFlags).find(name => sampleFlags[name] === upperCode);
+  if (matchedName) {
+    return { name: matchedName, code: upperCode.toLowerCase() };
+  }
+
+  // Try partial match
+  const lowercaseValue = countryValue.toLowerCase();
+  const partialMatch = Object.keys(sampleFlags).find(
+    name => {
+      if (lowercaseValue.includes(name.toLowerCase()) || name.toLowerCase().includes(lowercaseValue)) return true;
+      const code = sampleFlags[name];
+      const entry = COUNTRY_LIST.find(cl => cl.code === code) || { name, code, flag: "" };
+      return searchCountry(entry, lowercaseValue);
+    }
+  );
+  if (partialMatch) {
+    return { name: partialMatch, code: sampleFlags[partialMatch].toLowerCase() };
+  }
+
+  return { name: countryValue, code: "" };
+}
+
 export function CountryNotch({ form, sampleFlags, fill = "#000000", emptyBg = "bg-[#2a2a2a]", wrapperClassName = "" }: { form: any, sampleFlags: any, fill?: string, emptyBg?: string, wrapperClassName?: string }) {
   return (
     <div className={`flex items-start justify-center pointer-events-none ${wrapperClassName}`}>
@@ -48,14 +114,17 @@ export function CountryNotch({ form, sampleFlags, fill = "#000000", emptyBg = "b
       <div className="relative z-10 flex items-center justify-center rounded-b-[12px] pt-[2px] pb-[5px] px-[12px] pointer-events-auto" style={{ backgroundColor: fill }}>
         <div className="flex items-center justify-center gap-[6px] -translate-y-[2.8px]">
           <div className="h-[9px] w-[14px] shrink-0 overflow-hidden rounded-[2px] bg-[#161616]">
-            {form.country && sampleFlags[form.country] ? (
-              <span className={`fi fi-${sampleFlags[form.country].toLowerCase()} !block !h-full !w-full !bg-cover !bg-center !text-[0px]`} title={form.country} />
-            ) : (
-              <div className={`h-full w-full rounded-[2px] ${emptyBg}`} />
-            )}
+            {(() => {
+              const { name, code } = resolveCountryInfo(form.country, sampleFlags);
+              return code ? (
+                <span className={`fi fi-${code} !block !h-full !w-full !bg-cover !bg-center !text-[0px]`} title={name} />
+              ) : (
+                <div className={`h-full w-full rounded-[2px] ${emptyBg}`} />
+              );
+            })()}
           </div>
-          <p className="whitespace-nowrap text-[14px] font-[family-name:var(--font-inter)] font-normal leading-[20px] tracking-[-0.084px] text-white">
-            {form.country || <span className="text-[#656565]">Your country</span>}
+          <p className="whitespace-nowrap text-[14px] font-[family-name:Inter,_sans-serif] font-normal leading-[20px] tracking-[-0.084px] text-white">
+            {resolveCountryInfo(form.country, sampleFlags).name || <span className="text-[#656565]">Your country</span>}
           </p>
         </div>
       </div>
@@ -72,40 +141,50 @@ export function MinimalCountryNotch({ form, sampleFlags, wrapperClassName = "" }
     <div className={`flex items-start justify-center pointer-events-none ${wrapperClassName}`}>
       {/* Left Curve */}
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="shrink-0 relative z-20 overflow-visible">
-        <path d="M25 0H0L0.533106 0.0283589C13.3936 0.712479 23.5897 11.1279 24 24H25V0Z" fill="#1E1E1E"/>
+        <path d="M25 0H0L0.533106 0.0283589C13.3936 0.712479 23.5897 11.1279 24 24H25V0Z" fill="#1E1E1E" />
       </svg>
       {/* Center Rectangle */}
       <div className="relative z-10 flex h-[32px] items-center justify-center rounded-b-[12px] bg-[#1E1E1E] px-[12px] pointer-events-auto">
         <div className="flex items-center justify-center gap-[6px]">
           <div className="h-[9px] w-[14px] shrink-0 overflow-hidden rounded-[2px] bg-[#161616]">
-            {form.country && sampleFlags[form.country] ? (
-              <span className={`fi fi-${sampleFlags[form.country].toLowerCase()} !block !h-full !w-full !bg-cover !bg-center !text-[0px]`} title={form.country} />
-            ) : (
-              <div className="h-full w-full rounded-[2px] bg-[#2a2a2a]" />
-            )}
+            {(() => {
+              const { name, code } = resolveCountryInfo(form.country, sampleFlags);
+              return code ? (
+                <span className={`fi fi-${code} !block !h-full !w-full !bg-cover !bg-center !text-[0px]`} title={name} />
+              ) : (
+                <div className="h-full w-full rounded-[2px] bg-[#2a2a2a]" />
+              );
+            })()}
           </div>
-          <p className="whitespace-nowrap text-[14px] font-[family-name:var(--font-inter)] font-normal leading-[20px] tracking-[-0.084px] text-white">
-            {form.country || <span className="text-[#656565]">Your country</span>}
+          <p className="whitespace-nowrap text-[14px] font-[family-name:Inter,_sans-serif] font-normal leading-[20px] tracking-[-0.084px] text-white">
+            {resolveCountryInfo(form.country, sampleFlags).name || <span className="text-[#656565]">Your country</span>}
           </p>
         </div>
       </div>
       {/* Right Curve */}
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="shrink-0 relative z-20 overflow-visible">
-        <path d="M-1 0H24L23.4669 0.0283589C10.6064 0.712479 0.4103 11.1279 0 24H-1V0Z" fill="#1E1E1E"/>
+        <path d="M-1 0H24L23.4669 0.0283589C10.6064 0.712479 0.4103 11.1279 0 24H-1V0Z" fill="#1E1E1E" />
       </svg>
     </div>
   );
 }
 
-export function ClassicCard({ form, sampleFlags, visitedArray, isPreview }: CardProps) {
+export function ClassicCard({ form, sampleFlags, visitedArray, isPreview, coverCropData, profileCropData }: CardProps) {
   return (
-    <div className="flex w-[360px] shrink-0 flex-col items-center gap-[20px] rounded-[24px] border border-[#252525] bg-black px-[8px] pb-[24px] pt-[8px]">
+    <div className="relative flex w-[360px] shrink-0 flex-col items-center gap-[20px] rounded-[24px] border border-[#252525] bg-black px-[8px] pb-[24px] pt-[8px]">
+      {/* Founding Explorer Badge */}
+      {!isPreview && form.showBadge && (
+        <div className="absolute left-[20px] lg:left-[-60px] top-[204px] lg:top-[20px] z-50 h-[64px] w-[64px] lg:h-[120px] lg:w-[120px] pointer-events-none">
+          <FoundingExplorer />
+        </div>
+      )}
+
       {/* Profile section */}
       <div className="flex w-full shrink-0 flex-col items-center">
         {/* Background image: 344x226, negative margin to allow avatar overlap */}
         <div className="relative z-0 -mb-[36px] flex h-[226px] w-[344px] shrink-0 items-center justify-center overflow-hidden rounded-[16px] bg-[#161616]">
           {form.coverImage ? (
-            <LoadedImage priority src={getOptimizedMediaUrl(toLandingAssetUrl(form.coverImage))} alt="cover" containerClassName="h-full w-full" className="h-full w-full object-cover" />
+            <CroppedImage src={getOptimizedMediaUrl(toLandingAssetUrl(form.coverImage))} alt="cover" cropData={coverCropData} />
           ) : (
             <ImagePlaceholderIcon />
           )}
@@ -116,7 +195,7 @@ export function ClassicCard({ form, sampleFlags, visitedArray, isPreview }: Card
         {/* Photo Avatar */}
         <div className="relative z-10 h-[80px] w-[80px] shrink-0 overflow-hidden rounded-[16px] border-[4px] border-black bg-[#161616]">
           {form.profileImage ? (
-            <LoadedImage priority src={getOptimizedMediaUrl(toLandingAssetUrl(form.profileImage))} alt="profile" containerClassName="h-full w-full" className="h-full w-full object-cover" />
+            <CroppedImage src={getOptimizedMediaUrl(toLandingAssetUrl(form.profileImage))} alt="profile" cropData={profileCropData} />
           ) : (
             <div className="flex h-full w-full items-center justify-center text-white-600">
               <AvatarPlaceholderIcon />
@@ -131,21 +210,24 @@ export function ClassicCard({ form, sampleFlags, visitedArray, isPreview }: Card
         <div className="flex w-full shrink-0 flex-col items-center gap-[10px]">
           {/* Country container */}
           <div className="flex shrink-0 items-center justify-center gap-[6px]">
-            {form.country && sampleFlags[form.country] ? (
-              <>
-                <div className="h-[13.333px] w-[20px] aspect-[3/2] shrink-0 overflow-hidden rounded-[2px] bg-[#161616]">
-                  <span className={`fi fi-${sampleFlags[form.country].toLowerCase()} !block !h-full !w-full !bg-cover !bg-center !text-[0px]`} title={form.country} />
-                </div>
-                <span className="text-[14px] font-[family-name:var(--font-inter)] font-normal leading-[20px] tracking-[-0.084px] text-[#656565]">{form.country}</span>
-              </>
-            ) : (
-              <>
-                <div className="h-[13.333px] w-[20px] shrink-0 overflow-hidden rounded-[2px] bg-[#2a2a2a]" />
-                <span className="text-[14px] font-[family-name:var(--font-inter)] font-normal leading-[20px] tracking-[-0.084px] text-[#656565]">Your country</span>
-              </>
-            )}
+            {(() => {
+              const { name, code } = resolveCountryInfo(form.country, sampleFlags);
+              return code ? (
+                <>
+                  <div className="h-[13.333px] w-[20px] shrink-0 overflow-hidden rounded-[2px] bg-[#161616]">
+                    <span className={`fi fi-${code} !block !h-full !w-full !bg-cover !bg-center !text-[0px]`} title={name} />
+                  </div>
+                  <span className="text-[14px] font-[family-name:Inter,_sans-serif] font-normal leading-[20px] tracking-[-0.084px] text-[#656565]">{name}</span>
+                </>
+              ) : (
+                <>
+                  <div className="h-[13.333px] w-[20px] shrink-0 overflow-hidden rounded-[2px] bg-[#2a2a2a]" />
+                  <span className="text-[14px] font-[family-name:Inter,_sans-serif] font-normal leading-[20px] tracking-[-0.084px] text-[#656565]">{name || "Your country"}</span>
+                </>
+              );
+            })()}
           </div>
-          <h3 className="w-full text-center text-[20px] font-[family-name:var(--font-inter-display)] font-semibold leading-[28px] tracking-[-0.1px] text-white">
+          <h3 className="w-full text-center text-[20px] font-[family-name:InterDisplay,_sans-serif] font-semibold leading-[28px] tracking-[-0.1px] text-white">
             {form.fullName || "Your full name"}
           </h3>
         </div>
@@ -158,14 +240,16 @@ export function ClassicCard({ form, sampleFlags, visitedArray, isPreview }: Card
                 <div
                   key={c}
                   title={c}
-                  className="h-[13.333px] w-[20px] aspect-[3/2] shrink-0 overflow-hidden rounded-[2px] bg-[#161616]"
+                  className="h-[13.333px] w-[20px] shrink-0 overflow-hidden rounded-[2px] bg-[#161616]"
                 >
-                  <span className={`fi fi-${sampleFlags[c].toLowerCase()} !block !h-full !w-full !bg-cover !bg-center !text-[0px]`} title={c} />
+                  {resolveCountryInfo(c, sampleFlags).code && (
+                    <span className={`fi fi-${resolveCountryInfo(c, sampleFlags).code} !block !h-full !w-full !bg-cover !bg-center !text-[0px]`} title={resolveCountryInfo(c, sampleFlags).name || c} />
+                  )}
                 </div>
               ))}
               {visitedArray.length > 35 && (
                 <CountriesPopup
-                  countries={visitedArray.map((c) => ({ name: c, code: sampleFlags[c] || "" }))}
+                  countries={visitedArray.map((c) => ({ name: resolveCountryInfo(c, sampleFlags).name || c, code: resolveCountryInfo(c, sampleFlags).code || "" }))}
                   trigger={
                     <div className="flex h-[13.333px] w-[20px] shrink-0 items-center justify-center bg-[#533df6] text-[8px] font-bold text-white tracking-[-0.408px] leading-none cursor-pointer hover:opacity-80 transition-opacity">
                       +{visitedArray.length - 35}
@@ -184,7 +268,7 @@ export function ClassicCard({ form, sampleFlags, visitedArray, isPreview }: Card
 
         {/* Countries explored container */}
         <div className="flex w-full shrink-0 flex-col items-center gap-[12px]">
-          <p className="text-[32px] font-[family-name:var(--font-inter-display)] font-normal leading-[40px] tracking-[-0.5px] text-white">
+          <p className="text-[32px] font-[family-name:InterDisplay,_sans-serif] font-normal leading-[40px] tracking-[-0.5px] text-white">
             {visitedArray.length} Countries
           </p>
           <p className="bg-gradient-to-l from-[#3c3c3c] to-[#242424] bg-clip-text font-[family-name:var(--font-antonio)] text-[32px] font-bold leading-[40px] tracking-[24px] text-transparent pl-[24px]">
@@ -203,12 +287,19 @@ export function ClassicCard({ form, sampleFlags, visitedArray, isPreview }: Card
   );
 }
 
-export function MinimalCard({ form, sampleFlags, visitedArray, isPreview }: CardProps) {
+export function MinimalCard({ form, sampleFlags, visitedArray, isPreview, coverCropData, profileCropData }: CardProps) {
   return (
     <div
       id="minimal-card"
-      className="flex w-[360px] shrink-0 flex-col items-center gap-[20px] rounded-[24px] border border-[#252525] bg-black px-[8px] pb-[24px] pt-0"
+      className="relative flex w-[360px] shrink-0 flex-col items-center gap-[20px] rounded-[24px] border border-[#252525] bg-black px-[8px] pb-[24px] pt-0"
     >
+      {/* Founding Explorer Badge */}
+      {!isPreview && form.showBadge && (
+        <div className="absolute left-[12px] lg:left-[-60px] top-[12px] lg:top-[20px] z-50 h-[64px] w-[64px] lg:h-[120px] lg:w-[120px] pointer-events-none">
+          <FoundingExplorer />
+        </div>
+      )}
+
       {/* Country badge at top */}
       <MinimalCountryNotch form={form} sampleFlags={sampleFlags} wrapperClassName="w-full shrink-0 relative -mt-[1px] z-30" />
 
@@ -219,24 +310,24 @@ export function MinimalCard({ form, sampleFlags, visitedArray, isPreview }: Card
           {/* Profile image (acts like cover image here) */}
           <div className="relative flex h-full w-full items-center justify-center overflow-hidden rounded-[16px] bg-[#1a1a1a]">
             {form.coverImage ? (
-              <LoadedImage priority src={getOptimizedMediaUrl(toLandingAssetUrl(form.coverImage))} alt="cover" containerClassName="h-full w-full" className="h-full w-full object-cover" />
+              <CroppedImage src={getOptimizedMediaUrl(toLandingAssetUrl(form.coverImage))} alt="cover" cropData={coverCropData || (coverCropData && coverCropData.pixels ? coverCropData : null)} />
             ) : (
               <ImagePlaceholderIcon />
             )}
             {isPreview && form.coverImage && <PreviewWatermark />}
             {!isPreview && form.coverImage && <LogoWatermark />}
           </div>
-          
+
           {/* Profile info */}
           <div className="flex h-full w-full flex-col items-start justify-end gap-[12px] rounded-[16px] bg-[#111111] p-[16px]">
-            <div className="relative h-[48px] w-[48px] shrink-0 overflow-hidden rounded-[10px] bg-[#2a2a2a]">
+            <div className="relative h-[3em] w-[3em] shrink-0 overflow-hidden rounded-[0.625em] bg-[#2a2a2a]">
               {form.profileImage ? (
-                <LoadedImage priority src={getOptimizedMediaUrl(toLandingAssetUrl(form.profileImage))} alt="profile" containerClassName="h-full w-full" className="h-full w-full object-cover" />
+                <CroppedImage src={getOptimizedMediaUrl(toLandingAssetUrl(form.profileImage))} alt="profile" cropData={profileCropData} />
               ) : (
                 <AvatarPlaceholderIcon className="h-full w-full object-cover" />
               )}
             </div>
-            <div className="flex flex-col text-[24px] font-[family-name:var(--font-inter-display)] font-semibold leading-[32px] tracking-[-0.5px] text-white">
+            <div className="flex flex-col text-[24px] font-[family-name:InterDisplay,_sans-serif] font-semibold leading-[32px] tracking-[-0.5px] text-white">
               <span>{(form.fullName || "Your full name").trim().split(" ")[0]}</span>
               <span>{(form.fullName || "Your full name").trim().split(" ").slice(1).join(" ")}</span>
             </div>
@@ -246,40 +337,42 @@ export function MinimalCard({ form, sampleFlags, visitedArray, isPreview }: Card
 
         {/* Stats Container */}
         <div className="flex w-full shrink-0 flex-col items-start justify-end gap-[24px] rounded-[16px] bg-[#111111] px-[20px] py-[24px]">
-           <div className="flex flex-col items-start whitespace-nowrap">
-             <p className="text-[64px] font-[family-name:var(--font-inter-display)] font-normal leading-[72px] tracking-[-1px] text-white">
-               {visitedArray.length}
-             </p>
-             <p className="text-[16px] font-normal leading-[1.5] tracking-[-0.5px] text-[#a8a8a8]">
-               Countries Explored
-             </p>
-           </div>
+          <div className="flex flex-col items-start whitespace-nowrap">
+            <p className="text-[64px] font-[family-name:InterDisplay,_sans-serif] font-normal leading-[72px] tracking-[-1px] text-white">
+              {visitedArray.length}
+            </p>
+            <p className="text-[16px] font-normal leading-[1.5] tracking-[-0.5px] text-[#a8a8a8]">
+              Countries Explored
+            </p>
+          </div>
 
-           <div className="flex w-full shrink-0 flex-wrap items-start gap-[4px]">
-             {visitedArray.length > 0 ? (
-               <>
-                 {visitedArray.slice(0, 35).map((c) => (
-                    <div key={c} title={c} className="h-[18px] w-[26px] shrink-0 overflow-hidden rounded-[2px] bg-[#161616]">
-                      <span className={`fi fi-${sampleFlags[c].toLowerCase()} !block !h-full !w-full !bg-cover !bg-center !text-[0px]`} title={c} />
-                    </div>
-                 ))}
-                 {visitedArray.length > 35 && (
-                    <CountriesPopup
-                      countries={visitedArray.map((c) => ({ name: c, code: sampleFlags[c] || "" }))}
-                      trigger={
-                        <div className="flex h-[18px] min-w-[26px] shrink-0 items-center justify-center rounded-[2px] bg-[#533df6] px-1 text-[11px] font-medium text-white cursor-pointer hover:opacity-80 transition-opacity">
-                          +{visitedArray.length - 35}
-                        </div>
-                      }
-                    />
-                 )}
-               </>
-             ) : (
-                Array.from({ length: 8 }).map((_, i) => (
-                   <div key={i} className="h-[18px] w-[26px] shrink-0 overflow-hidden rounded-[2px] bg-[#2a2a2a]" />
-                ))
-             )}
-           </div>
+          <div className="flex w-full shrink-0 flex-wrap items-start gap-[4px]">
+            {visitedArray.length > 0 ? (
+              <>
+                {visitedArray.slice(0, 35).map((c) => (
+                  <div key={c} title={c} className="h-[18px] w-[26px] shrink-0 overflow-hidden rounded-[2px] bg-[#161616]">
+                    {resolveCountryInfo(c, sampleFlags).code && (
+                      <span className={`fi fi-${resolveCountryInfo(c, sampleFlags).code} !block !h-full !w-full !bg-cover !bg-center !text-[0px]`} title={resolveCountryInfo(c, sampleFlags).name || c} />
+                    )}
+                  </div>
+                ))}
+                {visitedArray.length > 35 && (
+                  <CountriesPopup
+                    countries={visitedArray.map((c) => ({ name: resolveCountryInfo(c, sampleFlags).name || c, code: resolveCountryInfo(c, sampleFlags).code || "" }))}
+                    trigger={
+                      <div className="flex h-[18px] min-w-[26px] shrink-0 items-center justify-center rounded-[2px] bg-[#533df6] px-1 text-[11px] font-medium text-white cursor-pointer hover:opacity-80 transition-opacity">
+                        +{visitedArray.length - 35}
+                      </div>
+                    }
+                  />
+                )}
+              </>
+            ) : (
+              Array.from({ length: 8 }).map((_, i) => (
+                <div key={i} className="h-[18px] w-[26px] shrink-0 overflow-hidden rounded-[2px] bg-[#2a2a2a]" />
+              ))
+            )}
+          </div>
         </div>
       </div>
 
@@ -292,51 +385,58 @@ export function MinimalCard({ form, sampleFlags, visitedArray, isPreview }: Card
   );
 }
 
-export function AdventureCard({ form, sampleFlags, visitedArray, isPreview }: CardProps) {
+export function AdventureCard({ form, sampleFlags, visitedArray, isPreview, coverCropData, profileCropData }: CardProps) {
   return (
     <div
       id="adventure-card"
-      className="flex w-[360px] shrink-0 flex-col items-center gap-[20px] rounded-[24px] border border-[#252525] bg-black px-[8px] pb-[24px] pt-[8px]"
+      className="relative flex w-[360px] shrink-0 flex-col items-center gap-[20px] rounded-[24px] border border-[#252525] bg-black px-[8px] pb-[24px] pt-[8px]"
     >
+      {/* Founding Explorer Badge */}
+      {!isPreview && form.showBadge && (
+        <div className="absolute left-[20px] lg:left-[-60px] top-[20px] lg:top-[20px] z-50 h-[64px] w-[64px] lg:h-[120px] lg:w-[120px] pointer-events-none">
+          <FoundingExplorer />
+        </div>
+      )}
+
       {/* Main Image Container */}
-      <div 
+      <div
         className="relative flex w-full min-h-[528px] shrink-0 flex-col items-center justify-end overflow-hidden rounded-[16px] bg-[#161616] isolate"
       >
-        
+
         {/* Notch Overlay - Negative top coordinate to overlap any hairline background bleed from anti-aliasing */}
         <CountryNotch form={form} sampleFlags={sampleFlags} fill="#000000" wrapperClassName="absolute -top-[1px] left-0 right-0 z-30 w-full shrink-0" />
 
         {/* Cover Image Background */}
         <div className="absolute inset-0 z-0">
           {form.coverImage ? (
-            <LoadedImage priority src={getOptimizedMediaUrl(toLandingAssetUrl(form.coverImage))} alt="cover" containerClassName="h-full w-full" className="h-full w-full object-cover" />
+            <CroppedImage src={getOptimizedMediaUrl(toLandingAssetUrl(form.coverImage))} alt="cover" cropData={coverCropData} />
           ) : (
             <div className="absolute top-[127px] left-1/2 -translate-x-1/2 flex items-center justify-center pointer-events-none">
-               <span className="material-symbols-rounded text-[#E3E3E3] text-[40px]">add_photo_alternate</span>
+              <span className="material-symbols-rounded text-[#E3E3E3] text-[40px]">add_photo_alternate</span>
             </div>
           )}
         </div>
         {/* Blurred Layer (Guarantees perfect html-to-image support via duplicated image) */}
         {form.coverImage && (
-          <div 
+          <div
             className="absolute inset-0 z-10 pointer-events-none"
-            style={{ 
+            style={{
               WebkitMaskImage: 'linear-gradient(to bottom, transparent 45%, black 60%, black 100%)',
               maskImage: 'linear-gradient(to bottom, transparent 45%, black 60%, black 100%)'
             }}
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img 
-              src={toLandingAssetUrl(form.coverImage)} 
-              alt="" 
+            <img
+              src={toLandingAssetUrl(form.coverImage)}
+              alt=""
               aria-hidden="true"
-              className="h-full w-full object-cover blur-[16px] scale-[1.05]" 
+              className="h-full w-full object-cover blur-[16px] scale-[1.15]"
             />
             {/* Dark overlay to make text highly readable over the blur */}
             <div className="absolute inset-0 bg-black/40" />
           </div>
         )}
-        
+
         {isPreview && form.coverImage && <PreviewWatermark />}
         {!isPreview && form.coverImage && <LogoWatermark />}
 
@@ -344,9 +444,9 @@ export function AdventureCard({ form, sampleFlags, visitedArray, isPreview }: Ca
         <div className="relative z-20 mt-auto flex w-full flex-col items-center gap-[16px] pb-[32px] px-[8px]">
 
           {/* Profile Picture */}
-          <div className="relative z-10 flex h-[60px] w-[60px] shrink-0 items-center justify-center overflow-hidden rounded-[12px] border-[3px] border-white bg-[#2a2a2a] shadow-[0_4px_16px_rgba(0,0,0,0.35)]">
+          <div className="relative z-10 flex h-[3.75em] w-[3.75em] shrink-0 items-center justify-center overflow-hidden rounded-[0.75em] border-[0.1875em] border-white bg-[#2a2a2a] shadow-[0_4px_16px_rgba(0,0,0,0.35)]">
             {form.profileImage ? (
-              <LoadedImage priority src={getOptimizedMediaUrl(toLandingAssetUrl(form.profileImage))} alt="profile" containerClassName="h-full w-full" className="h-full w-full object-cover" />
+              <CroppedImage src={getOptimizedMediaUrl(toLandingAssetUrl(form.profileImage))} alt="profile" cropData={profileCropData} />
             ) : (
               <div className="flex h-[32px] w-[32px] shrink-0 items-center justify-center">
                 <AvatarPlaceholderIcon className="h-full w-full object-cover" />
@@ -357,11 +457,11 @@ export function AdventureCard({ form, sampleFlags, visitedArray, isPreview }: Ca
           {/* Text Container: Name & Countries Explored */}
           <div className="relative z-10 flex w-full flex-col items-center gap-[24px]">
             <div className="relative z-10 flex w-full flex-col items-center gap-[4px]">
-              <h3 className="w-full break-words px-2 text-center text-[28px] font-bold font-[family-name:var(--font-inter-display)] leading-[36px] tracking-[-0.5px] text-white">
+              <h3 className="w-full break-words px-2 text-center text-[28px] font-bold font-[family-name:InterDisplay,_sans-serif] leading-[36px] tracking-[-0.5px] text-white">
                 {form.fullName || "Your full name"}
               </h3>
 
-              <p className="whitespace-nowrap text-center text-[16px] font-[family-name:var(--font-inter)] font-medium leading-[24px] tracking-[-0.096px] text-white">
+              <p className="whitespace-nowrap text-center text-[16px] font-[family-name:Inter,_sans-serif] font-medium leading-[24px] tracking-[-0.096px] text-white">
                 {visitedArray.length} Countries explored
               </p>
             </div>
@@ -369,39 +469,41 @@ export function AdventureCard({ form, sampleFlags, visitedArray, isPreview }: Ca
             {/* Flags */}
             <div className="relative z-10 flex w-full shrink-0 flex-wrap items-start justify-center gap-[4px] px-[6px]">
               {visitedArray.length > 0 ? (
-              <>
-                {visitedArray.slice(0, 35).map((c) => (
-                  <div key={c} title={c} className="h-[13.333px] w-[20px] aspect-[3/2] shrink-0 overflow-hidden rounded-[2px] bg-[#161616]">
-                    <span className={`fi fi-${sampleFlags[c].toLowerCase()} !block !h-full !w-full !bg-cover !bg-center !text-[0px]`} title={c} />
-                  </div>
-                ))}
-                {visitedArray.length > 35 && (
-                  <CountriesPopup
-                    countries={visitedArray.map((c) => ({ name: c, code: sampleFlags[c] || "" }))}
-                    trigger={
-                      <div className="flex h-[13.333px] min-w-[26px] shrink-0 items-center justify-center rounded-[2px] bg-[#533df6] px-1 text-[9px] font-medium text-white cursor-pointer hover:opacity-80 transition-opacity">
-                        +{visitedArray.length - 35}
-                      </div>
-                    }
-                  />
-                )}
-              </>
-            ) : (
-               Array.from({ length: 9 }).map((_, i) => (
+                <>
+                  {visitedArray.slice(0, 35).map((c) => (
+                    <div key={c} title={c} className="h-[13.333px] w-[20px] shrink-0 overflow-hidden rounded-[2px] bg-[#161616]">
+                      {resolveCountryInfo(c, sampleFlags).code && (
+                        <span className={`fi fi-${resolveCountryInfo(c, sampleFlags).code} !block !h-full !w-full !bg-cover !bg-center !text-[0px]`} title={resolveCountryInfo(c, sampleFlags).name || c} />
+                      )}
+                    </div>
+                  ))}
+                  {visitedArray.length > 35 && (
+                    <CountriesPopup
+                      countries={visitedArray.map((c) => ({ name: resolveCountryInfo(c, sampleFlags).name || c, code: resolveCountryInfo(c, sampleFlags).code || "" }))}
+                      trigger={
+                        <div className="flex h-[13.333px] min-w-[26px] shrink-0 items-center justify-center rounded-[2px] bg-[#533df6] px-1 text-[9px] font-medium text-white cursor-pointer hover:opacity-80 transition-opacity">
+                          +{visitedArray.length - 35}
+                        </div>
+                      }
+                    />
+                  )}
+                </>
+              ) : (
+                Array.from({ length: 9 }).map((_, i) => (
                   <div key={i} className="h-[13.333px] w-[20px] shrink-0 overflow-hidden rounded-[2px] bg-white/20" />
-               ))
-            )}
-           </div>
+                ))
+              )}
+            </div>
           </div>
         </div>
       </div>
 
       {/* Call to Action Container */}
-        <div className="flex w-full shrink-0 items-center justify-center">
-          <a href="https://www.travingat.com/explorercard" className="whitespace-nowrap text-[14px] font-medium leading-[20px] tracking-[-0.084px] text-[#7c7c7c] hover:text-white transition-colors underline decoration-wavy underline-offset-2">
-            Join me on Travingat
-          </a>
-        </div>
+      <div className="flex w-full shrink-0 items-center justify-center">
+        <a href="https://www.travingat.com/explorercard" className="whitespace-nowrap text-[14px] font-medium leading-[20px] tracking-[-0.084px] text-[#7c7c7c] hover:text-white transition-colors underline decoration-wavy underline-offset-2">
+          Join me on Travingat
+        </a>
+      </div>
     </div>
   );
 }
@@ -439,7 +541,7 @@ export function PreviewWatermark() {
       ) {
         setTampered(true);
       }
-      
+
       const span = el.querySelector('span');
       if (span) {
         const spanStyles = window.getComputedStyle(span);
@@ -458,7 +560,7 @@ export function PreviewWatermark() {
 
     const observer = new MutationObserver(() => checkTamper());
     observer.observe(document.body, { childList: true, subtree: true, attributes: true });
-    
+
     const interval = setInterval(checkTamper, 1000);
 
     return () => {
@@ -476,13 +578,13 @@ export function PreviewWatermark() {
   }
 
   return (
-    <div 
+    <div
       ref={containerRef}
       className="absolute inset-0 z-[99] flex items-center justify-center pointer-events-none select-none mix-blend-plus-lighter"
     >
       <span style={{
         color: 'rgba(255, 255, 255, 0.50)',
-        fontFamily: 'var(--font-inter-display, "Inter Display")',
+        fontFamily: 'InterDisplay, sans-serif',
         fontSize: 'var(--Heading-H4-Bold-Size, 32px)',
         fontStyle: 'normal',
         fontWeight: 700,

@@ -1,6 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { Field } from './expcard-page';
-import { ImagePlaceholderIcon, AvatarPlaceholderIcon } from './cards';
+import { ImagePlaceholderIcon, AvatarPlaceholderIcon, resolveCountryInfo } from './cards';
+import { COUNTRY_LIST, searchCountry } from "@/lib/countries";
 
 
 interface MobileExplorerFormProps {
@@ -82,21 +83,21 @@ export function MobileExplorerForm({
 
   React.useEffect(() => {
     if (!window.visualViewport) return;
-    
+
     let maxVpHeight = window.visualViewport.height;
-    
+
     const updateOffset = () => {
       const currentVpHeight = window.visualViewport!.height;
       if (currentVpHeight > maxVpHeight) {
         maxVpHeight = currentVpHeight;
       }
-      
+
       const isOpen = currentVpHeight < maxVpHeight - 100;
       setIsKeyboardOpen(isOpen);
-      
+
       const offset = window.innerHeight - currentVpHeight;
       setKeyboardOffset(offset > 0 ? offset + 16 : 16);
-      
+
       if (!isOpen && document.activeElement && document.activeElement.tagName === 'INPUT') {
         (document.activeElement as HTMLElement).blur();
       }
@@ -104,10 +105,10 @@ export function MobileExplorerForm({
 
     window.visualViewport.addEventListener('resize', updateOffset);
     window.visualViewport.addEventListener('scroll', updateOffset);
-    
+
     // Initial calculation
     updateOffset();
-    
+
     return () => {
       window.visualViewport?.removeEventListener('resize', updateOffset);
       window.visualViewport?.removeEventListener('scroll', updateOffset);
@@ -188,8 +189,8 @@ export function MobileExplorerForm({
 
       <form onSubmit={step === 3 ? handleSubmit : handleNext} className="flex-1 flex flex-col relative">
         <div ref={scrollContainerRef} className={`flex-1 px-4 pb-[112px] flex flex-col ${step === 3 ? 'overflow-hidden' : 'overflow-y-auto'}`} style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-          <style dangerouslySetInnerHTML={{__html: `form::-webkit-scrollbar { display: none; }`}} />
-          
+          <style dangerouslySetInnerHTML={{ __html: `form::-webkit-scrollbar { display: none; }` }} />
+
           {step === 1 && (
             <div className="flex flex-col flex-[1_0_0] gap-6 bg-[#111] p-4 rounded-xl border border-transparent">
               <Field label="Email">
@@ -217,27 +218,26 @@ export function MobileExplorerForm({
                       {form.profileImage ? (
                         <>
                           <img src={form.profileImage} alt="profile" className="h-full w-full object-cover" />
-                          <div className="absolute inset-0 z-20 flex items-center justify-center bg-black/50 opacity-0 transition-opacity group-hover:opacity-100" onClick={(e) => { e.preventDefault(); handleEditCrop("profileImage"); }}>
-                            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
-                          </div>
                         </>
                       ) : (
-                      <div className="relative w-[48px] h-[48px]">
-                        <AvatarPlaceholderIcon className="w-full h-full object-cover" />
-                        <div className="absolute left-[30px] w-[11px] h-[11px] top-[31.7px] pointer-events-none z-0">
-                          <div className="absolute inset-[0_-16.67%_-33.33%_-16.67%]">
-                            <img alt="" className="block max-w-none w-full h-full" src="/icons/Add user button.png" />
+                        <div className="relative w-[48px] h-[48px]">
+                          <AvatarPlaceholderIcon className="w-full h-full object-cover" />
+                          <div className="absolute left-[30px] w-[11px] h-[11px] top-[31.7px] pointer-events-none z-0">
+                            <div className="absolute inset-[0_-16.67%_-33.33%_-16.67%]">
+                              <img alt="" className="block max-w-none w-full h-full" src="/icons/Add user button.png" />
+                            </div>
                           </div>
                         </div>
-                      </div>
+                      )}
+                      {!form.profileImage && (
+                        <input type="file" accept="image/*" onChange={(e) => { handleFile(e, "profileImage"); setErrors(prev => ({ ...prev, profileImage: '' })); }} className="absolute inset-0 opacity-0 cursor-pointer z-10" />
+                      )}
+                    </div>
+                    {form.profileImage && (
+                      <button type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleEditCrop("profileImage"); }} className="absolute -top-2 -right-2 z-30 flex h-[28px] w-[28px] items-center justify-center rounded-full bg-black/80 text-white shadow-md border border-[#333]">
+                        <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
+                      </button>
                     )}
-                    <input type="file" accept="image/*" onChange={(e) => { handleFile(e, "profileImage"); setErrors(prev => ({ ...prev, profileImage: '' })); }} className="absolute inset-0 opacity-0 cursor-pointer z-10" />
-                  </div>
-                  {form.profileImage && (
-                    <button type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleRemoveImage("profileImage"); }} className="absolute -top-1.5 -right-1.5 z-30 flex h-4 w-4 items-center justify-center rounded-full bg-[#8b0000] text-white shadow-md hover:bg-[#6b0000] opacity-0 transition-opacity group-hover:opacity-100">
-                      <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" /></svg>
-                    </button>
-                  )}
                   </div>
                   <ErrorMsg field="profileImage" />
                 </Field>
@@ -250,20 +250,19 @@ export function MobileExplorerForm({
                       {form.coverImage ? (
                         <>
                           <img src={form.coverImage} alt="cover" className="h-full w-full object-cover" />
-                          <div className="absolute inset-0 z-20 flex items-center justify-center bg-black/50 opacity-0 transition-opacity group-hover:opacity-100" onClick={(e) => { e.preventDefault(); handleEditCrop("coverImage"); }}>
-                            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
-                          </div>
                         </>
                       ) : (
-                      <ImagePlaceholderIcon />
+                        <ImagePlaceholderIcon />
+                      )}
+                      {!form.coverImage && (
+                        <input type="file" accept="image/*" onChange={(e) => { handleFile(e, "coverImage"); setErrors(prev => ({ ...prev, coverImage: '' })); }} className="absolute inset-0 opacity-0 cursor-pointer z-10" />
+                      )}
+                    </div>
+                    {form.coverImage && (
+                      <button type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleEditCrop("coverImage"); }} className="absolute -top-2 -right-2 z-30 flex h-[28px] w-[28px] items-center justify-center rounded-full bg-black/80 text-white shadow-md border border-[#333]">
+                        <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
+                      </button>
                     )}
-                    <input type="file" accept="image/*" onChange={(e) => { handleFile(e, "coverImage"); setErrors(prev => ({ ...prev, coverImage: '' })); }} className="absolute inset-0 opacity-0 cursor-pointer z-10" />
-                  </div>
-                  {form.coverImage && (
-                    <button type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleRemoveImage("coverImage"); }} className="absolute -top-1.5 -right-1.5 z-30 flex h-4 w-4 items-center justify-center rounded-full bg-[#8b0000] text-white shadow-md hover:bg-[#6b0000] opacity-0 transition-opacity group-hover:opacity-100">
-                      <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" /></svg>
-                    </button>
-                  )}
                   </div>
                   <ErrorMsg field="coverImage" />
                 </Field>
@@ -306,8 +305,8 @@ export function MobileExplorerForm({
                 <Field label="Where are you from?">
                   <div className="relative w-full">
                     <div className={`flex w-full items-center gap-[8px] rounded-[10px] border bg-black px-[16px] py-[12px] ${errors.country ? 'border-red-500' : 'border-[#1e1e1e]'}`}>
-                      {sampleFlags[form.country] && (
-                        <span className={`fi fi-${sampleFlags[form.country].toLowerCase()} h-[13.333px] w-[20px] aspect-[3/2] shrink-0 rounded-[2px] inline-block bg-cover bg-center`} />
+                      {resolveCountryInfo(form.country, sampleFlags).code && (
+                        <span className={`fi fi-${resolveCountryInfo(form.country, sampleFlags).code} h-[13.333px] w-[20px] aspect-[3/2] shrink-0 rounded-[2px] inline-block bg-cover bg-center`} />
                       )}
                       <input
                         value={form.country}
@@ -326,22 +325,27 @@ export function MobileExplorerForm({
                     {fromOpen && (
                       <div className="absolute z-20 mt-1 max-h-48 w-full overflow-y-auto rounded-[10px] border border-[#2a2a2a] bg-[#111] shadow-lg">
                         {Object.keys(sampleFlags)
-                          .filter((c) => Object.keys(sampleFlags).includes(form.country) || c.toLowerCase().includes(form.country.toLowerCase()))
+                          .filter((c) => {
+                            if (Object.keys(sampleFlags).includes(form.country)) return true;
+                            const code = sampleFlags[c];
+                            const entry = COUNTRY_LIST.find(cl => cl.code === code) || { name: c, code: code, flag: "" };
+                            return searchCountry(entry, form.country);
+                          })
                           .map((c) => (
-                          <button
-                            key={c}
-                            type="button"
-                            onClick={() => {
-                              setForm((s: any) => ({ ...s, country: c }));
-                              setFromOpen(false);
-                              setErrors(prev => ({ ...prev, country: '' }));
-                            }}
-                            className="flex w-full items-center gap-[8px] px-[16px] py-[12px] text-left text-[16px] text-white hover:bg-[#1e1e1e]"
-                          >
-                            <span className={`fi fi-${sampleFlags[c].toLowerCase()} h-[13.333px] w-[20px] aspect-[3/2] rounded-[2px] inline-block bg-cover bg-center`} title={c} />
-                            <span>{c}</span>
-                          </button>
-                        ))}
+                            <button
+                              key={c}
+                              type="button"
+                              onClick={() => {
+                                setForm((s: any) => ({ ...s, country: c }));
+                                setFromOpen(false);
+                                setErrors(prev => ({ ...prev, country: '' }));
+                              }}
+                              className="flex w-full items-center gap-[8px] px-[16px] py-[12px] text-left text-[16px] text-white hover:bg-[#1e1e1e]"
+                            >
+                              <span className={`fi fi-${sampleFlags[c].toLowerCase()} h-[13.333px] w-[20px] aspect-[3/2] rounded-[2px] inline-block bg-cover bg-center`} title={c} />
+                              <span>{c}</span>
+                            </button>
+                          ))}
                       </div>
                     )}
                     <ErrorMsg field="country" />
@@ -361,8 +365,10 @@ export function MobileExplorerForm({
                 <div className="flex flex-wrap items-start gap-x-[12px] gap-y-[8px] mt-[10px] shrink-0 max-h-[140px] overflow-y-auto" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
                   {visited.map((c) => (
                     <div key={c} className="flex items-center gap-[4px]">
-                      <span className={`fi fi-${sampleFlags[c]?.toLowerCase()} h-[13.333px] w-[20px] aspect-[3/2] overflow-clip rounded-[1px] bg-cover bg-center`} title={c} />
-                      <span className="text-[12px] text-[#A3A3A3] font-medium leading-none">{sampleFlags[c]}</span>
+                      {resolveCountryInfo(c, sampleFlags).code && (
+                        <span className={`fi fi-${resolveCountryInfo(c, sampleFlags).code} h-[13.333px] w-[20px] aspect-[3/2] overflow-clip rounded-[1px] bg-cover bg-center`} title={resolveCountryInfo(c, sampleFlags).name || c} />
+                      )}
+                      <span className="text-[12px] text-[#A3A3A3] font-medium leading-none">{resolveCountryInfo(c, sampleFlags).code.toUpperCase()}</span>
                     </div>
                   ))}
                 </div>
@@ -400,32 +406,36 @@ export function MobileExplorerForm({
 
               <div className="flex flex-col mt-[12px] overflow-y-auto flex-1 rounded-[8px]">
                 {Object.keys(sampleFlags)
-                  .filter((c) => c.toLowerCase().includes(countryQuery.toLowerCase()))
+                  .filter((c) => {
+                    const code = sampleFlags[c];
+                    const entry = COUNTRY_LIST.find(cl => cl.code === code) || { name: c, code: code, flag: "" };
+                    return searchCountry(entry, countryQuery);
+                  })
                   .map((c) => {
-                  const isSelected = visited.includes(c);
-                  return (
-                    <button
-                      key={c}
-                      type="button"
-                      onMouseDown={(e) => e.preventDefault()}
-                      onClick={() => { isSelected ? removeCountry(c) : addCountry(c); setErrors(prev => ({ ...prev, visited: '' })); }}
-                      className={`flex w-full items-center justify-between p-[12px] text-left transition-colors ${isSelected ? 'bg-[#1e1e1e]' : 'bg-transparent hover:bg-[#1e1e1e]'}`}
-                    >
-                      <div className="flex items-center gap-[8px]">
-                        {isSelected ? (
-                          <div className="flex h-[24px] w-[24px] shrink-0 items-center justify-center rounded-[8px] border border-[#2a2a2a] bg-white">
-                            <svg className="h-[16px] w-[16px] text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" /></svg>
-                          </div>
-                        ) : (
-                          <div className="h-[24px] w-[24px] shrink-0 rounded-[8px] border border-[#464646] bg-[#161616]" />
-                        )}
-                        <span className={`fi fi-${sampleFlags[c].toLowerCase()} h-[13.333px] w-[20px] shrink-0 aspect-[3/2] rounded-[2px] inline-block bg-cover bg-center`} title={c} />
-                        <span className="text-[16px] text-white font-normal leading-[24px] tracking-[-0.096px]">{c}</span>
-                      </div>
-                      <span className="text-[16px] text-[#656565] font-normal leading-[24px] tracking-[-0.096px]">{sampleFlags[c]}</span>
-                    </button>
-                  );
-                })}
+                    const isSelected = visited.includes(c);
+                    return (
+                      <button
+                        key={c}
+                        type="button"
+                        onMouseDown={(e) => e.preventDefault()}
+                        onClick={() => { isSelected ? removeCountry(c) : addCountry(c); setErrors(prev => ({ ...prev, visited: '' })); }}
+                        className={`flex w-full items-center justify-between p-[12px] text-left transition-colors ${isSelected ? 'bg-[#1e1e1e]' : 'bg-transparent hover:bg-[#1e1e1e]'}`}
+                      >
+                        <div className="flex items-center gap-[8px]">
+                          {isSelected ? (
+                            <div className="flex h-[24px] w-[24px] shrink-0 items-center justify-center rounded-[8px] border border-[#2a2a2a] bg-white">
+                              <svg className="h-[16px] w-[16px] text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" /></svg>
+                            </div>
+                          ) : (
+                            <div className="h-[24px] w-[24px] shrink-0 rounded-[8px] border border-[#464646] bg-[#161616]" />
+                          )}
+                          <span className={`fi fi-${sampleFlags[c].toLowerCase()} h-[13.333px] w-[20px] shrink-0 aspect-[3/2] rounded-[2px] inline-block bg-cover bg-center`} title={c} />
+                          <span className="text-[16px] text-white font-normal leading-[24px] tracking-[-0.096px]">{c}</span>
+                        </div>
+                        <span className="text-[16px] text-[#656565] font-normal leading-[24px] tracking-[-0.096px]">{sampleFlags[c]}</span>
+                      </button>
+                    );
+                  })}
               </div>
             </div>
           )}

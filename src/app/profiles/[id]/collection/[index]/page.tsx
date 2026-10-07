@@ -3,7 +3,7 @@ import { CollectionDetailComponent } from "@/features/profilepages";
 import { getAllActiveProfiles, getProfileByHandle } from "@/lib/profiles";
 
 export const dynamicParams = true;
-export const revalidate = 60;
+export const revalidate = 30;
 
 export async function generateStaticParams() {
   try {

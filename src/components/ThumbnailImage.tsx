@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect, ImgHTMLAttributes } from 'react';
+import React, { useState, useEffect, useRef, ImgHTMLAttributes } from 'react';
 
 interface ThumbnailImageProps extends ImgHTMLAttributes<HTMLImageElement> {
   originalSrc: string;
@@ -16,6 +16,7 @@ export function ThumbnailImage({ originalSrc, size = 720, ...props }: ThumbnailI
   const [src, setSrc] = useState<string>(getThumbnailUrl(originalSrc, size));
   const [prevOriginalSrc, setPrevOriginalSrc] = useState(originalSrc);
   const [prevSize, setPrevSize] = useState(size);
+  const imgRef = useRef<HTMLImageElement>(null);
 
   if (originalSrc !== prevOriginalSrc || size !== prevSize) {
     setPrevOriginalSrc(originalSrc);
@@ -30,8 +31,16 @@ export function ThumbnailImage({ originalSrc, size = 720, ...props }: ThumbnailI
     }
   };
 
+  useEffect(() => {
+    if (imgRef.current && imgRef.current.complete && imgRef.current.naturalHeight === 0) {
+      handleError();
+    }
+  }, [src, originalSrc]);
+
   return (
     <img 
+      key={src}
+      ref={imgRef}
       src={src} 
       loading="lazy"
       decoding="async"

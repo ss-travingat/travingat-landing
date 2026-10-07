@@ -1,27 +1,25 @@
 "use client";
+import { distributeMasonryColumns } from "@/lib/masonry-utils";
 import { MediaResolver } from "@/lib/media-resolver";
 import { useRouter } from "next/navigation";
 
 import Link from "next/link";
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import type { MouseEvent as ReactMouseEvent } from "react";
-
-import { ThumbnailImage } from "@/components/ThumbnailImage";
+import LoadedImage from "@/components/ui/LoadedImage";
 import { sampleProfiles, type SampleProfile } from "../data/profile-data";
-import { MediaLightbox, type LightboxItem } from "./MediaLightbox";
+import { MediaLightbox } from "./MediaLightbox";
 import { MoreOptionsButton } from "@/components/ui/MoreOptionsButton";
 import { WaitlistPopup } from "@/components/ui/WaitlistPopup";
-import { MobileHero, MobileTabs, MobileActionBar } from "./MobileProfile";
+import { MobileHero, MobileTabs } from "./MobileProfile";
 import ProfileFooter from "./ProfileFooter";
 import CardCarousel from "./CardCarousel";
-import LoadedImage from "@/components/ui/LoadedImage";
-import { MasonryImageGrid } from "@/components/ui/MasonryImageGrid";
-import type { MasonryItemWithDimensions } from "@/hooks/useMasonryAdvanced";
+// import LoadedImage from "@/components/ui/LoadedImage";
+import FoundingExplorer from "@/components/ui/FoundingExplorerBadge";
 import { useMobileComingSoon } from "@/components/ui/MobileComingSoonToast";
 import { COUNTRY_LIST } from "@/lib/countries";
 import { Tooltip, TooltipProvider } from "@/components/ui/Tooltip";
 import { getCountryName } from "@/lib/countries";
-import { CountriesPopup } from "@/components/ui/CountriesPopup";
+import { DesktopCountriesPopup } from "@/components/ui/DesktopCountriesPopup";
 
 /* eslint-disable @next/next/no-img-element */
 
@@ -69,6 +67,7 @@ type MediaItem = {
   collectionIndex?: number;
   width?: number;
   height?: number;
+  blurhash?: string;
 };
 
 type CountryCard = {
@@ -79,6 +78,7 @@ type CountryCard = {
   previewImages: string[];
   photoCount: number;
   videoCount: number;
+  updatedLabel: string;
 };
 
 type CollectionCard = {
@@ -86,6 +86,7 @@ type CollectionCard = {
   title: string;
   description: string;
   createdLabel: string;
+  updatedLabel: string;
   thumbnailUrl: string;
   previewImages: string[];
   countries: string[];
@@ -108,14 +109,45 @@ type ShareCardData = {
 const CREATED_AT_BASE_UTC_MS = Date.UTC(2025, 11, 27);
 const CREATED_AT_STEP_DAYS = 19;
 
-function getDeterministicCreatedLabel(index: number): string {
+function getDeterministicCreatedLabel(index: number, realDate?: string): string {
+  if (realDate) {
+    const date = new Date(realDate);
+    if (!isNaN(date.getTime())) {
+      return date.toLocaleDateString("en-GB", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+      }).replace("Sept", "Sep");
+    }
+  }
   const createdAtMs = CREATED_AT_BASE_UTC_MS - index * CREATED_AT_STEP_DAYS * 24 * 60 * 60 * 1000;
   return new Date(createdAtMs).toLocaleDateString("en-GB", {
     day: "2-digit",
     month: "short",
     year: "numeric",
     timeZone: "UTC",
-  });
+  }).replace("Sept", "Sep");
+}
+
+function getUpdatedLabel(updatedAt: string | undefined, index: number): string {
+  if (updatedAt) {
+    const date = new Date(updatedAt);
+    if (!isNaN(date.getTime())) {
+      return `Updated ${date.toLocaleDateString("en-GB", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+      }).replace("Sept", "Sep")}`;
+    }
+  }
+  // Fallback deterministic mock
+  const createdAtMs = CREATED_AT_BASE_UTC_MS - index * CREATED_AT_STEP_DAYS * 24 * 60 * 60 * 1000;
+  return `Updated ${new Date(createdAtMs).toLocaleDateString("en-GB", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    timeZone: "UTC",
+  }).replace("Sept", "Sep")}`;
 }
 
 function isVideoAsset(url: string) {
@@ -149,7 +181,8 @@ function toSocialLabel(value: string) {
   return value.replace(/^https?:\/\//i, "").replace(/^www\./i, "");
 }
 
-function toLocationCountry(value: string) {
+function toLocationCountry(value: string | undefined | null) {
+  if (!value) return "";
   const parts = value
     .split(",")
     .map((part) => part.trim())
@@ -363,6 +396,7 @@ function PhotoCarouselModal({
   profileFlagCode?: string;
   countryName?: string;
   countryFlagCode?: string;
+  profileAvatarBlurhash?: string;
   description?: string;
   quote?: string;
 }) {
@@ -393,7 +427,7 @@ function PhotoCarouselModal({
           {/* Avatar + close */}
           <div className="flex items-start justify-between">
             <div className="h-18 w-18 overflow-hidden rounded-2xl">
-              <LoadedImage src={avatarSrc} thumbnailSrc={MediaResolver.getThumbnail(avatarSrc, 720)} alt={profileName} className="h-full w-full object-cover" />
+              <LoadedImage src={avatarSrc} thumbnailSrc={MediaResolver.getThumbnail(avatarSrc, 144)} blurhash={profileAvatarBlurhash} alt={profileName} className="h-full w-full object-cover" />
             </div>
             <button
               type="button"
@@ -483,8 +517,6 @@ type JsMasonryGridProps = {
   profile: SampleProfile;
   openContextMenuId: string | null;
   setOpenContextMenuId: (id: string | null) => void;
-  loadedItemIds: Set<string>;
-  setLoadedItemIds: React.Dispatch<React.SetStateAction<Set<string>>>;
   openCarouselAt: (index: number) => void;
   openShareCard: (data: ShareCardData) => void;
   contextMenuRef: React.RefObject<HTMLDivElement>;
@@ -500,8 +532,6 @@ function JsMasonryGrid({
   profile,
   openContextMenuId,
   setOpenContextMenuId,
-  loadedItemIds,
-  setLoadedItemIds,
   openCarouselAt,
   openShareCard,
   contextMenuRef,
@@ -510,19 +540,31 @@ function JsMasonryGrid({
   shareOwnerAvatar,
 }: JsMasonryGridProps) {
   const { showComingSoonToast } = useMobileComingSoon();
-  const orderedItems = items;
+  const [visibleCount, setVisibleCount] = useState(20);
+  const observerTarget = useRef<HTMLDivElement>(null);
 
-  const markItemLoaded = (id: string) => {
-    setLoadedItemIds((prev) => {
-      if (prev.has(id)) return prev;
-      const next = new Set(prev);
-      next.add(id);
-      return next;
-    });
-  };
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          setVisibleCount((prev) => Math.min(prev + 20, items.length));
+        }
+      },
+      { threshold: 0.1, rootMargin: '800px' }
+    );
+
+    if (observerTarget.current) {
+      observer.observe(observerTarget.current);
+    }
+
+    return () => observer.disconnect();
+  }, [items.length]);
+
+  const orderedItems = items.slice(0, visibleCount);
 
   const renderMediaItem = (mediaItem: MediaItem, isMobile = false) => {
     const originalIndex = allMediaItems.findIndex((it) => String(it.id) === String(mediaItem?.id));
+    const gridIndex = orderedItems.findIndex((it) => String(it.id) === String(mediaItem?.id));
     const isMenuOpen = openContextMenuId === mediaItem.id;
     const displayCountryCode = mediaItem.countryCode || profileFlagCode;
     const collectionHref =
@@ -533,18 +575,18 @@ function JsMasonryGrid({
       ? `/${profile.handle.replace(/^@/, "")}/country/${displayCountryCode.toUpperCase()}`
       : undefined);
     const viewLabel = collectionHref ? "View collection" : "View country";
-    const isLoaded = loadedItemIds.has(mediaItem.id);
+
 
     return (
-      <div key={mediaItem.id} className={`group relative w-full ${isMobile ? "mb-[0.375rem] break-inside-avoid [-webkit-column-break-inside:avoid] inline-block" : ""}`}>
+      <div key={mediaItem.id} className="group relative w-full">
         <div
-          className="relative rounded-lg md:rounded-2xl overflow-hidden bg-[#151515] cursor-pointer"
+          className="relative rounded-2xl overflow-hidden bg-[#151515] cursor-pointer"
           style={{ aspectRatio: mediaItem.width && mediaItem.height ? `${mediaItem.width}/${mediaItem.height}` : "1/1" }}
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
-            if (window.innerWidth < 811) {
-              showComingSoonToast();
+            if (isMobile) {
+              showComingSoonToast("desktopOnly");
             } else {
               openCarouselAt(originalIndex);
             }
@@ -558,24 +600,23 @@ function JsMasonryGrid({
                 playsInline
                 loop
                 preload="metadata"
-                className="w-full h-auto block pointer-events-none"
-                onLoadedData={() => markItemLoaded(mediaItem.id)}
-                onCanPlay={() => markItemLoaded(mediaItem.id)}
-                onError={() => markItemLoaded(mediaItem.id)}
+                className="w-full h-full object-cover block pointer-events-none"
               />
               <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
                 <span className="text-white text-3xl drop-shadow-lg">▶</span>
               </div>
             </>
           ) : (
-            <LoadedImage
-              originalSrc={MediaResolver.getBase(mediaItem.fileUrl)} src={MediaResolver.getOptimized(MediaResolver.getBase(mediaItem.fileUrl))}
-              thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(mediaItem.fileUrl), 720)}
+              <LoadedImage
+              priority={gridIndex < 4}
+              blurhash={mediaItem.blurhash}
+              originalSrc={MediaResolver.getBase(mediaItem.fileUrl)}
+              src={MediaResolver.getThumbnail(MediaResolver.getBase(mediaItem.fileUrl), 720)}
+              thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(mediaItem.fileUrl), 144)}
               alt="Uploaded media"
-              className="w-full h-auto block"
+              className="w-full h-full object-cover block"
               containerClassName="w-full h-full relative"
               skeletonClassName="absolute inset-0 w-full h-full bg-[#1a1a1a]"
-              onLoad={() => markItemLoaded(mediaItem.id)}
             />
           )}
           <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-200 pointer-events-none" />
@@ -592,8 +633,8 @@ function JsMasonryGrid({
           }}
         />
 
-        {/* Flag badge (visible after image loads) */}
-        {displayCountryCode && isLoaded ? (
+        {/* Flag badge */}
+        {displayCountryCode ? (
           <div className="absolute top-2 right-2 md:top-3 md:right-3 z-20 transition-opacity duration-200 opacity-100 pointer-events-auto">
             <TooltipProvider delayDuration={100}>
               <Tooltip
@@ -626,13 +667,8 @@ function JsMasonryGrid({
                   href={viewHref}
                   role="menuitem"
                   className="flex w-full items-center gap-3 text-[0.9375rem] font-medium tracking-[-0.3px] text-white hover:text-[#d4d4d4] transition-colors"
-                  onClick={(event) => {
-                    if (window.innerWidth < 811) {
-                      event.preventDefault();
-                      showComingSoonToast("featureLaunch");
-                    } else {
-                      setOpenContextMenuId(null);
-                    }
+                  onClick={() => {
+                    setOpenContextMenuId(null);
                   }}
                 >
                   <span className="material-symbols-rounded text-[1.375rem]">{collectionHref ? "collections" : "public"}</span>
@@ -680,20 +716,27 @@ function JsMasonryGrid({
 
   return (
     <div className="w-full">
-      {/* Desktop: 4 explicit flex columns */}
+      {/* Desktop: 4 explicit flex columns distributed by height */}
       <div className="hidden lg:flex w-full gap-[0.5rem] xl:gap-[0.75rem]">
-        {[0, 1, 2, 3].map((colIdx) => (
+        {distributeMasonryColumns(orderedItems, 4, (item) => (item.height && item.width ? item.height / item.width : 1)).map((columnItems, colIdx) => (
           <div key={colIdx} className="flex flex-col gap-[0.5rem] xl:gap-[0.75rem] flex-1 min-w-0">
-            {orderedItems
-              .filter((_, i) => i % 4 === colIdx)
-              .map((mediaItem) => renderMediaItem(mediaItem, false))}
+            {columnItems.map((mediaItem) => renderMediaItem(mediaItem, false))}
           </div>
         ))}
       </div>
-      {/* Mobile/tablet: 2-column CSS columns */}
-      <div className="lg:hidden columns-2 gap-[0.375rem] w-full">
-        {orderedItems.map((mediaItem) => renderMediaItem(mediaItem, true))}
+      {/* Mobile/tablet: 2 explicit flex columns distributed by height */}
+      <div className="flex lg:hidden w-full gap-[0.375rem]">
+        {distributeMasonryColumns(orderedItems, 2, (item) => (item.height && item.width ? item.height / item.width : 1)).map((columnItems, colIdx) => (
+          <div key={colIdx} className="flex flex-col gap-[0.375rem] flex-1 min-w-0">
+            {columnItems.map((mediaItem) => renderMediaItem(mediaItem, true))}
+          </div>
+        ))}
       </div>
+      {visibleCount < items.length && (
+        <div ref={observerTarget} className="w-full flex justify-center py-12">
+          <div className="w-6 h-6 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+        </div>
+      )}
     </div>
   );
 }
@@ -703,7 +746,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
   const router = useRouter();
 
   const [activeTab, setActiveTab] = useState<TabKey>("all");
-  const [loadedItemIds, setLoadedItemIds] = useState<Set<string>>(() => new Set());
+
   const [swipeOffset, setSwipeOffset] = useState(0);
 
   const [headerHeight, setHeaderHeight] = useState(0);
@@ -755,6 +798,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
   const contextMenuRef = useRef<HTMLDivElement>(null);
 
   const handleTabChange = (tab: TabKey) => {
+    (window as any).__lastProgrammaticScrollTime = Date.now();
     (window as any).__isProgrammaticScroll = true;
     const scrollBefore = window.scrollY;
     setActiveTab(tab);
@@ -779,13 +823,9 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
           }
         } else {
           // Mobile/iPad
-          // The tabs are sticky at 72px, but they might be visually translated UP by the navbar hook.
-          // We can find the exact translation by checking the navbar's position.
           const navbarEl = document.getElementById("profile-mobile-navbar");
           const navbarVisualTop = navbarEl ? navbarEl.getBoundingClientRect().top : 0;
-          // If navbar is translated up by 72px, navbarVisualTop is -72.
-          // The formula: absoluteTop - 72 (sticky offset) - navbarVisualTop.
-          targetScrollY = absoluteTop - 72 - navbarVisualTop;
+          targetScrollY = absoluteTop + 12 - 72 - navbarVisualTop;
         }
 
         // Only jump if the user was scrolled past the tabs BEFORE the tab change triggered native browser scrolling
@@ -795,7 +835,6 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
       }
 
       setTimeout(() => {
-        (window as any).__isProgrammaticScroll = false;
         // Dispatch a final scroll event so Desktop LandingHeader re-evaluates the absolute scroll position
         // and correctly applies or removes the 'header-hidden' class, preventing the tabs from moving down incorrectly.
         window.dispatchEvent(new Event('scroll'));
@@ -901,6 +940,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
 
   const allMediaItems = useMemo<MediaItem[]>(() => {
     const buckets: MediaItem[][] = [];
+    const seenUrls = new Set<string>();
 
     // Gallery bucket
     if (profile.images.gallery.length > 0) {
@@ -908,6 +948,8 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
       profile.images.gallery.forEach((fileEntry) => {
         const isObj = typeof fileEntry !== "string" && fileEntry !== null && typeof fileEntry === "object";
         const url = isObj ? (fileEntry.url as string) : (fileEntry as string);
+        if (seenUrls.has(url)) return;
+        seenUrls.add(url);
         bucket.push({
           id: `media-${profile.id}-gallery-${bucket.length}`,
           fileUrl: url,
@@ -926,6 +968,8 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
         country.images.forEach((fileEntry) => {
           const isObj = typeof fileEntry !== "string" && fileEntry !== null && typeof fileEntry === "object";
           const url = isObj ? (fileEntry.url as string) : (fileEntry as string);
+          if (seenUrls.has(url)) return;
+          seenUrls.add(url);
           bucket.push({
             id: `media-${profile.id}-country-${countryIdx}-${bucket.length}`,
             fileUrl: url,
@@ -946,6 +990,8 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
         collection.images.forEach((fileEntry) => {
           const isObj = typeof fileEntry !== "string" && fileEntry !== null && typeof fileEntry === "object";
           const url = isObj ? (fileEntry.url as string) : (fileEntry as string);
+          if (seenUrls.has(url)) return;
+          seenUrls.add(url);
           bucket.push({
             id: `media-${profile.id}-collection-${collectionIdx}-${bucket.length}`,
             fileUrl: url,
@@ -1102,6 +1148,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
           previewImages,
           photoCount: ci.images.filter((entry) => !isVideoAsset(typeof entry === "string" ? entry : entry.url)).length,
           videoCount: ci.images.filter((entry) => isVideoAsset(typeof entry === "string" ? entry : entry.url)).length,
+          updatedLabel: getUpdatedLabel(ci.updatedAt || ci.updated_at, index),
         };
       });
     }
@@ -1144,6 +1191,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
         previewImages,
         photoCount: Math.floor(totalPhotos / count),
         videoCount: Math.floor(totalVideos / count),
+        updatedLabel: getUpdatedLabel(undefined, index),
       };
     });
   }, [allMediaItems, basedIn, profile.images.cover, profile.currentlyIn, profile.flagCode, profile.homelandFlagCode, profile.currentlyInFlagCode, profile.homeland, profile.id, profile.countryImages]);
@@ -1284,7 +1332,8 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
           id: `${profile.id}-collection-${index}`,
           title: ci.title,
           description: profile.bio,
-          createdLabel: getDeterministicCreatedLabel(index),
+          createdLabel: getDeterministicCreatedLabel(index, ci.updatedAt || ci.updated_at),
+          updatedLabel: getUpdatedLabel(ci.updatedAt || ci.updated_at, index),
           thumbnailUrl: ci.coverPhoto || previewImages[0] || (typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url),
           previewImages,
           countries: selectedCountries.length > 0 ? visibleCountries : fallbackVisibleCountries,
@@ -1363,13 +1412,12 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
   return (
     <>
       <div
-        className="bg-black text-white flex flex-col items-center px-2 pt-2 min-[50.625rem]:pt-23 min-[75rem]:pt-0 min-[50.625rem]:px-8 min-[90rem]:px-16"
+        className="bg-black text-white flex flex-col items-center px-2 pt-2 min-[50.625rem]:pt-23 min-[75rem]:pt-0 min-[50.625rem]:px-8 min-[90rem]:px-16 min-[75rem]:[padding-left:var(--desktop-inset)] min-[75rem]:[padding-right:var(--desktop-inset)]"
         style={
           strictDesktopStyle
-            ? {
-              paddingLeft: `${interpolatedDesktopInset}px`,
-              paddingRight: `${interpolatedDesktopInset}px`,
-            }
+            ? ({
+              "--desktop-inset": `${interpolatedDesktopInset}px`,
+            } as React.CSSProperties)
             : undefined
         }
       >
@@ -1384,6 +1432,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
             profileFlagSrc={profileFlagSrc}
             headerFlagCodes={headerFlagCodes}
             flagOverflowCount={flagOverflowCount}
+            allVisitedCountries={allVisitedCountries}
           />
 
 
@@ -1397,8 +1446,10 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                   <div className="relative size-16 lg:size-[6.25rem] xl:size-[7.5rem] shrink-0 overflow-hidden rounded-[1.25rem] bg-[#151515]">
                     <LoadedImage
                       originalSrc={MediaResolver.getBase(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url)} src={MediaResolver.getOptimized(MediaResolver.getBase(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url))}
-                      thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url), 720)}
+                      thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url), 144)}
+                      blurhash={typeof profile.images.avatar === "object" ? profile.images.avatar.blurhash : undefined}
                       alt="Profile avatar"
+                      priority={true}
                       className="h-full w-full object-cover rounded-[1.25rem]"
                       skeletonClassName="absolute inset-0 bg-[#1a1a1a]"
                       containerClassName="w-full h-full"
@@ -1422,7 +1473,9 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                         <span>{basedIn}</span>
                       </div>
 
-                      <h1 className="ds-font-display text-2xl lg:text-4xl xl:text-[2.75rem] leading-tight xl:leading-[3.25rem] tracking-[-0.5px] font-semibold text-white w-full">{displayName}</h1>
+                      <h1 className="text-white w-full" style={{ fontFamily: 'var(--font-inter-display, "Inter Display")', fontSize: '52px', fontWeight: 700, lineHeight: '60px', letterSpacing: '-1px' }}>
+                        {displayName}
+                      </h1>
 
                       <div className="flex items-center gap-2 w-full">
                         <p className="ds-font-display text-white-400 text-base lg:text-xl xl:text-2xl leading-normal xl:leading-[2rem] tracking-[-0.5px] font-normal">{handle}</p>
@@ -1449,7 +1502,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                     })}
                   </TooltipProvider>
                   {flagOverflowCount > 0 && (
-                    <CountriesPopup
+                    <DesktopCountriesPopup
                       countries={allVisitedCountries}
                       trigger={
                         <div className="flex h-3 w-4.5 lg:h-4 lg:w-6 xl:h-5 xl:w-7.5 shrink-0 items-center justify-center overflow-hidden rounded-xs bg-white cursor-pointer hover:opacity-80 transition-opacity">
@@ -1548,8 +1601,10 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                 <div className="absolute inset-0 overflow-hidden rounded-3xl lg:rounded-[1.5rem] xl:rounded-[2rem]">
                   <LoadedImage
                     originalSrc={MediaResolver.getBase(typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url)} src={MediaResolver.getOptimized(MediaResolver.getBase(typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url))}
-                    thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url), 720)}
+                    thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url), 144)}
+                    blurhash={typeof profile.images.cover === "object" ? profile.images.cover.blurhash : undefined}
                     alt="Profile cover"
+                    priority={true}
                     className="absolute inset-0 w-full h-full object-cover rounded-3xl lg:rounded-[1.5rem] xl:rounded-[2rem]"
                     skeletonClassName="absolute inset-0 bg-[#1a1a1a]"
                     containerClassName="absolute inset-0 w-full h-full"
@@ -1557,23 +1612,22 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                 </div>
                 {/* Founding Explorer badge — half outside the left edge of the cover */}
                 {profile.showBadge && (
-                  <img
-                    src="/icons/badge.svg"
-                    alt="Founding Explorer"
-                    className="absolute z-10 w-[9.375rem] h-[9.375rem] pointer-events-none select-none drop-shadow-[0_4px_24px_rgba(0,0,0,0.45)]"
+                  <div
+                    className="absolute z-10 w-[9.375rem] h-[9.375rem] pointer-events-none select-none rounded-full"
                     style={{ top: "40px", left: "0", transform: "translateX(-50%)" }}
-                    draggable={false}
-                  />
+                  >
+                    <FoundingExplorer />
+                  </div>
                 )}
 
                 {/* Sample Profile Indicator */}
                 {profile.isSampleProfile && (
                   <div
-                    className="absolute z-10 text-white pointer-events-none select-none font-medium leading-none whitespace-nowrap drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)]"
+                    className="absolute z-10 text-white/80 pointer-events-none select-none font-medium leading-none whitespace-nowrap drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)]"
                     style={{
-                      fontSize: "14px",
-                      bottom: "20px",
-                      right: "20px",
+                      fontSize: "0.875rem",
+                      bottom: "1.25rem",
+                      right: "1.25rem",
                     }}
                   >
                     Sample Profile
@@ -1587,7 +1641,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
           <div id="desktop-tabs-sentinel" className="w-full h-0" />
           <div
             id="profile-desktop-tabs"
-            className={`hidden min-[75rem]:flex items-center justify-center gap-2 flex-wrap sticky z-header pt-8 pb-8 -mx-4 px-4 lg:-mx-8 lg:px-8 xl:-mx-10 xl:px-10 transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] top-[7.5rem] [.header-hidden_&]:top-0`}
+            className={`hidden min-[75rem]:flex items-center justify-center gap-2 flex-wrap sticky z-header pt-8 pb-8 -mx-4 px-4 lg:-mx-8 lg:px-8 xl:-mx-10 xl:px-10 transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] top-0`}
           >
             {/* Background gradient and progressive blur */}
             <div
@@ -1668,8 +1722,6 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                         profile={profile}
                         openContextMenuId={openContextMenuId}
                         setOpenContextMenuId={setOpenContextMenuId}
-                        loadedItemIds={loadedItemIds}
-                        setLoadedItemIds={setLoadedItemIds}
                         openCarouselAt={openCarouselAt}
                         openShareCard={openShareCard}
                         contextMenuRef={contextMenuRef as React.RefObject<HTMLDivElement>}
@@ -1691,10 +1743,10 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                         <div className="max-w-150 mx-auto flex flex-col items-center gap-6 text-center">
                           <div className="flex items-center gap-3">
                             {COUNTRIES_EMPTY_PREVIEW_IMAGES.map((src, idx) => (
-                              <div key={src} className="w-19 h-19 md:w-25 md:h-25 rounded-[0.625rem] overflow-hidden">
+                              <div key={src} className="w-19 h-19 md:w-25 md:h-25 rounded-2xl md:rounded-[0.625rem] overflow-hidden">
                                 <LoadedImage
                                   originalSrc={MediaResolver.getBase(src)} src={MediaResolver.getOptimized(MediaResolver.getBase(src))}
-                                  thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(src), 720)}
+                                  thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(src), 144)}
                                   alt={`Country preview ${idx + 1}`}
                                   className="w-full h-full object-cover"
                                   containerClassName="w-full h-full"
@@ -1722,12 +1774,6 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                               key={country.code}
                               href={countryHref}
                               className="flex flex-col gap-2.5"
-                              onClick={(e) => {
-                                if (window.innerWidth < 811) {
-                                  e.preventDefault();
-                                  showComingSoonToast();
-                                }
-                              }}
                             >
                               {/* Photo */}
                               <div className="relative group">
@@ -1783,14 +1829,14 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                                       className="block w-full h-full object-cover"
                                     />
                                   </div>
-                                  <p className="text-white text-sm md:text-lg font-medium leading-[1.25rem] md:leading-[1.5rem] tracking-[-0.084px] md:tracking-[-0.2px] truncate">
+                                  <p className="text-white text-base font-medium leading-[24px] tracking-[-0.096px] truncate">
                                     {country.name}
                                   </p>
                                 </div>
                                 <div className="flex items-center gap-1 md:gap-1.5">
                                   <span className="text-[#646464] text-xs md:text-sm leading-[1rem] md:leading-[1.25rem]">{country.photoCount} photos</span>
-                                  <span className="text-[#646464] text-xs md:text-sm leading-[1rem] md:leading-[1.25rem]">&bull;</span>
-                                  <span className="text-[#646464] text-xs md:text-sm leading-[1rem] md:leading-[1.25rem]">{country.videoCount} Videos</span>
+                                  {/* <span className="text-[#646464] text-xs md:text-sm leading-[1rem] md:leading-[1.25rem]">&bull;</span> */}
+                                  {/* <span className="text-[#646464] text-xs md:text-sm leading-[1rem] md:leading-[1.25rem]">{country.videoCount} Videos</span> */}
                                 </div>
                               </div>
                             </Link>
@@ -1810,10 +1856,10 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                         <div className="max-w-150 mx-auto flex flex-col items-center gap-6 text-center">
                           <div className="flex items-center gap-3">
                             {COLLECTIONS_EMPTY_PREVIEW_IMAGES.map((src, idx) => (
-                              <div key={src} className="w-19 h-19 md:w-25 md:h-25 rounded-[0.625rem] overflow-hidden">
+                              <div key={src} className="w-19 h-19 md:w-25 md:h-25 rounded-2xl md:rounded-[0.625rem] overflow-hidden">
                                 <LoadedImage
                                   originalSrc={MediaResolver.getBase(src)} src={MediaResolver.getOptimized(MediaResolver.getBase(src))}
-                                  thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(src), 720)}
+                                  thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(src), 144)}
                                   alt={`Collection preview ${idx + 1}`}
                                   className="w-full h-full object-cover"
                                   containerClassName="w-full h-full"
@@ -1842,18 +1888,12 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                               key={collection.id}
                               href={collectionHref}
                               className="flex flex-col gap-4 md:gap-5"
-                              onClick={(e) => {
-                                if (window.innerWidth < 811) {
-                                  e.preventDefault();
-                                  showComingSoonToast();
-                                }
-                              }}
                             >
                               <div className="relative group">
                                 <CardCarousel
                                   images={collection.previewImages.length > 0 ? collection.previewImages : [collection.thumbnailUrl]}
                                   alt={collection.title}
-                                  containerClassName="aspect-[357/278] border border-[#262626]"
+                                  containerClassName="aspect-[357/278]"
                                 />
 
                                 <MoreOptionsButton
@@ -1893,7 +1933,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                               <div className="flex flex-col px-1 md:px-2 gap-3 md:gap-4">
                                 <div className="flex flex-col gap-1 md:gap-2">
                                   <p className="text-[#646464] text-xs md:text-sm leading-[1rem] md:leading-[1.25rem] tracking-normal">{collection.createdLabel}</p>
-                                  <p className="text-white text-sm md:text-lg font-medium leading-[1.25rem] md:leading-[1.5rem] tracking-[-0.084px] md:tracking-[-0.2px] min-w-full w-min line-clamp-1">{collection.title}</p>
+                                  <p className="text-white text-base font-medium leading-[24px] tracking-[-0.096px] self-stretch line-clamp-1">{collection.title}</p>
                                 </div>
                                 {/* Hidden countries for now as per design request until Admin CMS supports collection country multi-select */}
                                 <div className="flex flex-wrap items-center gap-1.5">
@@ -1940,8 +1980,16 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                           >
                             {aboutPhotos.length > 0 ? (
                               aboutPhotos.map((src, idx) => (
-                                <div key={`${src}-${idx}`} className="w-[10rem] md:w-auto md:flex-1 shrink-0 min-w-0 rounded-[0.5rem] md:rounded-[0.75rem] overflow-hidden bg-[#151515] aspect-square snap-start">
-                                  <ThumbnailImage originalSrc={MediaResolver.getBase(src)} size={720} alt={`About photo ${idx + 1}`} loading="eager" decoding="async" draggable={false} className="w-full h-full object-cover pointer-events-none select-none" />
+                                <div key={`${src}-${idx}`} className="w-[10rem] md:w-auto md:flex-1 shrink-0 min-w-0 rounded-2xl md:rounded-[0.75rem] overflow-hidden bg-[#151515] aspect-square snap-start">
+                                  <LoadedImage
+                                    originalSrc={MediaResolver.getBase(src)}
+                                    src={MediaResolver.getThumbnail(MediaResolver.getBase(src), 720)}
+                                    thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(src), 144)}
+                                    alt={`About photo ${idx + 1}`}
+                                    className="w-full h-full object-cover pointer-events-none select-none"
+                                    containerClassName="w-full h-full"
+                                    priority={true}
+                                  />
                                 </div>
                               ))
                             ) : (
@@ -1951,9 +1999,20 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                             )}
                           </div>
                         </div>
-
-                        <hr className="border-t border-[#1e1e1e] w-full m-0" />
-
+                        <div className="flex flex-col gap-3 md:gap-4 w-full">
+                          <h3 className="ds-font-display text-white text-xl md:text-2xl font-medium md:font-semibold tracking-[-0.5px] leading-7 md:leading-8">My explorer card</h3>
+                          <div className="flex items-center gap-2">
+                            <img className="w-4 h-4 rounded" src={typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url} alt="Avatar" />
+                            <Link
+                              href={`https://app.travingat.com/ec/${profile.id.split("-")[0]}-${profile.explorer_card_variant === 'minimal' ? 'b' : (profile.explorer_card_variant === 'classic' ? 'a' : 'c')}`}
+                              className="text-[#1FBCFE] text-base font-normal leading-6 break-words"
+                              rel="noopener noreferrer"
+                              target="_blank"
+                            >
+                              app.travingat.com/ec/{profile.id.split("-")[0]}-{profile.explorer_card_variant === 'minimal' ? 'b' : (profile.explorer_card_variant === 'classic' ? 'a' : 'c')}
+                            </Link>
+                          </div>
+                        </div>
                         <div className="flex flex-col gap-3 md:gap-6">
                           <h4 className="ds-font-display text-white text-xl md:text-2xl font-medium md:font-semibold tracking-[-0.5px] leading-7 md:leading-8">My Interests</h4>
                           {profile.interests.length > 0 ? (
@@ -1997,7 +2056,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                               ) : (
                                 <span>{homelandFlagCode}</span>
                               )}
-                              <span className="truncate">{profile.homeland}</span>
+                              <span className="truncate">{profile.homeland || (homelandFlagCode ? getCountryName(homelandFlagCode) : "")}</span>
                             </div>
                           </div>
 
@@ -2015,7 +2074,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                               ) : (
                                 <span>{currentlyInFlagCode}</span>
                               )}
-                              <span className="truncate">{profile.currentlyIn}</span>
+                              <span className="truncate">{profile.currentlyIn || (currentlyInFlagCode ? getCountryName(currentlyInFlagCode) : "")}</span>
                             </div>
                           </div>
 
@@ -2097,7 +2156,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                 <div className="-mb-8 h-48.5 w-50 overflow-hidden rounded-xl shrink-0 bg-[#151515]">
                   <LoadedImage
                     originalSrc={MediaResolver.getBase(typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url)} src={MediaResolver.getOptimized(MediaResolver.getBase(typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url))}
-                    thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url), 720)}
+                    thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url), 144)}
                     alt="Cover preview"
                     className="h-full w-full object-cover"
                     skeletonClassName="absolute inset-0 bg-[#1a1a1a]"
@@ -2107,7 +2166,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                 <div className="-mb-8 h-15 w-15 overflow-hidden rounded-xl shadow-[8px_8px_12px_0px_rgba(0,0,0,0.25)] shrink-0 bg-[#151515]">
                   <LoadedImage
                     originalSrc={MediaResolver.getBase(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url)} src={MediaResolver.getOptimized(MediaResolver.getBase(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url))}
-                    thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url), 720)}
+                    thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url), 144)}
                     alt={profile.name}
                     className="h-full w-full object-cover"
                     skeletonClassName="absolute inset-0 bg-[#1a1a1a]"
@@ -2168,6 +2227,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
           profileCountry={profile.country}
           profileHandle={shareOwnerHandle}
           profileAvatar={shareOwnerAvatar}
+          profileAvatarBlurhash={typeof profile.images.avatar === "object" ? profile.images.avatar.blurhash : undefined}
           profileFlagCode={profileFlagCode}
           countryName={carouselCountryName}
           countryFlagCode={displayCountryFlagCode}

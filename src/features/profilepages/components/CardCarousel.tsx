@@ -48,7 +48,7 @@ export default function CardCarousel({
 
   return (
     <div
-      className={`relative w-full overflow-hidden rounded-[0.5rem] md:rounded-2xl bg-[#151515] group ${containerClassName}`}
+      className={`relative w-full overflow-hidden rounded-2xl bg-[#151515] group ${containerClassName}`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
@@ -59,8 +59,9 @@ export default function CardCarousel({
         {displayImages.map((src, i) => (
           <div key={`${src}-${i}`} className="w-full h-full flex-shrink-0 overflow-hidden relative">
             <LoadedImage
-              originalSrc={MediaResolver.getBase(src)} src={MediaResolver.getOptimized(MediaResolver.getBase(src))}
-              thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(src), 720)}
+              originalSrc={MediaResolver.getBase(src)}
+              src={MediaResolver.getThumbnail(MediaResolver.getBase(src), 720)}
+              thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(src), 144)}
               alt={`${alt} ${i + 1}`}
               priority={priority && i === 0}
               className="w-full h-full object-cover block transition-transform duration-300 group-hover:scale-[1.03]"

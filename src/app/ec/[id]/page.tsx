@@ -24,17 +24,17 @@ export default async function ShortExplorerCardPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  
+
   // Parse shortId and style suffix
   // e.g., 916ea9de-c -> shortId = "916ea9de", suffix = "c"
   const parts = id.split("-");
   if (parts.length !== 2) {
     notFound();
   }
-  
+
   const shortId = parts[0];
   const suffix = parts[1];
-  
+
   if (shortId.length < 8) {
     notFound();
   }
@@ -56,7 +56,10 @@ export default async function ShortExplorerCardPage({
         country: data.country,
         visited_countries: data.visited_countries,
         profile_image_url: data.profile_image_url,
-        cover_image_url: data.cover_image_url
+        cover_image_url: data.cover_image_url,
+        profile_crop_data: typeof data.profile_crop_data === "string" ? JSON.parse(data.profile_crop_data) : data.profile_crop_data,
+        cover_crop_data: typeof data.cover_crop_data === "string" ? JSON.parse(data.cover_crop_data) : data.cover_crop_data,
+        show_badge: data.show_badge || false
       };
     }
   } catch (err) {
@@ -69,15 +72,16 @@ export default async function ShortExplorerCardPage({
   }
 
   const user = cardData;
-  
+
   // Construct form data for Cards
   const form = {
     fullName: `${user.first_name || ""} ${user.last_name || ""}`.trim(),
     country: user.country || "",
     profileImage: user.profile_image_url || "",
     coverImage: user.cover_image_url || "",
+    showBadge: user.show_badge || false,
   };
-  
+
   // visited_countries is parsed automatically by postgres library if it's a JSON array
   let visitedArray: string[] = [];
   if (Array.isArray(user.visited_countries)) {
@@ -92,22 +96,22 @@ export default async function ShortExplorerCardPage({
 
 
   return (
-    <div className="min-h-screen bg-black flex flex-col relative">
-      <main className="fixed inset-0 flex items-center justify-center px-6 lg:px-12 w-full max-w-[87.5rem] mx-auto pointer-events-none z-10">
+    <div className="min-h-screen bg-black flex flex-col">
+      <main className="flex-1 flex items-center justify-center pt-[40px] pb-[80px] lg:py-[120px] px-6 lg:px-12 w-full max-w-[1400px] mx-auto">
         {/* Centered Card */}
         <div className="pointer-events-auto w-full flex justify-center">
           <ExplorerCardScaler>
             {style === "minimal" ? (
-              <MinimalCard form={form} sampleFlags={sampleFlags} visitedArray={visitedArray} />
+              <MinimalCard form={form} sampleFlags={sampleFlags} visitedArray={visitedArray} coverCropData={user.cover_crop_data?.Minimal || (user.cover_crop_data?.pixels ? user.cover_crop_data : null)} profileCropData={user.profile_crop_data} />
             ) : style === "adventure" ? (
-              <AdventureCard form={form} sampleFlags={sampleFlags} visitedArray={visitedArray} />
+              <AdventureCard form={form} sampleFlags={sampleFlags} visitedArray={visitedArray} coverCropData={user.cover_crop_data?.Adventure || (user.cover_crop_data?.pixels ? user.cover_crop_data : null)} profileCropData={user.profile_crop_data} />
             ) : (
-              <ClassicCard form={form} sampleFlags={sampleFlags} visitedArray={visitedArray} />
+              <ClassicCard form={form} sampleFlags={sampleFlags} visitedArray={visitedArray} coverCropData={user.cover_crop_data?.Classic || (user.cover_crop_data?.pixels ? user.cover_crop_data : null)} profileCropData={user.profile_crop_data} />
             )}
           </ExplorerCardScaler>
         </div>
       </main>
-      
+
       {/* Spacer to push footer to bottom, since main is fixed */}
       <div className="flex-1" />
       <div className="relative z-20 pointer-events-auto">

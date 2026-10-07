@@ -49,3 +49,24 @@ export function createMasonryItems(
     createMasonryItem(`${baseId}-${index}`, image, index, placeholderColor)
   );
 }
+
+/**
+ * Distributes items into N columns based on their height/aspect-ratio.
+ */
+export function distributeMasonryColumns<T>(
+  items: T[],
+  columns: number,
+  getRelativeHeight: (item: T) => number
+): T[][] {
+  const result: T[][] = Array.from({ length: columns }, () => []);
+  const columnHeights = Array.from({ length: columns }, () => 0);
+
+  for (const item of items) {
+    const minHeight = Math.min(...columnHeights);
+    const shortestColIndex = columnHeights.indexOf(minHeight);
+    result[shortestColIndex].push(item);
+    columnHeights[shortestColIndex] += getRelativeHeight(item);
+  }
+
+  return result;
+}

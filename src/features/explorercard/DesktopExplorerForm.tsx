@@ -1,6 +1,7 @@
 import React from 'react';
 import { Field } from './expcard-page';
-import { ImagePlaceholderIcon, AvatarPlaceholderIcon } from './cards';
+import { ImagePlaceholderIcon, AvatarPlaceholderIcon, resolveCountryInfo } from './cards';
+import { COUNTRY_LIST, searchCountry } from "@/lib/countries";
 
 
 interface DesktopExplorerFormProps {
@@ -88,9 +89,6 @@ export function DesktopExplorerForm({
                 {form.profileImage ? (
                   <>
                     <img src={form.profileImage} alt="profile" className="h-full w-full object-cover" />
-                    <div className="absolute inset-0 z-20 flex items-center justify-center bg-black/50 opacity-0 transition-opacity group-hover:opacity-100" onClick={(e) => { e.preventDefault(); handleEditCrop("profileImage"); }}>
-                      <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
-                    </div>
                   </>
                 ) : (
                 <div className="relative w-[48px] h-[48px]">
@@ -102,11 +100,13 @@ export function DesktopExplorerForm({
                   </div>
                 </div>
               )}
-              <input type="file" accept="image/*" onChange={(e) => { handleFile(e, "profileImage"); setErrors(s => ({ ...s, profileImage: '' })); }} className="absolute inset-0 opacity-0 cursor-pointer z-10" />
+              {!form.profileImage && (
+                <input type="file" accept="image/*" onChange={(e) => { handleFile(e, "profileImage"); setErrors(s => ({ ...s, profileImage: '' })); }} className="absolute inset-0 opacity-0 cursor-pointer z-10" />
+              )}
             </div>
             {form.profileImage && (
-              <button type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleRemoveImage("profileImage"); }} className="absolute -top-1.5 -right-1.5 z-30 flex h-4 w-4 items-center justify-center rounded-full bg-[#8b0000] text-white shadow-md hover:bg-[#6b0000] opacity-0 transition-opacity group-hover:opacity-100">
-                <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" /></svg>
+              <button type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleEditCrop("profileImage"); }} className="absolute -top-2 -right-2 z-30 flex h-[28px] w-[28px] items-center justify-center rounded-full bg-black/80 text-white shadow-md border border-[#333] transition-transform hover:scale-110">
+                <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
               </button>
             )}
             </div>
@@ -121,18 +121,17 @@ export function DesktopExplorerForm({
                 {form.coverImage ? (
                   <>
                     <img src={form.coverImage} alt="cover" className="h-full w-full object-cover" />
-                    <div className="absolute inset-0 z-20 flex items-center justify-center bg-black/50 opacity-0 transition-opacity group-hover:opacity-100" onClick={(e) => { e.preventDefault(); handleEditCrop("coverImage"); }}>
-                      <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
-                    </div>
                   </>
                 ) : (
                 <ImagePlaceholderIcon />
               )}
-              <input type="file" accept="image/*" onChange={(e) => { handleFile(e, "coverImage"); setErrors(s => ({ ...s, coverImage: '' })); }} className="absolute inset-0 opacity-0 cursor-pointer z-10" />
+              {!form.coverImage && (
+                <input type="file" accept="image/*" onChange={(e) => { handleFile(e, "coverImage"); setErrors(s => ({ ...s, coverImage: '' })); }} className="absolute inset-0 opacity-0 cursor-pointer z-10" />
+              )}
             </div>
             {form.coverImage && (
-              <button type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleRemoveImage("coverImage"); }} className="absolute -top-1.5 -right-1.5 z-30 flex h-4 w-4 items-center justify-center rounded-full bg-[#8b0000] text-white shadow-md hover:bg-[#6b0000] opacity-0 transition-opacity group-hover:opacity-100">
-                <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" /></svg>
+              <button type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleEditCrop("coverImage"); }} className="absolute -top-2 -right-2 z-30 flex h-[28px] w-[28px] items-center justify-center rounded-full bg-black/80 text-white shadow-md border border-[#333] transition-transform hover:scale-110">
+                <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
               </button>
             )}
             </div>
@@ -172,8 +171,8 @@ export function DesktopExplorerForm({
         <Field label="Where are you from?">
           <div className="relative w-full flex flex-col">
             <div className={`flex w-full items-center gap-[8px] rounded-[10px] bg-black border px-[16px] py-[12px] ${errors.country ? 'border-red-500' : 'border-[#1e1e1e]'}`}>
-              {sampleFlags[form.country] && (
-                 <span className={`fi fi-${sampleFlags[form.country].toLowerCase()} h-[13.333px] w-[20px] aspect-[3/2] shrink-0 rounded-[2px] inline-block bg-cover bg-center`} />
+              {resolveCountryInfo(form.country, sampleFlags).code && (
+                 <span className={`fi fi-${resolveCountryInfo(form.country, sampleFlags).code} h-[13.333px] w-[20px] aspect-[3/2] shrink-0 rounded-[2px] inline-block bg-cover bg-center`} />
               )}
               <input
                 value={form.country}
@@ -193,7 +192,12 @@ export function DesktopExplorerForm({
             {fromOpen && (
               <div className="absolute z-20 mt-1 max-h-48 w-full overflow-y-auto rounded-[8px] border border-[#2a2a2a] bg-[#111] shadow-lg">
                 {Object.keys(sampleFlags)
-                  .filter((c) => Object.keys(sampleFlags).includes(form.country) || c.toLowerCase().includes(form.country.toLowerCase()))
+                  .filter((c) => {
+                    if (Object.keys(sampleFlags).includes(form.country)) return true;
+                    const code = sampleFlags[c];
+                    const entry = COUNTRY_LIST.find(cl => cl.code === code) || { name: c, code: code, flag: "" };
+                    return searchCountry(entry, form.country);
+                  })
                   .map((c) => (
                   <button
                     key={c}
@@ -235,7 +239,9 @@ export function DesktopExplorerForm({
                   key={c}
                   className="flex items-center justify-center rounded-[4px] bg-[#1e1e1e] px-[4px] py-[2px]"
                 >
-                  <span className={`fi fi-${sampleFlags[c].toLowerCase()} h-[13.333px] w-[20px] aspect-[3/2] shrink-0 overflow-clip rounded-[1px] bg-cover bg-center`} title={c} />
+                  {resolveCountryInfo(c, sampleFlags).code && (
+                    <span className={`fi fi-${resolveCountryInfo(c, sampleFlags).code} h-[13.333px] w-[20px] aspect-[3/2] shrink-0 overflow-clip rounded-[1px] bg-cover bg-center`} title={resolveCountryInfo(c, sampleFlags).name || c} />
+                  )}
                 </div>
               ))}
               {visited.length > 5 && (
@@ -253,8 +259,10 @@ export function DesktopExplorerForm({
                   key={c}
                   className="flex items-center gap-[4px] rounded-[6px] bg-[#1e1e1e] px-[6px] py-[2px]"
                 >
-                  <span className={`fi fi-${sampleFlags[c].toLowerCase()} h-[13.333px] w-[20px] aspect-[3/2] shrink-0 overflow-clip rounded-[1px] bg-cover bg-center`} title={c} />
-                  <span className="text-[12px] text-white">{sampleFlags[c]}</span>
+                  {resolveCountryInfo(c, sampleFlags).code && (
+                    <span className={`fi fi-${resolveCountryInfo(c, sampleFlags).code} h-[13.333px] w-[20px] aspect-[3/2] shrink-0 overflow-clip rounded-[1px] bg-cover bg-center`} title={resolveCountryInfo(c, sampleFlags).name || c} />
+                  )}
+                  <span className="text-[12px] text-white">{resolveCountryInfo(c, sampleFlags).code.toUpperCase()}</span>
                   <button
                     type="button"
                     onClick={() => removeCountry(c)}

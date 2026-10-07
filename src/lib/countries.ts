@@ -1,4 +1,4 @@
-export const COUNTRY_LIST: { code: string; name: string; flag: string }[] = [
+export const COUNTRY_LIST: { code: string; name: string; flag: string; aliases?: string[] }[] = [
   { code: "AF", name: "Afghanistan", flag: "" },
   { code: "AX", name: "Aland Islands", flag: "" },
   { code: "AL", name: "Albania", flag: "" },
@@ -35,11 +35,11 @@ export const COUNTRY_LIST: { code: string; name: string; flag: string }[] = [
   { code: "BV", name: "Bouvet Island", flag: "" },
   { code: "BR", name: "Brazil", flag: "" },
   { code: "IO", name: "British Indian Ocean Territory", flag: "" },
-  { code: "BN", name: "Brunei Darussalam", flag: "" },
+  { code: "BN", name: "Brunei Darussalam", flag: "", aliases: ["Brunei"] },
   { code: "BG", name: "Bulgaria", flag: "" },
   { code: "BF", name: "Burkina Faso", flag: "" },
   { code: "BI", name: "Burundi", flag: "" },
-  { code: "CV", name: "Cabo Verde", flag: "" },
+  { code: "CV", name: "Cabo Verde", flag: "", aliases: ["Cape Verde"] },
   { code: "KH", name: "Cambodia", flag: "" },
   { code: "CM", name: "Cameroon", flag: "" },
   { code: "CA", name: "Canada", flag: "" },
@@ -62,9 +62,9 @@ export const COUNTRY_LIST: { code: string; name: string; flag: string }[] = [
   { code: "CU", name: "Cuba", flag: "" },
   { code: "CW", name: "Curaçao", flag: "" },
   { code: "CY", name: "Cyprus", flag: "" },
-  { code: "CZ", name: "Czech Republic", flag: "" },
-  { code: "CI", name: "Côte d'Ivoire", flag: "" },
-  { code: "CD", name: "Democratic Republic of the Congo", flag: "" },
+  { code: "CZ", name: "Czech Republic", flag: "", aliases: ["Czechia"] },
+  { code: "CI", name: "Côte d'Ivoire", flag: "", aliases: ["Ivory Coast"] },
+  { code: "CD", name: "Democratic Republic of the Congo", flag: "", aliases: ["DRC", "DR Congo", "Congo-Kinshasa"] },
   { code: "DK", name: "Denmark", flag: "" },
   { code: "DG", name: "Diego Garcia", flag: "" },
   { code: "DJ", name: "Djibouti", flag: "" },
@@ -78,12 +78,12 @@ export const COUNTRY_LIST: { code: string; name: string; flag: string }[] = [
   { code: "GQ", name: "Equatorial Guinea", flag: "" },
   { code: "ER", name: "Eritrea", flag: "" },
   { code: "EE", name: "Estonia", flag: "" },
-  { code: "SZ", name: "Eswatini", flag: "" },
+  { code: "SZ", name: "Eswatini", flag: "", aliases: ["Swaziland"] },
   { code: "ET", name: "Ethiopia", flag: "" },
   { code: "EU", name: "Europe", flag: "" },
   { code: "FK", name: "Falkland Islands", flag: "" },
   { code: "FO", name: "Faroe Islands", flag: "" },
-  { code: "FM", name: "Federated States of Micronesia", flag: "" },
+  { code: "FM", name: "Federated States of Micronesia", flag: "", aliases: ["Micronesia", "FSM"] },
   { code: "FJ", name: "Fiji", flag: "" },
   { code: "FI", name: "Finland", flag: "" },
   { code: "FR", name: "France", flag: "" },
@@ -109,7 +109,7 @@ export const COUNTRY_LIST: { code: string; name: string; flag: string }[] = [
   { code: "GY", name: "Guyana", flag: "" },
   { code: "HT", name: "Haiti", flag: "" },
   { code: "HM", name: "Heard Island and McDonald Islands", flag: "" },
-  { code: "VA", name: "Holy See", flag: "" },
+  { code: "VA", name: "Holy See", flag: "", aliases: ["Vatican City", "Vatican"] },
   { code: "HN", name: "Honduras", flag: "" },
   { code: "HK", name: "Hong Kong", flag: "" },
   { code: "HU", name: "Hungary", flag: "" },
@@ -132,7 +132,7 @@ export const COUNTRY_LIST: { code: string; name: string; flag: string }[] = [
   { code: "XK", name: "Kosovo", flag: "" },
   { code: "KW", name: "Kuwait", flag: "" },
   { code: "KG", name: "Kyrgyzstan", flag: "" },
-  { code: "LA", name: "Laos", flag: "" },
+  { code: "LA", name: "Laos", flag: "", aliases: ["Lao PDR", "Lao People's Democratic Republic"] },
   { code: "LV", name: "Latvia", flag: "" },
   { code: "ARAB", name: "League of Arab States", flag: "" },
   { code: "LB", name: "Lebanon", flag: "" },
@@ -142,7 +142,7 @@ export const COUNTRY_LIST: { code: string; name: string; flag: string }[] = [
   { code: "LI", name: "Liechtenstein", flag: "" },
   { code: "LT", name: "Lithuania", flag: "" },
   { code: "LU", name: "Luxembourg", flag: "" },
-  { code: "MO", name: "Macau", flag: "" },
+  { code: "MO", name: "Macau", flag: "", aliases: ["Macao"] },
   { code: "MG", name: "Madagascar", flag: "" },
   { code: "MW", name: "Malawi", flag: "" },
   { code: "MY", name: "Malaysia", flag: "" },
@@ -162,11 +162,11 @@ export const COUNTRY_LIST: { code: string; name: string; flag: string }[] = [
   { code: "MS", name: "Montserrat", flag: "" },
   { code: "MA", name: "Morocco", flag: "" },
   { code: "MZ", name: "Mozambique", flag: "" },
-  { code: "MM", name: "Myanmar", flag: "" },
+  { code: "MM", name: "Myanmar", flag: "", aliases: ["Burma"] },
   { code: "NA", name: "Namibia", flag: "" },
   { code: "NR", name: "Nauru", flag: "" },
   { code: "NP", name: "Nepal", flag: "" },
-  { code: "NL", name: "Netherlands", flag: "" },
+  { code: "NL", name: "Netherlands", flag: "", aliases: ["Holland"] },
   { code: "NC", name: "New Caledonia", flag: "" },
   { code: "NZ", name: "New Zealand", flag: "" },
   { code: "NI", name: "Nicaragua", flag: "" },
@@ -174,8 +174,8 @@ export const COUNTRY_LIST: { code: string; name: string; flag: string }[] = [
   { code: "NG", name: "Nigeria", flag: "" },
   { code: "NU", name: "Niue", flag: "" },
   { code: "NF", name: "Norfolk Island", flag: "" },
-  { code: "KP", name: "North Korea", flag: "" },
-  { code: "MK", name: "North Macedonia", flag: "" },
+  { code: "KP", name: "North Korea", flag: "", aliases: ["DPRK", "Democratic People's Republic of Korea"] },
+  { code: "MK", name: "North Macedonia", flag: "", aliases: ["Macedonia"] },
   { code: "GB-NIR", name: "Northern Ireland", flag: "" },
   { code: "MP", name: "Northern Mariana Islands", flag: "" },
   { code: "NO", name: "Norway", flag: "" },
@@ -184,7 +184,7 @@ export const COUNTRY_LIST: { code: string; name: string; flag: string }[] = [
   { code: "PK", name: "Pakistan", flag: "" },
   { code: "PW", name: "Palau", flag: "" },
   { code: "PA", name: "Panama", flag: "" },
-  { code: "PG", name: "Papua New Guinea", flag: "" },
+  { code: "PG", name: "Papua New Guinea", flag: "", aliases: ["PNG"] },
   { code: "PY", name: "Paraguay", flag: "" },
   { code: "PE", name: "Peru", flag: "" },
   { code: "PH", name: "Philippines", flag: "" },
@@ -193,12 +193,12 @@ export const COUNTRY_LIST: { code: string; name: string; flag: string }[] = [
   { code: "PT", name: "Portugal", flag: "" },
   { code: "PR", name: "Puerto Rico", flag: "" },
   { code: "QA", name: "Qatar", flag: "" },
-  { code: "CG", name: "Republic of the Congo", flag: "" },
+  { code: "CG", name: "Republic of the Congo", flag: "", aliases: ["Congo-Brazzaville"] },
   { code: "RO", name: "Romania", flag: "" },
-  { code: "RU", name: "Russia", flag: "" },
+  { code: "RU", name: "Russia", flag: "", aliases: ["Russian Federation"] },
   { code: "RW", name: "Rwanda", flag: "" },
   { code: "RE", name: "Réunion", flag: "" },
-  { code: "BL", name: "Saint Barthélemy", flag: "" },
+  { code: "BL", name: "Saint Barthélemy", flag: "", aliases: ["St Barts", "St Barths", "Saint Barthelemy"] },
   { code: "SH-HL", name: "Saint Helena", flag: "" },
   { code: "SH", name: "Saint Helena, Ascension and Tristan da Cunha", flag: "" },
   { code: "KN", name: "Saint Kitts and Nevis", flag: "" },
@@ -209,7 +209,7 @@ export const COUNTRY_LIST: { code: string; name: string; flag: string }[] = [
   { code: "WS", name: "Samoa", flag: "" },
   { code: "SM", name: "San Marino", flag: "" },
   { code: "ST", name: "Sao Tome and Principe", flag: "" },
-  { code: "SA", name: "Saudi Arabia", flag: "" },
+  { code: "SA", name: "Saudi Arabia", flag: "", aliases: ["KSA"] },
   { code: "GB-SCT", name: "Scotland", flag: "" },
   { code: "SN", name: "Senegal", flag: "" },
   { code: "RS", name: "Serbia", flag: "" },
@@ -223,11 +223,11 @@ export const COUNTRY_LIST: { code: string; name: string; flag: string }[] = [
   { code: "SO", name: "Somalia", flag: "" },
   { code: "ZA", name: "South Africa", flag: "" },
   { code: "GS", name: "South Georgia and the South Sandwich Islands", flag: "" },
-  { code: "KR", name: "South Korea", flag: "" },
+  { code: "KR", name: "South Korea", flag: "", aliases: ["Republic of Korea", "Korea"] },
   { code: "SS", name: "South Sudan", flag: "" },
   { code: "ES", name: "Spain", flag: "" },
   { code: "LK", name: "Sri Lanka", flag: "" },
-  { code: "PS", name: "State of Palestine", flag: "" },
+  { code: "PS", name: "State of Palestine", flag: "", aliases: ["Palestine"] },
   { code: "SD", name: "Sudan", flag: "" },
   { code: "SR", name: "Suriname", flag: "" },
   { code: "SJ", name: "Svalbard and Jan Mayen", flag: "" },
@@ -238,7 +238,7 @@ export const COUNTRY_LIST: { code: string; name: string; flag: string }[] = [
   { code: "TJ", name: "Tajikistan", flag: "" },
   { code: "TZ", name: "Tanzania", flag: "" },
   { code: "TH", name: "Thailand", flag: "" },
-  { code: "TL", name: "Timor-Leste", flag: "" },
+  { code: "TL", name: "Timor-Leste", flag: "", aliases: ["East Timor", "Timor Leste"] },
   { code: "TG", name: "Togo", flag: "" },
   { code: "TK", name: "Tokelau", flag: "" },
   { code: "TO", name: "Tonga", flag: "" },
@@ -248,22 +248,22 @@ export const COUNTRY_LIST: { code: string; name: string; flag: string }[] = [
   { code: "TM", name: "Turkmenistan", flag: "" },
   { code: "TC", name: "Turks and Caicos Islands", flag: "" },
   { code: "TV", name: "Tuvalu", flag: "" },
-  { code: "TR", name: "Türkiye", flag: "" },
+  { code: "TR", name: "Türkiye", flag: "", aliases: ["Turkey"] },
   { code: "UG", name: "Uganda", flag: "" },
   { code: "UA", name: "Ukraine", flag: "" },
-  { code: "AE", name: "United Arab Emirates", flag: "" },
-  { code: "GB", name: "United Kingdom", flag: "" },
+  { code: "AE", name: "United Arab Emirates", flag: "", aliases: ["UAE"] },
+  { code: "GB", name: "United Kingdom", flag: "", aliases: ["UK", "Great Britain"] },
   { code: "UN", name: "United Nations", flag: "" },
   { code: "UM", name: "United States Minor Outlying Islands", flag: "" },
-  { code: "US", name: "United States of America", flag: "" },
+  { code: "US", name: "United States of America", flag: "", aliases: ["USA", "US", "United States"] },
   { code: "XX", name: "Unknown", flag: "" },
   { code: "UY", name: "Uruguay", flag: "" },
   { code: "UZ", name: "Uzbekistan", flag: "" },
   { code: "VU", name: "Vanuatu", flag: "" },
   { code: "VE", name: "Venezuela", flag: "" },
-  { code: "VN", name: "Vietnam", flag: "" },
-  { code: "VG", name: "Virgin Islands (British)", flag: "" },
-  { code: "VI", name: "Virgin Islands (U.S.)", flag: "" },
+  { code: "VN", name: "Vietnam", flag: "", aliases: ["Viet Nam"] },
+  { code: "VG", name: "Virgin Islands (British)", flag: "", aliases: ["British Virgin Islands", "BVI"] },
+  { code: "VI", name: "Virgin Islands (U.S.)", flag: "", aliases: ["US Virgin Islands", "USVI"] },
   { code: "GB-WLS", name: "Wales", flag: "" },
   { code: "WF", name: "Wallis and Futuna", flag: "" },
   { code: "EH", name: "Western Sahara", flag: "" },
@@ -275,4 +275,39 @@ export const COUNTRY_LIST: { code: string; name: string; flag: string }[] = [
 export function getCountryName(code: string): string {
   const country = COUNTRY_LIST.find((c) => c.code === code.toUpperCase());
   return country ? country.name : code;
+}
+
+export function normalizeCountryName(text: string): string {
+  if (!text) return "";
+  return text
+    .toLowerCase()
+    .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // remove accents
+    .replace(/\b(st|st\.)\b/g, "saint") // st, st. -> saint
+    .replace(/[^a-z0-9\s]/g, " ") // replace punctuation/hyphens with spaces
+    .replace(/\s+/g, " ") // remove extra spaces
+    .trim();
+}
+
+export function searchCountry(country: { name: string; code: string; aliases?: string[] }, query: string): boolean {
+  if (!query) return true;
+  const q = normalizeCountryName(query);
+  if (!q) return true;
+
+  if (normalizeCountryName(country.name).includes(q)) return true;
+  if (normalizeCountryName(country.code) === q) return true;
+  if (country.aliases?.some(alias => normalizeCountryName(alias).includes(q))) return true;
+
+  return false;
+}
+
+export function matchCountryExact(country: { name: string; code: string; aliases?: string[] }, query: string): boolean {
+  if (!query) return false;
+  const q = normalizeCountryName(query);
+  if (!q) return false;
+
+  if (normalizeCountryName(country.name) === q) return true;
+  if (normalizeCountryName(country.code) === q) return true;
+  if (country.aliases?.some(alias => normalizeCountryName(alias) === q)) return true;
+
+  return false;
 }

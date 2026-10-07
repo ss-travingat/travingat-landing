@@ -6,7 +6,9 @@ import { getCountryName } from "@/lib/countries";
 import Link from "next/link";
 import { type SampleProfile } from "../data/profile-data";
 import LoadedImage from "@/components/ui/LoadedImage";
+import FoundingExplorer from "@/components/ui/FoundingExplorerBadge";
 import { useMobileComingSoon } from "@/components/ui/MobileComingSoonToast";
+import { CountriesPopup } from "@/components/ui/CountriesPopup";
 
 // Shared Types
 type TabKey = "all" | "countries" | "collections" | "about";
@@ -19,9 +21,17 @@ function toFlagAssetPath(flagCode?: string): string | undefined {
 // ==========================================
 // CUSTOM HOOK: NAVBAR VISIBILITY
 // ==========================================
-export function useNavbarVisibility(menuOpen = false) {
+export function useNavbarVisibility(menuOpen = false, navbarHeight = 72) {
   const lastScrollY = useRef(0);
   const offsetRef = useRef(0);
+
+  // Restore imperative styles after any React re-render
+  useEffect(() => {
+    const navbarEl = document.getElementById("profile-mobile-navbar");
+    const tabsEl = document.getElementById("profile-mobile-tabs");
+    if (navbarEl) navbarEl.style.transform = `translateY(-${offsetRef.current}px)`;
+    if (tabsEl) tabsEl.style.transform = `translateY(-${offsetRef.current}px)`;
+  });
 
   useEffect(() => {
     const updateDOM = () => {
@@ -41,14 +51,19 @@ export function useNavbarVisibility(menuOpen = false) {
       const currentScrollY = window.scrollY;
       const delta = currentScrollY - lastScrollY.current;
 
+      if ((window as any).__lastProgrammaticScrollTime && Date.now() - (window as any).__lastProgrammaticScrollTime < 500) {
+        lastScrollY.current = currentScrollY;
+        return;
+      }
+
       const tabsEl = document.getElementById("profile-mobile-tabs");
-      const isTabsLocked = tabsEl ? tabsEl.getBoundingClientRect().top <= (72 - offsetRef.current + 2) : false;
+      const isTabsLocked = tabsEl ? tabsEl.getBoundingClientRect().top <= (navbarHeight - offsetRef.current + 2) : false;
 
       if (currentScrollY <= 24) {
         offsetRef.current = 0;
       } else {
         if (delta > 0 && isTabsLocked) {
-          offsetRef.current = Math.min(72, offsetRef.current + delta);
+          offsetRef.current = Math.min(navbarHeight, offsetRef.current + delta);
         } else if (delta < 0) {
           offsetRef.current = Math.max(0, offsetRef.current + delta);
         }
@@ -131,8 +146,10 @@ export function MobileProfileNavbar({ profile }: { profile?: any }) {
             <div className="flex items-center gap-2">
               <LoadedImage
                 originalSrc={MediaResolver.getBase(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url)} src={MediaResolver.getOptimized(MediaResolver.getBase(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url))}
-                thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url), 720)}
+                thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url), 144)}
+                blurhash={typeof profile.images.avatar === "object" ? profile.images.avatar.blurhash : undefined}
                 alt="Avatar"
+                priority={true}
                 className="w-8 h-8 rounded-full object-cover"
                 skeletonClassName="absolute inset-0 bg-[#2a2a2a]"
                 containerClassName="w-8 h-8 relative shrink-0 rounded-full"
@@ -199,6 +216,7 @@ export interface MobileHeroProps {
   profileFlagSrc?: string;
   headerFlagCodes: string[];
   flagOverflowCount: number;
+  allVisitedCountries: { name: string; code: string; }[];
 }
 
 export function MobileHero({
@@ -210,6 +228,7 @@ export function MobileHero({
   profileFlagSrc,
   headerFlagCodes,
   flagOverflowCount,
+  allVisitedCountries,
 }: MobileHeroProps) {
   const { showComingSoonToast } = useMobileComingSoon();
   const [openTooltipIndex, setOpenTooltipIndex] = useState<number | null>(null);
@@ -220,191 +239,196 @@ export function MobileHero({
       <div className="flex flex-col items-center gap-[1.25rem] rounded-[1.5rem] w-full relative">
         <MobileProfileNavbar profile={profile} />
         <div className="w-full min-[50.625rem]:max-w-[25rem] min-[50.625rem]:mx-auto flex flex-col items-center">
-          <div className="relative w-full aspect-[377/248] -mb-[2.25rem]">
-            <div className="w-full h-full rounded-2xl overflow-hidden bg-[#151515]">
+          <div className="relative flex w-full aspect-[339/223] p-[1rem] justify-end items-end gap-[0.625rem] -mb-[2.25rem]">
+            <div className="absolute inset-0 rounded-[1rem] overflow-hidden bg-[#151515]">
               <LoadedImage
                 originalSrc={MediaResolver.getBase(typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url)} src={MediaResolver.getOptimized(MediaResolver.getBase(typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url))}
-                thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url), 720)}
+                thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url), 144)}
+                blurhash={typeof profile.images.cover === "object" ? profile.images.cover.blurhash : undefined}
                 alt="Profile cover"
+                priority={true}
                 className="w-full h-full object-cover"
                 skeletonClassName="absolute inset-0 bg-[#1a1a1a]"
                 containerClassName="w-full h-full"
               />
+              <div className="absolute inset-0 pointer-events-none bg-gradient-to-b from-[rgba(0,0,0,0.6)] from-0% to-transparent to-[60.167%]" aria-hidden="true" />
             </div>
-            {/* Founding Explorer badge — half outside left edge */}
+            {/* Founding Explorer badge — half outside bottom-left edge */}
             {profile.showBadge && (
-              <img
-                src="/icons/badge.svg"
-                alt="Founding Explorer"
-                className="absolute z-10 w-24 h-24 pointer-events-none select-none drop-shadow-[0_4px_16px_rgba(0,0,0,0.5)]"
-                style={{ top: "24px", left: "0", transform: "translateX(-50%)" }}
-                draggable={false}
-              />
+              <div
+                className="absolute z-10 w-[4.5rem] h-[4.5rem] pointer-events-none select-none rounded-full"
+                style={{ bottom: "-2.25rem", left: "0.75rem" }}
+              >
+                <FoundingExplorer />
+              </div>
             )}
 
             {/* Sample Profile Indicator */}
             {profile.isSampleProfile && (
               <div
-                className="absolute z-10 text-white pointer-events-none select-none font-medium leading-none whitespace-nowrap drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)]"
-                style={{
-                  fontSize: "14px",
-                  bottom: "16px",
-                  right: "16px",
-                }}
+                className="relative z-10 text-white/80 pointer-events-none select-none font-medium leading-none whitespace-nowrap drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)]"
+                style={{ fontSize: "0.75rem" }}
               >
-                Sample Profile
-              </div>
+            Sample Profile
+          </div>
             )}
-          </div>
-          <div className="relative z-10 mx-auto w-[5rem] h-[5rem] rounded-2xl ring-4 ring-black bg-[#151515]">
-            <LoadedImage
-              originalSrc={MediaResolver.getBase(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url)} src={MediaResolver.getOptimized(MediaResolver.getBase(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url))}
-              thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url), 720)}
-              alt="Profile avatar"
-              className="w-full h-full object-cover rounded-2xl"
-              skeletonClassName="absolute inset-0 bg-[#1a1a1a] rounded-2xl"
-              containerClassName="w-full h-full rounded-2xl"
-            />
-          </div>
         </div>
-
-        <div className="flex flex-col items-center gap-[0.5rem] w-full min-[50.625rem]:max-w-[25rem] min-[50.625rem]:mx-auto">
-          <div className="flex items-center justify-center gap-1.5 text-[#696969] text-[0.875rem] leading-[1.25rem] tracking-[-0.5px] font-sans font-normal">
-            {profileFlagSrc ? (
-              <TooltipProvider delayDuration={100}>
-                <Tooltip
-                  content={basedIn}
-                  theme="light"
-                  side="top"
-                  open={openBioTooltip}
-                  onOpenChange={setOpenBioTooltip}
-                >
-                  <button
-                    type="button"
-                    className="focus:outline-none flex items-center justify-center"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      setOpenBioTooltip(!openBioTooltip);
-                    }}
-                  >
-                    <img
-                      src={profileFlagSrc}
-                      alt={`${basedIn} flag`}
-                      className="h-[0.625rem] w-[0.9375rem] rounded-[0.125rem] object-cover cursor-pointer"
-                      loading="lazy"
-                      decoding="async"
-                    />
-                  </button>
-                </Tooltip>
-              </TooltipProvider>
-            ) : (
-              <span>{profileFlagCode}</span>
-            )}
-            <span>{basedIn}</span>
-          </div>
-          <h1 className="text-white text-[1.25rem] leading-[1.5rem] tracking-[-0.41px] font-semibold text-center w-full">{displayName}</h1>
-          <p className="text-[#a8a8a8] text-[0.875rem] leading-[1.25rem] tracking-[-0.5px] text-center w-full font-sans font-normal">{handle}</p>
-        </div>
-
-        <div className="flex flex-wrap items-start justify-center gap-[0.25rem] px-[0.375rem] w-full min-[50.625rem]:max-w-[25rem] min-[50.625rem]:mx-auto">
-          <TooltipProvider delayDuration={100}>
-            {headerFlagCodes.map((code, index) => {
-              const countryName = getCountryName(code);
-              return (
-                <Tooltip
-                  key={`${code}-${index}`}
-                  content={countryName}
-                  theme="light"
-                  side="top"
-                  open={openTooltipIndex === index}
-                  onOpenChange={(isOpen) => setOpenTooltipIndex(isOpen ? index : null)}
-                >
-                  <button
-                    type="button"
-                    className="focus:outline-none shrink-0"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      setOpenTooltipIndex(openTooltipIndex === index ? null : index);
-                    }}
-                  >
-                    <img
-                      src={toFlagAssetPath(code) || ""}
-                      alt={`${countryName} flag`}
-                      className="h-[1.0625rem] w-[1.625rem] rounded-[0.125rem] object-cover cursor-pointer"
-                      loading="lazy"
-                      decoding="async"
-                    />
-                  </button>
-                </Tooltip>
-              );
-            })}
-          </TooltipProvider>
-          {flagOverflowCount > 0 && (
-            <div className="flex h-[1.0625rem] w-[1.625rem] shrink-0 items-center justify-center overflow-hidden rounded-[0.125rem] bg-white">
-              <span className="font-medium text-violet-600 text-[0.625rem] text-center tracking-[-0.408px] whitespace-nowrap">
-                +{flagOverflowCount}
-              </span>
-            </div>
-          )}
-        </div>
-
-        {/* Mobile Stats Container */}
-        <div className="bg-[#111] flex items-center justify-center gap-[1.25rem] rounded-[0.75rem] w-full min-[50.625rem]:max-w-[25rem] min-[50.625rem]:mx-auto pt-[1.125rem] pb-[1.25rem] px-[1.25rem]">
-          <div className="flex flex-1 flex-col items-center justify-center gap-[0.25rem]">
-            <p className="ds-font-display text-[1.5rem] font-semibold leading-[2rem] tracking-[-0.5px] text-white">
-              {profile.countries}
-            </p>
-            <p className="text-[0.875rem] font-normal leading-[1.25rem] tracking-[-0.084px] text-[#989898]">
-              Countries
-            </p>
-          </div>
-          <div className="flex flex-1 flex-col items-center justify-center gap-[0.25rem]">
-            <p className="ds-font-display text-[1.5rem] font-semibold leading-[2rem] tracking-[-0.5px] text-white">
-              {profile.media}
-            </p>
-            <p className="text-[0.875rem] font-normal leading-[1.25rem] tracking-[-0.084px] text-[#989898]">
-              All media
-            </p>
-          </div>
-          <div className="flex flex-1 flex-col items-center justify-center gap-[0.25rem]">
-            <p className="ds-font-display text-[1.5rem] font-semibold leading-[2rem] tracking-[-0.5px] text-white">
-              {profile.collections}
-            </p>
-            <p className="text-[0.875rem] font-normal leading-[1.25rem] tracking-[-0.084px] text-[#989898]">
-              Collections
-            </p>
-          </div>
-        </div>
-
-        {/* Buttons under Stats Card */}
-        <div className="flex gap-[0.5rem] items-center w-full min-[50.625rem]:max-w-[25rem] min-[50.625rem]:mx-auto mt-[0.25rem]">
-          <button
-            onClick={() => showComingSoonToast("featureLaunch")}
-            className="flex-1 rounded-full bg-white text-black px-[1.125rem] py-[0.625rem] text-[1rem] font-medium leading-[1.5rem] tracking-[-0.096px]"
-          >
-            Follow
-          </button>
-          <button
-            onClick={() => showComingSoonToast("featureLaunch")}
-            className="h-[2.75rem] w-[2.6875rem] shrink-0 rounded-full border border-[#353535] bg-[#1a1a1a] grid place-items-center text-white"
-            aria-label="More options"
-          >
-            <span className="grid grid-cols-2 gap-1">
-              <span className="h-[0.1875rem] w-[0.1875rem] rounded-full bg-white" />
-              <span className="h-[0.1875rem] w-[0.1875rem] rounded-full bg-white" />
-              <span className="h-[0.1875rem] w-[0.1875rem] rounded-full bg-white" />
-              <span className="h-[0.1875rem] w-[0.1875rem] rounded-full bg-white" />
-            </span>
-          </button>
-          <button
-            onClick={() => showComingSoonToast("featureLaunch")}
-            className="flex-1 rounded-full bg-[#1a1a1a] border border-[#353535] text-white px-[1.125rem] py-[0.625rem] text-[1rem] font-medium leading-[1.5rem] tracking-[-0.096px]"
-          >
-            Connect
-          </button>
+        <div className="relative z-10 mx-auto w-[5rem] h-[5rem] rounded-2xl ring-4 ring-black bg-[#151515]">
+          <LoadedImage
+            originalSrc={MediaResolver.getBase(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url)} src={MediaResolver.getOptimized(MediaResolver.getBase(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url))}
+            thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url), 144)}
+            blurhash={typeof profile.images.avatar === "object" ? profile.images.avatar.blurhash : undefined}
+            alt="Profile avatar"
+            priority={true}
+            className="w-full h-full object-cover rounded-2xl"
+            skeletonClassName="absolute inset-0 bg-[#1a1a1a] rounded-2xl"
+            containerClassName="w-full h-full rounded-2xl"
+          />
         </div>
       </div>
-    </section>
+
+      <div className="flex flex-col items-center gap-[0.5rem] w-full min-[50.625rem]:max-w-[25rem] min-[50.625rem]:mx-auto">
+        <div className="flex items-center justify-center gap-1.5 text-[#696969] text-[0.875rem] leading-[1.25rem] tracking-[-0.5px] font-sans font-normal">
+          {profileFlagSrc ? (
+            <TooltipProvider delayDuration={100}>
+              <Tooltip
+                content={basedIn}
+                theme="light"
+                side="top"
+                open={openBioTooltip}
+                onOpenChange={setOpenBioTooltip}
+              >
+                <button
+                  type="button"
+                  className="focus:outline-none flex items-center justify-center"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setOpenBioTooltip(!openBioTooltip);
+                  }}
+                >
+                  <img
+                    src={profileFlagSrc}
+                    alt={`${basedIn} flag`}
+                    className="h-[0.625rem] w-[0.9375rem] rounded-[0.125rem] object-cover cursor-pointer"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </button>
+              </Tooltip>
+            </TooltipProvider>
+          ) : (
+            <span>{profileFlagCode}</span>
+          )}
+          <span>{basedIn}</span>
+        </div>
+        <h1 className="text-white text-[1.25rem] leading-[1.5rem] tracking-[-0.41px] font-semibold text-center w-full">{displayName}</h1>
+        <p className="text-[#a8a8a8] text-[0.875rem] leading-[1.25rem] tracking-[-0.5px] text-center w-full font-sans font-normal">{handle}</p>
+      </div>
+
+      <div className="flex flex-wrap items-start justify-center gap-[0.25rem] px-[0.375rem] w-full min-[50.625rem]:max-w-[25rem] min-[50.625rem]:mx-auto">
+        <TooltipProvider delayDuration={100}>
+          {headerFlagCodes.map((code, index) => {
+            const countryName = getCountryName(code);
+            return (
+              <Tooltip
+                key={`${code}-${index}`}
+                content={countryName}
+                theme="light"
+                side="top"
+                open={openTooltipIndex === index}
+                onOpenChange={(isOpen) => setOpenTooltipIndex(isOpen ? index : null)}
+              >
+                <button
+                  type="button"
+                  className="focus:outline-none shrink-0"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setOpenTooltipIndex(openTooltipIndex === index ? null : index);
+                  }}
+                >
+                  <img
+                    src={toFlagAssetPath(code) || ""}
+                    alt={`${countryName} flag`}
+                    className="h-[1.0625rem] w-[1.625rem] rounded-[0.125rem] object-cover cursor-pointer"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </button>
+              </Tooltip>
+            );
+          })}
+        </TooltipProvider>
+        {flagOverflowCount > 0 && (
+          <CountriesPopup
+            countries={allVisitedCountries}
+            trigger={
+              <div className="flex h-[1.0625rem] w-[1.625rem] shrink-0 items-center justify-center overflow-hidden rounded-[0.125rem] bg-white">
+                <span className="font-medium text-violet-600 text-[0.625rem] text-center tracking-[-0.408px] whitespace-nowrap">
+                  +{flagOverflowCount}
+                </span>
+              </div>
+            }
+          />
+        )}
+      </div>
+
+      {/* Mobile Stats Container */}
+      <div className="bg-[#111] flex items-center justify-center gap-[1.25rem] rounded-[0.75rem] w-full min-[50.625rem]:max-w-[25rem] min-[50.625rem]:mx-auto pt-[1.125rem] pb-[1.25rem] px-[1.25rem]">
+        <div className="flex flex-1 flex-col items-center justify-center gap-[0.25rem]">
+          <p className="ds-font-display text-[1.5rem] font-semibold leading-[2rem] tracking-[-0.5px] text-white">
+            {profile.countries}
+          </p>
+          <p className="text-[0.875rem] font-normal leading-[1.25rem] tracking-[-0.084px] text-[#989898]">
+            Countries
+          </p>
+        </div>
+        <div className="flex flex-1 flex-col items-center justify-center gap-[0.25rem]">
+          <p className="ds-font-display text-[1.5rem] font-semibold leading-[2rem] tracking-[-0.5px] text-white">
+            {profile.media}
+          </p>
+          <p className="text-[0.875rem] font-normal leading-[1.25rem] tracking-[-0.084px] text-[#989898]">
+            All media
+          </p>
+        </div>
+        <div className="flex flex-1 flex-col items-center justify-center gap-[0.25rem]">
+          <p className="ds-font-display text-[1.5rem] font-semibold leading-[2rem] tracking-[-0.5px] text-white">
+            {profile.collections}
+          </p>
+          <p className="text-[0.875rem] font-normal leading-[1.25rem] tracking-[-0.084px] text-[#989898]">
+            Collections
+          </p>
+        </div>
+      </div>
+
+      {/* Buttons under Stats Card */}
+      <div className="flex gap-[0.5rem] items-center w-full min-[50.625rem]:max-w-[25rem] min-[50.625rem]:mx-auto mt-[0.25rem]">
+        <button
+          onClick={() => showComingSoonToast("featureLaunch")}
+          className="flex-1 rounded-full bg-white text-black px-[1.125rem] py-[0.625rem] text-[1rem] font-medium leading-[1.5rem] tracking-[-0.096px]"
+        >
+          Follow
+        </button>
+        <button
+          onClick={() => showComingSoonToast("featureLaunch")}
+          className="h-[2.75rem] w-[2.6875rem] shrink-0 rounded-full border border-[#353535] bg-[#1a1a1a] grid place-items-center text-white"
+          aria-label="More options"
+        >
+          <span className="grid grid-cols-2 gap-1">
+            <span className="h-[0.1875rem] w-[0.1875rem] rounded-full bg-white" />
+            <span className="h-[0.1875rem] w-[0.1875rem] rounded-full bg-white" />
+            <span className="h-[0.1875rem] w-[0.1875rem] rounded-full bg-white" />
+            <span className="h-[0.1875rem] w-[0.1875rem] rounded-full bg-white" />
+          </span>
+        </button>
+        <button
+          onClick={() => showComingSoonToast("featureLaunch")}
+          className="flex-1 rounded-full bg-[#1a1a1a] border border-[#353535] text-white px-[1.125rem] py-[0.625rem] text-[1rem] font-medium leading-[1.5rem] tracking-[-0.096px]"
+        >
+          Connect
+        </button>
+      </div>
+    </div>
+    </section >
   );
 }
 
@@ -418,11 +442,11 @@ export interface MobileTabsProps {
 }
 
 export function MobileTabs({ activeTab, setActiveTab, swipeOffset = 0 }: MobileTabsProps) {
-  const mobileTabs: { key: TabKey }[] = [
-    { key: "all" },
-    { key: "countries" },
-    { key: "collections" },
-    { key: "about" },
+  const mobileTabs: { key: TabKey; icon: string }[] = [
+    { key: "all", icon: "auto_awesome_mosaic" },
+    { key: "countries", icon: "public" },
+    { key: "collections", icon: "folder_copy" },
+    { key: "about", icon: "account_box" },
   ];
   const activeIndex = mobileTabs.findIndex((t) => t.key === activeTab);
 
@@ -441,7 +465,7 @@ export function MobileTabs({ activeTab, setActiveTab, swipeOffset = 0 }: MobileT
   const isDragging = swipeOffset !== 0;
 
   return (
-    <div id="profile-mobile-tabs" className="flex min-[75rem]:hidden flex-col w-[calc(100%+16px)] -mx-[0.5rem] border-b border-[#252525] sticky top-[4.5rem] z-header bg-black">
+    <div id="profile-mobile-tabs" className="flex min-[75rem]:hidden flex-col w-full border-b border-[#252525] sticky top-[4.5rem] z-header bg-black">
       <div className="flex items-center w-full">
         {mobileTabs.map((tab) => (
           <button
@@ -452,19 +476,21 @@ export function MobileTabs({ activeTab, setActiveTab, swipeOffset = 0 }: MobileT
             }}
             className="flex-1 flex items-center justify-center px-6 py-4 transition-all duration-200 opacity-100"
           >
-            <img src={`/icons/tab-${tab.key}.svg`} alt={`${tab.key} tab`} className="w-[1.5rem] h-[1.5rem]" />
+            <span className="material-symbols-rounded text-[1.5rem]" style={{ fontVariationSettings: "'FILL' 0, 'wght' 400" }}>{tab.icon}</span>
           </button>
         ))}
       </div>
       {/* Sliding underline */}
       <div
-        className="absolute bottom-0 h-0.5 bg-white rounded-full"
+        className="absolute bottom-0 left-0 pointer-events-none"
         style={{
           width: `${100 / mobileTabs.length}%`,
           transform: `translateX(${finalTranslate}%)`,
           transition: isDragging ? "none" : "transform 300ms cubic-bezier(0.4, 0, 0.2, 1)",
         }}
-      />
+      >
+        <div className="w-full h-[1px] bg-white" />
+      </div>
     </div>
   );
 }

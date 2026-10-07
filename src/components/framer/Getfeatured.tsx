@@ -2,6 +2,7 @@
 "use client"
 import React, { useState, useRef } from "react"
 import { countries } from "https://esm.sh/countries-list"
+import { COUNTRY_LIST, searchCountry } from "@/lib/countries"
 
 const countryOptions = Object.entries(countries)
   .map(([code, data]) => ({
@@ -30,9 +31,10 @@ const EmailVerificationForm = () => {
   // Basic email validation regex
   const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
 
-  const filteredCountries = countryOptions.filter((c) =>
-    c.name.toLowerCase().includes(countrySearchQuery.toLowerCase())
-  )
+  const filteredCountries = countryOptions.filter((c) => {
+    const entry = COUNTRY_LIST.find(cl => cl.code === c.code) || { name: c.name, code: c.code };
+    return searchCountry(entry, countrySearchQuery);
+  });
 
   const trimmedLink = linkInput.trim()
   const isLinkInputValid =
@@ -79,7 +81,7 @@ const EmailVerificationForm = () => {
     const resData = await fetch(backendUrl + "/api/auth/verify-otp", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, otp: otpString }),
+      body: JSON.stringify({ email, otp: otpString, source: "Get Featured" }),
     })
     const res = await resData.json()
 
@@ -640,14 +642,11 @@ const EmailVerificationForm = () => {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                   email,
-                  data: {
-                    firstName,
-                    lastName,
-                    country: selectedCountry || "",
-                    visitedCount:
-                      parseInt(visitedCount) || 0,
-                    links,
-                  },
+                  firstName,
+                  lastName,
+                  country: selectedCountry || "",
+                  visitedCount: parseInt(visitedCount) || 0,
+                  links: links.map(l => l.startsWith('http') ? l : `https://${l}`),
                 }),
               }
             )
@@ -671,6 +670,7 @@ const EmailVerificationForm = () => {
             setLastName("")
             setVisitedCount("")
             setLinks([])
+            setLinkInput("")
             setSelectedCountry(null)
           }}
         >
