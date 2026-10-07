@@ -55,13 +55,14 @@ function PhotoLightbox({
   profileCountry,
   profileHandle,
   profileAvatar,
+  profileAvatarBlurhash,
   profileFlagCode,
   countryName,
   countryCode,
   description,
   quote,
 }: {
-  items: Array<{ url: string; width?: number; height?: number }>;
+  items: Array<{ url: string; width?: number; height?: number; blurhash?: string }>;
   activeIndex: number;
   onClose: () => void;
   onNext: () => void;

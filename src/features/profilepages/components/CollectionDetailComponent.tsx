@@ -45,10 +45,11 @@ function CollectionLightbox({
   profileCountry,
   profileHandle,
   profileAvatar,
+  profileAvatarBlurhash,
   collectionTitle,
   description,
 }: {
-  items: Array<{ url: string; width?: number; height?: number }>;
+  items: Array<{ url: string; width?: number; height?: number; blurhash?: string }>;
   activeIndex: number;
   onClose: () => void;
   onNext: () => void;
@@ -153,7 +154,7 @@ export default function CollectionDetailComponent({
 }: {
   profile: SampleProfile;
   title: string;
-  images: Array<string | { url: string; width?: number; height?: number }>;
+  images: Array<string | { url: string; width?: number; height?: number; blurhash?: string }>;
   collectionCountryCodes?: string[];
 }) {
   const router = useRouter();
@@ -371,7 +372,7 @@ export default function CollectionDetailComponent({
   const getCountryCodeForImage = (img: { url: string; countryCode?: string }) => {
     if (!img) return undefined;
     if (img.countryCode) return img.countryCode;
-    const entry = profile.countryImages?.find(c => 
+    const entry = profile.countryImages?.find(c =>
       c.images.some((i: any) => i && (typeof i === "string" ? i : i.url) === img.url)
     );
     return entry?.countryCode;
@@ -501,30 +502,29 @@ export default function CollectionDetailComponent({
                 <div id="mobile-tabs-sentinel" className="w-full h-0 pointer-events-none md:hidden" />
                 <div id="profile-mobile-tabs" className="flex md:hidden items-center justify-between w-full border-b border-[#222] sticky top-[56px] z-[90] bg-black">
                   {[
-                  { key: "all", icon: "auto_awesome_mosaic" },
-                  { key: "about", icon: "chat_info" },
-                ].map(tab => (
-                  <button
-                    key={tab.key}
-                    onClick={() => handleTabChange(tab.key as MediaTab)}
-                    className={`relative flex flex-col flex-1 items-center justify-center py-[1rem] transition-colors ${
-                      activeTab === tab.key ? "text-white" : "text-[#7c7c7c]"
-                    }`}
+                    { key: "all", icon: "auto_awesome_mosaic" },
+                    { key: "about", icon: "chat_info" },
+                  ].map(tab => (
+                    <button
+                      key={tab.key}
+                      onClick={() => handleTabChange(tab.key as MediaTab)}
+                      className={`relative flex flex-col flex-1 items-center justify-center py-[1rem] transition-colors ${activeTab === tab.key ? "text-white" : "text-[#7c7c7c]"
+                        }`}
+                    >
+                      <span className="material-symbols-rounded text-[1.5rem]" style={{ fontVariationSettings: "'FILL' 0, 'wght' 400" }}>{tab.icon}</span>
+                    </button>
+                  ))}
+                  <div
+                    className="absolute bottom-[-1px] left-0 pointer-events-none"
+                    style={{
+                      width: `${100 / mobileTabsArr.length}%`,
+                      transform: `translateX(${finalTranslate}%)`,
+                      transition: isDragging ? "none" : "transform 300ms cubic-bezier(0.4, 0, 0.2, 1)",
+                    }}
                   >
-                    <span className="material-symbols-rounded text-[1.5rem]" style={{ fontVariationSettings: "'FILL' 0, 'wght' 400" }}>{tab.icon}</span>
-                  </button>
-                ))}
-                <div
-                  className="absolute bottom-[-1px] left-0 pointer-events-none"
-                  style={{
-                    width: `${100 / mobileTabsArr.length}%`,
-                    transform: `translateX(${finalTranslate}%)`,
-                    transition: isDragging ? "none" : "transform 300ms cubic-bezier(0.4, 0, 0.2, 1)",
-                  }}
-                >
-                  <div className="w-full h-[1px] bg-white" />
+                    <div className="w-full h-[1px] bg-white" />
+                  </div>
                 </div>
-              </div>
               </>
             );
           })()}
@@ -536,8 +536,8 @@ export default function CollectionDetailComponent({
                 key={tab.label}
                 onClick={() => setActiveTab(tab.key as MediaTab)}
                 className={`w-[7.5rem] rounded-[62.4375rem] px-[1.5rem] py-[0.5rem] text-[1rem] leading-[1.5rem] tracking-[-0.096px] transition ${activeTab === tab.key
-                    ? "bg-[#1e1e1e] border border-white text-white font-medium"
-                    : "bg-[#161616] border border-transparent text-[#bdbdbd] font-normal"
+                  ? "bg-[#1e1e1e] border border-white text-white font-medium"
+                  : "bg-[#161616] border border-transparent text-[#bdbdbd] font-normal"
                   }`}
               >
                 {tab.label}
@@ -553,24 +553,24 @@ export default function CollectionDetailComponent({
             onTouchEnd={handleTouchEnd}
           >
             {/* Masonry grid or About */}
-          {activeTab === "about" ? (
-            <div className="flex flex-col items-start gap-6 w-full max-w-[50rem] mx-auto text-left mt-8 mb-20 px-4 md:px-0">
-              <h2 className="text-[1.5rem] font-semibold text-white">About {title}</h2>
-              <p className="text-[1rem] text-[#a8a8a8] leading-relaxed whitespace-pre-wrap">
-                {aboutText || "No information provided yet."}
-              </p>
-            </div>
-          ) : displayImages.length === 0 ? (
-            <div className="flex flex-col items-center gap-4 py-16 text-center">
-              <p className="text-[#a8a8a8] text-[1rem]">No media in this category yet.</p>
-            </div>
-          ) : (
-            <div className="w-full">
-              {/* Desktop: 4 explicit flex columns distributed by height — matches Figma layout */}
-              <div className="hidden lg:flex w-full gap-[0.5rem] xl:gap-[0.75rem]">
-                {distributeMasonryColumns(items, 4, (item) => (item.height && item.width ? item.height / item.width : 1)).map((columnItems, colIdx) => (
-                  <div key={colIdx} className="flex flex-col gap-[0.5rem] xl:gap-[0.75rem] flex-1 min-w-0">
-                    {columnItems.map(({ url: imgUrl, globalIndex }) => {
+            {activeTab === "about" ? (
+              <div className="flex flex-col items-start gap-6 w-full max-w-[50rem] mx-auto text-left mt-8 mb-20 px-4 md:px-0">
+                <h2 className="text-[1.5rem] font-semibold text-white">About {title}</h2>
+                <p className="text-[1rem] text-[#a8a8a8] leading-relaxed whitespace-pre-wrap">
+                  {aboutText || "No information provided yet."}
+                </p>
+              </div>
+            ) : displayImages.length === 0 ? (
+              <div className="flex flex-col items-center gap-4 py-16 text-center">
+                <p className="text-[#a8a8a8] text-[1rem]">No media in this category yet.</p>
+              </div>
+            ) : (
+              <div className="w-full">
+                {/* Desktop: 4 explicit flex columns distributed by height — matches Figma layout */}
+                <div className="hidden lg:flex w-full gap-[0.5rem] xl:gap-[0.75rem]">
+                  {distributeMasonryColumns(items, 4, (item) => (item.height && item.width ? item.height / item.width : 1)).map((columnItems, colIdx) => (
+                    <div key={colIdx} className="flex flex-col gap-[0.5rem] xl:gap-[0.75rem] flex-1 min-w-0">
+                      {columnItems.map(({ url: imgUrl, globalIndex, blurhash }) => {
                         const isVideo = isVideoAsset(imgUrl);
                         const displayCountryCode = getCountryCodeForImage(columnItems[colIdx] as any) || getCountryCodeForImage({ url: imgUrl });
                         const countryEntry = displayCountryCode ? COUNTRY_LIST.find((c) => c.code.toLowerCase() === displayCountryCode.toLowerCase()) : null;
@@ -637,14 +637,14 @@ export default function CollectionDetailComponent({
                           </div>
                         );
                       })}
-                  </div>
-                ))}
-              </div>
-              {/* Mobile/tablet: 2 explicit flex columns distributed by height */}
-              <div className="flex lg:hidden w-full gap-[0.375rem] md:gap-[1.25rem]">
-                {distributeMasonryColumns(items, 2, (item) => (item.height && item.width ? item.height / item.width : 1)).map((columnItems, colIdx) => (
-                  <div key={colIdx} className="flex flex-col gap-[0.375rem] md:gap-[1.25rem] flex-1 min-w-0">
-                    {columnItems.map(({ url: imgUrl, globalIndex }) => {
+                    </div>
+                  ))}
+                </div>
+                {/* Mobile/tablet: 2 explicit flex columns distributed by height */}
+                <div className="flex lg:hidden w-full gap-[0.375rem] md:gap-[1.25rem]">
+                  {distributeMasonryColumns(items, 2, (item) => (item.height && item.width ? item.height / item.width : 1)).map((columnItems, colIdx) => (
+                    <div key={colIdx} className="flex flex-col gap-[0.375rem] md:gap-[1.25rem] flex-1 min-w-0">
+                      {columnItems.map(({ url: imgUrl, globalIndex, blurhash }) => {
                         const isVideo = isVideoAsset(imgUrl);
                         const displayCountryCode = getCountryCodeForImage(columnItems[colIdx] as any) || getCountryCodeForImage({ url: imgUrl });
                         const countryEntry = displayCountryCode ? COUNTRY_LIST.find((c) => c.code.toLowerCase() === displayCountryCode.toLowerCase()) : null;
@@ -711,11 +711,11 @@ export default function CollectionDetailComponent({
                           </div>
                         );
                       })}
-                  </div>
-                ))}
+                    </div>
+                  ))}
+                </div>
               </div>
-            </div>
-          )}
+            )}
           </div>
         </div>
       </main>
