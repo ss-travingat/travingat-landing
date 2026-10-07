@@ -446,9 +446,9 @@ function PhotoCarouselModal({
               {profileFlagSrc ? (
                 <img src={profileFlagSrc} alt="" className="h-3 w-[1.125rem] rounded-[0.125rem] object-cover" />
               ) : null}
-              <span className="text-sm font-medium leading-[1.25rem] tracking-[-0.1px] text-[#A8A8A8]">{profileCountry || profileName}</span>
+              <span className="text-[14px] font-medium leading-[20px] tracking-[-0.5px] text-[#A8A8A8]">{profileCountry || profileName}</span>
             </div>
-            <p className="text-lg font-medium leading-6 tracking-[-0.198px] text-white">{profileHandle}</p>
+            <p className="text-[18px] font-medium leading-[24px] tracking-[-0.198px] text-white">{profileHandle}</p>
           </div>
 
           {/* Follow / Connect / More */}
@@ -456,14 +456,14 @@ function PhotoCarouselModal({
             <button
               type="button"
               onClick={() => showComingSoonToast("featureLaunch")}
-              className="h-9.5 flex-1 rounded-full bg-white text-sm font-medium text-black transition hover:bg-[#e8e8e8]"
+              className="h-9.5 flex-1 rounded-full bg-white text-[14px] font-medium text-black transition hover:bg-[#e8e8e8]"
             >
               Follow
             </button>
             <button
               type="button"
               onClick={() => showComingSoonToast("featureLaunch")}
-              className="h-9.5 flex-1 rounded-full border border-[#2e2e2e] bg-[#1a1a1a] text-sm font-medium text-white transition hover:bg-[#222]"
+              className="h-9.5 flex-1 rounded-full border border-[#2e2e2e] bg-[#1a1a1a] text-[14px] font-medium text-white transition hover:bg-[#222]"
             >
               Connect
             </button>
@@ -488,18 +488,18 @@ function PhotoCarouselModal({
               {countryFlagSrc ? (
                 <img src={countryFlagSrc} alt="" className="mt-[0.34375rem] shrink-0 h-[1.3125rem] w-[2rem] rounded-[0.204375rem] object-cover shadow-sm" />
               ) : null}
-              <p className="text-left font-display text-[24px] font-semibold not-italic leading-[2rem] tracking-[-0.03125rem] text-white">
+              <p className="text-left font-display text-[24px] font-semibold not-italic leading-[32px] tracking-[-0.5px] text-white">
                 {countryName || ""}
               </p>
             </div>
             {description ? (
-              <p className="text-base font-normal leading-[1.5rem] tracking-[-0.096px] text-[#dcdcdc] whitespace-pre-wrap">{description}</p>
+              <p className="text-[16px] font-normal leading-[24px] tracking-[-0.096px] text-[#dcdcdc] whitespace-pre-wrap">{description}</p>
             ) : null}
           </div>
 
           {quote ? (
             <div className="border-t border-[#222] pt-6">
-              <p className="text-base font-normal leading-[1.5rem] tracking-[-0.096px] text-[#dcdcdc] whitespace-pre-wrap">{quote}</p>
+              <p className="text-[16px] font-normal leading-[24px] tracking-[-0.096px] text-[#dcdcdc] whitespace-pre-wrap">{quote}</p>
             </div>
           ) : null}
         </aside>

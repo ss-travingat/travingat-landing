@@ -113,7 +113,7 @@ function CollectionLightbox({
               {profileFlagSrc ? (
                 <img src={profileFlagSrc} alt="" className="h-3 w-[1.125rem] rounded-[0.125rem] object-cover" />
               ) : null}
-              <span className="text-[14px] font-medium leading-[1.25rem] tracking-[-0.1px] text-[#A8A8A8]">{profileCountry || profileName}</span>
+              <span className="text-[14px] font-medium leading-[20px] tracking-[-0.5px] text-[#A8A8A8]">{profileCountry || profileName}</span>
             </div>
             <p className="text-[20px] font-semibold tracking-[-0.5px] text-white">{profileHandle}</p>
           </div>
@@ -148,7 +148,7 @@ function CollectionLightbox({
               {collectionTitle}
             </p>
             {description ? (
-              <p className="text-[15px] leading-[1.6] tracking-[-0.3px] text-[#a0a0a0]">{description}</p>
+              <p className="text-[15px] leading-[25px] tracking-[-0.3px] text-[#a0a0a0]">{description}</p>
             ) : null}
           </div>
         </aside>

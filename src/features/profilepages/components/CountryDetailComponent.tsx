@@ -124,7 +124,7 @@ function PhotoLightbox({
               {profileFlagSrc ? (
                 <img src={profileFlagSrc} alt="" className="h-3 w-[1.125rem] rounded-[0.125rem] object-cover" />
               ) : null}
-              <span className="text-[14px] font-medium leading-[1.25rem] tracking-[-0.1px] text-[#A8A8A8]">{profileCountry || profileName}</span>
+              <span className="text-[14px] font-medium leading-[20px] tracking-[-0.5px] text-[#A8A8A8]">{profileCountry || profileName}</span>
             </div>
             <p className="text-[20px] font-semibold tracking-[-0.5px] text-white">{profileHandle}</p>
           </div>
@@ -161,19 +161,19 @@ function PhotoLightbox({
               {countryFlagSrc ? (
                 <img src={countryFlagSrc} alt="" className="mt-[0.34375rem] shrink-0 h-[1.3125rem] w-[2rem] rounded-[0.204375rem] object-cover shadow-sm" />
               ) : null}
-              <p className="text-left font-display text-[24px] font-semibold not-italic leading-[2rem] tracking-[-0.03125rem] text-white">
+              <p className="text-left font-display text-[24px] font-semibold not-italic leading-[32px] tracking-[-0.5px] text-white">
                 {countryName}
               </p>
             </div>
             {description ? (
-              <p className="text-[16px] leading-[1.5rem] tracking-[-0.096px] font-normal text-[#dcdcdc] whitespace-pre-wrap">{description}</p>
+              <p className="text-[16px] leading-[24px] tracking-[-0.096px] font-normal text-[#dcdcdc] whitespace-pre-wrap">{description}</p>
             ) : null}
           </div>
 
           {/* Divider + quote */}
           {quote ? (
             <div className="border-t border-[#222] pt-6">
-              <p className="text-[16px] leading-[1.5rem] tracking-[-0.096px] font-normal text-[#dcdcdc] whitespace-pre-wrap">{quote}</p>
+              <p className="text-[16px] leading-[24px] tracking-[-0.096px] font-normal text-[#dcdcdc] whitespace-pre-wrap">{quote}</p>
             </div>
           ) : null}
         </aside>
