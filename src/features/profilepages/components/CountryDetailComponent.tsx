@@ -652,6 +652,7 @@ export default function CountryDetailComponent({
                             <div key={globalIndex} className="group relative">
                               <div
                                 className="relative rounded-2xl overflow-hidden bg-[#151515] cursor-pointer"
+                                style={{ aspectRatio: width && height ? `${width}/${height}` : "1/1" }}
                                 onClick={(e) => {
                                   e.preventDefault();
                                   e.stopPropagation();
@@ -750,6 +751,7 @@ export default function CountryDetailComponent({
                             <div key={globalIndex} className="group relative w-full">
                               <div
                                 className="relative rounded-2xl overflow-hidden bg-[#151515] cursor-pointer"
+                                style={{ aspectRatio: width && height ? `${width}/${height}` : "1/1" }}
                                 onClick={(e) => {
                                   e.preventDefault();
                                   e.stopPropagation();
