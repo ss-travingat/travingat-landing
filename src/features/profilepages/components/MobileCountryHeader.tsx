@@ -7,7 +7,7 @@ export const MobileCountryHeader = ({ countryCode, countryName, profile, updated
   return (
     <div className="flex md:hidden flex-col items-center gap-[1.5rem] w-full max-w-[37.5rem] pt-[16px]">
       <div className="flex flex-col items-center gap-[1.75rem]">
-        <div className="h-[5rem] w-[7.5rem] overflow-hidden rounded-[0.5rem] shrink-0">
+        <div className="h-[56px] w-[84px] overflow-hidden rounded-[0.5rem] shrink-0">
           <img
             src={`/flags/${countryCode.toUpperCase()}.svg`}
             alt={`${countryName} flag`}

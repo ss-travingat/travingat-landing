@@ -1646,7 +1646,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
           </section>
 
           {/* Desktop: pill tabs with text */}
-          <div id="desktop-tabs-sentinel" className="w-full h-0" />
+          <div id="desktop-tabs-sentinel" className="hidden min-[75rem]:block w-full h-0" />
           <div
             id="profile-desktop-tabs"
             className={`hidden min-[75rem]:flex items-center justify-center gap-2 flex-wrap sticky z-header pt-8 pb-8 -mx-4 px-4 lg:-mx-8 lg:px-8 xl:-mx-10 xl:px-10 transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] top-0`}
@@ -1701,13 +1701,13 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
             </button>
           </div>
 
-          <div className="flex flex-col gap-3 w-full">
+          <div className="flex flex-col w-full">
             {/* Mobile/iPad: icon-only tabs with sliding underline indicator */}
             <div id="mobile-tabs-sentinel" className="w-full h-0" />
             <MobileTabs activeTab={activeTab} setActiveTab={handleTabChange} swipeOffset={swipeOffset} />
 
             <div
-              className="flex flex-col flex-1 min-h-screen"
+              className="flex flex-col flex-1 min-h-screen pt-3"
               onTouchStart={handleTouchStart}
               onTouchMove={handleTouchMove}
               onTouchEnd={handleTouchEnd}
@@ -1836,7 +1836,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                                       className="block w-full h-full object-cover"
                                     />
                                   </div>
-                                  <p className="text-white text-base font-medium leading-[24px] tracking-[-0.096px] truncate">
+                                  <p className="text-white font-medium truncate text-[14px] leading-[20px] tracking-[-0.084px] md:text-[16px] md:leading-[24px] md:tracking-[-0.096px]">
                                     {country.name}
                                   </p>
                                 </div>
@@ -1939,7 +1939,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                               <div className="flex flex-col px-1 md:px-2 gap-3 md:gap-4">
                                 <div className="flex flex-col gap-1 md:gap-2">
                                   <p className="text-[#646464] text-xs md:text-sm leading-[1rem] md:leading-[1.25rem] tracking-normal">{collection.createdLabel}</p>
-                                  <p className="text-white text-base font-medium leading-[24px] tracking-[-0.096px] self-stretch line-clamp-1">{collection.title}</p>
+                                  <p className="text-white font-medium self-stretch line-clamp-1 text-[14px] leading-[20px] tracking-[-0.084px] md:text-[16px] md:leading-[24px] md:tracking-[-0.096px]">{collection.title}</p>
                                 </div>
                                 {/* Hidden countries for now as per design request until Admin CMS supports collection country multi-select */}
                                 <div className="flex flex-wrap items-center gap-1.5">

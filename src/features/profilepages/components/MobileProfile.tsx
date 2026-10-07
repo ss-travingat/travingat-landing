@@ -162,7 +162,7 @@ export function MobileProfileNavbar({ profile }: { profile?: any }) {
           )}
           <button
             onClick={() => setMenuOpen((prev) => !prev)}
-            className={`relative flex h-[2.25rem] w-[2.25rem] flex-col items-center justify-center gap-[0.25rem] rounded-full transition-colors ${menuOpen ? 'bg-[#1c1c1c] text-white hover:bg-[#2a2a2a]' : ''}`}
+            className={`relative translate-x-[2px] flex h-[2.25rem] w-[2.25rem] flex-col items-center justify-center gap-[0.25rem] rounded-full transition-colors ${menuOpen ? 'bg-[#1c1c1c] text-white hover:bg-[#2a2a2a]' : ''}`}
             aria-label="Toggle navigation menu"
             aria-expanded={menuOpen}
           >
