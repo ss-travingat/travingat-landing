@@ -15,7 +15,7 @@ export const MobileCountryHeader = ({ countryCode, countryName, profile, updated
             style={{ objectPosition: 'center' }}
           />
         </div>
-        <h1 className="text-white text-center" style={{ fontFamily: 'var(--font-inter-display, "Inter Display")', fontSize: '1.75rem', lineHeight: 1, letterSpacing: '-0.03125rem', fontWeight: 600 }}>
+        <h1 className="text-white text-center" style={{ fontFamily: 'var(--font-inter-display, "Inter Display")', fontSize: '28px', lineHeight: '36px', letterSpacing: '-0.5px', fontWeight: 600 }}>
           {countryName}
         </h1>
       </div>
