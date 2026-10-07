@@ -43,7 +43,7 @@ export const DesktopCollectionHeader = ({ title, headerCountryCodes, flagOverflo
             )}
           </div>
         )}
-        <h1 className="text-white text-center" style={{ fontFamily: 'var(--font-inter-display, "Inter Display")', fontSize: '52px', fontWeight: 700, lineHeight: '60px', letterSpacing: '-1px' }}>
+        <h1 className="text-white text-center font-display text-[52px] font-bold leading-[60px] tracking-[-1px]">
           {title}
         </h1>
       </div>

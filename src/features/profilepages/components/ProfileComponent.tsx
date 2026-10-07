@@ -91,6 +91,7 @@ type CollectionCard = {
   previewImages: Array<string | { url: string; blurhash?: string }>;
   countries: string[];
   countryOverflowCount: number;
+  photoCount?: number;
 };
 
 export type ContextMenuKind = "media" | "country" | "collection";
@@ -1348,6 +1349,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
           previewImages,
           countries: selectedCountries.length > 0 ? visibleCountries : fallbackVisibleCountries,
           countryOverflowCount: selectedCountries.length > 0 ? countryOverflowCount : fallbackOverflowCount,
+          photoCount: ci.images?.length || 0,
         };
       });
     }
@@ -1893,7 +1895,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                             <Link
                               key={collection.id}
                               href={collectionHref}
-                              className="flex flex-col gap-4 md:gap-5"
+                              className="flex flex-col gap-4 md:gap-[16px]"
                             >
                               <div className="relative group">
                                 <CardCarousel
@@ -1936,26 +1938,10 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                                 ) : null}
                               </div>
 
-                              <div className="flex flex-col px-1 md:px-2 gap-3 md:gap-4">
-                                <div className="flex flex-col gap-1 md:gap-2">
-                                  <p className="text-[#646464] text-xs md:text-sm leading-[1rem] md:leading-[1.25rem] tracking-normal">{collection.createdLabel}</p>
-                                  <p className="text-white font-medium self-stretch line-clamp-1 text-[14px] leading-[20px] tracking-[-0.084px] md:text-[16px] md:leading-[24px] md:tracking-[-0.096px]">{collection.title}</p>
-                                </div>
-                                {/* Hidden countries for now as per design request until Admin CMS supports collection country multi-select */}
-                                <div className="flex flex-wrap items-center gap-1.5">
-                                  {collection.countries.map((country) => (
-                                    <span
-                                      key={`${collection.id}-${country}`}
-                                      className="backdrop-blur-[0.125rem] bg-[#161616] border border-[#252525] border-solid flex items-center justify-center py-1 px-2 rounded-full text-[#989898] text-xs leading-[1rem] font-normal tracking-normal"
-                                    >
-                                      {country}
-                                    </span>
-                                  ))}
-                                  {collection.countryOverflowCount > 0 ? (
-                                    <span className="backdrop-blur-[0.125rem] bg-[#161616] border border-[#252525] border-solid flex items-center justify-center py-1 px-2 rounded-full text-[#989898] text-xs leading-[1rem] font-normal tracking-normal">
-                                      +{collection.countryOverflowCount}
-                                    </span>
-                                  ) : null}
+                              <div className="flex flex-col px-[6px]">
+                                <div className="flex flex-col gap-[4px] md:gap-[8px]">
+                                  <p className="text-white font-medium self-stretch line-clamp-1 text-[16px] leading-[24px] tracking-[-0.096px]">{collection.title}</p>
+                                  <p className="text-[#646464] md:text-[#7c7c7c] text-xs leading-[1rem] md:text-[14px] md:leading-[20px] md:tracking-[-0.084px] font-normal">{collection.photoCount || 0} photos</p>
                                 </div>
                               </div>
                             </Link>
@@ -1972,7 +1958,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                   hasAboutContent ? (
                     <section className="w-full max-w-[69.5rem] mx-auto grid md:grid-cols-[minmax(0,1fr)_320px] lg:grid-cols-[minmax(0,1fr)_360px] gap-8 items-stretch">
                       <article className="relative min-w-0 md:rounded-[1.25rem] md:border md:border-[#1e1e1e] md:pt-8 md:pb-10 md:px-8 md:bg-[#111] flex flex-col gap-8">
-                        <div className="flex flex-col gap-6 px-1 py-2 md:px-0 md:py-0">
+                        <div className="flex flex-col gap-6 px-0 py-2 md:px-0 md:py-0">
                           <div className="flex flex-col gap-2">
                             <h3 className="ds-font-display text-white text-xl md:text-2xl font-medium md:font-semibold tracking-[-0.5px] leading-7 md:leading-8">About</h3>
                             <p className="text-white md:text-[#dcdcdc] text-base leading-6 tracking-[-0.096px]">{profile.bio || "No bio yet."}</p>
@@ -2009,7 +1995,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                           <div className="flex items-center gap-2">
                             <img className="w-4 h-4 rounded" src={typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url} alt="Avatar" />
                             <Link
-                              href={`https://app.travingat.com/ec/${profile.id.split("-")[0]}-${profile.explorer_card_variant === 'minimal' ? 'b' : (profile.explorer_card_variant === 'classic' ? 'a' : 'c')}`}
+                              href={`https://app.travingat.com/ec/${profile.id.split("-")[0]}-${profile.explorer_card_variant === 'minimal' ? 'b' : (profile.explorer_card_variant === 'classic' ? 'a' : 'c')}?handle=${profile.handle.replace(/^@/, "")}`}
                               className="text-[#1FBCFE] text-base font-normal leading-6 break-words"
                               rel="noopener noreferrer"
                               target="_blank"

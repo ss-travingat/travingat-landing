@@ -462,7 +462,7 @@ export default function CountryDetailComponent({
   const profileHandle = profile.handle.startsWith("@") ? profile.handle : `@${profile.handle}`;
 
   return (
-    <div className="min-h-screen bg-black text-white flex flex-col items-center px-[0.75rem] min-[50.625rem]:px-[2rem] min-[1200px]:px-[96px] relative">
+    <div className="min-h-screen bg-black text-white flex flex-col items-center px-2 min-[50.625rem]:px-[2rem] min-[1200px]:px-[96px] relative">
       <div id="profile-mobile-navbar" className="flex md:hidden fixed top-0 left-0 w-full z-[120] flex-col pointer-events-none">
         <div className="flex items-center justify-between px-[20px] h-[56px] bg-black shadow-[0_2px_0_0_#000] pointer-events-auto transition-transform duration-300">
           <button onClick={() => router.back()} className="text-white flex items-center justify-center p-2 -ml-2">
@@ -629,12 +629,12 @@ export default function CountryDetailComponent({
           >
             {/* Masonry grid or About */}
             {activeTab === "about" ? (
-              <div className="w-full max-w-[50rem] mx-auto mb-20 px-4 md:px-0">
+              <div className="w-full max-w-[50rem] mx-auto mb-20">
                 <article className="relative min-w-0 md:rounded-[1.25rem] md:border md:border-[#1e1e1e] md:pt-8 md:pb-10 md:px-8 md:bg-[#111] flex flex-col gap-8">
-                  <div className="flex flex-col gap-6 px-1 py-2 md:px-0 md:py-0">
+                  <div className="flex flex-col gap-6 px-0 py-2 md:px-0 md:py-0">
                     <div className="flex flex-col gap-2">
                       <h3 className="ds-font-display text-white text-xl md:text-2xl font-medium md:font-semibold tracking-[-0.5px] leading-7 md:leading-8">
-                        About {countryName}
+                        About
                       </h3>
                       <p className="text-white md:text-[#dcdcdc] text-base leading-6 tracking-[-0.096px] whitespace-pre-wrap">
                         {aboutText || "No information provided yet."}

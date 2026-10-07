@@ -3,6 +3,7 @@ import { COUNTRY_LIST, searchCountry } from "@/lib/countries";
 import LoadedImage from "@/components/ui/LoadedImage";
 import { toLandingAssetUrl, getOptimizedMediaUrl } from "@/lib/landing-assets";
 import { CountriesPopup } from "@/components/ui/CountriesPopup";
+import { JoinMeLink } from "./JoinMeLink";
 import FoundingExplorer from "@/components/ui/FoundingExplorerBadge";
 
 interface CardProps {
@@ -278,9 +279,7 @@ export function ClassicCard({ form, sampleFlags, visitedArray, isPreview, coverC
 
         {/* Call to action container */}
         <div className="mt-auto flex w-full shrink-0 items-center justify-center">
-          <a href="https://www.travingat.com/explorercard" className="whitespace-nowrap text-[14px] font-medium leading-[20px] tracking-[-0.084px] text-[#7c7c7c] hover:text-white transition-colors underline decoration-wavy underline-offset-2">
-            Join me on Travingat
-          </a>
+          <JoinMeLink />
         </div>
       </div>
     </div>
@@ -377,9 +376,7 @@ export function MinimalCard({ form, sampleFlags, visitedArray, isPreview, coverC
       </div>
 
       <div className="flex w-full shrink-0 items-center justify-center">
-        <a href="https://www.travingat.com/explorercard" className="whitespace-nowrap text-[14px] font-medium leading-[20px] tracking-[-0.084px] text-[#7c7c7c] hover:text-white transition-colors underline decoration-wavy underline-offset-2">
-          Join me on Travingat
-        </a>
+        <JoinMeLink />
       </div>
     </div>
   );
@@ -500,9 +497,7 @@ export function AdventureCard({ form, sampleFlags, visitedArray, isPreview, cove
 
       {/* Call to Action Container */}
       <div className="flex w-full shrink-0 items-center justify-center">
-        <a href="https://www.travingat.com/explorercard" className="whitespace-nowrap text-[14px] font-medium leading-[20px] tracking-[-0.084px] text-[#7c7c7c] hover:text-white transition-colors underline decoration-wavy underline-offset-2">
-          Join me on Travingat
-        </a>
+        <JoinMeLink />
       </div>
     </div>
   );

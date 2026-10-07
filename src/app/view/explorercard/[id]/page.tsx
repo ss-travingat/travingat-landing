@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import Link from "next/link";
 
 import { ClassicCard, MinimalCard, AdventureCard } from "@/features/explorercard/cards";
 import countryData from "@/features/explorercard/countries.json";
@@ -25,7 +26,9 @@ export default async function SharedExplorerCardPage({
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
   const { id } = await params;
-  const { style } = await searchParams;
+  const resolvedSearchParams = await searchParams;
+  const styleRaw = resolvedSearchParams.style;
+  const searchParamsHandle = typeof resolvedSearchParams.handle === 'string' ? resolvedSearchParams.handle : '';
 
   // Validate UUID format roughly to avoid DB errors on bad input
   const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -49,7 +52,8 @@ export default async function SharedExplorerCardPage({
         cover_image_url: data.cover_image_url,
         profile_crop_data: typeof data.profile_crop_data === "string" ? JSON.parse(data.profile_crop_data) : data.profile_crop_data,
         cover_crop_data: typeof data.cover_crop_data === "string" ? JSON.parse(data.cover_crop_data) : data.cover_crop_data,
-        show_badge: data.show_badge || false
+        show_badge: data.show_badge || false,
+        handle: data.user?.handle || data.user?.username || data.handle || data.username || searchParamsHandle || ""
       };
     }
   } catch (err) {
@@ -87,17 +91,19 @@ export default async function SharedExplorerCardPage({
 
   return (
     <div className="min-h-screen bg-black flex flex-col">
-      <main className="flex-1 flex items-center justify-center px-6 lg:px-12 w-full overflow-visible max-w-[1400px] mx-auto">
+      <main className="flex-1 flex items-center justify-center pt-[48px] pb-[80px] lg:pb-[120px] px-6 lg:px-12 w-full overflow-visible max-w-[1400px] mx-auto">
         {/* Centered Card */}
-        <ExplorerCardScaler>
-          {style === "minimal" ? (
-            <MinimalCard form={form} sampleFlags={sampleFlags} visitedArray={visitedArray} coverCropData={user.cover_crop_data?.Minimal || (user.cover_crop_data?.pixels ? user.cover_crop_data : null)} profileCropData={user.profile_crop_data} />
-          ) : style === "adventure" ? (
-            <AdventureCard form={form} sampleFlags={sampleFlags} visitedArray={visitedArray} coverCropData={user.cover_crop_data?.Adventure || (user.cover_crop_data?.pixels ? user.cover_crop_data : null)} profileCropData={user.profile_crop_data} />
-          ) : (
-            <ClassicCard form={form} sampleFlags={sampleFlags} visitedArray={visitedArray} coverCropData={user.cover_crop_data?.Classic || (user.cover_crop_data?.pixels ? user.cover_crop_data : null)} profileCropData={user.profile_crop_data} />
-          )}
-        </ExplorerCardScaler>
+        <Link href={user.handle ? `/${user.handle.replace(/^@/, '')}` : '#'} className="block hover:opacity-95 transition-opacity cursor-pointer">
+          <ExplorerCardScaler>
+            {styleRaw === "minimal" ? (
+              <MinimalCard form={form} sampleFlags={sampleFlags} visitedArray={visitedArray} coverCropData={user.cover_crop_data?.Minimal || (user.cover_crop_data?.pixels ? user.cover_crop_data : null)} profileCropData={user.profile_crop_data} />
+            ) : styleRaw === "adventure" ? (
+              <AdventureCard form={form} sampleFlags={sampleFlags} visitedArray={visitedArray} coverCropData={user.cover_crop_data?.Adventure || (user.cover_crop_data?.pixels ? user.cover_crop_data : null)} profileCropData={user.profile_crop_data} />
+            ) : (
+              <ClassicCard form={form} sampleFlags={sampleFlags} visitedArray={visitedArray} coverCropData={user.cover_crop_data?.Classic || (user.cover_crop_data?.pixels ? user.cover_crop_data : null)} profileCropData={user.profile_crop_data} />
+            )}
+          </ExplorerCardScaler>
+        </Link>
       </main>
 
       {/* Spacer to push footer to bottom, since main is fixed */}

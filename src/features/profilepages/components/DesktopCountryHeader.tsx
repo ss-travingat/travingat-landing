@@ -10,7 +10,7 @@ export const DesktopCountryHeader = ({ countryCode, countryName, profile, update
         <div className="overflow-hidden rounded-[8px] shrink-0 bg-transparent" style={{ width: '120px', height: '80px' }}>
           <img src={`/flags/${countryCode.toUpperCase()}.svg`} alt={`${countryName} flag`} className="w-full h-full block" style={{ objectFit: 'cover', objectPosition: 'center' }} />
         </div>
-        <h1 className="text-white text-center whitespace-nowrap" style={{ fontFamily: 'var(--font-inter-display, "Inter Display")', fontSize: '52px', fontWeight: 700, lineHeight: '60px', letterSpacing: '-1px' }}>
+        <h1 className="text-white text-center whitespace-nowrap font-display text-[52px] font-bold leading-[60px] tracking-[-1px]">
           {countryName}
         </h1>
       </div>
