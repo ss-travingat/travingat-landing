@@ -58,6 +58,7 @@ function CollectionLightbox({
   profileCountry?: string;
   profileHandle: string;
   profileAvatar: string;
+  profileAvatarBlurhash?: string;
   collectionTitle: string;
   description?: string;
 }) {
@@ -86,7 +87,7 @@ function CollectionLightbox({
         >
           <div className="flex items-start justify-between">
             <div className="h-[4.5rem] w-[4.5rem] overflow-hidden rounded-2xl">
-              <LoadedImage src={avatarSrc} thumbnailSrc={MediaResolver.getThumbnail(avatarSrc, 144)} alt={profileName} className="h-full w-full object-cover" />
+              <LoadedImage src={avatarSrc} thumbnailSrc={MediaResolver.getThumbnail(avatarSrc, 144)} blurhash={profileAvatarBlurhash} alt={profileName} className="h-full w-full object-cover" />
             </div>
             <button
               type="button"
@@ -604,6 +605,7 @@ export default function CollectionDetailComponent({
                                   originalSrc={MediaResolver.getBase(imgUrl)}
                                   src={MediaResolver.getThumbnail(MediaResolver.getBase(imgUrl), 720)}
                                   thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(imgUrl), 144)}
+                                  blurhash={blurhash}
                                   alt={`${title} photo ${globalIndex + 1}`}
                                   priority={globalIndex < 4}
                                   className="w-full h-full object-cover block"
@@ -677,6 +679,7 @@ export default function CollectionDetailComponent({
                                   originalSrc={MediaResolver.getBase(imgUrl)}
                                   src={MediaResolver.getThumbnail(MediaResolver.getBase(imgUrl), 720)}
                                   thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(imgUrl), 144)}
+                                  blurhash={blurhash}
                                   alt={`${title} photo ${globalIndex + 1}`}
                                   priority={globalIndex < 4}
                                   className="w-full h-full object-cover block"

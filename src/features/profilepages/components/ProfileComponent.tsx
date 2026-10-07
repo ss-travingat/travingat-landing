@@ -396,6 +396,7 @@ function PhotoCarouselModal({
   profileFlagCode?: string;
   countryName?: string;
   countryFlagCode?: string;
+  profileAvatarBlurhash?: string;
   description?: string;
   quote?: string;
 }) {
@@ -426,7 +427,7 @@ function PhotoCarouselModal({
           {/* Avatar + close */}
           <div className="flex items-start justify-between">
             <div className="h-18 w-18 overflow-hidden rounded-2xl">
-              <LoadedImage src={avatarSrc} thumbnailSrc={MediaResolver.getThumbnail(avatarSrc, 144)} alt={profileName} className="h-full w-full object-cover" />
+              <LoadedImage src={avatarSrc} thumbnailSrc={MediaResolver.getThumbnail(avatarSrc, 144)} blurhash={profileAvatarBlurhash} alt={profileName} className="h-full w-full object-cover" />
             </div>
             <button
               type="button"
@@ -1446,6 +1447,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                     <LoadedImage
                       originalSrc={MediaResolver.getBase(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url)} src={MediaResolver.getOptimized(MediaResolver.getBase(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url))}
                       thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url), 144)}
+                      blurhash={typeof profile.images.avatar === "object" ? profile.images.avatar.blurhash : undefined}
                       alt="Profile avatar"
                       priority={true}
                       className="h-full w-full object-cover rounded-[1.25rem]"
@@ -1600,6 +1602,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                   <LoadedImage
                     originalSrc={MediaResolver.getBase(typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url)} src={MediaResolver.getOptimized(MediaResolver.getBase(typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url))}
                     thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url), 144)}
+                    blurhash={typeof profile.images.cover === "object" ? profile.images.cover.blurhash : undefined}
                     alt="Profile cover"
                     priority={true}
                     className="absolute inset-0 w-full h-full object-cover rounded-3xl lg:rounded-[1.5rem] xl:rounded-[2rem]"
@@ -2224,6 +2227,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
           profileCountry={profile.country}
           profileHandle={shareOwnerHandle}
           profileAvatar={shareOwnerAvatar}
+          profileAvatarBlurhash={typeof profile.images.avatar === "object" ? profile.images.avatar.blurhash : undefined}
           profileFlagCode={profileFlagCode}
           countryName={carouselCountryName}
           countryFlagCode={displayCountryFlagCode}

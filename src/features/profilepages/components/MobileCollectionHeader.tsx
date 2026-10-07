@@ -50,6 +50,7 @@ export const MobileCollectionHeader = ({ title, headerCountryCodes, flagOverflow
             <LoadedImage
               originalSrc={MediaResolver.getBase(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url)} src={MediaResolver.getOptimized(MediaResolver.getBase(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url))}
               thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url), 144)}
+              blurhash={typeof profile.images.avatar === "object" ? profile.images.avatar.blurhash : undefined}
               alt={profile.name}
               className="w-full h-full object-cover"
               skeletonClassName="absolute inset-0 bg-[#2a2a2a]"
