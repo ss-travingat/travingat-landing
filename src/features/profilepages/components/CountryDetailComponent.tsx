@@ -600,8 +600,7 @@ export default function CountryDetailComponent({
                       onClick={() => {
                         handleTabChange(tab.key as MediaTab);
                       }}
-                      className={`relative flex flex-col flex-1 items-center justify-center py-[1rem] transition-colors ${activeTab === tab.key ? "text-white" : "text-[#7c7c7c]"
-                        }`}
+                      className="relative flex flex-col flex-1 items-center justify-center py-[1rem] transition-colors text-white"
                     >
                       <span className="material-symbols-rounded text-[1.5rem]" style={{ fontVariationSettings: "'FILL' 0, 'wght' 400" }}>{tab.icon}</span>
                     </button>
