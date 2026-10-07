@@ -106,7 +106,7 @@ function PhotoLightbox({
           {/* Avatar + close */}
           <div className="flex items-start justify-between">
             <div className="h-[4.5rem] w-[4.5rem] overflow-hidden rounded-2xl">
-              <LoadedImage src={avatarSrc} thumbnailSrc={MediaResolver.getThumbnail(avatarSrc, 144)} blurhash={profileAvatarBlurhash} alt={profileName} className="h-full w-full object-cover" />
+              <LoadedImage src={avatarSrc} blurhash={profileAvatarBlurhash} alt={profileName} className="h-full w-full object-cover" />
             </div>
             <button
               type="button"
@@ -676,7 +676,6 @@ export default function CountryDetailComponent({
                                     priority={globalIndex < 4}
                                     originalSrc={MediaResolver.getBase(imgUrl)}
                                     src={MediaResolver.getThumbnail(MediaResolver.getBase(imgUrl), 720)}
-                                    thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(imgUrl), 144)}
                                     blurhash={blurhash}
                                     alt={`${countryName} photo ${globalIndex + 1}`}
                                     className="w-full h-full object-cover block"
@@ -776,7 +775,6 @@ export default function CountryDetailComponent({
                                     priority={globalIndex < 4}
                                     originalSrc={MediaResolver.getBase(imgUrl)}
                                     src={MediaResolver.getThumbnail(MediaResolver.getBase(imgUrl), 720)}
-                                    thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(imgUrl), 144)}
                                     blurhash={blurhash}
                                     alt={`${countryName} photo ${globalIndex + 1}`}
                                     className="w-full h-full object-cover block"

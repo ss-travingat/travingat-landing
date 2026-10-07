@@ -198,7 +198,6 @@ export function MediaLightbox({
                     <LoadedImage
                       originalSrc={MediaResolver.getBase(item.url)}
                       src={MediaResolver.getThumbnail(MediaResolver.getBase(item.url), 720)}
-                      thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(item.url), 144)}
                       blurhash={item.blurhash}
                       alt={`Gallery thumbnail ${idx + 1}`}
                       className="h-auto w-full"
@@ -395,7 +394,6 @@ export function MediaLightbox({
                     <LoadedImage
                       originalSrc={MediaResolver.getBase(item.url)}
                       src={MediaResolver.getThumbnail(MediaResolver.getBase(item.url), 720)}
-                      thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(item.url), 144)}
                       blurhash={item.blurhash}
                       alt={`Carousel thumbnail ${idx + 1}`}
                       className="h-full w-full object-cover"
