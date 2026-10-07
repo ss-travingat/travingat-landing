@@ -12,11 +12,16 @@ export function ExplorerCardScaler({ children, innerClassName }: { children: Rea
     const updateScale = () => {
       if (!cardRef.current) return;
       const cardHeight = cardRef.current.offsetHeight;
-      if (cardHeight === 0) return;
+      const cardWidth = cardRef.current.offsetWidth;
+      if (cardHeight === 0 || cardWidth === 0) return;
       
       const targetHeight = window.innerHeight * 0.8; // 80vh
-      let newScale = targetHeight / cardHeight;
-      if (newScale > 1) newScale = 1; // Don't scale up, only down
+      const targetWidth = window.innerWidth * 0.95; // 95vw to prevent horizontal overflow
+      
+      const scaleByHeight = targetHeight / cardHeight;
+      const scaleByWidth = targetWidth / cardWidth;
+      
+      let newScale = Math.min(scaleByHeight, scaleByWidth);
       
       setScale(newScale);
       if (!isReady) setIsReady(true);

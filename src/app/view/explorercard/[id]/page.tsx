@@ -90,8 +90,8 @@ export default async function SharedExplorerCardPage({
 
 
   return (
-    <div className="min-h-screen bg-black flex flex-col">
-      <main className="flex-1 flex items-center justify-center pt-[48px] pb-[80px] lg:pb-[120px] px-6 lg:px-12 w-full overflow-visible max-w-[1400px] mx-auto">
+    <div className="min-h-[calc(100vh-92px)] lg:min-h-[calc(100vh-124px)] bg-black flex flex-col">
+      <main className="flex-1 flex items-center justify-center px-6 lg:px-12 w-full overflow-visible max-w-[1400px] mx-auto">
         {/* Centered Card */}
         <Link href={user.handle ? `/${user.handle.replace(/^@/, '')}` : '#'} className="block hover:opacity-95 transition-opacity cursor-pointer">
           <ExplorerCardScaler>
