@@ -11,7 +11,7 @@ export default function CardCarousel({
   containerClassName = "aspect-square",
   priority = false,
 }: {
-  images: string[];
+  images: Array<string | { url: string; blurhash?: string }>;
   alt: string;
   maxImages?: number;
   containerClassName?: string;
@@ -56,18 +56,23 @@ export default function CardCarousel({
         className="flex h-full transition-transform duration-300 ease-out"
         style={{ transform: `translateX(-${currentIndex * 100}%)` }}
       >
-        {displayImages.map((src, i) => (
-          <div key={`${src}-${i}`} className="w-full h-full flex-shrink-0 overflow-hidden relative">
-            <LoadedImage
-              originalSrc={MediaResolver.getBase(src)}
-              src={MediaResolver.getThumbnail(MediaResolver.getBase(src), 720)}
-              alt={`${alt} ${i + 1}`}
-              priority={priority && i === 0}
-              className="w-full h-full object-cover block transition-transform duration-300 group-hover:scale-[1.03]"
-              containerClassName="w-full h-full"
-            />
-          </div>
-        ))}
+        {displayImages.map((srcItem, i) => {
+          const srcUrl = typeof srcItem === "string" ? srcItem : srcItem.url;
+          const blurhash = typeof srcItem === "object" ? srcItem.blurhash : undefined;
+          return (
+            <div key={`${srcUrl}-${i}`} className="w-full h-full flex-shrink-0 overflow-hidden relative">
+              <LoadedImage
+                originalSrc={MediaResolver.getBase(srcUrl)}
+                src={MediaResolver.getThumbnail(MediaResolver.getBase(srcUrl), 720)}
+                blurhash={blurhash}
+                alt={`${alt} ${i + 1}`}
+                priority={priority && i === 0}
+                className="w-full h-full object-cover block transition-transform duration-300 group-hover:scale-[1.03]"
+                containerClassName="w-full h-full"
+              />
+            </div>
+          );
+        })}
       </div>
 
       {displayImages.length > 1 && (

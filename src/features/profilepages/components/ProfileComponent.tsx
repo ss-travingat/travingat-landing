@@ -75,7 +75,7 @@ type CountryCard = {
   name: string;
   flagCode: string;
   thumbnailUrl: string;
-  previewImages: string[];
+  previewImages: Array<string | { url: string; blurhash?: string }>;
   photoCount: number;
   videoCount: number;
   updatedLabel: string;
@@ -88,7 +88,7 @@ type CollectionCard = {
   createdLabel: string;
   updatedLabel: string;
   thumbnailUrl: string;
-  previewImages: string[];
+  previewImages: Array<string | { url: string; blurhash?: string }>;
   countries: string[];
   countryOverflowCount: number;
 };
@@ -1136,15 +1136,20 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
         const countryName = COUNTRY_LIST_LOOKUP[ci.countryCode.toUpperCase()] || ci.countryCode;
         const photoPreviewImages = ci.images.filter((url) => !isVideoAsset(typeof url === "string" ? url : url.url)).slice(0, 5);
         const rawPreview = (photoPreviewImages.length > 0 ? photoPreviewImages : ci.images).slice(0, 5);
-        let previewImages = rawPreview.map((g) => (typeof g === "string" ? g : g.url));
+        let previewImages: Array<string | { url: string; blurhash?: string }> = [...rawPreview];
         if (ci.coverPhoto) {
-          previewImages = [ci.coverPhoto, ...previewImages.filter((url) => url !== ci.coverPhoto)];
+          const isCoverStr = typeof ci.coverPhoto === "string";
+          const coverUrl = isCoverStr ? ci.coverPhoto : (ci.coverPhoto as any).url;
+          previewImages = [ci.coverPhoto, ...previewImages.filter((img) => {
+            const url = typeof img === "string" ? img : img.url;
+            return url !== coverUrl;
+          })];
         }
         return {
           code: `${profile.id}-ci-${index}`,
           name: countryName,
           flagCode: ci.countryCode,
-          thumbnailUrl: ci.coverPhoto || previewImages[0] || (typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url),
+          thumbnailUrl: ci.coverPhoto ? (typeof ci.coverPhoto === "string" ? ci.coverPhoto : (ci.coverPhoto as any).url) : (previewImages[0] ? (typeof previewImages[0] === "string" ? previewImages[0] : previewImages[0].url) : (typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url)),
           previewImages,
           photoCount: ci.images.filter((entry) => !isVideoAsset(typeof entry === "string" ? entry : entry.url)).length,
           videoCount: ci.images.filter((entry) => isVideoAsset(typeof entry === "string" ? entry : entry.url)).length,
@@ -1319,9 +1324,14 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
       return profile.collectionImages.map((ci, index) => {
         const photoPreviewImages = ci.images.filter((entry) => !isVideoAsset(typeof entry === "string" ? entry : entry.url)).slice(0, 5);
         const rawPreview = (photoPreviewImages.length > 0 ? photoPreviewImages : ci.images).slice(0, 5);
-        let previewImages = rawPreview.map((g) => (typeof g === "string" ? g : g.url));
+        let previewImages: Array<string | { url: string; blurhash?: string }> = [...rawPreview];
         if (ci.coverPhoto) {
-          previewImages = [ci.coverPhoto, ...previewImages.filter((url) => url !== ci.coverPhoto)];
+          const isCoverStr = typeof ci.coverPhoto === "string";
+          const coverUrl = isCoverStr ? ci.coverPhoto : (ci.coverPhoto as any).url;
+          previewImages = [ci.coverPhoto, ...previewImages.filter((img) => {
+            const url = typeof img === "string" ? img : img.url;
+            return url !== coverUrl;
+          })];
         }
         const selectedCountries = (ci.countryCodes ?? [])
           .map((code) => COUNTRY_LIST_LOOKUP[code.toUpperCase()] || code.toUpperCase())
@@ -1334,7 +1344,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
           description: profile.bio,
           createdLabel: getDeterministicCreatedLabel(index, ci.updatedAt || ci.updated_at),
           updatedLabel: getUpdatedLabel(ci.updatedAt || ci.updated_at, index),
-          thumbnailUrl: ci.coverPhoto || previewImages[0] || (typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url),
+          thumbnailUrl: ci.coverPhoto ? (typeof ci.coverPhoto === "string" ? ci.coverPhoto : (ci.coverPhoto as any).url) : (previewImages[0] ? (typeof previewImages[0] === "string" ? previewImages[0] : previewImages[0].url) : (typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url)),
           previewImages,
           countries: selectedCountries.length > 0 ? visibleCountries : fallbackVisibleCountries,
           countryOverflowCount: selectedCountries.length > 0 ? countryOverflowCount : fallbackOverflowCount,
