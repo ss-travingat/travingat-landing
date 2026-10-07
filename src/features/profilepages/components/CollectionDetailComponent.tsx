@@ -159,7 +159,7 @@ export default function CollectionDetailComponent({
 }) {
   const router = useRouter();
   const { showComingSoonToast } = useMobileComingSoon();
-  const imageObjects = (images || []).filter(Boolean).map((entry) => (typeof entry === "string" ? { url: entry } : entry));
+  const imageObjects = (images || []).filter(Boolean).map((entry) => (typeof entry === "string" ? { url: entry } : entry)) as Array<{ url: string; width?: number; height?: number; blurhash?: string }>;
   const [activeTab, setActiveTab] = useState<MediaTab>("all");
   const [showMenu, setShowMenu] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);

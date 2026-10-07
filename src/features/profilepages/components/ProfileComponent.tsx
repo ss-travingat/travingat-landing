@@ -379,6 +379,7 @@ function PhotoCarouselModal({
   profileFlagCode,
   countryName,
   countryFlagCode,
+  profileAvatarBlurhash,
   description,
   quote,
 }: {

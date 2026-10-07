@@ -198,7 +198,7 @@ export default function CountryDetailComponent({
   const router = useRouter();
 
 
-  const imageObjects = (images || []).filter(Boolean).map((entry) => (typeof entry === "string" ? { url: entry } : entry));
+  const imageObjects = (images || []).filter(Boolean).map((entry) => (typeof entry === "string" ? { url: entry } : entry)) as Array<{ url: string; width?: number; height?: number; blurhash?: string }>;
   const countryName = COUNTRY_LIST_LOOKUP[countryCode] || countryCode;
   const [activeTab, setActiveTab] = useState<MediaTab>("all");
   const [showMenu, setShowMenu] = useState(false);
