@@ -567,7 +567,7 @@ function JsMasonryGrid({
     const originalIndex = allMediaItems.findIndex((it) => String(it.id) === String(mediaItem?.id));
     const gridIndex = orderedItems.findIndex((it) => String(it.id) === String(mediaItem?.id));
     const isMenuOpen = openContextMenuId === mediaItem.id;
-    const displayCountryCode = mediaItem.countryCode || profileFlagCode;
+    const displayCountryCode = mediaItem.countryCode;
     const collectionHref =
       typeof mediaItem.collectionIndex === "number" && profile.collectionImages?.[mediaItem.collectionIndex]
         ? `/${profile.handle.replace(/^@/, "")}/collection/${mediaItem.collectionIndex}`
