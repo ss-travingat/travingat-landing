@@ -169,7 +169,7 @@ export function MediaLightbox({
         </div>
 
         <div className={`flex-1 min-h-0 overflow-y-auto px-10 pb-8 ${showBrowser ? '' : 'hidden'}`}>
-          <div className="columns-2 md:columns-3 xl:columns-4 gap-6 [column-fill:_balance]">
+          <div className="columns-2 md:columns-3 xl:columns-4 gap-6 lg:gap-[0.5rem] xl:gap-[0.75rem] [column-fill:_balance]">
             {items.map((item, idx) => (
               <button
                 key={item.id || `item-${idx}`}
@@ -178,7 +178,7 @@ export function MediaLightbox({
                   onSelectIndex(idx);
                   setShowBrowser(false);
                 }}
-                className="mb-6 w-full break-inside-avoid overflow-hidden rounded-[1.375rem] bg-[#0a0a0a] text-left"
+                className="mb-6 lg:mb-[0.5rem] xl:mb-[0.75rem] w-full break-inside-avoid overflow-hidden rounded-[1.375rem] bg-[#0a0a0a] text-left"
                 aria-label={`Open photo ${idx + 1}`}
               >
                 <div className="relative">

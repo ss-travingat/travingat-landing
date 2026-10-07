@@ -147,7 +147,10 @@ export default function FoundingExplorer(props: FoundingExplorerProps) {
     } as React.CSSProperties
 
     return (
-        <div
+        <a
+            href="https://travingat.com/get-featured"
+            target="_blank"
+            rel="noopener noreferrer"
             style={rootStyle}
             onPointerEnter={() => setIsHovered(true)}
             onPointerLeave={() => setIsHovered(false)}
@@ -279,7 +282,7 @@ export default function FoundingExplorer(props: FoundingExplorerProps) {
                 </svg>
             </div>
 
-        </div>
+        </a>
     )
 }
 

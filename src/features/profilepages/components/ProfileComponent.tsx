@@ -444,7 +444,7 @@ function PhotoCarouselModal({
           <div className="flex flex-col gap-1">
             <div className="flex items-center gap-1.5">
               {profileFlagSrc ? (
-                <img src={profileFlagSrc} alt="" className="h-[0.975rem] w-6 rounded-[0.125rem] object-cover" />
+                <img src={profileFlagSrc} alt="" className="h-3 w-[1.125rem] rounded-[0.125rem] object-cover" />
               ) : null}
               <span className="text-sm font-medium leading-[1.25rem] tracking-[-0.1px] text-[#A8A8A8]">{profileCountry || profileName}</span>
             </div>
@@ -483,12 +483,12 @@ function PhotoCarouselModal({
           </div>
 
           {/* Country + description */}
-          <div className="flex flex-col gap-3">
-            <div className="flex items-center gap-2">
+          <div className="flex flex-col gap-[0.5rem]">
+            <div className="flex items-start gap-[0.75rem]">
               {countryFlagSrc ? (
-                <img src={countryFlagSrc} alt="" className="h-[1.33125rem] w-8 rounded-[0.204375rem] object-cover" />
+                <img src={countryFlagSrc} alt="" className="mt-[0.34375rem] shrink-0 h-[1.3125rem] w-[2rem] rounded-[0.204375rem] object-cover shadow-sm" />
               ) : null}
-              <p className="text-center font-display text-[1.5rem] font-semibold not-italic leading-[2rem] tracking-[-0.03125rem] text-white">
+              <p className="text-left font-display text-[24px] font-semibold not-italic leading-[2rem] tracking-[-0.03125rem] text-white">
                 {countryName || ""}
               </p>
             </div>
@@ -1614,7 +1614,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                 {/* Founding Explorer badge — half outside the left edge of the cover */}
                 {profile.showBadge && (
                   <div
-                    className="absolute z-10 w-[9.375rem] h-[9.375rem] pointer-events-none select-none rounded-full"
+                    className="absolute z-10 w-[9.375rem] h-[9.375rem] select-none rounded-full"
                     style={{ top: "40px", left: "0", transform: "translateX(-50%)" }}
                   >
                     <FoundingExplorer />

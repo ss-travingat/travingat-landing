@@ -256,7 +256,7 @@ export function MobileHero({
             {/* Founding Explorer badge — half outside bottom-left edge */}
             {profile.showBadge && (
               <div
-                className="absolute z-10 w-[4.5rem] h-[4.5rem] pointer-events-none select-none rounded-full"
+                className="absolute z-10 w-[4.5rem] h-[4.5rem] select-none rounded-full"
                 style={{ bottom: "-2.25rem", left: "0.75rem" }}
               >
                 <FoundingExplorer />

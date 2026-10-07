@@ -174,7 +174,7 @@ export function ClassicCard({ form, sampleFlags, visitedArray, isPreview, coverC
     <div className="relative flex w-[360px] shrink-0 flex-col items-center gap-[20px] rounded-[24px] border border-[#252525] bg-black px-[8px] pb-[24px] pt-[8px]">
       {/* Founding Explorer Badge */}
       {!isPreview && form.showBadge && (
-        <div className="absolute left-[20px] lg:left-[-60px] top-[204px] lg:top-[20px] z-50 h-[64px] w-[64px] lg:h-[120px] lg:w-[120px] pointer-events-none">
+        <div className="absolute left-[20px] lg:left-[-60px] top-[204px] lg:top-[20px] z-50 h-[64px] w-[64px] lg:h-[120px] lg:w-[120px]">
           <FoundingExplorer />
         </div>
       )}
@@ -295,7 +295,7 @@ export function MinimalCard({ form, sampleFlags, visitedArray, isPreview, coverC
     >
       {/* Founding Explorer Badge */}
       {!isPreview && form.showBadge && (
-        <div className="absolute left-[12px] lg:left-[-60px] top-[12px] lg:top-[20px] z-50 h-[64px] w-[64px] lg:h-[120px] lg:w-[120px] pointer-events-none">
+        <div className="absolute left-[12px] lg:left-[-60px] top-[12px] lg:top-[20px] z-50 h-[64px] w-[64px] lg:h-[120px] lg:w-[120px]">
           <FoundingExplorer />
         </div>
       )}
@@ -393,7 +393,7 @@ export function AdventureCard({ form, sampleFlags, visitedArray, isPreview, cove
     >
       {/* Founding Explorer Badge */}
       {!isPreview && form.showBadge && (
-        <div className="absolute left-[20px] lg:left-[-60px] top-[20px] lg:top-[20px] z-50 h-[64px] w-[64px] lg:h-[120px] lg:w-[120px] pointer-events-none">
+        <div className="absolute left-[20px] lg:left-[-60px] top-[20px] lg:top-[20px] z-50 h-[64px] w-[64px] lg:h-[120px] lg:w-[120px]">
           <FoundingExplorer />
         </div>
       )}

@@ -32,6 +32,11 @@ function isVideoAsset(url: string) {
   return /\.(mp4|mov|webm|m4v|3gp|3g2)$/i.test(url);
 }
 
+function toFlagAssetPath(flagCode?: string): string | undefined {
+  if (!flagCode) return undefined;
+  return `/flags/${flagCode.toUpperCase()}.svg`;
+}
+
 // ─── Main Component ─────────────────────────────────────────────────────────────
 
 function CollectionLightbox({
@@ -46,6 +51,7 @@ function CollectionLightbox({
   profileHandle,
   profileAvatar,
   profileAvatarBlurhash,
+  profileFlagCode,
   collectionTitle,
   description,
 }: {
@@ -60,12 +66,14 @@ function CollectionLightbox({
   profileHandle: string;
   profileAvatar: string;
   profileAvatarBlurhash?: string;
+  profileFlagCode?: string;
   collectionTitle: string;
   description?: string;
 }) {
   const totalCount = items.length;
   const displayIndex = activeIndex + 1;
   const avatarSrc = MediaResolver.getBase(profileAvatar);
+  const profileFlagSrc = toFlagAssetPath(profileFlagCode);
 
   const { showComingSoonToast } = useMobileComingSoon();
 
@@ -102,23 +110,26 @@ function CollectionLightbox({
 
           <div className="flex flex-col gap-3">
             <div className="flex items-center gap-[0.375rem]">
-              <span className="text-[0.875rem] font-medium leading-[1.25rem] tracking-[-0.1px] text-[#A8A8A8]">{profileCountry || profileName}</span>
+              {profileFlagSrc ? (
+                <img src={profileFlagSrc} alt="" className="h-3 w-[1.125rem] rounded-[0.125rem] object-cover" />
+              ) : null}
+              <span className="text-[14px] font-medium leading-[1.25rem] tracking-[-0.1px] text-[#A8A8A8]">{profileCountry || profileName}</span>
             </div>
-            <p className="text-[1.25rem] font-semibold tracking-[-0.5px] text-white">{profileHandle}</p>
+            <p className="text-[20px] font-semibold tracking-[-0.5px] text-white">{profileHandle}</p>
           </div>
 
           <div className="flex items-center gap-2">
             <button
               type="button"
               onClick={() => showComingSoonToast("featureLaunch")}
-              className="h-[2.375rem] flex-1 rounded-full bg-white text-[0.875rem] font-medium text-black transition hover:bg-[#e8e8e8]"
+              className="h-[2.375rem] flex-1 rounded-full bg-white text-[14px] font-medium text-black transition hover:bg-[#e8e8e8]"
             >
               Follow
             </button>
             <button
               type="button"
               onClick={() => showComingSoonToast("featureLaunch")}
-              className="h-[2.375rem] flex-1 rounded-full border border-[#2e2e2e] bg-[#1a1a1a] text-[0.875rem] font-medium text-white transition hover:bg-[#222]"
+              className="h-[2.375rem] flex-1 rounded-full border border-[#2e2e2e] bg-[#1a1a1a] text-[14px] font-medium text-white transition hover:bg-[#222]"
             >
               Connect
             </button>
@@ -128,16 +139,16 @@ function CollectionLightbox({
               className="flex h-[2.375rem] w-[2.375rem] shrink-0 items-center justify-center rounded-full border border-[#2e2e2e] bg-[#1a1a1a] text-white transition hover:bg-[#222]"
               aria-label="More options"
             >
-              <span className="material-symbols-rounded text-[1.25rem]">more_horiz</span>
+              <span className="material-symbols-rounded text-[20px]">more_horiz</span>
             </button>
           </div>
 
           <div className="flex flex-col gap-4">
-            <p className="text-[1.375rem] font-semibold tracking-[-0.5px] text-[#ededed]">
+            <p className="text-[22px] font-semibold tracking-[-0.5px] text-[#ededed]">
               {collectionTitle}
             </p>
             {description ? (
-              <p className="text-[0.9375rem] leading-[1.6] tracking-[-0.3px] text-[#a0a0a0]">{description}</p>
+              <p className="text-[15px] leading-[1.6] tracking-[-0.3px] text-[#a0a0a0]">{description}</p>
             ) : null}
           </div>
         </aside>
@@ -451,6 +462,7 @@ export default function CollectionDetailComponent({
           profileCountry={profile.country}
           profileHandle={profile.handle.startsWith("@") ? profile.handle : `@${profile.handle}`}
           profileAvatar={typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url}
+          profileFlagCode={profile.flagCode}
           collectionTitle={title}
           description={aboutText}
         />
@@ -554,11 +566,19 @@ export default function CollectionDetailComponent({
           >
             {/* Masonry grid or About */}
             {activeTab === "about" ? (
-              <div className="flex flex-col items-start gap-6 w-full max-w-[50rem] mx-auto text-left mt-8 mb-20 px-4 md:px-0">
-                <h2 className="text-[1.5rem] font-semibold text-white">About {title}</h2>
-                <p className="text-[1rem] text-[#a8a8a8] leading-relaxed whitespace-pre-wrap">
-                  {aboutText || "No information provided yet."}
-                </p>
+              <div className="w-full max-w-[50rem] mx-auto mb-20 px-4 md:px-0">
+                <article className="relative min-w-0 md:rounded-[1.25rem] md:border md:border-[#1e1e1e] md:pt-8 md:pb-10 md:px-8 md:bg-[#111] flex flex-col gap-8">
+                  <div className="flex flex-col gap-6 px-1 py-2 md:px-0 md:py-0">
+                    <div className="flex flex-col gap-2">
+                      <h3 className="ds-font-display text-white text-xl md:text-2xl font-medium md:font-semibold tracking-[-0.5px] leading-7 md:leading-8">
+                        About {title}
+                      </h3>
+                      <p className="text-white md:text-[#dcdcdc] text-base leading-6 tracking-[-0.096px] whitespace-pre-wrap">
+                        {aboutText || "No information provided yet."}
+                      </p>
+                    </div>
+                  </div>
+                </article>
               </div>
             ) : displayImages.length === 0 ? (
               <div className="flex flex-col items-center gap-4 py-16 text-center">

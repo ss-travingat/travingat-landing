@@ -124,9 +124,9 @@ function PhotoLightbox({
               {profileFlagSrc ? (
                 <img src={profileFlagSrc} alt="" className="h-3 w-[1.125rem] rounded-[0.125rem] object-cover" />
               ) : null}
-              <span className="text-[0.875rem] font-medium leading-[1.25rem] tracking-[-0.1px] text-[#A8A8A8]">{profileCountry || profileName}</span>
+              <span className="text-[14px] font-medium leading-[1.25rem] tracking-[-0.1px] text-[#A8A8A8]">{profileCountry || profileName}</span>
             </div>
-            <p className="text-[1.25rem] font-semibold tracking-[-0.5px] text-white">{profileHandle}</p>
+            <p className="text-[20px] font-semibold tracking-[-0.5px] text-white">{profileHandle}</p>
           </div>
 
           {/* Follow / Connect / More */}
@@ -134,14 +134,14 @@ function PhotoLightbox({
             <button
               type="button"
               onClick={() => showComingSoonToast("featureLaunch")}
-              className="h-[2.375rem] flex-1 rounded-full bg-white text-[0.875rem] font-medium text-black transition hover:bg-[#e8e8e8]"
+              className="h-[2.375rem] flex-1 rounded-full bg-white text-[14px] font-medium text-black transition hover:bg-[#e8e8e8]"
             >
               Follow
             </button>
             <button
               type="button"
               onClick={() => showComingSoonToast("featureLaunch")}
-              className="h-[2.375rem] flex-1 rounded-full border border-[#2e2e2e] bg-[#1a1a1a] text-[0.875rem] font-medium text-white transition hover:bg-[#222]"
+              className="h-[2.375rem] flex-1 rounded-full border border-[#2e2e2e] bg-[#1a1a1a] text-[14px] font-medium text-white transition hover:bg-[#222]"
             >
               Connect
             </button>
@@ -151,29 +151,29 @@ function PhotoLightbox({
               className="flex h-[2.375rem] w-[2.375rem] shrink-0 items-center justify-center rounded-full border border-[#2e2e2e] bg-[#1a1a1a] text-white transition hover:bg-[#222]"
               aria-label="More options"
             >
-              <span className="material-symbols-rounded text-[1.25rem]">more_horiz</span>
+              <span className="material-symbols-rounded text-[20px]">more_horiz</span>
             </button>
           </div>
 
           {/* Country + description */}
           <div className="flex flex-col gap-[0.5rem]">
-            <div className="flex items-center gap-[0.75rem]">
+            <div className="flex items-start gap-[0.75rem]">
               {countryFlagSrc ? (
-                <img src={countryFlagSrc} alt="" className="h-[1.3125rem] w-[2rem] rounded-[0.204375rem] object-cover shadow-sm" />
+                <img src={countryFlagSrc} alt="" className="mt-[0.34375rem] shrink-0 h-[1.3125rem] w-[2rem] rounded-[0.204375rem] object-cover shadow-sm" />
               ) : null}
-              <p className="text-center font-display text-[1.5rem] font-semibold not-italic leading-[2rem] tracking-[-0.03125rem] text-white">
+              <p className="text-left font-display text-[24px] font-semibold not-italic leading-[2rem] tracking-[-0.03125rem] text-white">
                 {countryName}
               </p>
             </div>
             {description ? (
-              <p className="text-[1rem] leading-[1.5rem] tracking-[-0.096px] font-normal text-[#dcdcdc] whitespace-pre-wrap">{description}</p>
+              <p className="text-[16px] leading-[1.5rem] tracking-[-0.096px] font-normal text-[#dcdcdc] whitespace-pre-wrap">{description}</p>
             ) : null}
           </div>
 
           {/* Divider + quote */}
           {quote ? (
             <div className="border-t border-[#222] pt-6">
-              <p className="text-[1rem] leading-[1.5rem] tracking-[-0.096px] font-normal text-[#dcdcdc] whitespace-pre-wrap">{quote}</p>
+              <p className="text-[16px] leading-[1.5rem] tracking-[-0.096px] font-normal text-[#dcdcdc] whitespace-pre-wrap">{quote}</p>
             </div>
           ) : null}
         </aside>
@@ -532,25 +532,25 @@ export default function CountryDetailComponent({
       )}
 
       <main className="w-full flex flex-col items-center gap-[1.25rem] md:gap-0 pb-28 md:pb-[100px] pt-[56px] md:pt-0">
-        
-        <MobileCountryHeader 
-          countryCode={countryCode} 
-          countryName={countryName} 
-          profile={profile} 
-          updatedLabel={updatedLabel} 
-          menuRef={menuRef} 
-          showMenu={showMenu} 
-          setShowMenu={setShowMenu} 
+
+        <MobileCountryHeader
+          countryCode={countryCode}
+          countryName={countryName}
+          profile={profile}
+          updatedLabel={updatedLabel}
+          menuRef={menuRef}
+          showMenu={showMenu}
+          setShowMenu={setShowMenu}
         />
-        
-        <DesktopCountryHeader 
-          countryCode={countryCode} 
-          countryName={countryName} 
-          profile={profile} 
-          updatedLabel={updatedLabel} 
-          menuRef={menuRef} 
-          showMenu={showMenu} 
-          setShowMenu={setShowMenu} 
+
+        <DesktopCountryHeader
+          countryCode={countryCode}
+          countryName={countryName}
+          profile={profile}
+          updatedLabel={updatedLabel}
+          menuRef={menuRef}
+          showMenu={showMenu}
+          setShowMenu={setShowMenu}
         />
 
         {/* Tabs + content */}
@@ -630,11 +630,19 @@ export default function CountryDetailComponent({
           >
             {/* Masonry grid or About */}
             {activeTab === "about" ? (
-              <div className="flex flex-col items-start gap-6 w-full max-w-[50rem] mx-auto text-left mt-8 mb-20 px-4 md:px-0">
-                <h2 className="text-[1.5rem] font-semibold text-white">About {countryName}</h2>
-                <p className="text-[1rem] text-[#a8a8a8] leading-relaxed whitespace-pre-wrap">
-                  {aboutText || "No information provided yet."}
-                </p>
+              <div className="w-full max-w-[50rem] mx-auto mb-20 px-4 md:px-0">
+                <article className="relative min-w-0 md:rounded-[1.25rem] md:border md:border-[#1e1e1e] md:pt-8 md:pb-10 md:px-8 md:bg-[#111] flex flex-col gap-8">
+                  <div className="flex flex-col gap-6 px-1 py-2 md:px-0 md:py-0">
+                    <div className="flex flex-col gap-2">
+                      <h3 className="ds-font-display text-white text-xl md:text-2xl font-medium md:font-semibold tracking-[-0.5px] leading-7 md:leading-8">
+                        About {countryName}
+                      </h3>
+                      <p className="text-white md:text-[#dcdcdc] text-base leading-6 tracking-[-0.096px] whitespace-pre-wrap">
+                        {aboutText || "No information provided yet."}
+                      </p>
+                    </div>
+                  </div>
+                </article>
               </div>
             ) : displayImages.length === 0 ? (
               <div className="flex flex-col items-center gap-4 py-16 text-center">
@@ -647,97 +655,97 @@ export default function CountryDetailComponent({
                   {distributeMasonryColumns(orderedItems, 4, (item) => (item.height && item.width ? item.height / item.width : 1)).map((columnItems, colIdx) => (
                     <div key={colIdx} className="flex flex-col gap-[0.5rem] xl:gap-[0.75rem] flex-1 min-w-0">
                       {columnItems.map(({ url: imgUrl, globalIndex, width, height, blurhash }) => {
-                          const isVideo = isVideoAsset(imgUrl);
-                          return (
-                            <div key={globalIndex} className="group relative">
-                              <div
-                                className="relative rounded-2xl overflow-hidden bg-[#151515] cursor-pointer"
-                                onClick={(e) => {
-                                  e.preventDefault();
-                                  e.stopPropagation();
-                                  setLightboxIndex(globalIndex);
-                                }}
-                              >
-                                {isVideo ? (
-                                  <>
-                                    <video data-data-original-src={MediaResolver.getBase(imgUrl)} src={MediaResolver.getOptimized(MediaResolver.getBase(imgUrl))}
-                                      muted
-                                      playsInline
-                                      loop
-                                      preload="metadata"
-                                      className="w-full h-full object-cover block pointer-events-none"
-                                    />
-                                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
-                                      <span className="text-white text-3xl drop-shadow-lg">▶</span>
-                                    </div>
-                                  </>
-                                ) : (
-                                  <LoadedImage
-                                    priority={globalIndex < 4}
-                                    originalSrc={MediaResolver.getBase(imgUrl)}
-                                    src={MediaResolver.getThumbnail(MediaResolver.getBase(imgUrl), 720)}
-                                    thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(imgUrl), 144)}
-                                    blurhash={blurhash}
-                                    alt={`${countryName} photo ${globalIndex + 1}`}
-                                    className="w-full h-full object-cover block"
-                                    containerClassName="w-full h-full relative"
-                                    skeletonClassName="absolute inset-0 w-full h-full bg-[#1a1a1a]"
+                        const isVideo = isVideoAsset(imgUrl);
+                        return (
+                          <div key={globalIndex} className="group relative">
+                            <div
+                              className="relative rounded-2xl overflow-hidden bg-[#151515] cursor-pointer"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                setLightboxIndex(globalIndex);
+                              }}
+                            >
+                              {isVideo ? (
+                                <>
+                                  <video data-data-original-src={MediaResolver.getBase(imgUrl)} src={MediaResolver.getOptimized(MediaResolver.getBase(imgUrl))}
+                                    muted
+                                    playsInline
+                                    loop
+                                    preload="metadata"
+                                    className="w-full h-full object-cover block pointer-events-none"
                                   />
-                                )}
-                                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-200 pointer-events-none" />
-                              </div>
-                              <MoreOptionsButton
-                                isOpen={openContextMenuId === `media-${globalIndex}`}
-                                label={`Open menu for photo ${globalIndex + 1}`}
-                                size="sm"
-                                onClick={(e) => {
-                                  e.preventDefault();
-                                  e.stopPropagation();
-                                  setOpenContextMenuId(openContextMenuId === `media-${globalIndex}` ? null : `media-${globalIndex}`);
-                                }}
-                              />
-                              {openContextMenuId === `media-${globalIndex}` ? (
-                                <div
-                                  ref={contextMenuRef}
-                                  role="menu"
-                                  className="absolute right-3 bottom-14 z-30 w-[12.5rem] rounded-2xl border border-[#2e2e2e] bg-[#1a1a1a] p-4 shadow-[0_8px_30px_rgb(0,0,0,0.5)]"
-                                  onClick={(event) => { event.preventDefault(); event.stopPropagation(); }}
-                                >
-                                  <div className="flex flex-col gap-4">
-                                    <button
-                                      type="button"
-                                      role="menuitem"
-                                      onClick={(event) => {
-                                        event.preventDefault();
-                                        event.stopPropagation();
-                                        setOpenContextMenuId(null);
-                                        showComingSoonToast("featureLaunch");
-                                      }}
-                                      className="flex w-full items-center gap-3 text-[0.9375rem] font-medium tracking-[-0.3px] text-white hover:text-[#d4d4d4] transition-colors"
-                                    >
-                                      <span className="material-symbols-rounded text-[1.375rem]">favorite_border</span>
-                                      <span>Add to favorites</span>
-                                    </button>
-                                    <button
-                                      type="button"
-                                      role="menuitem"
-                                      onClick={(event) => {
-                                        event.preventDefault();
-                                        event.stopPropagation();
-                                        showComingSoonToast("featureLaunch");
-                                        setOpenContextMenuId(null);
-                                      }}
-                                      className="flex w-full items-center gap-3 text-[0.9375rem] font-medium tracking-[-0.3px] text-white hover:text-[#d4d4d4] transition-colors"
-                                    >
-                                      <span className="material-symbols-rounded text-[1.375rem]">block</span>
-                                      <span>Report</span>
-                                    </button>
+                                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
+                                    <span className="text-white text-3xl drop-shadow-lg">▶</span>
                                   </div>
-                                </div>
-                              ) : null}
+                                </>
+                              ) : (
+                                <LoadedImage
+                                  priority={globalIndex < 4}
+                                  originalSrc={MediaResolver.getBase(imgUrl)}
+                                  src={MediaResolver.getThumbnail(MediaResolver.getBase(imgUrl), 720)}
+                                  thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(imgUrl), 144)}
+                                  blurhash={blurhash}
+                                  alt={`${countryName} photo ${globalIndex + 1}`}
+                                  className="w-full h-full object-cover block"
+                                  containerClassName="w-full h-full relative"
+                                  skeletonClassName="absolute inset-0 w-full h-full bg-[#1a1a1a]"
+                                />
+                              )}
+                              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-200 pointer-events-none" />
                             </div>
-                          );
-                        })}
+                            <MoreOptionsButton
+                              isOpen={openContextMenuId === `media-${globalIndex}`}
+                              label={`Open menu for photo ${globalIndex + 1}`}
+                              size="sm"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                setOpenContextMenuId(openContextMenuId === `media-${globalIndex}` ? null : `media-${globalIndex}`);
+                              }}
+                            />
+                            {openContextMenuId === `media-${globalIndex}` ? (
+                              <div
+                                ref={contextMenuRef}
+                                role="menu"
+                                className="absolute right-3 bottom-14 z-30 w-[12.5rem] rounded-2xl border border-[#2e2e2e] bg-[#1a1a1a] p-4 shadow-[0_8px_30px_rgb(0,0,0,0.5)]"
+                                onClick={(event) => { event.preventDefault(); event.stopPropagation(); }}
+                              >
+                                <div className="flex flex-col gap-4">
+                                  <button
+                                    type="button"
+                                    role="menuitem"
+                                    onClick={(event) => {
+                                      event.preventDefault();
+                                      event.stopPropagation();
+                                      showComingSoonToast("featureLaunch");
+                                      setTimeout(() => setOpenContextMenuId(null), 500);
+                                    }}
+                                    className="flex w-full items-center gap-3 text-[0.9375rem] font-medium tracking-[-0.3px] text-white hover:text-[#d4d4d4] transition-colors"
+                                  >
+                                    <span className="material-symbols-rounded text-[1.375rem]">favorite_border</span>
+                                    <span>Add to favorites</span>
+                                  </button>
+                                  <button
+                                    type="button"
+                                    role="menuitem"
+                                    onClick={(event) => {
+                                      event.preventDefault();
+                                      event.stopPropagation();
+                                      showComingSoonToast("featureLaunch");
+                                      setTimeout(() => setOpenContextMenuId(null), 50);
+                                    }}
+                                    className="flex w-full items-center gap-3 text-[0.9375rem] font-medium tracking-[-0.3px] text-white hover:text-[#d4d4d4] transition-colors"
+                                  >
+                                    <span className="material-symbols-rounded text-[1.375rem]">block</span>
+                                    <span>Report</span>
+                                  </button>
+                                </div>
+                              </div>
+                            ) : null}
+                          </div>
+                        );
+                      })}
                     </div>
                   ))}
                 </div>
@@ -746,93 +754,98 @@ export default function CountryDetailComponent({
                   {distributeMasonryColumns(orderedItems, 2, (item) => (item.height && item.width ? item.height / item.width : 1)).map((columnItems, colIdx) => (
                     <div key={colIdx} className="flex flex-col gap-[0.375rem] flex-1 min-w-0">
                       {columnItems.map(({ url: imgUrl, globalIndex, width, height, blurhash }) => {
-                          const isVideo = isVideoAsset(imgUrl);
-                          return (
-                            <div key={globalIndex} className="group relative w-full">
-                              <div
-                                className="relative rounded-2xl overflow-hidden bg-[#151515] cursor-pointer"
-                                onClick={(e) => {
-                                  e.preventDefault();
-                                  e.stopPropagation();
-                                  showComingSoonToast("desktopOnly");
-                                }}
-                              >
-                                {isVideo ? (
-                                  <>
-                                    <video
-                                      data-original-src={MediaResolver.getBase(imgUrl)} src={MediaResolver.getOptimized(MediaResolver.getBase(imgUrl))}
-                                      muted
-                                      playsInline
-                                      loop
-                                      preload="metadata"
-                                      className="w-full h-full object-cover block pointer-events-none"
-                                    />
-                                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
-                                      <span className="text-white text-3xl drop-shadow-lg">▶</span>
-                                    </div>
-                                  </>
-                                ) : (
-                                  <LoadedImage
-                                    priority={globalIndex < 4}
-                                    originalSrc={MediaResolver.getBase(imgUrl)}
-                                    src={MediaResolver.getThumbnail(MediaResolver.getBase(imgUrl), 720)}
-                                    thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(imgUrl), 144)}
-                                    blurhash={blurhash}
-                                    alt={`${countryName} photo ${globalIndex + 1}`}
-                                    className="w-full h-full object-cover block"
-                                    containerClassName="w-full h-full relative"
-                                    skeletonClassName="absolute inset-0 w-full h-full bg-[#1a1a1a]"
+                        const isVideo = isVideoAsset(imgUrl);
+                        return (
+                          <div key={globalIndex} className="group relative w-full">
+                            <div
+                              className="relative rounded-2xl overflow-hidden bg-[#151515] cursor-pointer"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                showComingSoonToast("desktopOnly");
+                              }}
+                            >
+                              {isVideo ? (
+                                <>
+                                  <video
+                                    data-original-src={MediaResolver.getBase(imgUrl)} src={MediaResolver.getOptimized(MediaResolver.getBase(imgUrl))}
+                                    muted
+                                    playsInline
+                                    loop
+                                    preload="metadata"
+                                    className="w-full h-full object-cover block pointer-events-none"
                                   />
-                                )}
-                                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-200 pointer-events-none" />
-                              </div>
-                              <MoreOptionsButton
-                                isOpen={openContextMenuId === `media-${globalIndex}`}
-                                label={`Open menu for photo ${globalIndex + 1}`}
-                                size="sm"
-                                onClick={(e) => {
-                                  e.preventDefault();
-                                  e.stopPropagation();
-                                  setOpenContextMenuId(openContextMenuId === `media-${globalIndex}` ? null : `media-${globalIndex}`);
-                                }}
-                              />
-                              {openContextMenuId === `media-${globalIndex}` ? (
-                                <div
-                                  ref={contextMenuRef}
-                                  role="menu"
-                                  className="absolute right-3 bottom-14 z-30 w-[12.5rem] rounded-2xl border border-[#2e2e2e] bg-[#1a1a1a] p-4 shadow-[0_8px_30px_rgb(0,0,0,0.5)]"
-                                  onClick={(event) => { event.preventDefault(); event.stopPropagation(); }}
-                                >
-                                  <div className="flex flex-col gap-4">
-                                    <button
-                                      type="button"
-                                      role="menuitem"
-                                      onClick={(event) => {
-                                        event.preventDefault();
-                                        event.stopPropagation();
-                                        setOpenContextMenuId(null);
-                                        showComingSoonToast("featureLaunch");
-                                      }}
-                                      className="flex w-full items-center gap-3 text-[0.9375rem] font-medium tracking-[-0.3px] text-white hover:text-[#d4d4d4] transition-colors"
-                                    >
-                                      <span className="material-symbols-rounded text-[1.375rem]">favorite_border</span>
-                                      <span>Add to favorites</span>
-                                    </button>
-                                    <button
-                                      type="button"
-                                      role="menuitem"
-                                      onClick={(event) => { event.preventDefault(); event.stopPropagation(); setOpenContextMenuId(null); }}
-                                      className="flex w-full items-center gap-3 text-[0.9375rem] font-medium tracking-[-0.3px] text-white hover:text-[#d4d4d4] transition-colors"
-                                    >
-                                      <span className="material-symbols-rounded text-[1.375rem]">block</span>
-                                      <span>Report</span>
-                                    </button>
+                                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
+                                    <span className="text-white text-3xl drop-shadow-lg">▶</span>
                                   </div>
-                                </div>
-                              ) : null}
+                                </>
+                              ) : (
+                                <LoadedImage
+                                  priority={globalIndex < 4}
+                                  originalSrc={MediaResolver.getBase(imgUrl)}
+                                  src={MediaResolver.getThumbnail(MediaResolver.getBase(imgUrl), 720)}
+                                  thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(imgUrl), 144)}
+                                  blurhash={blurhash}
+                                  alt={`${countryName} photo ${globalIndex + 1}`}
+                                  className="w-full h-full object-cover block"
+                                  containerClassName="w-full h-full relative"
+                                  skeletonClassName="absolute inset-0 w-full h-full bg-[#1a1a1a]"
+                                />
+                              )}
+                              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-200 pointer-events-none" />
                             </div>
-                          );
-                        })}
+                            <MoreOptionsButton
+                              isOpen={openContextMenuId === `media-${globalIndex}`}
+                              label={`Open menu for photo ${globalIndex + 1}`}
+                              size="sm"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                setOpenContextMenuId(openContextMenuId === `media-${globalIndex}` ? null : `media-${globalIndex}`);
+                              }}
+                            />
+                            {openContextMenuId === `media-${globalIndex}` ? (
+                              <div
+                                ref={contextMenuRef}
+                                role="menu"
+                                className="absolute right-3 bottom-14 z-30 w-[12.5rem] rounded-2xl border border-[#2e2e2e] bg-[#1a1a1a] p-4 shadow-[0_8px_30px_rgb(0,0,0,0.5)]"
+                                onClick={(event) => { event.preventDefault(); event.stopPropagation(); }}
+                              >
+                                <div className="flex flex-col gap-4">
+                                  <button
+                                    type="button"
+                                    role="menuitem"
+                                    onClick={(event) => {
+                                      event.preventDefault();
+                                      event.stopPropagation();
+                                      showComingSoonToast("featureLaunch");
+                                      setTimeout(() => setOpenContextMenuId(null), 50);
+                                    }}
+                                    className="flex w-full items-center gap-3 text-[0.9375rem] font-medium tracking-[-0.3px] text-white hover:text-[#d4d4d4] transition-colors"
+                                  >
+                                    <span className="material-symbols-rounded text-[1.375rem]">favorite_border</span>
+                                    <span>Add to favorites</span>
+                                  </button>
+                                  <button
+                                    type="button"
+                                    role="menuitem"
+                                    onClick={(event) => {
+                                      event.preventDefault();
+                                      event.stopPropagation();
+                                      showComingSoonToast("featureLaunch");
+                                      setTimeout(() => setOpenContextMenuId(null), 50);
+                                    }}
+                                    className="flex w-full items-center gap-3 text-[0.9375rem] font-medium tracking-[-0.3px] text-white hover:text-[#d4d4d4] transition-colors"
+                                  >
+                                    <span className="material-symbols-rounded text-[1.375rem]">block</span>
+                                    <span>Report</span>
+                                  </button>
+                                </div>
+                              </div>
+                            ) : null}
+                          </div>
+                        );
+                      })}
                     </div>
                   ))}
                 </div>
