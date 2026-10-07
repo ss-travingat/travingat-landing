@@ -146,7 +146,6 @@ export function MobileProfileNavbar({ profile }: { profile?: any }) {
             <div className="flex items-center gap-2">
               <LoadedImage
                 originalSrc={MediaResolver.getBase(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url)} src={MediaResolver.getOptimized(MediaResolver.getBase(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url))}
-                thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url), 144)}
                 blurhash={typeof profile.images.avatar === "object" ? profile.images.avatar.blurhash : undefined}
                 alt="Avatar"
                 priority={true}
@@ -243,7 +242,6 @@ export function MobileHero({
             <div className="absolute inset-0 rounded-[1rem] overflow-hidden bg-[#151515]">
               <LoadedImage
                 originalSrc={MediaResolver.getBase(typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url)} src={MediaResolver.getOptimized(MediaResolver.getBase(typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url))}
-                thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url), 144)}
                 blurhash={typeof profile.images.cover === "object" ? profile.images.cover.blurhash : undefined}
                 alt="Profile cover"
                 priority={true}
@@ -276,7 +274,6 @@ export function MobileHero({
         <div className="relative z-10 mx-auto w-[5rem] h-[5rem] rounded-2xl ring-4 ring-black bg-[#151515]">
           <LoadedImage
             originalSrc={MediaResolver.getBase(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url)} src={MediaResolver.getOptimized(MediaResolver.getBase(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url))}
-            thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url), 144)}
             blurhash={typeof profile.images.avatar === "object" ? profile.images.avatar.blurhash : undefined}
             alt="Profile avatar"
             priority={true}

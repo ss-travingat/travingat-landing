@@ -96,7 +96,7 @@ function CollectionLightbox({
         >
           <div className="flex items-start justify-between">
             <div className="h-[4.5rem] w-[4.5rem] overflow-hidden rounded-2xl">
-              <LoadedImage src={avatarSrc} thumbnailSrc={MediaResolver.getThumbnail(avatarSrc, 144)} blurhash={profileAvatarBlurhash} alt={profileName} className="h-full w-full object-cover" />
+              <LoadedImage src={avatarSrc} blurhash={profileAvatarBlurhash} alt={profileName} className="h-full w-full object-cover" />
             </div>
             <button
               type="button"
@@ -590,7 +590,7 @@ export default function CollectionDetailComponent({
                 <div className="hidden lg:flex w-full gap-[0.5rem] xl:gap-[0.75rem]">
                   {distributeMasonryColumns(items, 4, (item) => (item.height && item.width ? item.height / item.width : 1)).map((columnItems, colIdx) => (
                     <div key={colIdx} className="flex flex-col gap-[0.5rem] xl:gap-[0.75rem] flex-1 min-w-0">
-                      {columnItems.map(({ url: imgUrl, globalIndex, blurhash }) => {
+                      {columnItems.map(({ url: imgUrl, globalIndex, width, height, blurhash }) => {
                         const isVideo = isVideoAsset(imgUrl);
                         const displayCountryCode = getCountryCodeForImage(columnItems[colIdx] as any) || getCountryCodeForImage({ url: imgUrl });
                         const countryEntry = displayCountryCode ? COUNTRY_LIST.find((c) => c.code.toLowerCase() === displayCountryCode.toLowerCase()) : null;
@@ -600,6 +600,7 @@ export default function CollectionDetailComponent({
                           <div key={globalIndex} className="group relative">
                             <div
                               className="relative rounded-2xl overflow-hidden bg-[#151515] cursor-pointer"
+                              style={{ aspectRatio: width && height ? `${width}/${height}` : "1/1" }}
                               onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
@@ -624,7 +625,6 @@ export default function CollectionDetailComponent({
                                 <LoadedImage
                                   originalSrc={MediaResolver.getBase(imgUrl)}
                                   src={MediaResolver.getThumbnail(MediaResolver.getBase(imgUrl), 720)}
-                                  thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(imgUrl), 144)}
                                   blurhash={blurhash}
                                   alt={`${title} photo ${globalIndex + 1}`}
                                   priority={globalIndex < 4}
@@ -664,7 +664,7 @@ export default function CollectionDetailComponent({
                 <div className="flex lg:hidden w-full gap-[0.375rem] md:gap-[1.25rem]">
                   {distributeMasonryColumns(items, 2, (item) => (item.height && item.width ? item.height / item.width : 1)).map((columnItems, colIdx) => (
                     <div key={colIdx} className="flex flex-col gap-[0.375rem] md:gap-[1.25rem] flex-1 min-w-0">
-                      {columnItems.map(({ url: imgUrl, globalIndex, blurhash }) => {
+                      {columnItems.map(({ url: imgUrl, globalIndex, width, height, blurhash }) => {
                         const isVideo = isVideoAsset(imgUrl);
                         const displayCountryCode = getCountryCodeForImage(columnItems[colIdx] as any) || getCountryCodeForImage({ url: imgUrl });
                         const countryEntry = displayCountryCode ? COUNTRY_LIST.find((c) => c.code.toLowerCase() === displayCountryCode.toLowerCase()) : null;
@@ -674,6 +674,7 @@ export default function CollectionDetailComponent({
                           <div key={globalIndex} className="group relative w-full">
                             <div
                               className="relative rounded-2xl overflow-hidden bg-[#151515] cursor-pointer"
+                              style={{ aspectRatio: width && height ? `${width}/${height}` : "1/1" }}
                               onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
@@ -698,7 +699,6 @@ export default function CollectionDetailComponent({
                                 <LoadedImage
                                   originalSrc={MediaResolver.getBase(imgUrl)}
                                   src={MediaResolver.getThumbnail(MediaResolver.getBase(imgUrl), 720)}
-                                  thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(imgUrl), 144)}
                                   blurhash={blurhash}
                                   alt={`${title} photo ${globalIndex + 1}`}
                                   priority={globalIndex < 4}

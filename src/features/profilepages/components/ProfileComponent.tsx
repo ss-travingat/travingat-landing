@@ -75,7 +75,7 @@ type CountryCard = {
   name: string;
   flagCode: string;
   thumbnailUrl: string;
-  previewImages: string[];
+  previewImages: Array<string | { url: string; blurhash?: string }>;
   photoCount: number;
   videoCount: number;
   updatedLabel: string;
@@ -88,7 +88,7 @@ type CollectionCard = {
   createdLabel: string;
   updatedLabel: string;
   thumbnailUrl: string;
-  previewImages: string[];
+  previewImages: Array<string | { url: string; blurhash?: string }>;
   countries: string[];
   countryOverflowCount: number;
 };
@@ -428,7 +428,7 @@ function PhotoCarouselModal({
           {/* Avatar + close */}
           <div className="flex items-start justify-between">
             <div className="h-18 w-18 overflow-hidden rounded-2xl">
-              <LoadedImage src={avatarSrc} thumbnailSrc={MediaResolver.getThumbnail(avatarSrc, 144)} blurhash={profileAvatarBlurhash} alt={profileName} className="h-full w-full object-cover" />
+              <LoadedImage src={avatarSrc} blurhash={profileAvatarBlurhash} alt={profileName} className="h-full w-full object-cover" />
             </div>
             <button
               type="button"
@@ -613,7 +613,6 @@ function JsMasonryGrid({
               blurhash={mediaItem.blurhash}
               originalSrc={MediaResolver.getBase(mediaItem.fileUrl)}
               src={MediaResolver.getThumbnail(MediaResolver.getBase(mediaItem.fileUrl), 720)}
-              thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(mediaItem.fileUrl), 144)}
               alt="Uploaded media"
               className="w-full h-full object-cover block"
               containerClassName="w-full h-full relative"
@@ -1137,15 +1136,20 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
         const countryName = COUNTRY_LIST_LOOKUP[ci.countryCode.toUpperCase()] || ci.countryCode;
         const photoPreviewImages = ci.images.filter((url) => !isVideoAsset(typeof url === "string" ? url : url.url)).slice(0, 5);
         const rawPreview = (photoPreviewImages.length > 0 ? photoPreviewImages : ci.images).slice(0, 5);
-        let previewImages = rawPreview.map((g) => (typeof g === "string" ? g : g.url));
+        let previewImages: Array<string | { url: string; blurhash?: string }> = [...rawPreview];
         if (ci.coverPhoto) {
-          previewImages = [ci.coverPhoto, ...previewImages.filter((url) => url !== ci.coverPhoto)];
+          const isCoverStr = typeof ci.coverPhoto === "string";
+          const coverUrl = isCoverStr ? ci.coverPhoto : (ci.coverPhoto as any).url;
+          previewImages = [ci.coverPhoto, ...previewImages.filter((img) => {
+            const url = typeof img === "string" ? img : img.url;
+            return url !== coverUrl;
+          })];
         }
         return {
           code: `${profile.id}-ci-${index}`,
           name: countryName,
           flagCode: ci.countryCode,
-          thumbnailUrl: ci.coverPhoto || previewImages[0] || (typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url),
+          thumbnailUrl: ci.coverPhoto ? (typeof ci.coverPhoto === "string" ? ci.coverPhoto : (ci.coverPhoto as any).url) : (previewImages[0] ? (typeof previewImages[0] === "string" ? previewImages[0] : previewImages[0].url) : (typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url)),
           previewImages,
           photoCount: ci.images.filter((entry) => !isVideoAsset(typeof entry === "string" ? entry : entry.url)).length,
           videoCount: ci.images.filter((entry) => isVideoAsset(typeof entry === "string" ? entry : entry.url)).length,
@@ -1320,9 +1324,14 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
       return profile.collectionImages.map((ci, index) => {
         const photoPreviewImages = ci.images.filter((entry) => !isVideoAsset(typeof entry === "string" ? entry : entry.url)).slice(0, 5);
         const rawPreview = (photoPreviewImages.length > 0 ? photoPreviewImages : ci.images).slice(0, 5);
-        let previewImages = rawPreview.map((g) => (typeof g === "string" ? g : g.url));
+        let previewImages: Array<string | { url: string; blurhash?: string }> = [...rawPreview];
         if (ci.coverPhoto) {
-          previewImages = [ci.coverPhoto, ...previewImages.filter((url) => url !== ci.coverPhoto)];
+          const isCoverStr = typeof ci.coverPhoto === "string";
+          const coverUrl = isCoverStr ? ci.coverPhoto : (ci.coverPhoto as any).url;
+          previewImages = [ci.coverPhoto, ...previewImages.filter((img) => {
+            const url = typeof img === "string" ? img : img.url;
+            return url !== coverUrl;
+          })];
         }
         const selectedCountries = (ci.countryCodes ?? [])
           .map((code) => COUNTRY_LIST_LOOKUP[code.toUpperCase()] || code.toUpperCase())
@@ -1335,7 +1344,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
           description: profile.bio,
           createdLabel: getDeterministicCreatedLabel(index, ci.updatedAt || ci.updated_at),
           updatedLabel: getUpdatedLabel(ci.updatedAt || ci.updated_at, index),
-          thumbnailUrl: ci.coverPhoto || previewImages[0] || (typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url),
+          thumbnailUrl: ci.coverPhoto ? (typeof ci.coverPhoto === "string" ? ci.coverPhoto : (ci.coverPhoto as any).url) : (previewImages[0] ? (typeof previewImages[0] === "string" ? previewImages[0] : previewImages[0].url) : (typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url)),
           previewImages,
           countries: selectedCountries.length > 0 ? visibleCountries : fallbackVisibleCountries,
           countryOverflowCount: selectedCountries.length > 0 ? countryOverflowCount : fallbackOverflowCount,
@@ -1447,7 +1456,6 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                   <div className="relative size-16 lg:size-[6.25rem] xl:size-[7.5rem] shrink-0 overflow-hidden rounded-[1.25rem] bg-[#151515]">
                     <LoadedImage
                       originalSrc={MediaResolver.getBase(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url)} src={MediaResolver.getOptimized(MediaResolver.getBase(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url))}
-                      thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url), 144)}
                       blurhash={typeof profile.images.avatar === "object" ? profile.images.avatar.blurhash : undefined}
                       alt="Profile avatar"
                       priority={true}
@@ -1602,7 +1610,6 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                 <div className="absolute inset-0 overflow-hidden rounded-3xl lg:rounded-[1.5rem] xl:rounded-[2rem]">
                   <LoadedImage
                     originalSrc={MediaResolver.getBase(typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url)} src={MediaResolver.getOptimized(MediaResolver.getBase(typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url))}
-                    thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url), 144)}
                     blurhash={typeof profile.images.cover === "object" ? profile.images.cover.blurhash : undefined}
                     alt="Profile cover"
                     priority={true}
@@ -1747,7 +1754,6 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                               <div key={src} className="w-19 h-19 md:w-25 md:h-25 rounded-2xl md:rounded-[0.625rem] overflow-hidden">
                                 <LoadedImage
                                   originalSrc={MediaResolver.getBase(src)} src={MediaResolver.getOptimized(MediaResolver.getBase(src))}
-                                  thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(src), 144)}
                                   alt={`Country preview ${idx + 1}`}
                                   className="w-full h-full object-cover"
                                   containerClassName="w-full h-full"
@@ -1860,7 +1866,6 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                               <div key={src} className="w-19 h-19 md:w-25 md:h-25 rounded-2xl md:rounded-[0.625rem] overflow-hidden">
                                 <LoadedImage
                                   originalSrc={MediaResolver.getBase(src)} src={MediaResolver.getOptimized(MediaResolver.getBase(src))}
-                                  thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(src), 144)}
                                   alt={`Collection preview ${idx + 1}`}
                                   className="w-full h-full object-cover"
                                   containerClassName="w-full h-full"
@@ -1985,7 +1990,6 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                                   <LoadedImage
                                     originalSrc={MediaResolver.getBase(src)}
                                     src={MediaResolver.getThumbnail(MediaResolver.getBase(src), 720)}
-                                    thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(src), 144)}
                                     alt={`About photo ${idx + 1}`}
                                     className="w-full h-full object-cover pointer-events-none select-none"
                                     containerClassName="w-full h-full"
@@ -2157,7 +2161,6 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                 <div className="-mb-8 h-48.5 w-50 overflow-hidden rounded-xl shrink-0 bg-[#151515]">
                   <LoadedImage
                     originalSrc={MediaResolver.getBase(typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url)} src={MediaResolver.getOptimized(MediaResolver.getBase(typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url))}
-                    thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url), 144)}
                     alt="Cover preview"
                     className="h-full w-full object-cover"
                     skeletonClassName="absolute inset-0 bg-[#1a1a1a]"
@@ -2167,7 +2170,6 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                 <div className="-mb-8 h-15 w-15 overflow-hidden rounded-xl shadow-[8px_8px_12px_0px_rgba(0,0,0,0.25)] shrink-0 bg-[#151515]">
                   <LoadedImage
                     originalSrc={MediaResolver.getBase(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url)} src={MediaResolver.getOptimized(MediaResolver.getBase(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url))}
-                    thumbnailSrc={MediaResolver.getThumbnail(MediaResolver.getBase(typeof profile.images.avatar === "string" ? profile.images.avatar : profile.images.avatar.url), 144)}
                     alt={profile.name}
                     className="h-full w-full object-cover"
                     skeletonClassName="absolute inset-0 bg-[#1a1a1a]"
