@@ -136,10 +136,15 @@ function CollectionLightbox({
             <button
               type="button"
               onClick={() => showComingSoonToast("featureLaunch")}
-              className="flex h-[2.375rem] w-[2.375rem] shrink-0 items-center justify-center rounded-full border border-[#2e2e2e] bg-[#1a1a1a] text-white transition hover:bg-[#222]"
               aria-label="More options"
+              className="grid h-[2.375rem] w-[2.375rem] place-items-center rounded-full border border-[#2e2e2e] bg-[#1a1a1a] text-white transition hover:bg-[#222]"
             >
-              <span className="material-symbols-rounded text-[20px]">more_horiz</span>
+              <span className="grid grid-cols-2 gap-1.5">
+                <span className="h-1 w-1 rounded-full bg-white" />
+                <span className="h-1 w-1 rounded-full bg-white" />
+                <span className="h-1 w-1 rounded-full bg-white" />
+                <span className="h-1 w-1 rounded-full bg-white" />
+              </span>
             </button>
           </div>
 

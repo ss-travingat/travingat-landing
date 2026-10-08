@@ -442,14 +442,14 @@ function PhotoCarouselModal({
           </div>
 
           {/* Profile info */}
-          <a href={`/${profileHandle.replace(/^@/, '')}`} className="flex flex-col gap-1 block transition hover:opacity-80">
-            <div className="flex items-center gap-1.5">
+          <a href={`/${profileHandle.replace(/^@/, '')}`} className="flex flex-col gap-3 block transition hover:opacity-80">
+            <div className="flex items-center gap-[0.375rem]">
               {profileFlagSrc ? (
                 <img src={profileFlagSrc} alt="" className="h-3 w-[1.125rem] rounded-[0.125rem] object-cover" />
               ) : null}
               <span className="text-[14px] font-medium leading-[20px] tracking-[-0.5px] text-[#A8A8A8]">{profileCountry || profileName}</span>
             </div>
-            <p className="text-[18px] font-medium leading-[24px] tracking-[-0.198px] text-white">{profileHandle}</p>
+            <p className="text-[20px] font-semibold tracking-[-0.5px] text-white">{profileHandle}</p>
           </a>
 
           {/* Follow / Connect / More */}
@@ -623,7 +623,7 @@ function JsMasonryGrid({
               </div>
             </>
           ) : (
-              <LoadedImage
+            <LoadedImage
               priority={gridIndex < 4}
               blurhash={mediaItem.blurhash}
               originalSrc={MediaResolver.getBase(mediaItem.fileUrl)}
@@ -1497,7 +1497,8 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                         )}
                         <span>{basedIn}</span>
                       </div>
-                      <h1 className="ds-font-display text-[32px] leading-[40px] xl:text-[52px] xl:leading-[60px] font-bold tracking-[-1px] text-white w-full">
+
+                      <h1 className="ds-font-display text-[32px] leading-[40px] tracking-[-0.5px] font-semibold xl:text-[44px] xl:leading-[52px] text-white w-full">
                         {displayName}
                       </h1>
 

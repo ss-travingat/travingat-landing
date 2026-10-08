@@ -130,7 +130,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className={`${inter.variable} ${interDisplay.variable} ${logoFont.variable} ${openSauceTwo.variable} ${interGoogle.variable} ${antonio.variable}`}>
       <head>
         <link
           rel="preload"
@@ -150,7 +150,7 @@ export default function RootLayout({
           {`document.querySelector('link[href*="Material+Symbols"][media="print"]').media='all'`}
         </Script>
       </head>
-      <body className={`${inter.variable} ${interDisplay.variable} ${logoFont.variable} ${openSauceTwo.variable} ${interGoogle.variable} ${antonio.variable}`}>
+      <body>
         <MobileComingSoonProvider>
           <LandingLayout>{children}</LandingLayout>
         </MobileComingSoonProvider>
