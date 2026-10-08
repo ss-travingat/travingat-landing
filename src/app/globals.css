@@ -358,11 +358,11 @@ body {
 }
 
 .ds-font-display {
-  font-family: var(--font-display-css);
+  font-family: var(--font-inter-display, "Inter Display"), var(--font-inter, "Inter"), "Inter", "Segoe UI", sans-serif;
 }
 
 .ds-font-body {
-  font-family: var(--font-sans-css);
+  font-family: var(--font-inter, "Inter"), "Inter", "Segoe UI", sans-serif;
 }
 
 .ds-font-open-sauce {
