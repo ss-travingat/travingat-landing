@@ -101,13 +101,13 @@ function PhotoLightbox({
       sidebarContent={
         <aside
           className="flex w-[22.5rem] shrink-0 flex-col gap-8 overflow-y-auto bg-[#111111] p-8 text-white"
-          onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
+          onClick={(e) => e.stopPropagation()}
         >
           {/* Avatar + close */}
           <div className="flex items-start justify-between">
-            <div className="h-[4.5rem] w-[4.5rem] overflow-hidden rounded-2xl">
+            <a href={`/${profileHandle.replace(/^@/, '')}`} className="h-[4.5rem] w-[4.5rem] overflow-hidden rounded-2xl block transition hover:opacity-80">
               <LoadedImage src={avatarSrc} blurhash={profileAvatarBlurhash} alt={profileName} className="h-full w-full object-cover" />
-            </div>
+            </a>
             <button
               type="button"
               onClick={onClose}
@@ -119,7 +119,7 @@ function PhotoLightbox({
           </div>
 
           {/* Profile info */}
-          <div className="flex flex-col gap-3">
+          <a href={`/${profileHandle.replace(/^@/, '')}`} className="flex flex-col gap-3 block transition hover:opacity-80">
             <div className="flex items-center gap-[0.375rem]">
               {profileFlagSrc ? (
                 <img src={profileFlagSrc} alt="" className="h-3 w-[1.125rem] rounded-[0.125rem] object-cover" />
@@ -127,7 +127,7 @@ function PhotoLightbox({
               <span className="text-[14px] font-medium leading-[20px] tracking-[-0.5px] text-[#A8A8A8]">{profileCountry || profileName}</span>
             </div>
             <p className="text-[20px] font-semibold tracking-[-0.5px] text-white">{profileHandle}</p>
-          </div>
+          </a>
 
           {/* Follow / Connect / More */}
           <div className="flex items-center gap-2">
@@ -157,14 +157,28 @@ function PhotoLightbox({
 
           {/* Country + description */}
           <div className="flex flex-col gap-[0.5rem]">
-            <div className="flex items-start gap-[0.75rem]">
-              {countryFlagSrc ? (
-                <img src={countryFlagSrc} alt="" className="mt-[0.34375rem] shrink-0 h-[1.3125rem] w-[2rem] rounded-[0.204375rem] object-cover shadow-sm" />
-              ) : null}
-              <p className="text-left font-display text-[24px] font-semibold not-italic leading-[32px] tracking-[-0.5px] text-white">
-                {countryName}
-              </p>
-            </div>
+            {countryName && countryCode ? (
+              <a 
+                href={`/${profileHandle.replace(/^@/, '')}/country/${countryCode.toUpperCase()}`}
+                className="flex items-start gap-[0.75rem] transition hover:opacity-80"
+              >
+                {countryFlagSrc ? (
+                  <img src={countryFlagSrc} alt="" className="mt-[0.34375rem] shrink-0 h-[1.3125rem] w-[2rem] rounded-[0.204375rem] object-cover shadow-sm" />
+                ) : null}
+                <p className="text-left font-display text-[24px] font-semibold not-italic leading-[32px] tracking-[-0.5px] text-white">
+                  {countryName}
+                </p>
+              </a>
+            ) : (
+              <div className="flex items-start gap-[0.75rem]">
+                {countryFlagSrc ? (
+                  <img src={countryFlagSrc} alt="" className="mt-[0.34375rem] shrink-0 h-[1.3125rem] w-[2rem] rounded-[0.204375rem] object-cover shadow-sm" />
+                ) : null}
+                <p className="text-left font-display text-[24px] font-semibold not-italic leading-[32px] tracking-[-0.5px] text-white">
+                  {countryName}
+                </p>
+              </div>
+            )}
             {description ? (
               <p className="text-[16px] leading-[24px] tracking-[-0.096px] font-normal text-[#dcdcdc] whitespace-pre-wrap">{description}</p>
             ) : null}

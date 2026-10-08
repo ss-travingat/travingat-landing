@@ -424,13 +424,13 @@ function PhotoCarouselModal({
       sidebarContent={
         <aside
           className="flex w-[22.5rem] shrink-0 flex-col gap-8 overflow-y-auto bg-[#111111] p-8 text-white"
-          onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
+          onClick={(e) => e.stopPropagation()}
         >
           {/* Avatar + close */}
           <div className="flex items-start justify-between">
-            <div className="h-18 w-18 overflow-hidden rounded-2xl">
+            <a href={`/${profileHandle.replace(/^@/, '')}`} className="h-18 w-18 overflow-hidden rounded-2xl block transition hover:opacity-80">
               <LoadedImage src={avatarSrc} blurhash={profileAvatarBlurhash} alt={profileName} className="h-full w-full object-cover" />
-            </div>
+            </a>
             <button
               type="button"
               onClick={onClose}
@@ -442,7 +442,7 @@ function PhotoCarouselModal({
           </div>
 
           {/* Profile info */}
-          <div className="flex flex-col gap-1">
+          <a href={`/${profileHandle.replace(/^@/, '')}`} className="flex flex-col gap-1 block transition hover:opacity-80">
             <div className="flex items-center gap-1.5">
               {profileFlagSrc ? (
                 <img src={profileFlagSrc} alt="" className="h-3 w-[1.125rem] rounded-[0.125rem] object-cover" />
@@ -450,7 +450,7 @@ function PhotoCarouselModal({
               <span className="text-[14px] font-medium leading-[20px] tracking-[-0.5px] text-[#A8A8A8]">{profileCountry || profileName}</span>
             </div>
             <p className="text-[18px] font-medium leading-[24px] tracking-[-0.198px] text-white">{profileHandle}</p>
-          </div>
+          </a>
 
           {/* Follow / Connect / More */}
           <div className="flex items-center gap-2">
@@ -485,14 +485,28 @@ function PhotoCarouselModal({
 
           {/* Country + description */}
           <div className="flex flex-col gap-[0.5rem]">
-            <div className="flex items-start gap-[0.75rem]">
-              {countryFlagSrc ? (
-                <img src={countryFlagSrc} alt="" className="mt-[0.34375rem] shrink-0 h-[1.3125rem] w-[2rem] rounded-[0.204375rem] object-cover shadow-sm" />
-              ) : null}
-              <p className="text-left font-display text-[24px] font-semibold not-italic leading-[32px] tracking-[-0.5px] text-white">
-                {countryName || ""}
-              </p>
-            </div>
+            {countryName && countryFlagCode ? (
+              <a 
+                href={`/${profileHandle.replace(/^@/, '')}/country/${countryFlagCode.toUpperCase()}`} 
+                className="flex items-start gap-[0.75rem] transition hover:opacity-80"
+              >
+                {countryFlagSrc ? (
+                  <img src={countryFlagSrc} alt="" className="mt-[0.34375rem] shrink-0 h-[1.3125rem] w-[2rem] rounded-[0.204375rem] object-cover shadow-sm" />
+                ) : null}
+                <p className="text-left font-display text-[24px] font-semibold not-italic leading-[32px] tracking-[-0.5px] text-white">
+                  {countryName}
+                </p>
+              </a>
+            ) : (
+              <div className="flex items-start gap-[0.75rem]">
+                {countryFlagSrc ? (
+                  <img src={countryFlagSrc} alt="" className="mt-[0.34375rem] shrink-0 h-[1.3125rem] w-[2rem] rounded-[0.204375rem] object-cover shadow-sm" />
+                ) : null}
+                <p className="text-left font-display text-[24px] font-semibold not-italic leading-[32px] tracking-[-0.5px] text-white">
+                  {countryName || ""}
+                </p>
+              </div>
+            )}
             {description ? (
               <p className="text-[16px] font-normal leading-[24px] tracking-[-0.096px] text-[#dcdcdc] whitespace-pre-wrap">{description}</p>
             ) : null}
@@ -1483,8 +1497,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                         )}
                         <span>{basedIn}</span>
                       </div>
-
-                      <h1 className="text-white w-full" style={{ fontFamily: 'var(--font-inter-display, "Inter Display")', fontSize: '52px', fontWeight: 700, lineHeight: '60px', letterSpacing: '-1px' }}>
+                      <h1 className="ds-font-display text-[32px] leading-[40px] xl:text-[52px] xl:leading-[60px] font-bold tracking-[-1px] text-white w-full">
                         {displayName}
                       </h1>
 

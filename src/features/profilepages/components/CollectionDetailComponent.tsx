@@ -92,12 +92,12 @@ function CollectionLightbox({
       sidebarContent={
         <aside
           className="flex w-[22.5rem] shrink-0 flex-col gap-8 overflow-y-auto bg-[#111111] p-8 text-white"
-          onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
+          onClick={(e) => e.stopPropagation()}
         >
           <div className="flex items-start justify-between">
-            <div className="h-[4.5rem] w-[4.5rem] overflow-hidden rounded-2xl">
+            <a href={`/${profileHandle.replace(/^@/, '')}`} className="h-[4.5rem] w-[4.5rem] overflow-hidden rounded-2xl block transition hover:opacity-80">
               <LoadedImage src={avatarSrc} blurhash={profileAvatarBlurhash} alt={profileName} className="h-full w-full object-cover" />
-            </div>
+            </a>
             <button
               type="button"
               onClick={onClose}
@@ -108,7 +108,7 @@ function CollectionLightbox({
             </button>
           </div>
 
-          <div className="flex flex-col gap-3">
+          <a href={`/${profileHandle.replace(/^@/, '')}`} className="flex flex-col gap-3 block transition hover:opacity-80">
             <div className="flex items-center gap-[0.375rem]">
               {profileFlagSrc ? (
                 <img src={profileFlagSrc} alt="" className="h-3 w-[1.125rem] rounded-[0.125rem] object-cover" />
@@ -116,7 +116,7 @@ function CollectionLightbox({
               <span className="text-[14px] font-medium leading-[20px] tracking-[-0.5px] text-[#A8A8A8]">{profileCountry || profileName}</span>
             </div>
             <p className="text-[20px] font-semibold tracking-[-0.5px] text-white">{profileHandle}</p>
-          </div>
+          </a>
 
           <div className="flex items-center gap-2">
             <button
