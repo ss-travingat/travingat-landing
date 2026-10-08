@@ -623,7 +623,7 @@ function JsMasonryGrid({
               </div>
             </>
           ) : (
-              <LoadedImage
+            <LoadedImage
               priority={gridIndex < 4}
               blurhash={mediaItem.blurhash}
               originalSrc={MediaResolver.getBase(mediaItem.fileUrl)}
@@ -1497,7 +1497,8 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                         )}
                         <span>{basedIn}</span>
                       </div>
-                      <h1 className="ds-font-display text-[32px] leading-[40px] xl:text-[52px] xl:leading-[60px] font-bold tracking-[-1px] text-white w-full">
+
+                      <h1 className="text-white w-full" style={{ fontFamily: 'var(--font-inter-display, "Inter Display")', fontSize: '52px', fontWeight: 700, lineHeight: '60px', letterSpacing: '-1px' }}>
                         {displayName}
                       </h1>
 
