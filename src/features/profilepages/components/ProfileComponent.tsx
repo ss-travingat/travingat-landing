@@ -1498,7 +1498,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                         <span>{basedIn}</span>
                       </div>
 
-                      <h1 className="ds-font-display text-[44px] leading-[52px] tracking-[-0.5px] font-semibold text-white w-full">
+                      <h1 className="ds-font-display text-[32px] leading-[40px] tracking-[-0.5px] font-semibold xl:text-[44px] xl:leading-[52px] text-white w-full">
                         {displayName}
                       </h1>
 
