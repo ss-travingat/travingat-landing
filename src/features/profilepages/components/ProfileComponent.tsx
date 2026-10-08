@@ -442,14 +442,14 @@ function PhotoCarouselModal({
           </div>
 
           {/* Profile info */}
-          <a href={`/${profileHandle.replace(/^@/, '')}`} className="flex flex-col gap-1 block transition hover:opacity-80">
-            <div className="flex items-center gap-1.5">
+          <a href={`/${profileHandle.replace(/^@/, '')}`} className="flex flex-col gap-3 block transition hover:opacity-80">
+            <div className="flex items-center gap-[0.375rem]">
               {profileFlagSrc ? (
                 <img src={profileFlagSrc} alt="" className="h-3 w-[1.125rem] rounded-[0.125rem] object-cover" />
               ) : null}
               <span className="text-[14px] font-medium leading-[20px] tracking-[-0.5px] text-[#A8A8A8]">{profileCountry || profileName}</span>
             </div>
-            <p className="text-[18px] font-medium leading-[24px] tracking-[-0.198px] text-white">{profileHandle}</p>
+            <p className="text-[20px] font-semibold tracking-[-0.5px] text-white">{profileHandle}</p>
           </a>
 
           {/* Follow / Connect / More */}
@@ -1498,7 +1498,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                         <span>{basedIn}</span>
                       </div>
 
-                      <h1 className="text-white w-full" style={{ fontFamily: 'var(--font-inter-display, "Inter Display")', fontSize: '52px', fontWeight: 700, lineHeight: '60px', letterSpacing: '-1px' }}>
+                      <h1 className="ds-font-display text-[44px] leading-[52px] tracking-[-0.5px] font-semibold text-white w-full">
                         {displayName}
                       </h1>
 
