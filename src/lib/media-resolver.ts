@@ -83,12 +83,19 @@ export class MediaResolver {
       if (!urlObj.hostname.includes('travingat.com') && !urlObj.hostname.includes('r2.cloudflarestorage.com')) {
         return baseUrl;
       }
+      
+      const isVideo = /\.(mp4|mov|m4v|3gp|3g2|webm)$/i.test(urlObj.pathname);
+      urlObj.pathname = urlObj.pathname.replace(/\.[^/.]+$/, isVideo ? ".webm" : ".avif");
+      
+      // If we modified the pathname, the original presigned signature (if any) is now invalid.
+      // We must clear the query parameters to make an anonymous request (assuming public CDN).
+      if (urlObj.toString() !== baseUrl) {
+        urlObj.search = "";
+      }
+      return urlObj.toString();
     } catch (e) {
       return baseUrl;
     }
-
-    const isVideo = /\.(mp4|mov|m4v|3gp|3g2|webm)$/i.test(baseUrl);
-    return baseUrl.replace(/\.[^/.]+$/, isVideo ? ".webm" : ".avif");
   }
 
   /**
@@ -114,6 +121,11 @@ export class MediaResolver {
 
       const pathWithoutExt = path.replace(/\.[^/.]+$/, "");
       urlObj.pathname = `/thumbnails/${pathWithoutExt}_${size}.avif`;
+      
+      // A presigned URL signature is tied to the original path. Since we changed the path to /thumbnails/...,
+      // the signature will fail with 403. We clear the query parameters to allow public CDN access.
+      urlObj.search = "";
+      
       return urlObj.toString();
     } catch (e) {
       return baseUrl;

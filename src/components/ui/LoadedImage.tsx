@@ -115,6 +115,15 @@ export default function LoadedImage({
           return;
         }
       }
+      if (healState === "optimized" || healState === "none") {
+        const originalTarget = originalSrc || src;
+        if (originalTarget && originalTarget !== activeSrc) {
+          console.warn(`[LoadedImage] Optimized image failed. Falling back to original image: ${originalTarget}`);
+          setHealState("original");
+          setRetryCount(0);
+          return;
+        }
+      }
     }
 
     if (retryCount < maxRetries) {
@@ -143,6 +152,7 @@ export default function LoadedImage({
   }, [src, thumbnailSrc]);
 
   useEffect(() => {
+    let isActive = true;
     const node = imgRef.current;
     if (!node) return;
 
@@ -152,7 +162,7 @@ export default function LoadedImage({
     const checkState = () => {
       if (node.complete) {
         if (node.naturalWidth > 0 || isSvg) {
-          handleLoad();
+          if (isActive) handleLoad();
           return true;
         }
         // If complete is true but naturalWidth is 0 (and not an SVG), it might be 
@@ -160,13 +170,10 @@ export default function LoadedImage({
         // Use decode() to safely wait for the browser to decode it.
         node.decode()
           .then(() => {
-            handleLoad();
+            if (isActive) handleLoad();
           })
           .catch(() => {
-            // Only trigger error if the src hasn't changed since we started waiting
-            if (imgRef.current?.src === node.src) {
-              handleError();
-            }
+            if (isActive) handleError();
           });
         return true;
       }
@@ -182,7 +189,10 @@ export default function LoadedImage({
       }
     }, 250);
 
-    return () => clearInterval(interval);
+    return () => {
+      isActive = false;
+      clearInterval(interval);
+    };
   }, [currentSrc]);
 
   // Handle blur preview loaded
