@@ -38,7 +38,7 @@ export function MasonryImageCard({
         alt={alt ?? item.alt ?? "Masonry image"}
         fill
         sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
-        className={`object-cover transition-opacity duration-400 ${isLoaded ? "opacity-100" : "opacity-0"}`}
+        className={`object-cover transition-opacity duration-400 ${isLoaded ? "opacity-100" : "opacity-[0.01]"}`}
         onLoad={() => setIsLoaded(true)}
         unoptimized
       />

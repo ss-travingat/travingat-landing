@@ -155,8 +155,19 @@ export default function LoadedImage({
           handleLoad();
           return true;
         }
-        // If complete is true but naturalWidth is 0 (and not an SVG), it failed to decode or 404'd before hydration!
-        handleError();
+        // If complete is true but naturalWidth is 0 (and not an SVG), it might be 
+        // a 404/error, OR it might just be asynchronously decoding.
+        // Use decode() to safely wait for the browser to decode it.
+        node.decode()
+          .then(() => {
+            handleLoad();
+          })
+          .catch(() => {
+            // Only trigger error if the src hasn't changed since we started waiting
+            if (imgRef.current?.src === node.src) {
+              handleError();
+            }
+          });
         return true;
       }
       return false;
@@ -217,7 +228,7 @@ export default function LoadedImage({
         ref={imgRef}
         src={currentSrc}
         alt={alt}
-        className={`relative z-10 transition-all duration-700 ease-out ${phase === "loaded" ? "opacity-100 blur-none scale-100" : "opacity-0 blur-sm scale-[1.02]"
+        className={`relative z-10 transition-all duration-700 ease-out ${phase === "loaded" ? "opacity-100 blur-none scale-100" : "opacity-[0.01] blur-sm scale-[1.02]"
           } ${className}`}
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         {...(priority ? { fetchPriority: "high" as any, loading: "eager" } : { loading: "lazy" })}
