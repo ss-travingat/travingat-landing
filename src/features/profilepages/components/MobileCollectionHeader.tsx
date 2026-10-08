@@ -70,7 +70,7 @@ export const MobileCollectionHeader = ({ title, headerCountryCodes, flagOverflow
             <button
               type="button"
               onClick={() => setShowMenu((prev: boolean) => !prev)}
-              className="flex px-[0.5rem] py-[0.25rem] items-center justify-center rounded-[3.125rem] bg-[#181818] hover:bg-[#222] transition shrink-0"
+              className="flex px-[8px] h-[20px] w-[36px] items-center justify-center rounded-[3.125rem] bg-[#181818] hover:bg-[#222] transition shrink-0"
               aria-label="More options"
             >
               <div className="flex items-center gap-[0.25rem]">
