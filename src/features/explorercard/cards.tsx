@@ -1,4 +1,5 @@
 import React from "react";
+import { Tooltip, TooltipProvider } from "@/components/ui/Tooltip";
 import { COUNTRY_LIST, searchCountry } from "@/lib/countries";
 import LoadedImage from "@/components/ui/LoadedImage";
 import { toLandingAssetUrl, getOptimizedMediaUrl } from "@/lib/landing-assets";
@@ -236,17 +237,17 @@ export function ClassicCard({ form, sampleFlags, visitedArray, isPreview, coverC
         {/* FLAGS */}
         <div className="flex w-full shrink-0 flex-wrap items-start justify-center gap-[4px]">
           {visitedArray.length > 0 ? (
-            <>
+            <TooltipProvider delayDuration={100}>
               {visitedArray.slice(0, 35).map((c) => (
-                <div
-                  key={c}
-                  title={c}
-                  className="h-[13.333px] w-[20px] shrink-0 overflow-hidden rounded-[2px] bg-[#161616]"
-                >
-                  {resolveCountryInfo(c, sampleFlags).code && (
-                    <span className={`fi fi-${resolveCountryInfo(c, sampleFlags).code} !block !h-full !w-full !bg-cover !bg-center !text-[0px]`} title={resolveCountryInfo(c, sampleFlags).name || c} />
-                  )}
-                </div>
+                <Tooltip key={c} content={resolveCountryInfo(c, sampleFlags).name || c} theme="light" side="top">
+                  <div
+                    className="h-[13.333px] w-[20px] shrink-0 overflow-hidden rounded-[2px] bg-[#161616] cursor-pointer"
+                  >
+                    {resolveCountryInfo(c, sampleFlags).code && (
+                      <span className={`fi fi-${resolveCountryInfo(c, sampleFlags).code} !block !h-full !w-full !bg-cover !bg-center !text-[0px]`} />
+                    )}
+                  </div>
+                </Tooltip>
               ))}
               {visitedArray.length > 35 && (
                 <CountriesPopup
@@ -258,7 +259,7 @@ export function ClassicCard({ form, sampleFlags, visitedArray, isPreview, coverC
                   }
                 />
               )}
-            </>
+            </TooltipProvider>
           ) : (
             // Placeholder empty flags if none visited
             Array.from({ length: 9 }).map((_, i) => (
@@ -347,13 +348,15 @@ export function MinimalCard({ form, sampleFlags, visitedArray, isPreview, coverC
 
           <div className="flex w-full shrink-0 flex-wrap items-start gap-[4px]">
             {visitedArray.length > 0 ? (
-              <>
+              <TooltipProvider delayDuration={100}>
                 {visitedArray.slice(0, 35).map((c) => (
-                  <div key={c} title={c} className="h-[18px] w-[26px] shrink-0 overflow-hidden rounded-[2px] bg-[#161616]">
-                    {resolveCountryInfo(c, sampleFlags).code && (
-                      <span className={`fi fi-${resolveCountryInfo(c, sampleFlags).code} !block !h-full !w-full !bg-cover !bg-center !text-[0px]`} title={resolveCountryInfo(c, sampleFlags).name || c} />
-                    )}
-                  </div>
+                  <Tooltip key={c} content={resolveCountryInfo(c, sampleFlags).name || c} theme="light" side="top">
+                    <div className="h-[18px] w-[26px] shrink-0 overflow-hidden rounded-[2px] bg-[#161616] cursor-pointer">
+                      {resolveCountryInfo(c, sampleFlags).code && (
+                        <span className={`fi fi-${resolveCountryInfo(c, sampleFlags).code} !block !h-full !w-full !bg-cover !bg-center !text-[0px]`} />
+                      )}
+                    </div>
+                  </Tooltip>
                 ))}
                 {visitedArray.length > 35 && (
                   <CountriesPopup
@@ -365,7 +368,7 @@ export function MinimalCard({ form, sampleFlags, visitedArray, isPreview, coverC
                     }
                   />
                 )}
-              </>
+              </TooltipProvider>
             ) : (
               Array.from({ length: 8 }).map((_, i) => (
                 <div key={i} className="h-[18px] w-[26px] shrink-0 overflow-hidden rounded-[2px] bg-[#2a2a2a]" />
@@ -466,13 +469,15 @@ export function AdventureCard({ form, sampleFlags, visitedArray, isPreview, cove
             {/* Flags */}
             <div className="relative z-10 flex w-full shrink-0 flex-wrap items-start justify-center gap-[4px] px-[6px]">
               {visitedArray.length > 0 ? (
-                <>
+                <TooltipProvider delayDuration={100}>
                   {visitedArray.slice(0, 35).map((c) => (
-                    <div key={c} title={c} className="h-[13.333px] w-[20px] shrink-0 overflow-hidden rounded-[2px] bg-[#161616]">
-                      {resolveCountryInfo(c, sampleFlags).code && (
-                        <span className={`fi fi-${resolveCountryInfo(c, sampleFlags).code} !block !h-full !w-full !bg-cover !bg-center !text-[0px]`} title={resolveCountryInfo(c, sampleFlags).name || c} />
-                      )}
-                    </div>
+                    <Tooltip key={c} content={resolveCountryInfo(c, sampleFlags).name || c} theme="light" side="top">
+                      <div className="h-[13.333px] w-[20px] shrink-0 overflow-hidden rounded-[2px] bg-[#161616] cursor-pointer">
+                        {resolveCountryInfo(c, sampleFlags).code && (
+                          <span className={`fi fi-${resolveCountryInfo(c, sampleFlags).code} !block !h-full !w-full !bg-cover !bg-center !text-[0px]`} />
+                        )}
+                      </div>
+                    </Tooltip>
                   ))}
                   {visitedArray.length > 35 && (
                     <CountriesPopup
@@ -484,7 +489,7 @@ export function AdventureCard({ form, sampleFlags, visitedArray, isPreview, cove
                       }
                     />
                   )}
-                </>
+                </TooltipProvider>
               ) : (
                 Array.from({ length: 9 }).map((_, i) => (
                   <div key={i} className="h-[13.333px] w-[20px] shrink-0 overflow-hidden rounded-[2px] bg-white/20" />

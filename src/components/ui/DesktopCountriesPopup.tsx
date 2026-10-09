@@ -50,9 +50,9 @@ export function DesktopCountriesPopup({ trigger, countries }: DesktopCountriesPo
           <Dialog.Overlay 
             className="fixed inset-0 z-[999] bg-black/50 backdrop-blur-sm desktop-overlay" 
             style={{ pointerEvents: 'auto' }}
-            onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
-            onPointerDown={(e) => e.stopPropagation()}
-            onTouchStart={(e) => e.stopPropagation()}
+            onClick={(e) => { e.preventDefault(); e.stopPropagation(); setOpen(false); }}
+            onPointerDown={(e) => { e.stopPropagation(); }}
+            onTouchStart={(e) => { e.stopPropagation(); }}
           />
         <Dialog.Content
           className="fixed left-[50%] top-[50%] z-[1000] flex w-full max-w-[400px] max-h-[85vh] flex-col overflow-hidden rounded-[24px] bg-[#111111] border border-white/5 shadow-2xl outline-none desktop-popup-content"

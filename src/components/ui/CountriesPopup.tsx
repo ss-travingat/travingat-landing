@@ -120,9 +120,9 @@ export function CountriesPopup({ trigger, countries }: CountriesPopupProps) {
           <Dialog.Overlay 
             className="fixed inset-0 z-[999] bg-black/50 backdrop-blur-sm mobile-overlay-bg" 
             style={{ pointerEvents: 'auto' }}
-            onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
-            onPointerDown={(e) => e.stopPropagation()}
-            onTouchStart={(e) => e.stopPropagation()}
+            onClick={(e) => { e.preventDefault(); e.stopPropagation(); setOpen(false); }}
+            onPointerDown={(e) => { e.stopPropagation(); }}
+            onTouchStart={(e) => { e.stopPropagation(); }}
           />
         <Dialog.Content
           className="fixed bottom-0 left-0 right-0 z-[1000] flex w-full flex-col outline-none md:bottom-auto md:left-[50%] md:top-[50%] md:w-full md:max-w-[400px] mobile-popup-content"
