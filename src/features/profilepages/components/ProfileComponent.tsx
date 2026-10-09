@@ -414,6 +414,7 @@ function PhotoCarouselModal({
         isVideo: item.isVideo,
         width: item.width,
         height: item.height,
+        blurhash: item.blurhash,
       }))}
       activeIndex={activeIndex}
       onClose={onClose}
@@ -971,6 +972,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
           isVideo: isVideoAsset(url),
           width: isObj ? (fileEntry.width as number) : undefined,
           height: isObj ? (fileEntry.height as number) : undefined,
+          blurhash: isObj ? (fileEntry.blurhash as string) : undefined,
         });
       });
       buckets.push(bucket);
@@ -992,6 +994,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
             countryCode: country.countryCode,
             width: isObj ? (fileEntry.width as number) : undefined,
             height: isObj ? (fileEntry.height as number) : undefined,
+            blurhash: isObj ? (fileEntry.blurhash as string) : undefined,
           });
         });
         buckets.push(bucket);
@@ -1014,6 +1017,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
             collectionIndex: collectionIdx,
             width: isObj ? (fileEntry.width as number) : undefined,
             height: isObj ? (fileEntry.height as number) : undefined,
+            blurhash: isObj ? (fileEntry.blurhash as string) : undefined,
           });
         });
         buckets.push(bucket);

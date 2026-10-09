@@ -6,6 +6,20 @@ function resolveImageAsset(img: any) {
   return typeof img === "string" ? img : img?.url ?? "";
 }
 
+function normalizeImageEntry(img: any) {
+  if (!img) return "";
+  if (typeof img === "string") {
+    return toLandingAssetUrl(img);
+  }
+  if (typeof img === "object") {
+    return {
+      ...img,
+      url: toLandingAssetUrl(img.url || ""),
+    };
+  }
+  return img;
+}
+
 export function normalizeProfile(p: any) {
   if (!p) return null;
   const images = p.images || { cover: "", avatar: "", gallery: [] };
@@ -24,9 +38,9 @@ export function normalizeProfile(p: any) {
     showBadge: p.showBadge ?? p.show_badge ?? false,
     isSampleProfile: p.isSampleProfile ?? p.is_sample_profile ?? false,
     images: {
-      cover: toLandingAssetUrl(resolveImageAsset(images.cover)),
-      avatar: toLandingAssetUrl(resolveImageAsset(images.avatar)),
-      gallery: (images.gallery || []).map((g: any) => toLandingAssetUrl(resolveImageAsset(g))),
+      cover: normalizeImageEntry(images.cover),
+      avatar: normalizeImageEntry(images.avatar),
+      gallery: (images.gallery || []).map(normalizeImageEntry),
     },
   };
 }
