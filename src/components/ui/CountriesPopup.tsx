@@ -101,15 +101,28 @@ export function CountriesPopup({ trigger, countries }: CountriesPopupProps) {
         }
       `}} />
       <Dialog.Root open={open} onOpenChange={setOpen}>
-        <Dialog.Trigger asChild>
-          <button
-            type="button"
-            className="cursor-pointer border-none bg-transparent p-0 outline-none flex items-center justify-center m-0"
-            aria-label="View all countries"
-          >
-            {trigger}
-          </button>
-        </Dialog.Trigger>
+        <div
+          role="button"
+          tabIndex={0}
+          aria-haspopup="dialog"
+          aria-expanded={open}
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            setOpen(true);
+          }}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              e.stopPropagation();
+              setOpen(true);
+            }
+          }}
+          className="cursor-pointer border-none bg-transparent p-0 outline-none flex items-center justify-center m-0"
+          aria-label="View all countries"
+        >
+          {trigger}
+        </div>
         <Dialog.Portal>
           <Dialog.Overlay 
             className="fixed inset-0 z-[999] bg-black/50 backdrop-blur-sm mobile-overlay-bg" 
