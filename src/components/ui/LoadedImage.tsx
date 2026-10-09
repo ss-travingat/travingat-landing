@@ -211,7 +211,7 @@ export default function LoadedImage({
   return (
     <div className={`relative overflow-hidden [transform:translateZ(0)] ${containerClassName}`} style={style}>
       {/* Skeleton placeholder — kept behind the blur preview to prevent edge bleeding into transparent */}
-      {phase !== "error" && (
+      {phase !== "error" && !blurhash && (
         <div className={`absolute inset-0 z-0 pointer-events-none bg-[#1a1a1a] transition-opacity duration-700 ease-out ${phase === "loaded" ? "opacity-0" : "opacity-100"} ${phase === "skeleton" ? "animate-pulse" : ""} rounded-[inherit] ${skeletonClassName.replace("absolute inset-0", "")}`} />
       )}
 
@@ -250,7 +250,7 @@ export default function LoadedImage({
 
       {/* Blurhash Placeholder (or Skeleton) */}
       {phase !== "error" && (
-        <div className={`absolute inset-0 z-0 transition-opacity duration-700 ease-out ${phase === "loaded" ? "opacity-0" : "opacity-100"} ${skeletonClassName}`}>
+        <div className={`absolute inset-0 z-0 transition-opacity duration-700 ease-out ${phase === "loaded" ? "opacity-0" : "opacity-100"} ${blurhash ? "" : skeletonClassName}`}>
           {blurhash ? (
             <Blurhash
               hash={blurhash}
