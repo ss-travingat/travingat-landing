@@ -5,6 +5,7 @@ import { useState, useRef, useEffect, type SyntheticEvent } from "react";
 import { useMobileComingSoon } from "@/components/ui/MobileComingSoonToast";
 import LoadedImage from "@/components/ui/LoadedImage";
 import { useImagePreloader } from "@/hooks/useImagePreloader";
+import { Blurhash } from "react-blurhash";
 
 export type LightboxItem = {
   id?: string;
@@ -42,7 +43,10 @@ export function MediaLightbox({
   const [mediaLoaded, setMediaLoaded] = useState(false);
   const [mediaError, setMediaError] = useState(false);
   const [fullResReady, setFullResReady] = useState(false);
-  const [naturalAspectRatio, setNaturalAspectRatio] = useState<number | null>(null);
+  const [naturalAspectRatio, setNaturalAspectRatio] = useState<number | null>(() => {
+    const item = items[activeIndex];
+    return item?.width && item?.height ? item.width / item.height : null;
+  });
   const [fallbackLevel, setFallbackLevel] = useState(0);
 
   const [prevActiveIndex, setPrevActiveIndex] = useState(activeIndex);
@@ -279,6 +283,18 @@ export function MediaLightbox({
                 </video>
               ) : (
                 <>
+                  {!mediaLoaded && activeItem?.blurhash && (
+                    <div className="absolute inset-0 z-0">
+                      <Blurhash
+                        hash={activeItem.blurhash}
+                        width="100%"
+                        height="100%"
+                        resolutionX={32}
+                        resolutionY={32}
+                        punch={1}
+                      />
+                    </div>
+                  )}
                   {/* Base layer: 720p thumbnail — already cached from the grid, shows instantly */}
                   <img
                     key={`thumb-${activeIndex}`}

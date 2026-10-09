@@ -92,6 +92,9 @@ function PhotoLightbox({
         id: entry.url,
         url: entry.url,
         isVideo: isVideoAsset(entry.url),
+        width: entry.width,
+        height: entry.height,
+        blurhash: entry.blurhash,
       }))}
       activeIndex={activeIndex}
       onClose={onClose}

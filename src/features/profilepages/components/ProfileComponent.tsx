@@ -83,6 +83,7 @@ type CountryCard = {
 
 type CollectionCard = {
   id: string;
+  collectionIndex: number;
   title: string;
   description: string;
   createdLabel: string;
@@ -405,6 +406,7 @@ function PhotoCarouselModal({
         isVideo: item.isVideo,
         width: item.width,
         height: item.height,
+        blurhash: item.blurhash,
       }))}
       activeIndex={activeIndex}
       onClose={onClose}
@@ -938,6 +940,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
           isVideo: isVideoAsset(url),
           width: isObj ? (fileEntry.width as number) : undefined,
           height: isObj ? (fileEntry.height as number) : undefined,
+          blurhash: isObj ? (fileEntry.blurhash as string) : undefined,
         });
       });
       buckets.push(bucket);
@@ -959,6 +962,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
             countryCode: country.countryCode,
             width: isObj ? (fileEntry.width as number) : undefined,
             height: isObj ? (fileEntry.height as number) : undefined,
+            blurhash: isObj ? (fileEntry.blurhash as string) : undefined,
           });
         });
         buckets.push(bucket);
@@ -981,6 +985,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
             collectionIndex: collectionIdx,
             width: isObj ? (fileEntry.width as number) : undefined,
             height: isObj ? (fileEntry.height as number) : undefined,
+            blurhash: isObj ? (fileEntry.blurhash as string) : undefined,
           });
         });
         buckets.push(bucket);
@@ -1122,7 +1127,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
         if (ci.coverPhoto) {
           const isCoverStr = typeof ci.coverPhoto === "string";
           const coverUrl = isCoverStr ? ci.coverPhoto : (ci.coverPhoto as any).url;
-          previewImages = [ci.coverPhoto, ...previewImages.filter((img) => {
+          previewImages = [{ url: coverUrl, blurhash: ci.coverPhotoBlurhash }, ...previewImages.filter((img) => {
             const url = typeof img === "string" ? img : img.url;
             return url !== coverUrl;
           })];
@@ -1303,36 +1308,58 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
 
     // Use admin-uploaded collection images if available
     if (profile.collectionImages && profile.collectionImages.length > 0) {
-      return profile.collectionImages.map((ci, index) => {
-        const photoPreviewImages = ci.images.filter((entry) => !isVideoAsset(typeof entry === "string" ? entry : entry.url)).slice(0, 5);
-        const rawPreview = (photoPreviewImages.length > 0 ? photoPreviewImages : ci.images).slice(0, 5);
-        let previewImages: Array<string | { url: string; blurhash?: string }> = [...rawPreview];
-        if (ci.coverPhoto) {
-          const isCoverStr = typeof ci.coverPhoto === "string";
-          const coverUrl = isCoverStr ? ci.coverPhoto : (ci.coverPhoto as any).url;
-          previewImages = [ci.coverPhoto, ...previewImages.filter((img) => {
-            const url = typeof img === "string" ? img : img.url;
-            return url !== coverUrl;
-          })];
-        }
-        const selectedCountries = (ci.countryCodes ?? [])
-          .map((code) => COUNTRY_LIST_LOOKUP[code.toUpperCase()] || code.toUpperCase())
-          .filter(Boolean);
-        const visibleCountries = selectedCountries.slice(0, 3);
-        const countryOverflowCount = Math.max(0, selectedCountries.length - visibleCountries.length);
-        return {
-          id: `${profile.id}-collection-${index}`,
-          title: ci.title,
-          description: profile.bio,
-          createdLabel: getDeterministicCreatedLabel(index, ci.updatedAt || ci.updated_at),
-          updatedLabel: getUpdatedLabel(ci.updatedAt || ci.updated_at, index),
-          thumbnailUrl: ci.coverPhoto ? (typeof ci.coverPhoto === "string" ? ci.coverPhoto : (ci.coverPhoto as any).url) : (previewImages[0] ? (typeof previewImages[0] === "string" ? previewImages[0] : previewImages[0].url) : (typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url)),
-          previewImages,
-          countries: selectedCountries.length > 0 ? visibleCountries : fallbackVisibleCountries,
-          countryOverflowCount: selectedCountries.length > 0 ? countryOverflowCount : fallbackOverflowCount,
-          photoCount: ci.images?.length || 0,
-        };
-      });
+      return profile.collectionImages
+        .map((ci, originalIndex) => ({ ci, originalIndex }))
+        .filter(({ ci }) => {
+          const validImages = (ci.images || []).filter((entry) => {
+            if (!entry) return false;
+            const url = typeof entry === "string" ? entry : entry?.url;
+            return typeof url === "string" && url.trim().length > 0;
+          });
+          const hasCover = Boolean(
+            typeof ci.coverPhoto === "string"
+              ? ci.coverPhoto.trim()
+              : (ci.coverPhoto as any)?.url?.trim()
+          );
+          // If there are no images in a collection, hide it
+          return validImages.length > 0 || hasCover;
+        })
+        .map(({ ci, originalIndex }) => {
+          const validImages = (ci.images || []).filter((entry) => {
+            if (!entry) return false;
+            const url = typeof entry === "string" ? entry : entry?.url;
+            return typeof url === "string" && url.trim().length > 0;
+          });
+          const photoPreviewImages = validImages.filter((entry) => !isVideoAsset(typeof entry === "string" ? entry : entry.url)).slice(0, 5);
+          const rawPreview = (photoPreviewImages.length > 0 ? photoPreviewImages : validImages).slice(0, 5);
+          let previewImages: Array<string | { url: string; blurhash?: string }> = [...rawPreview];
+          if (ci.coverPhoto) {
+            const isCoverStr = typeof ci.coverPhoto === "string";
+            const coverUrl = isCoverStr ? ci.coverPhoto : (ci.coverPhoto as any).url;
+            previewImages = [{ url: coverUrl, blurhash: ci.coverPhotoBlurhash }, ...previewImages.filter((img) => {
+              const url = typeof img === "string" ? img : img.url;
+              return url !== coverUrl;
+            })];
+          }
+          const selectedCountries = (ci.countryCodes ?? [])
+            .map((code) => COUNTRY_LIST_LOOKUP[code.toUpperCase()] || code.toUpperCase())
+            .filter(Boolean);
+          const visibleCountries = selectedCountries.slice(0, 3);
+          const countryOverflowCount = Math.max(0, selectedCountries.length - visibleCountries.length);
+          return {
+            id: `${profile.id}-collection-${originalIndex}`,
+            collectionIndex: originalIndex,
+            title: ci.title,
+            description: profile.bio,
+            createdLabel: getDeterministicCreatedLabel(originalIndex, ci.updatedAt || ci.updated_at),
+            updatedLabel: getUpdatedLabel(ci.updatedAt || ci.updated_at, originalIndex),
+            thumbnailUrl: ci.coverPhoto ? (typeof ci.coverPhoto === "string" ? ci.coverPhoto : (ci.coverPhoto as any).url) : (previewImages[0] ? (typeof previewImages[0] === "string" ? previewImages[0] : previewImages[0].url) : (typeof profile.images.cover === "string" ? profile.images.cover : profile.images.cover.url)),
+            previewImages,
+            countries: selectedCountries.length > 0 ? visibleCountries : fallbackVisibleCountries,
+            countryOverflowCount: selectedCountries.length > 0 ? countryOverflowCount : fallbackOverflowCount,
+            photoCount: validImages.length > 0 ? validImages.length : (ci.coverPhoto ? 1 : 0),
+          };
+        });
     }
 
     return [];
@@ -1868,8 +1895,8 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
                       </div>
                     ) : (
                       <div className="grid grid-cols-1 gap-x-5 gap-y-8 sm:gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                        {collectionCards.map((collection, idx) => {
-                          const collectionHref = `/${profile.handle.replace(/^@/, "")}/collection/${idx}`;
+                        {collectionCards.map((collection) => {
+                          const collectionHref = `/${profile.handle.replace(/^@/, "")}/collection/${collection.collectionIndex}`;
                           const contextMenuId = `collection-${collection.id}`;
                           const isMenuOpen = openContextMenuId === contextMenuId;
                           return (
