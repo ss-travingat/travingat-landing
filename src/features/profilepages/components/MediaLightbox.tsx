@@ -238,9 +238,7 @@ export function MediaLightbox({
                   className="flex h-12 w-12 items-center justify-center rounded-full bg-black/40 backdrop-blur-sm text-white transition-colors hover:bg-black/60 transform-gpu"
                   aria-label="Share"
                 >
-                  <svg width="20" height="20" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" className="translate-x-[0.125rem] -translate-y-[0.125rem]">
-                    <path d="M4.66667 10V6C4.66667 5.63333 4.79722 5.31944 5.05833 5.05833C5.31944 4.79722 5.63333 4.66667 6 4.66667H11.4333L9.71667 2.95L10.6667 2L14 5.33333L10.6667 8.66667L9.71667 7.73333L11.4333 6H6V10H4.66667ZM3.33333 14C2.96667 14 2.65278 13.8694 2.39167 13.6083C2.13056 13.3472 2 13.0333 2 12.6667V2.66667H3.33333V12.6667H11.3333V10H12.6667V12.6667C12.6667 13.0333 12.5361 13.3472 12.275 13.6083C12.0139 13.8694 11.7 14 11.3333 14H3.33333Z" fill="white" />
-                  </svg>
+                  <span className="material-symbols-rounded text-xl">ios_share</span>
                 </button>
                 <button
                   type="button"

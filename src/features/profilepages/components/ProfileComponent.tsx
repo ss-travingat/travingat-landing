@@ -292,17 +292,8 @@ export function ContextMenu({
               className={`flex w-full items-center gap-3 text-sm font-normal text-white transition ${viewHref ? "hover:text-[#d4d4d4]" : "opacity-50 cursor-not-allowed"
                 }`}
             >
-              <span className="material-symbols-rounded text-xl">folder</span>
+              <span className="material-symbols-rounded text-xl">{kind === "collection" ? "collections" : "public"}</span>
               <span>{viewLabel}</span>
-              {flagSrc ? (
-                <div className="ml-auto flex items-center justify-center rounded-[0.25rem] overflow-hidden shadow-sm w-6 h-[0.975rem] flex-shrink-0">
-                  <img
-                    src={flagSrc}
-                    alt=""
-                    className="h-full w-full object-cover"
-                  />
-                </div>
-              ) : null}
             </button>
           )}
 
@@ -670,60 +661,36 @@ function JsMasonryGrid({
         ) : null}
 
         {isMenuOpen && (
-          <div
-            ref={contextMenuRef}
-            role="menu"
-            className="absolute right-3 bottom-14 z-50 w-[12.5rem] rounded-2xl border border-[#2e2e2e] bg-[#1a1a1a] p-4 shadow-[0_8px_30px_rgb(0,0,0,0.5)]"
-            onClick={(event) => { event.preventDefault(); event.stopPropagation(); }}
-          >
-            <div className="flex flex-col gap-4">
-              {viewHref && (
-                <Link
-                  href={viewHref}
-                  role="menuitem"
-                  className="flex w-full items-center gap-3 text-[0.9375rem] font-medium tracking-[-0.3px] text-white hover:text-[#d4d4d4] transition-colors"
-                  onClick={() => {
-                    setOpenContextMenuId(null);
-                  }}
-                >
-                  <span className="material-symbols-rounded text-[1.375rem]">{collectionHref ? "collections" : "public"}</span>
-                  <span>{viewLabel}</span>
-                </Link>
-              )}
-              <button
-                type="button"
-                role="menuitem"
-                onClick={(event) => {
-                  event.preventDefault();
-                  event.stopPropagation();
-                  setOpenContextMenuId(null);
-                  const shareUrl = new URL(window.location.origin);
-                  if (collectionHref?.includes("/collection/")) {
-                    shareUrl.pathname = collectionHref;
-                  } else if (displayCountryCode) {
-                    shareUrl.pathname = `/${profile.handle.replace(/^@/, "")}/country/${displayCountryCode.toUpperCase()}`;
-                  } else {
-                    shareUrl.pathname = `/${profile.handle.replace(/^@/, "")}`;
-                  }
-                  shareUrl.searchParams.set("image", btoa(unescape(encodeURIComponent(mediaItem.fileUrl))));
-                  openShareCard({
-                    kind: "media",
-                    title: "Share moment",
-                    imageUrl: mediaItem.fileUrl,
-                    shareUrl: shareUrl.toString(),
-                    flagCode: displayCountryCode,
-                    ownerName: shareOwnerName,
-                    ownerHandle: shareOwnerHandle,
-                    ownerAvatar: shareOwnerAvatar,
-                  });
-                }}
-                className="flex w-full items-center gap-3 text-[0.9375rem] font-medium tracking-[-0.3px] text-white hover:text-[#d4d4d4] transition-colors"
-              >
-                <span className="material-symbols-rounded text-[1.375rem]">share</span>
-                <span>Share media</span>
-              </button>
-            </div>
-          </div>
+          <ContextMenu
+            kind={collectionHref ? "collection" : displayCountryCode ? "country" : "media"}
+            viewLabel={viewLabel}
+            shareLabel={collectionHref ? "Share collection" : displayCountryCode ? "Share country" : "Share media"}
+            viewHref={viewHref}
+            showViewAction={!!viewHref}
+            onShare={() => {
+              const shareUrl = new URL(window.location.origin);
+              if (collectionHref?.includes("/collection/")) {
+                shareUrl.pathname = collectionHref;
+              } else if (displayCountryCode) {
+                shareUrl.pathname = `/${profile.handle.replace(/^@/, "")}/country/${displayCountryCode.toUpperCase()}`;
+              } else {
+                shareUrl.pathname = `/${profile.handle.replace(/^@/, "")}`;
+              }
+              shareUrl.searchParams.set("image", btoa(unescape(encodeURIComponent(mediaItem.fileUrl))));
+              openShareCard({
+                kind: collectionHref ? "collection" : displayCountryCode ? "country" : "media",
+                title: collectionHref ? "Share collection" : displayCountryCode ? "Share country" : "Share moment",
+                imageUrl: mediaItem.fileUrl,
+                shareUrl: shareUrl.toString(),
+                flagCode: displayCountryCode,
+                ownerName: shareOwnerName,
+                ownerHandle: shareOwnerHandle,
+                ownerAvatar: shareOwnerAvatar,
+              });
+            }}
+            onClose={() => setOpenContextMenuId(null)}
+            menuRef={contextMenuRef as React.RefObject<HTMLDivElement>}
+          />
         )}
       </div>
     );
