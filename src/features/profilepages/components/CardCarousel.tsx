@@ -20,7 +20,12 @@ export default function CardCarousel({
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
 
-  const displayImages = images.slice(0, maxImages);
+  const displayImages = (images || [])
+    .filter((srcItem): srcItem is string | { url: string; blurhash?: string } => {
+      const srcUrl = srcItem ? (typeof srcItem === "string" ? srcItem : srcItem.url) : "";
+      return Boolean(srcUrl && typeof srcUrl === "string" && srcUrl.trim().length > 0);
+    })
+    .slice(0, maxImages);
 
   useEffect(() => {
     if (!isHovered || displayImages.length <= 1) return;
@@ -57,8 +62,9 @@ export default function CardCarousel({
         style={{ transform: `translateX(-${currentIndex * 100}%)` }}
       >
         {displayImages.map((srcItem, i) => {
-          const srcUrl = typeof srcItem === "string" ? srcItem : srcItem.url;
-          const blurhash = typeof srcItem === "object" ? srcItem.blurhash : undefined;
+          const srcUrl = srcItem ? (typeof srcItem === "string" ? srcItem : srcItem.url) : "";
+          const blurhash = srcItem && typeof srcItem === "object" ? srcItem.blurhash : undefined;
+          if (!srcUrl) return null;
           return (
             <div key={`${srcUrl}-${i}`} className="w-full h-full flex-shrink-0 overflow-hidden relative">
               <LoadedImage

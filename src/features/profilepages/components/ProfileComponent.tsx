@@ -1159,7 +1159,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
         if (ci.coverPhoto) {
           const isCoverStr = typeof ci.coverPhoto === "string";
           const coverUrl = isCoverStr ? ci.coverPhoto : (ci.coverPhoto as any).url;
-          previewImages = [ci.coverPhoto, ...previewImages.filter((img) => {
+          previewImages = [{ url: coverUrl, blurhash: ci.coverPhotoBlurhash }, ...previewImages.filter((img) => {
             const url = typeof img === "string" ? img : img.url;
             return url !== coverUrl;
           })];
@@ -1347,7 +1347,7 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
         if (ci.coverPhoto) {
           const isCoverStr = typeof ci.coverPhoto === "string";
           const coverUrl = isCoverStr ? ci.coverPhoto : (ci.coverPhoto as any).url;
-          previewImages = [ci.coverPhoto, ...previewImages.filter((img) => {
+          previewImages = [{ url: coverUrl, blurhash: ci.coverPhotoBlurhash }, ...previewImages.filter((img) => {
             const url = typeof img === "string" ? img : img.url;
             return url !== coverUrl;
           })];
