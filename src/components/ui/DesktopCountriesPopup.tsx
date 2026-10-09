@@ -31,23 +31,27 @@ export function DesktopCountriesPopup({ trigger, countries }: DesktopCountriesPo
         .desktop-popup-content[data-state="closed"] { animation: popOutDesktop 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
       `}} />
       <Dialog.Root open={open} onOpenChange={setOpen}>
-        <Dialog.Trigger asChild>
-          <button
-            type="button"
-            className="cursor-pointer border-none bg-transparent p-0 outline-none flex items-center justify-center m-0"
-            aria-label="View all countries"
-          >
-            {trigger}
-          </button>
-        </Dialog.Trigger>
+        <div onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}>
+          <Dialog.Trigger asChild>
+            <button
+              type="button"
+              className="cursor-pointer border-none bg-transparent p-0 outline-none flex items-center justify-center m-0"
+              aria-label="View all countries"
+            >
+              {trigger}
+            </button>
+          </Dialog.Trigger>
+        </div>
         <Dialog.Portal>
           <Dialog.Overlay 
             className="fixed inset-0 z-[999] bg-black/50 backdrop-blur-sm desktop-overlay" 
             style={{ pointerEvents: 'auto' }}
+            onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
           />
         <Dialog.Content
           className="fixed left-[50%] top-[50%] z-[1000] flex w-full max-w-[400px] max-h-[85vh] flex-col overflow-hidden rounded-[24px] bg-[#111111] border border-white/5 shadow-2xl outline-none desktop-popup-content"
           style={{ transform: 'translate(-50%, -50%)' }}
+          onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
         >
           <div className="px-[32px] pt-[32px] shrink-0">
             <Dialog.Title asChild>

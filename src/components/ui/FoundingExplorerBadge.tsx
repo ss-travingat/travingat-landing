@@ -147,16 +147,14 @@ export default function FoundingExplorer(props: FoundingExplorerProps) {
     } as React.CSSProperties
 
     return (
-        <object className="pointer-events-none" style={{ position: "relative", width: "100%", height: "100%", display: "block" }}>
-            <a
-                href="https://travingat.com/get-featured"
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{ ...rootStyle, pointerEvents: "auto" }}
-                onPointerEnter={() => setIsHovered(true)}
-                onPointerLeave={() => setIsHovered(false)}
-                onClick={(e) => e.stopPropagation()}
-            >
+        <a
+            href="https://travingat.com/get-featured"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={rootStyle}
+            onPointerEnter={() => setIsHovered(true)}
+            onPointerLeave={() => setIsHovered(false)}
+        >
             <style>{`
                 @keyframes ${OUTER_KEYFRAMES} {
                     from { transform: rotate(0deg); }
@@ -285,7 +283,6 @@ export default function FoundingExplorer(props: FoundingExplorerProps) {
             </div>
 
         </a>
-        </object>
     )
 }
 

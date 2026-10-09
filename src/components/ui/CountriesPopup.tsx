@@ -101,35 +101,26 @@ export function CountriesPopup({ trigger, countries }: CountriesPopupProps) {
         }
       `}} />
       <Dialog.Root open={open} onOpenChange={setOpen}>
-        <div
-          role="button"
-          tabIndex={0}
-          aria-haspopup="dialog"
-          aria-expanded={open}
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            setOpen(true);
-          }}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-              e.preventDefault();
-              e.stopPropagation();
-              setOpen(true);
-            }
-          }}
-          className="cursor-pointer border-none bg-transparent p-0 outline-none flex items-center justify-center m-0"
-          aria-label="View all countries"
-        >
-          {trigger}
+        <div onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}>
+          <Dialog.Trigger asChild>
+            <button
+              type="button"
+              className="cursor-pointer border-none bg-transparent p-0 outline-none flex items-center justify-center m-0"
+              aria-label="View all countries"
+            >
+              {trigger}
+            </button>
+          </Dialog.Trigger>
         </div>
         <Dialog.Portal>
           <Dialog.Overlay 
             className="fixed inset-0 z-[999] bg-black/50 backdrop-blur-sm mobile-overlay-bg" 
             style={{ pointerEvents: 'auto' }}
+            onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
           />
         <Dialog.Content
           className="fixed bottom-0 left-0 right-0 z-[1000] flex w-full flex-col outline-none md:bottom-auto md:left-[50%] md:top-[50%] md:w-full md:max-w-[400px] mobile-popup-content"
+          onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
         >
           <div 
             className="flex w-full flex-col max-h-[85vh] md:max-h-[75vh] overflow-hidden rounded-t-[24px] bg-[#1a1a1a] shadow-[0_-8px_30px_rgba(0,0,0,0.5)] md:rounded-[20px] md:border md:border-white/5 md:shadow-2xl relative"
