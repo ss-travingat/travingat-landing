@@ -298,7 +298,7 @@ export function ContextMenu({
               disabled={!viewHref}
               className={`flex w-full items-center gap-3 text-sm font-normal text-white transition ${viewHref ? "hover:text-[#d4d4d4]" : "opacity-50 cursor-not-allowed"}`}
             >
-              <span className="material-symbols-rounded text-xl">{kind === "collection" ? "collections" : "public"}</span>
+              <span className="material-symbols-rounded text-xl">{kind === "collection" ? "folder" : "public"}</span>
               <span>{viewLabel}</span>
             </button>
           )}
