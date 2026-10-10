@@ -183,7 +183,8 @@ export default function CollectionDetailComponent({
   const [showMenu, setShowMenu] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const fullScreenMenuRef = useRef<HTMLDivElement>(null);
-  const menuRef = useRef<HTMLDivElement>(null);
+  const desktopMenuRef = useRef<HTMLDivElement>(null);
+  const mobileMenuRef = useRef<HTMLDivElement>(null);
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const [prevActiveTab, setPrevActiveTab] = useState<MediaTab>("all");
   const [openContextMenuId, setOpenContextMenuId] = useState<string | null>(null);
@@ -332,7 +333,10 @@ export default function CollectionDetailComponent({
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
-      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+      const isOutsideDesktop = desktopMenuRef.current ? !desktopMenuRef.current.contains(e.target as Node) : true;
+      const isOutsideMobile = mobileMenuRef.current ? !mobileMenuRef.current.contains(e.target as Node) : true;
+      
+      if (isOutsideDesktop && isOutsideMobile) {
         setShowMenu(false);
       }
     }
@@ -504,7 +508,7 @@ export default function CollectionDetailComponent({
           allVisitedCountries={allVisitedCountries}
           profile={profile}
           updatedLabel={updatedLabel}
-          menuRef={menuRef}
+          menuRef={mobileMenuRef}
           showMenu={showMenu}
           setShowMenu={setShowMenu}
         />
@@ -516,7 +520,7 @@ export default function CollectionDetailComponent({
           allVisitedCountries={allVisitedCountries}
           profile={profile}
           updatedLabel={updatedLabel}
-          menuRef={menuRef}
+          menuRef={desktopMenuRef}
           showMenu={showMenu}
           setShowMenu={setShowMenu}
         />

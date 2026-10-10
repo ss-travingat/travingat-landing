@@ -64,8 +64,9 @@ export const MobileCountryHeader = ({ countryCode, countryName, profile, updated
                 shareLabel="Share country"
                 viewHref={`/${profile.handle.replace(/^@/, "")}`}
                 showViewAction={false}
+                className="absolute right-0 top-[calc(100%+8px)] z-[100] w-[13.75rem] rounded-2xl border border-[#2a2a2a] bg-[#111] py-5 pl-5 pr-8 shadow-[0_8px_40px_rgba(0,0,0,0.7)]"
                 onShare={() => {
-                  navigator.clipboard.writeText(window.location.href).catch(() => { });
+                  window.dispatchEvent(new CustomEvent("trigger-coming-soon-toast", { detail: { type: "featureLaunch" } }));
                   setShowMenu(false);
                 }}
                 onClose={() => setShowMenu(false)}

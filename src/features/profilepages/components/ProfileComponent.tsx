@@ -237,6 +237,7 @@ export function ContextMenu({
   onShare,
   onClose,
   menuRef,
+  className,
 }: {
   kind: ContextMenuKind;
   viewLabel: string;
@@ -247,6 +248,7 @@ export function ContextMenu({
   onShare: () => void;
   onClose: () => void;
   menuRef: React.RefObject<HTMLDivElement | null>;
+  className?: string;
 }) {
   const { showComingSoonToast } = useMobileComingSoon();
   const router = useRouter();
@@ -258,14 +260,14 @@ export function ContextMenu({
     if (viewHref) {
       router.push(viewHref);
     }
-    setTimeout(() => onClose(), 500);
+    onClose();
   };
 
   const handleShare = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     onShare();
-    setTimeout(() => onClose(), 500);
+    onClose();
   };
 
   return (
@@ -273,7 +275,7 @@ export function ContextMenu({
       <div
         ref={menuRef}
         role="menu"
-        className="absolute right-3 bottom-14 z-30 w-[13.75rem] rounded-2xl border border-[#2a2a2a] bg-[#111] py-5 pl-5 pr-8 shadow-[0_8px_40px_rgba(0,0,0,0.7)]"
+        className={className || "absolute right-3 bottom-14 z-[100] w-[13.75rem] rounded-2xl border border-[#2a2a2a] bg-[#111] py-5 pl-5 pr-8 shadow-[0_8px_40px_rgba(0,0,0,0.7)]"}
         onClick={(event) => {
           event.preventDefault();
           event.stopPropagation();
@@ -290,7 +292,7 @@ export function ContextMenu({
                   e.preventDefault();
                   e.stopPropagation();
                   window.dispatchEvent(new CustomEvent("trigger-coming-soon-toast", { detail: { type: "featureLaunch" } }));
-                  setTimeout(() => onClose(), 500);
+                  onClose();
                 } else {
                   handleView(e);
                 }
@@ -320,7 +322,7 @@ export function ContextMenu({
               e.preventDefault();
               e.stopPropagation();
               window.dispatchEvent(new CustomEvent("trigger-coming-soon-toast", { detail: { type: "featureLaunch" } }));
-              setTimeout(() => onClose(), 500);
+              onClose();
             }}
             className="flex w-full items-center gap-3 text-sm font-normal text-white hover:text-[#d4d4d4] transition-colors"
           >
@@ -335,7 +337,7 @@ export function ContextMenu({
               e.preventDefault();
               e.stopPropagation();
               window.dispatchEvent(new CustomEvent("trigger-coming-soon-toast", { detail: { type: "featureLaunch" } }));
-              setTimeout(() => onClose(), 500);
+              onClose();
             }}
             className="flex w-full items-center gap-3 text-sm font-normal text-white hover:text-[#d4d4d4] transition-colors"
           >

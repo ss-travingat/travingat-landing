@@ -227,7 +227,8 @@ export default function CountryDetailComponent({
   const [menuOpen, setMenuOpen] = useState(false);
   const fullScreenMenuRef = useRef<HTMLDivElement>(null);
   const [isWaitlistOpen, setIsWaitlistOpen] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
+  const desktopMenuRef = useRef<HTMLDivElement>(null);
+  const mobileMenuRef = useRef<HTMLDivElement>(null);
   useNavbarVisibility(showMenu, 56);
 
   useEffect(() => {
@@ -405,7 +406,10 @@ export default function CountryDetailComponent({
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
-      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+      const isOutsideDesktop = desktopMenuRef.current ? !desktopMenuRef.current.contains(e.target as Node) : true;
+      const isOutsideMobile = mobileMenuRef.current ? !mobileMenuRef.current.contains(e.target as Node) : true;
+      
+      if (isOutsideDesktop && isOutsideMobile) {
         setShowMenu(false);
       }
       if (contextMenuRef.current && !contextMenuRef.current.contains(e.target as Node)) {
@@ -560,7 +564,7 @@ export default function CountryDetailComponent({
           countryName={countryName}
           profile={profile}
           updatedLabel={updatedLabel}
-          menuRef={menuRef}
+          menuRef={mobileMenuRef}
           showMenu={showMenu}
           setShowMenu={setShowMenu}
         />
@@ -570,7 +574,7 @@ export default function CountryDetailComponent({
           countryName={countryName}
           profile={profile}
           updatedLabel={updatedLabel}
-          menuRef={menuRef}
+          menuRef={desktopMenuRef}
           showMenu={showMenu}
           setShowMenu={setShowMenu}
         />
