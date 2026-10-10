@@ -136,21 +136,21 @@ function PhotoLightbox({
           <div className="flex items-center gap-2">
             <button
               type="button"
-              onClick={() => showComingSoonToast("featureLaunch")}
+              onClick={() => window.dispatchEvent(new CustomEvent("trigger-coming-soon-toast", { detail: { type: "featureLaunch" } }))}
               className="h-[2.375rem] flex-1 rounded-full bg-white text-[14px] font-medium text-black transition hover:bg-[#e8e8e8]"
             >
               Follow
             </button>
             <button
               type="button"
-              onClick={() => showComingSoonToast("featureLaunch")}
+              onClick={() => window.dispatchEvent(new CustomEvent("trigger-coming-soon-toast", { detail: { type: "featureLaunch" } }))}
               className="h-[2.375rem] flex-1 rounded-full border border-[#2e2e2e] bg-[#1a1a1a] text-[14px] font-medium text-white transition hover:bg-[#222]"
             >
               Connect
             </button>
             <button
               type="button"
-              onClick={() => showComingSoonToast("featureLaunch")}
+              onClick={() => window.dispatchEvent(new CustomEvent("trigger-coming-soon-toast", { detail: { type: "featureLaunch" } }))}
               aria-label="More options"
               className="grid h-[2.375rem] w-[2.375rem] place-items-center rounded-full border border-[#2e2e2e] bg-[#1a1a1a] text-white transition hover:bg-[#222]"
             >
@@ -736,10 +736,10 @@ export default function CountryDetailComponent({
                                   <button
                                     type="button"
                                     role="menuitem"
-                                    onClick={(event) => {
-                                      event.preventDefault();
-                                      event.stopPropagation();
-                                      showComingSoonToast("featureLaunch");
+                                    onMouseDown={(e) => {
+                                      e.preventDefault();
+                                      e.stopPropagation();
+                                      window.dispatchEvent(new CustomEvent("trigger-coming-soon-toast", { detail: { type: "featureLaunch" } }));
                                       setTimeout(() => setOpenContextMenuId(null), 500);
                                     }}
                                     className="flex w-full items-center gap-3 text-[0.9375rem] font-medium tracking-[-0.3px] text-white hover:text-[#d4d4d4] transition-colors"
@@ -750,10 +750,10 @@ export default function CountryDetailComponent({
                                   <button
                                     type="button"
                                     role="menuitem"
-                                    onClick={(event) => {
-                                      event.preventDefault();
-                                      event.stopPropagation();
-                                      showComingSoonToast("featureLaunch");
+                                    onMouseDown={(e) => {
+                                      e.preventDefault();
+                                      e.stopPropagation();
+                                      window.dispatchEvent(new CustomEvent("trigger-coming-soon-toast", { detail: { type: "featureLaunch" } }));
                                       setTimeout(() => setOpenContextMenuId(null), 500);
                                     }}
                                     className="flex w-full items-center gap-3 text-[0.9375rem] font-medium tracking-[-0.3px] text-white hover:text-[#d4d4d4] transition-colors"
@@ -783,7 +783,7 @@ export default function CountryDetailComponent({
                               onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
-                                showComingSoonToast("desktopOnly");
+                                window.dispatchEvent(new CustomEvent("trigger-coming-soon-toast", { detail: { type: "desktopOnly" } }));
                               }}
                             >
                               {isVideo ? (
@@ -836,10 +836,10 @@ export default function CountryDetailComponent({
                                   <button
                                     type="button"
                                     role="menuitem"
-                                    onClick={(event) => {
-                                      event.preventDefault();
-                                      event.stopPropagation();
-                                      showComingSoonToast("featureLaunch");
+                                    onMouseDown={(e) => {
+                                      e.preventDefault();
+                                      e.stopPropagation();
+                                      window.dispatchEvent(new CustomEvent("trigger-coming-soon-toast", { detail: { type: "featureLaunch" } }));
                                       setTimeout(() => setOpenContextMenuId(null), 500);
                                     }}
                                     className="flex w-full items-center gap-3 text-[0.9375rem] font-medium tracking-[-0.3px] text-white hover:text-[#d4d4d4] transition-colors"
@@ -850,10 +850,10 @@ export default function CountryDetailComponent({
                                   <button
                                     type="button"
                                     role="menuitem"
-                                    onClick={(event) => {
-                                      event.preventDefault();
-                                      event.stopPropagation();
-                                      showComingSoonToast("featureLaunch");
+                                    onMouseDown={(e) => {
+                                      e.preventDefault();
+                                      e.stopPropagation();
+                                      window.dispatchEvent(new CustomEvent("trigger-coming-soon-toast", { detail: { type: "featureLaunch" } }));
                                       setTimeout(() => setOpenContextMenuId(null), 500);
                                     }}
                                     className="flex w-full items-center gap-3 text-[0.9375rem] font-medium tracking-[-0.3px] text-white hover:text-[#d4d4d4] transition-colors"

@@ -262,6 +262,8 @@ export function ContextMenu({
   };
 
   const handleShare = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
     onShare();
     setTimeout(() => onClose(), 500);
   };
@@ -282,9 +284,11 @@ export function ContextMenu({
             <button
               type="button"
               role="menuitem"
-              onClick={(e) => {
+              onMouseDown={(e) => {
                 const lowerLabel = viewLabel.toLowerCase();
                 if (lowerLabel !== "view country" && lowerLabel !== "view collection") {
+                  e.preventDefault();
+                  e.stopPropagation();
                   window.dispatchEvent(new CustomEvent("trigger-coming-soon-toast", { detail: { type: "featureLaunch" } }));
                   setTimeout(() => onClose(), 500);
                 } else {
@@ -302,7 +306,7 @@ export function ContextMenu({
           <button
             type="button"
             role="menuitem"
-            onClick={(e) => handleShare(e)}
+            onMouseDown={(e) => handleShare(e)}
             className="flex w-full items-center gap-3 text-sm font-normal text-white hover:text-[#d4d4d4] transition-colors"
           >
             <span className="material-symbols-rounded text-xl">ios_share</span>
@@ -312,7 +316,9 @@ export function ContextMenu({
           <button
             type="button"
             role="menuitem"
-            onClick={(e) => {
+            onMouseDown={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
               window.dispatchEvent(new CustomEvent("trigger-coming-soon-toast", { detail: { type: "featureLaunch" } }));
               setTimeout(() => onClose(), 500);
             }}
@@ -325,7 +331,9 @@ export function ContextMenu({
           <button
             type="button"
             role="menuitem"
-            onClick={(e) => {
+            onMouseDown={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
               window.dispatchEvent(new CustomEvent("trigger-coming-soon-toast", { detail: { type: "featureLaunch" } }));
               setTimeout(() => onClose(), 500);
             }}
@@ -894,12 +902,12 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
       }
     };
 
-    document.addEventListener("click", onPointerDown);
+    document.addEventListener("mousedown", onPointerDown);
     document.addEventListener("touchstart", onPointerDown);
     document.addEventListener("keydown", onKeyDown);
 
     return () => {
-      document.removeEventListener("click", onPointerDown);
+      document.removeEventListener("mousedown", onPointerDown);
       document.removeEventListener("touchstart", onPointerDown);
       document.removeEventListener("keydown", onKeyDown);
     };

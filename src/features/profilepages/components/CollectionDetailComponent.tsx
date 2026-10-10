@@ -186,6 +186,27 @@ export default function CollectionDetailComponent({
   const menuRef = useRef<HTMLDivElement>(null);
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const [prevActiveTab, setPrevActiveTab] = useState<MediaTab>("all");
+  const [openContextMenuId, setOpenContextMenuId] = useState<string | null>(null);
+  const contextMenuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") {
+        setOpenContextMenuId(null);
+      }
+    }
+    function handleClickOutside(e: MouseEvent) {
+      if (contextMenuRef.current && !contextMenuRef.current.contains(e.target as Node)) {
+        setOpenContextMenuId(null);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
 
   useEffect(() => {
     if (menuOpen) {
@@ -642,6 +663,55 @@ export default function CollectionDetailComponent({
                               )}
                               <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-200 pointer-events-none" />
                             </div>
+                            <MoreOptionsButton
+                              isOpen={openContextMenuId === `media-${globalIndex}`}
+                              label={`Open menu for photo ${globalIndex + 1}`}
+                              size="sm"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                setOpenContextMenuId(openContextMenuId === `media-${globalIndex}` ? null : `media-${globalIndex}`);
+                              }}
+                            />
+                            {openContextMenuId === `media-${globalIndex}` ? (
+                              <div
+                                ref={contextMenuRef}
+                                role="menu"
+                                className="absolute right-3 bottom-14 z-30 w-[12.5rem] rounded-2xl border border-[#2e2e2e] bg-[#1a1a1a] p-4 shadow-[0_8px_30px_rgb(0,0,0,0.5)]"
+                                onClick={(event) => { event.preventDefault(); event.stopPropagation(); }}
+                              >
+                                <div className="flex flex-col gap-4">
+                                  <button
+                                    type="button"
+                                    role="menuitem"
+                                    onMouseDown={(e) => {
+                                      e.preventDefault();
+                                      e.stopPropagation();
+                                      window.dispatchEvent(new CustomEvent("trigger-coming-soon-toast", { detail: { type: "featureLaunch" } }));
+                                      setTimeout(() => setOpenContextMenuId(null), 500);
+                                    }}
+                                    className="flex w-full items-center gap-3 text-[0.9375rem] font-medium tracking-[-0.3px] text-white hover:text-[#d4d4d4] transition-colors"
+                                  >
+                                    <span className="material-symbols-rounded text-[1.375rem]">favorite_border</span>
+                                    <span>Add to favorites</span>
+                                  </button>
+                                  <button
+                                    type="button"
+                                    role="menuitem"
+                                    onMouseDown={(e) => {
+                                      e.preventDefault();
+                                      e.stopPropagation();
+                                      window.dispatchEvent(new CustomEvent("trigger-coming-soon-toast", { detail: { type: "featureLaunch" } }));
+                                      setTimeout(() => setOpenContextMenuId(null), 500);
+                                    }}
+                                    className="flex w-full items-center gap-3 text-[0.9375rem] font-medium tracking-[-0.3px] text-white hover:text-[#d4d4d4] transition-colors"
+                                  >
+                                    <span className="material-symbols-rounded text-[1.375rem]">block</span>
+                                    <span>Report</span>
+                                  </button>
+                                </div>
+                              </div>
+                            ) : null}
                             {displayCountryCode ? (
                               <div className="absolute top-2 right-2 md:top-3 md:right-3 z-20 transition-opacity duration-200 opacity-100 pointer-events-auto">
                                 <TooltipProvider delayDuration={100}>
@@ -685,7 +755,7 @@ export default function CollectionDetailComponent({
                               onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
-                                showComingSoonToast("desktopOnly");
+                                window.dispatchEvent(new CustomEvent("trigger-coming-soon-toast", { detail: { type: "desktopOnly" } }));
                               }}
                             >
                               {isVideo ? (
@@ -716,6 +786,55 @@ export default function CollectionDetailComponent({
                               )}
                               <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-200 pointer-events-none" />
                             </div>
+                            <MoreOptionsButton
+                              isOpen={openContextMenuId === `media-${globalIndex}`}
+                              label={`Open menu for photo ${globalIndex + 1}`}
+                              size="sm"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                setOpenContextMenuId(openContextMenuId === `media-${globalIndex}` ? null : `media-${globalIndex}`);
+                              }}
+                            />
+                            {openContextMenuId === `media-${globalIndex}` ? (
+                              <div
+                                ref={contextMenuRef}
+                                role="menu"
+                                className="absolute right-3 bottom-14 z-30 w-[12.5rem] rounded-2xl border border-[#2e2e2e] bg-[#1a1a1a] p-4 shadow-[0_8px_30px_rgb(0,0,0,0.5)]"
+                                onClick={(event) => { event.preventDefault(); event.stopPropagation(); }}
+                              >
+                                <div className="flex flex-col gap-4">
+                                  <button
+                                    type="button"
+                                    role="menuitem"
+                                    onMouseDown={(e) => {
+                                      e.preventDefault();
+                                      e.stopPropagation();
+                                      window.dispatchEvent(new CustomEvent("trigger-coming-soon-toast", { detail: { type: "featureLaunch" } }));
+                                      setTimeout(() => setOpenContextMenuId(null), 500);
+                                    }}
+                                    className="flex w-full items-center gap-3 text-[0.9375rem] font-medium tracking-[-0.3px] text-white hover:text-[#d4d4d4] transition-colors"
+                                  >
+                                    <span className="material-symbols-rounded text-[1.375rem]">favorite_border</span>
+                                    <span>Add to favorites</span>
+                                  </button>
+                                  <button
+                                    type="button"
+                                    role="menuitem"
+                                    onMouseDown={(e) => {
+                                      e.preventDefault();
+                                      e.stopPropagation();
+                                      window.dispatchEvent(new CustomEvent("trigger-coming-soon-toast", { detail: { type: "featureLaunch" } }));
+                                      setTimeout(() => setOpenContextMenuId(null), 500);
+                                    }}
+                                    className="flex w-full items-center gap-3 text-[0.9375rem] font-medium tracking-[-0.3px] text-white hover:text-[#d4d4d4] transition-colors"
+                                  >
+                                    <span className="material-symbols-rounded text-[1.375rem]">block</span>
+                                    <span>Report</span>
+                                  </button>
+                                </div>
+                              </div>
+                            ) : null}
                             {displayCountryCode ? (
                               <div className="absolute top-2 right-2 md:top-3 md:right-3 z-20 transition-opacity duration-200 opacity-100 pointer-events-auto">
                                 <TooltipProvider delayDuration={100}>
