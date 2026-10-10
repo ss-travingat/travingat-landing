@@ -249,23 +249,27 @@ export function ContextMenu({
   menuRef: React.RefObject<HTMLDivElement | null>;
 }) {
   const { showComingSoonToast } = useMobileComingSoon();
+  const router = useRouter();
   const [isWaitlistOpen, setIsWaitlistOpen] = useState(false);
-  const flagSrc = toFlagAssetPath(flagCode);
-  const handleView = () => {
+  
+  const handleView = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
     if (viewHref) {
-      window.location.assign(viewHref);
+      router.push(viewHref);
     }
-    onClose();
+    setTimeout(() => onClose(), 500);
   };
 
-  const handleShare = () => {
+  const handleShare = (e: React.MouseEvent) => {
     onShare();
-    onClose();
+    setTimeout(() => onClose(), 500);
   };
 
   return (
-    <div ref={menuRef}>
+    <div>
       <div
+        ref={menuRef}
         role="menu"
         className="absolute right-3 bottom-14 z-30 w-[13.75rem] rounded-2xl border border-[#2a2a2a] bg-[#111] py-5 pl-5 pr-8 shadow-[0_8px_40px_rgba(0,0,0,0.7)]"
         onClick={(event) => {
@@ -278,20 +282,17 @@ export function ContextMenu({
             <button
               type="button"
               role="menuitem"
-              onClick={(event) => {
-                event.preventDefault();
-                event.stopPropagation();
+              onClick={(e) => {
                 const lowerLabel = viewLabel.toLowerCase();
                 if (lowerLabel !== "view country" && lowerLabel !== "view collection") {
-                  showComingSoonToast("featureLaunch");
-                  onClose();
+                  window.dispatchEvent(new CustomEvent("trigger-coming-soon-toast", { detail: { type: "featureLaunch" } }));
+                  setTimeout(() => onClose(), 500);
                 } else {
-                  handleView();
+                  handleView(e);
                 }
               }}
               disabled={!viewHref}
-              className={`flex w-full items-center gap-3 text-sm font-normal text-white transition ${viewHref ? "hover:text-[#d4d4d4]" : "opacity-50 cursor-not-allowed"
-                }`}
+              className={`flex w-full items-center gap-3 text-sm font-normal text-white transition ${viewHref ? "hover:text-[#d4d4d4]" : "opacity-50 cursor-not-allowed"}`}
             >
               <span className="material-symbols-rounded text-xl">{kind === "collection" ? "collections" : "public"}</span>
               <span>{viewLabel}</span>
@@ -301,12 +302,7 @@ export function ContextMenu({
           <button
             type="button"
             role="menuitem"
-            onClick={(event) => {
-              event.preventDefault();
-              event.stopPropagation();
-              showComingSoonToast("featureLaunch");
-              onClose();
-            }}
+            onClick={(e) => handleShare(e)}
             className="flex w-full items-center gap-3 text-sm font-normal text-white hover:text-[#d4d4d4] transition-colors"
           >
             <span className="material-symbols-rounded text-xl">ios_share</span>
@@ -316,11 +312,9 @@ export function ContextMenu({
           <button
             type="button"
             role="menuitem"
-            onClick={(event) => {
-              event.preventDefault();
-              event.stopPropagation();
-              showComingSoonToast("featureLaunch");
-              onClose();
+            onClick={(e) => {
+              window.dispatchEvent(new CustomEvent("trigger-coming-soon-toast", { detail: { type: "featureLaunch" } }));
+              setTimeout(() => onClose(), 500);
             }}
             className="flex w-full items-center gap-3 text-sm font-normal text-white hover:text-[#d4d4d4] transition-colors"
           >
@@ -331,11 +325,9 @@ export function ContextMenu({
           <button
             type="button"
             role="menuitem"
-            onClick={(event) => {
-              event.preventDefault();
-              event.stopPropagation();
-              showComingSoonToast("featureLaunch");
-              onClose();
+            onClick={(e) => {
+              window.dispatchEvent(new CustomEvent("trigger-coming-soon-toast", { detail: { type: "featureLaunch" } }));
+              setTimeout(() => onClose(), 500);
             }}
             className="flex w-full items-center gap-3 text-sm font-normal text-white hover:text-[#d4d4d4] transition-colors"
           >
@@ -889,7 +881,10 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
     const onPointerDown = (event: MouseEvent | TouchEvent) => {
       const target = event.target as Node;
       if (contextMenuRef.current && !contextMenuRef.current.contains(target)) {
+        console.log("[POINTER DOWN] Click outside detected. Closing menu. Target:", target);
         setOpenContextMenuId(null);
+      } else {
+        console.log("[POINTER DOWN] Click inside detected. Not closing menu.");
       }
     };
 
@@ -899,12 +894,12 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
       }
     };
 
-    document.addEventListener("mousedown", onPointerDown);
+    document.addEventListener("click", onPointerDown);
     document.addEventListener("touchstart", onPointerDown);
     document.addEventListener("keydown", onKeyDown);
 
     return () => {
-      document.removeEventListener("mousedown", onPointerDown);
+      document.removeEventListener("click", onPointerDown);
       document.removeEventListener("touchstart", onPointerDown);
       document.removeEventListener("keydown", onKeyDown);
     };
@@ -1271,8 +1266,8 @@ export default function ProfileComponent({ profile }: { profile: SampleProfile }
   };
 
   const openShareCard = (data: ShareCardData) => {
-    showComingSoonToast("featureLaunch");
-    setOpenContextMenuId(null);
+    window.dispatchEvent(new CustomEvent("trigger-coming-soon-toast", { detail: { type: "featureLaunch" } }));
+    setTimeout(() => setOpenContextMenuId(null), 500);
   };
 
   const openCarouselAt = (index: number) => {

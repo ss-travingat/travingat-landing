@@ -754,7 +754,7 @@ export default function CountryDetailComponent({
                                       event.preventDefault();
                                       event.stopPropagation();
                                       showComingSoonToast("featureLaunch");
-                                      setTimeout(() => setOpenContextMenuId(null), 50);
+                                      setTimeout(() => setOpenContextMenuId(null), 500);
                                     }}
                                     className="flex w-full items-center gap-3 text-[0.9375rem] font-medium tracking-[-0.3px] text-white hover:text-[#d4d4d4] transition-colors"
                                   >
@@ -840,7 +840,7 @@ export default function CountryDetailComponent({
                                       event.preventDefault();
                                       event.stopPropagation();
                                       showComingSoonToast("featureLaunch");
-                                      setTimeout(() => setOpenContextMenuId(null), 50);
+                                      setTimeout(() => setOpenContextMenuId(null), 500);
                                     }}
                                     className="flex w-full items-center gap-3 text-[0.9375rem] font-medium tracking-[-0.3px] text-white hover:text-[#d4d4d4] transition-colors"
                                   >
@@ -854,7 +854,7 @@ export default function CountryDetailComponent({
                                       event.preventDefault();
                                       event.stopPropagation();
                                       showComingSoonToast("featureLaunch");
-                                      setTimeout(() => setOpenContextMenuId(null), 50);
+                                      setTimeout(() => setOpenContextMenuId(null), 500);
                                     }}
                                     className="flex w-full items-center gap-3 text-[0.9375rem] font-medium tracking-[-0.3px] text-white hover:text-[#d4d4d4] transition-colors"
                                   >
